@@ -27,6 +27,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <nexusproxy>http://nexus.opendaylight.org/content</nexusproxy>
+    <jacoco.version>0.6.2.201302030002</jacoco.version>
   </properties>
 
       <pluginRepositories>
@@ -152,6 +153,30 @@
                 <manifestLocation>${project.build.directory}/META-INF</manifestLocation>
               </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <configuration>
+                  <includes>
+                    <include>org.opendaylight.topoprocessing.*</include>
+                  </includes>
+                </configuration>
+                <executions>
+                  <execution>
+                    <id>pre-test</id>
+                    <goals>
+                      <goal>prepare-agent</goal>
+                    </goals>
+                  </execution>
+                  <execution>
+                    <id>post-test</id>
+                    <goals>
+                      <goal>report</goal>
+                    </goals>
+                    <phase>test</phase>
+                  </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -179,6 +204,11 @@
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
                     <version>${maven.bundle.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
