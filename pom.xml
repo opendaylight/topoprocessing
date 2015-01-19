@@ -29,6 +29,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jacoco.version>0.6.2.201302030002</jacoco.version>
+    <yangtools.version>0.7.0-SNAPSHOT</yangtools.version>
+    <salGeneratorPath>${project.build.directory}/yang-gen-sal</salGeneratorPath>
   </properties>
 
   <!--
@@ -179,6 +181,11 @@
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${jacoco.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.opendaylight.yangtools</groupId>
+                    <artifactId>yang-maven-plugin</artifactId>
+                    <version>${yangtools.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
