@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "7a96c907_879ac161",
+        "filename": "topoprocessing-api/src/main/yang/topology-correlation.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 3324
+      },
+      "writtenOn": "2015-01-21T17:24:52Z",
+      "side": 1,
+      "message": "Hi Michal,\n\nCould you provide an example of usage?\n\nHere our interpretation:\n{\n    \"network-topology\": {\n            \"topology\": [\n                {\n                    \"topology-id\": \"correlated:1\",\n                    \"topology-types\": {\n\u003ccorrelated type is missing\u003e\n                    }\n                    “correlations”: {\n                        “correlation”: [\n                            {\n                                “name”: “correlation-base”,\n                                “identity”: {\n                                    “leaf”: [\n\u003cif multiple, is order meaningful?\u003e\n                                        “nodes/node/id”\n                                ]\n                            }\n                        ]\n                    }\n\nGiorgio and Carlo.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 30
+      },
+      "revId": "65f3664012b9f1588df0cf1a88f6c2c16f2bfddd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_c7d1a958",
         "filename": "topoprocessing-api/src/main/yang/topology-correlation.yang",
         "patchSetId": 2
