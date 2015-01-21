@@ -1,0 +1,59 @@
+/*
+ * Copyright (c) 2015 Pantheon Technologies s.r.o. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+ 
+ module topology-correlation {
+
+    namespace "urn:opendaylight:topology:correlation";
+    prefix "topo-correlation";
+
+    import network-topology {prefix topo; revision-date "2013-10-21";}
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+
+    revision "2015-01-21" {
+        description "Topology Processing Framework correlation definition";
+    }
+
+    typedef leaf-path {
+        description "Path to leaf that shall be compared.
+        This definition should be tuned later.
+        Something like RelativeSchemaPath might be useful.";
+        type string;
+    }
+
+    identity correlation-base {
+        description "Base identity for correlation types";
+    }
+
+    identity equality {
+        description "All referenced leaves must be equal (of the same value)";
+        base correlation-base;
+    }
+
+    augment "/topo:network-topology/topo:topology" {
+        ext:augment-identifier "correlation-augment";
+        container correlations {
+            list correlation {
+                key name;
+                leaf name {
+                    type identityref {
+                        base correlation-base;
+                    }
+                }
+                choice correlation-type {
+                    case equality-case {
+                        container equality {
+                            leaf-list leaf {
+                                type leaf-path;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
