@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_c7d1a958",
+        "filename": "topoprocessing-api/src/main/yang/topology-correlation.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 391
+      },
+      "writtenOn": "2015-01-21T16:15:48Z",
+      "side": 1,
+      "message": "Would it be better to not use a keyword as an attribute?",
+      "revId": "65f3664012b9f1588df0cf1a88f6c2c16f2bfddd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
