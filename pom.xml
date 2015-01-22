@@ -18,6 +18,7 @@
     <module>topoprocessing-api</module>
     <module>topoprocessing-spi</module>
     <module>topoprocessing-impl</module>
+    <module>features-topoprocessing</module>
   </modules>
   <scm>
       <connection>scm:git:ssh://git.opendaylight.org:29418/topoprocessing.git</connection>
