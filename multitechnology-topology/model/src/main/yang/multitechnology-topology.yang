@@ -1,0 +1,116 @@
+module multitechnology-topology {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:multitechnology";
+    prefix "mt";
+
+    import yang-ext         { prefix "ext";   revision-date 2013-07-09; }
+
+    import ietf-inet-types  { prefix "inet";  revision-date 2010-09-24; }
+    import network-topology { prefix "nt";    revision-date 2013-10-21; }
+
+    organization "Ericsson AB";
+    contact "TBD
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152 
+             Italy";
+
+    description
+        "
+        Copyright (c)2015 Ericsson, AB. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        This module introduces in network-topology the basic ability 
+        to represent technology specific parameters in an SDN context.";
+
+    revision "2015-01-22" {
+        description
+            "Initial revision.";
+    }
+
+    grouping multitechnology-topology-type {
+        container multitechnology-topology {
+            presence "indicates normalized Multi-Technology Topology";
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:topology-types" {
+        ext:augment-identifier "mt-topology-type";
+        uses multitechnology-topology-type;
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:underlay-topology" {
+        when "../../nt:topology-types/mt:multitechnology-topology-type";
+        ext:augment-identifier "mt-underlay-topology";
+        description 
+           "Saved original definition add: 
+            Multitechnology topology provides a normalized view of reported 
+            topologies. Provided representation may not be an overlay view.
+            It is configured by client in order to specify the set of 
+            topologies to be normalized.";
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:node/nt:supporting-node" {
+        when "../../nt:topology-types/mt:multitechnology-topology-type";
+        ext:augment-identifier "mt-supporting-node";
+        description 
+           "Saved original definition add: 
+            Multitechnology topology provides a normalized topology view.
+            This list reports nodes belonging to normalized topologies.
+            Provided representation may not be an overlay view.";
+    }
+
+    identity base-attribute-type {
+        description 
+          "Describe source of a set of attributes in multi-technology topology.
+           Attributes MAY be used as constraints during path computation
+           according to applied policies.";
+    }
+
+    grouping mt-info {
+        list attribute {
+            description
+                "Topology constraints may be originated by different sources
+                 and may be technology dependent.";
+            key id;
+            leaf attribute-type {
+                type identityref {
+                    base base-attribute-type;
+                }
+            }
+            leaf id {
+                type inet:uri;
+                description
+                   "An identifier for a constraint: it MUST be unique among 
+                    constraints and instances of constraints.  
+                    For example: controller based constraints may have 
+                    multiple instances of the same type.";
+            }
+            container value {
+            }
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:node" {
+        when "../../nt:topology-types/mt:multitechnology-topology-type";
+        ext:augment-identifier "mt-info-node";
+        uses mt-info;
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:node/nt:termination-point" {
+        when "../../nt:topology-types/mt:multitechnology-topology-type";
+        ext:augment-identifier "mt-info-termination-point";
+        uses mt-info;
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:link" {
+        when "../../nt:topology-types/mt:multitechnology-topology-type";
+        ext:augment-identifier "mt-info-link";
+        uses mt-info;
+    }
+}
+

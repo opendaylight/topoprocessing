@@ -1,0 +1,116 @@
+module multitechnology-topology-general-purpose {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:multitechnology:general";
+    prefix "mt-gp";
+
+    import yang-ext                 { prefix "ext";   revision-date 2013-07-09; }
+
+    import network-topology         { prefix "nt";    revision-date 2013-10-21; }
+    import multitechnology-topology { prefix "mt";    revision-date 2015-01-22; }
+
+    organization "Ericsson AB";
+    contact "TBD
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152 
+             Italy";
+
+    description
+        "
+        Copyright (c)2015 Ericsson, AB. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        This module defines attribute value augmentation of multitechnology
+        network topology in order to introduce the ability to represent any
+        'basic' application defined parameter without requesting changes to
+        to controller.";
+
+    revision "2015-01-22" {
+        description
+            "Initial revision.";
+    }
+
+    grouping multitechnology-topology-general-purpose-type {
+        container multitechnology-general-purpose-topology {
+            presence "indicates normalized Multi-Technology Topology containing general purpose info";
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:topology-types/mt:multitechnology-topology" {
+        ext:augment-identifier "mt-topology-general-purpose-type";
+        uses multitechnology-topology-general-purpose-type;
+    }
+
+    //
+    // General Purpose Attribute Container
+    //
+    identity native {
+        description "native";
+        base mt:base-attribute-type;
+    }
+    identity controller {
+        description "controller";
+        base mt:base-attribute-type;
+    }
+    identity application {
+        description "application";
+        base mt:base-attribute-type;
+    }
+
+    grouping basic-attribute-types {
+        choice basic-attribute-types {
+            case binary-value    {leaf      binary-value    {type binary; }}
+            case boolean-value   {leaf      boolean-value   {type boolean;}}
+            case decimal64-value {leaf      decimal64-value {
+                    type decimal64{fraction-digits 2;}}}
+            case decimal64-list  {leaf-list decimal64-list  {
+                    type decimal64{fraction-digits 2;}}}
+            case empty-value     {leaf      empty-value     {type empty;  }}
+            case int8-value      {leaf      int8-value      {type int8;   }}
+            case int8-list       {leaf-list int8-list       {type int8;   }}
+            case int16-value     {leaf      int16-value     {type int16;  }}
+            case int16-list      {leaf-list int16-list      {type int16;  }}
+            case int32-value     {leaf      int32-value     {type int32;  }}
+            case int32-list      {leaf-list int32-list      {type int32;  }}
+            case int64-value     {leaf      int64-value     {type int64;  }}
+            case int64-list      {leaf-list int64-list      {type int64;  }}
+            case string-value    {leaf      string-value    {type string; }}
+            case string-list     {leaf-list string-list     {type string; }}
+            case uint8-value     {leaf      uint8-value     {type uint8;  }}
+            case uint8-list      {leaf-list uint8-list      {type uint8;  }}
+            case uint16-value    {leaf      uint16-value    {type uint16; }}
+            case uint16-list     {leaf-list uint16-list     {type uint16; }}
+            case uint32-value    {leaf      uint32-value    {type uint32; }}
+            case uint32-list     {leaf-list uint32-list     {type uint32; }}
+            case uint64-value    {leaf      uint64-value    {type uint64; }}
+            case uint64-list     {leaf-list uint64-list     {type uint64; }}
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:node/mt:attribute/mt:value" {
+        when "./mt:attribute-type = 'native' or " +
+             "./mt:attribute-type = 'controller' or " +
+             "./mt:attribute-type = 'application'";
+        ext:augment-identifier "mt-basic-node-attribute-value";
+        uses basic-attribute-types;
+    }
+    augment "/nt:network-topology/nt:topology/nt:link/mt:attribute/mt:value" {
+        when "./mt:attribute-type = 'native' or " +
+             "./mt:attribute-type = 'controller' or " +
+             "./mt:attribute-type = 'application'";
+        ext:augment-identifier "mt-basic-link-attribute-value";
+        uses basic-attribute-types;
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:node/nt:termination-point/mt:attribute/mt:value" {
+        when "./mt:attribute-type = 'native' or " +
+             "./mt:attribute-type = 'controller' or " +
+             "./mt:attribute-type = 'application'";
+        ext:augment-identifier "basic-tp-attr-value";
+        uses basic-attribute-types;
+    }
+}
