@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<features name="odl-topoprocessing-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+    <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.controller/features-config/${config.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
+    <feature name='odl-topoprocessing-all' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: All">
+        <feature version='${yangtools.version}'>odl-yangtools-common</feature>
+        <feature version='${yangtools.version}'>odl-yangtools-binding</feature>
+        <feature version='${yangtools.version}'>odl-yangtools-models</feature>
+        <feature version='${config.version}'>odl-config-api</feature>
+        <feature version='${mdsal.version}'>odl-mdsal-common</feature>
+        <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-api/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-impl/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-spi/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-common-model/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-common-impl/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-model/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-impl/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/multitechnology-topology-model/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/multitechnology-topology-impl/${project.version}</bundle>
+    </feature>
+</features>

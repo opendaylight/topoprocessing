@@ -12,8 +12,162 @@
     <artifactId>features-topoprocessing</artifactId>
     <packaging>jar</packaging>
 
+    <scm>
+        <connection>scm:git:ssh://git.opendaylight.org:29418/topoprocessing.git</connection>
+        <developerConnection>scm:git:ssh://git.opendaylight.org:29418/topoprocessing.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://git.opendaylight.org/gerrit/gitweb?p=topoprocessing.git;a=summary</url>
+    </scm>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <karaf.empty.version>1.5.0-SNAPSHOT</karaf.empty.version>
+        <features.file>features.xml</features.file>
+        <surefire.version>2.16</surefire.version>
     </properties>
 
+    <dependencies>
+        <!-- feature dependencies -->
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>features-yangtools</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>features-config</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>features-mdsal</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+
+        <!-- bundle dependencies -->
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>topoprocessing-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>topoprocessing-spi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>topoprocessing-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>mlmt-topology-common-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>mlmt-topology-common-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>mlmt-topology-observer-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>mlmt-topology-observer-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>multitechnology-topology-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>multitechnology-topology-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- test to validate features.xml -->
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>features-test</artifactId>
+            <version>${yangtools.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- dependency for opendaylight-karaf-empty for use by testing -->
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>opendaylight-karaf-empty</artifactId>
+            <version>${karaf.empty.version}</version>
+            <type>zip</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>filter</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+                                <artifact>
+                                    <file>${project.build.directory}/classes/${features.file}</file>
+                                    <type>xml</type>
+                                    <classifier>features</classifier>
+                                </artifact>
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <karaf.distro.groupId>org.opendaylight.controller</karaf.distro.groupId>
+                        <karaf.distro.artifactId>opendaylight-karaf-empty</karaf.distro.artifactId>
+                        <karaf.distro.version>${karaf.empty.version}</karaf.distro.version>
+                    </systemPropertyVariables>
+                    <dependenciesToScan>
+                        <dependency>org.opendaylight.yangtools:features-test</dependency>
+                    </dependenciesToScan>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
