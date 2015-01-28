@@ -60,7 +60,7 @@
         <configuration>
 
           <instructions>
-            <Bundle-Activator>org.ericsson.mlwc.network.topology.multitechnology.MultitechnologyTopologyProvider</Bundle-Activator>
+            <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
           </instructions>
           <manifestLocation>${project.build.directory}/META-INF</manifestLocation>
         </configuration>
