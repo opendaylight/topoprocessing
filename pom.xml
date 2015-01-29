@@ -19,7 +19,7 @@
         <module>topoprocessing-api</module>
         <module>topoprocessing-spi</module>
         <module>topoprocessing-impl</module>
-        <module>features-topoprocessing</module>
+        <module>features</module>
         <module>common</module>
         <module>multitechnology-topology</module>
         <module>observer</module>
