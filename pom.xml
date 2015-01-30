@@ -41,6 +41,7 @@
         <ietf.ted.version>2013.10.21.7-SNAPSHOT</ietf.ted.version>
         <config.version>0.3.0-SNAPSHOT</config.version>
         <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
+        <sal.binding.api.version>1.2.0-SNAPSHOT</sal.binding.api.version>
     </properties>
 
     <!-- Note: We can not use variables for these URLs because we need to 
