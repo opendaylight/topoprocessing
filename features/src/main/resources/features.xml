@@ -12,6 +12,7 @@
         <feature version='${yangtools.version}'>odl-yangtools-models</feature>
         <feature version='${config.version}'>odl-config-api</feature>
         <feature version='${mdsal.version}'>odl-mdsal-common</feature>
+        <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-api/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-spi/${project.version}</bundle>
