@@ -18,6 +18,7 @@ public class MlmtTopologyNotify implements Runnable {
     private static final int MAX_NOTIFY_Q_LENGTH = 54;
     private MlmtTopologyUpdate entry;
     private MlmtTopologyUpdateListener listener;
+    private volatile boolean finishing = false;
 
     public MlmtTopologyNotify(MlmtTopologyUpdateListener listener, final Logger logger) {
         this.LOG = logger;
@@ -31,18 +32,26 @@ public class MlmtTopologyNotify implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!finishing) {
             try {
                 // First we block waiting for an element to get in
                 entry = notifyQ.take();
                 listener.update(entry);
                 // Lets sleep for sometime to allow aggregation of event
                 Thread.sleep(100);
-            } catch (InterruptedException e1) {
-                LOG.error("MlmtTopologyNotify Thread interrupted", e1);
-            } catch (Exception e2) {
-                LOG.error("MlmtTopologyNotify Thread exception", e2);
+            } catch (final InterruptedException e) {
+                LOG.error("MlmtTopologyNotify Thread interrupted", e);
+                finishing = true;
+            } catch (final Exception e) {
+                LOG.error("MlmtTopologyNotify Thread exception", e);
             }
+        }
+        cleanNotifyQueue();
+    }
+
+    private void cleanNotifyQueue() {
+        while (!notifyQ.isEmpty()) {
+            notifyQ.poll();
         }
     }
 }
