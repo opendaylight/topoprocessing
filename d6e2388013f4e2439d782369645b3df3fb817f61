@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a96c907_55652743",
+        "filename": "common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtAbstractProviderFactory.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 3277
+      },
+      "writtenOn": "2015-02-02T14:27:32Z",
+      "side": 1,
+      "message": "Yes, we can and name that interface as MlmtProviderFactory.",
+      "parentUuid": "7a96c907_754aa3c6",
+      "range": {
+        "startLine": 13,
+        "startChar": 21,
+        "endLine": 13,
+        "endChar": 29
+      },
+      "revId": "d6e2388013f4e2439d782369645b3df3fb817f61",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a96c907_9545efb4",
         "filename": "common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtAbstractTopologyUpdate.java",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2015-02-02T13:25:00Z",
       "side": 1,
       "message": "do we need to call this method getTopologyINSTANCEId() ? can we skip INSTANCE ?",
+      "range": {
+        "startLine": 38,
+        "startChar": 51,
+        "endLine": 38,
+        "endChar": 59
+      },
+      "revId": "d6e2388013f4e2439d782369645b3df3fb817f61",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_f55b1385",
+        "filename": "common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtAbstractTopologyUpdate.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 3277
+      },
+      "writtenOn": "2015-02-02T14:27:32Z",
+      "side": 1,
+      "message": "I think it is the \"topologyId\" member variable that should be named as topologyInstanceId in place of topologyId, while keeping that method name as it is.",
+      "parentUuid": "7a96c907_9545efb4",
       "range": {
         "startLine": 38,
         "startChar": 51,
