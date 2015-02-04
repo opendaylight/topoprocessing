@@ -1,0 +1,29 @@
+/*
+ * Copyright (c) 2015 Pantheon Technologies s.r.o. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+ 
+ module topoprocessing-provider {
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:topoprocessing:provider";
+    prefix "topoprocessing-provider";
+
+    import config {prefix config; revision-date 2013-04-05; }
+
+    description
+        "Topology Processing Framework service definition";
+
+    revision "2015-02-09" {
+        description
+            "Initial revision";
+    }
+
+    identity topoprocessing-provider {
+         base "config:service-type";
+         config:java-class "org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider";
+    }
+
+}
