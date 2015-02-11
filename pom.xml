@@ -36,12 +36,15 @@
         <jacoco.version>0.6.2.201302030002</jacoco.version>
         <yangtools.version>0.7.0-SNAPSHOT</yangtools.version>
         <salGeneratorPath>${project.build.directory}/yang-gen-sal</salGeneratorPath>
+        <jmxGeneratorPath>${project.build.directory}/generated-sources/config</jmxGeneratorPath>
+        <yang.jmx.generator.plugin>0.3.0-SNAPSHOT</yang.jmx.generator.plugin>
         <yang.ext.version>2013.09.07.7-SNAPSHOT</yang.ext.version>
         <ietf.model.version>2013.10.21.7-SNAPSHOT</ietf.model.version>
         <ietf.ted.version>2013.10.21.7-SNAPSHOT</ietf.ted.version>
         <config.version>0.3.0-SNAPSHOT</config.version>
         <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
         <sal.binding.api.version>1.2.0-SNAPSHOT</sal.binding.api.version>
+        <sal.binding.config.version>1.2.0-SNAPSHOT</sal.binding.config.version>
     </properties>
 
     <!-- Note: We can not use variables for these URLs because we need to 
