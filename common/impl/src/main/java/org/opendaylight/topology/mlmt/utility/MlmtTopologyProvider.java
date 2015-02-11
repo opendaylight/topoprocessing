@@ -33,5 +33,39 @@ public interface MlmtTopologyProvider {
     public void onLinkCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Link link);
+
+    public void onTopologyUpdated(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final Topology topology);
+
+    public void onNodeUpdated(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final Node node);
+
+    public void onTpUpdated(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final NodeKey nodeKey,
+            final TerminationPoint tp);
+
+    public void onLinkUpdated(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final Link link);
+
+    public void onTopologyDeleted(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final Topology topology);
+
+    public void onNodeDeleted(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final Node node);
+
+    public void onTpDeleted(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final NodeKey nodeKey,
+            final TerminationPoint tp);
+
+    public void onLinkDeleted(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final Link link);
 }
 
