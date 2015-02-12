@@ -13,7 +13,8 @@
 
     import topoprocessing-provider {prefix topoproc;}
     import config {prefix config; revision-date 2013-04-05;}
-    import opendaylight-md-sal-dom {prefix dom;}
+    import opendaylight-md-sal-dom {prefix dom; revision-date 2013-10-28;}
+    import opendaylight-md-sal-binding {prefix binding; revision-date 2013-10-28;}
 
     description
         "Topology Processing Framework module definition";
@@ -37,6 +38,14 @@
                     refine type {
                         mandatory true;
                         config:required-identity dom:schema-service;
+                    }
+                }
+            }
+            container data-broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity binding:binding-async-data-broker;
                     }
                 }
             }

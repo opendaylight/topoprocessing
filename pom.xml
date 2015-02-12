@@ -126,6 +126,11 @@
                 <version>${mdsal.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.opendaylight.controller</groupId>
+                <artifactId>sal-binding-config</artifactId>
+                <version>${mdsal.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
