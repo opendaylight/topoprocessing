@@ -22,6 +22,30 @@
       "revId": "1df2ba9a0d94c6847626acef9f16be808154f2e0",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a96c907_4ee01896",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 3277
+      },
+      "writtenOn": "2015-02-12T11:56:22Z",
+      "side": 1,
+      "message": "Yes, I will submit that update.",
+      "parentUuid": "7a96c907_2e4cacc7",
+      "range": {
+        "startLine": 38,
+        "startChar": 8,
+        "endLine": 39,
+        "endChar": 96
+      },
+      "revId": "1df2ba9a0d94c6847626acef9f16be808154f2e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
