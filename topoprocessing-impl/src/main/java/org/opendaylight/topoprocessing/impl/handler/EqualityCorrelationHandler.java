@@ -17,8 +17,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
+ * Sets up all needed structures for correct Equality correlation processing
  * @author michal.polkorab
- *
  */
 public class EqualityCorrelationHandler {
 

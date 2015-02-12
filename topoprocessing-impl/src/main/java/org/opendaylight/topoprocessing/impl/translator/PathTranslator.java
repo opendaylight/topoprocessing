@@ -10,6 +10,7 @@ package org.opendaylight.topoprocessing.impl.translator;
 
 import java.util.Iterator;
 
+import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.model.api.DataNodeContainer;
@@ -27,15 +28,6 @@ import com.google.common.base.Strings;
  */
 public class PathTranslator {
 
-    private volatile SchemaContext globalSchemaContext;
-
-    /**
-     * @param globalContext
-     */
-    public PathTranslator(SchemaContext globalContext) {
-        globalSchemaContext = globalContext;
-    }
-
     /**
      * Translates yang path into {@link YangInstanceIdentifier}
      * @param yangPath path to target node
@@ -52,8 +44,9 @@ public class PathTranslator {
         }
         String startModule = pathIterator.next();
         InstanceIdentifierBuilder builder = YangInstanceIdentifier.builder();
-        final Module readModule = globalSchemaContext.findModuleByName(startModule, null);
-        YangInstanceIdentifier identifier = collectPathArguments(builder, pathIterator, readModule);
+        SchemaContext schemaContext = GlobalSchemaContextHolder.getSchemaContext();
+        final Module readModule = schemaContext.findModuleByName(startModule, null);
+        YangInstanceIdentifier identifier = collectPathArguments(builder, pathIterator, readModule, schemaContext);
         if (identifier == null) {
             throw new IllegalStateException("Unable to create identifier for given path: " + yangPath);
         }
@@ -61,7 +54,8 @@ public class PathTranslator {
     }
 
     private YangInstanceIdentifier collectPathArguments(final InstanceIdentifierBuilder builder,
-            final Iterator<String> pathIterator, final DataNodeContainer parentNode) {
+            final Iterator<String> pathIterator, final DataNodeContainer parentNode,
+            SchemaContext schemaContext) {
         if (parentNode == null) {
             return null;
         }
@@ -73,7 +67,7 @@ public class PathTranslator {
         final String moduleName = toModuleName(head);
         DataSchemaNode targetNode = null;
         if (!Strings.isNullOrEmpty(moduleName)) {
-            Module module = globalSchemaContext.findModuleByName(moduleName, null);
+            Module module = schemaContext.findModuleByName(moduleName, null);
             if (module == null) {
                 throw new IllegalStateException("Specified module: " + moduleName + " was not found.");
             }
@@ -86,7 +80,7 @@ public class PathTranslator {
         }
         builder.node(targetNode.getQName());
         if ((targetNode instanceof DataNodeContainer)) {
-            return collectPathArguments(builder, pathIterator, ((DataNodeContainer) targetNode));
+            return collectPathArguments(builder, pathIterator, ((DataNodeContainer) targetNode), schemaContext);
         }
         return builder.build();
     }

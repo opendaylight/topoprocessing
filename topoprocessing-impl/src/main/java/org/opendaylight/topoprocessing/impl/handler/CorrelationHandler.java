@@ -15,11 +15,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
-import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 
 /**
+ * Differentiates received correlations and engages correct {@link CorrelationHandler}
  * @author michal.polkorab
- *
  */
 public class CorrelationHandler {
 
@@ -28,8 +27,8 @@ public class CorrelationHandler {
     /**
      * @param globalContext
      */
-    public CorrelationHandler(SchemaContext globalContext) {
-        pathTranslator = new PathTranslator(globalContext);
+    public CorrelationHandler() {
+        pathTranslator = new PathTranslator();
     }
 
     /**

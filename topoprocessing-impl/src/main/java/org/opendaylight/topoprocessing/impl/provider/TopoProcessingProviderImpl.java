@@ -9,8 +9,11 @@
 package org.opendaylight.topoprocessing.impl.provider;
 
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
-import org.opendaylight.topoprocessing.impl.handler.CorrelationHandler;
+import org.opendaylight.topoprocessing.impl.listener.GlobalSchemaContextListener;
+import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 
 /**
  * @author michal.polkorab
@@ -18,25 +21,29 @@ import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
  */
 public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
-    private CorrelationHandler correlationHandler;
+    private SchemaService schemaService;
+    private ListenerRegistration<SchemaContextListener> schemaContextListenerRegistration;
 
     /**
      * @param schemaService
      */
     public TopoProcessingProviderImpl(SchemaService schemaService) {
-        correlationHandler = new CorrelationHandler(schemaService.getGlobalContext());
+        this.schemaService = schemaService;
+        GlobalSchemaContextHolder.setSchemaContext(schemaService.getGlobalContext());
+        startup();
     }
 
     @Override
     public void startup() {
         // start TopologyListener
-        // register SchemaContextListener
+        schemaContextListenerRegistration =
+                schemaService.registerSchemaContextListener(new GlobalSchemaContextListener());
     }
 
     @Override
     public void close() throws Exception {
         // shutdown TopologyListener
-        // unregister SchemaContextListener
+        schemaContextListenerRegistration.close();
     }
 
 }
