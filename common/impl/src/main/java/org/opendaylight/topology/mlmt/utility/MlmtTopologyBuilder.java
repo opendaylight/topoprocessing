@@ -24,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SupportingLink;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
@@ -33,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNode;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.slf4j.Logger;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -151,12 +149,14 @@ public class MlmtTopologyBuilder {
     }
 
     public void deleteNode(final LogicalDatastoreType type,
-             final InstanceIdentifier<Node> nodeInstanceId) {
+             final InstanceIdentifier<Topology> topologyInstanceId,
+             final NodeKey nodeKey) {
         try {
             LOG.info("MlmtTopologyBuilder.deleteNode");
             processor.enqueueOperation(new MlmtTopologyOperation() {
                 @Override
                 public void applyOperation(ReadWriteTransaction transaction) {
+                    final InstanceIdentifier<Node> nodeInstanceId = topologyInstanceId.child(Node.class, nodeKey);
                     transaction.delete(type, nodeInstanceId);
                 }
             });
@@ -190,12 +190,16 @@ public class MlmtTopologyBuilder {
     }
 
     public void deleteTp(final LogicalDatastoreType type,
-            final InstanceIdentifier<TerminationPoint> tpInstanceId) {
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final NodeKey nodeKey,
+            final TerminationPointKey tpKey) {
         try {
             LOG.info("MlmtTopologyBuilder.deleteTp");
             processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
                 public void applyOperation(ReadWriteTransaction transaction) {
+                    InstanceIdentifier<Node> nodeInstanceId = topologyInstanceId.child(Node.class, nodeKey);
+                    InstanceIdentifier<TerminationPoint> tpInstanceId = nodeInstanceId.child(TerminationPoint.class, tpKey);
                     transaction.delete(type, tpInstanceId);
                 }
             });
@@ -230,12 +234,14 @@ public class MlmtTopologyBuilder {
     }
 
     public void deleteLink(final LogicalDatastoreType type,
-            final InstanceIdentifier<Link> linkInstanceId) {
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final LinkKey linkKey) {
         try {
             LOG.info("MlmtTopologyBuilder.deleteLink");
             processor.enqueueOperation(new MlmtTopologyOperation() {
                 @Override
                 public void applyOperation(ReadWriteTransaction transaction) {
+                    InstanceIdentifier<Link> linkInstanceId = topologyInstanceId.child(Link.class, linkKey);
                     transaction.delete(type, linkInstanceId);
                 }
             });

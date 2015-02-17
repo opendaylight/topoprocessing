@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
@@ -20,6 +21,8 @@
         <module>topoprocessing-impl</module>
         <module>features</module>
         <module>common</module>
+        <module>parser</module>
+        <module>factory</module>
         <module>multitechnology-topology</module>
         <module>observer</module>
     <module>distribution-karaf</module>
@@ -41,6 +44,8 @@
         <yang.ext.version>2013.09.07.7-SNAPSHOT</yang.ext.version>
         <ietf.model.version>2013.10.21.7-SNAPSHOT</ietf.model.version>
         <ietf.ted.version>2013.10.21.7-SNAPSHOT</ietf.ted.version>
+        <ietf.l3.unicast.igp.version>2013.10.21.7-SNAPSHOT</ietf.l3.unicast.igp.version>
+        <ietf.isis.version>2013.10.21.7-SNAPSHOT</ietf.isis.version>
         <config.version>0.3.0-SNAPSHOT</config.version>
         <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
         <sal.binding.api.version>1.2.0-SNAPSHOT</sal.binding.api.version>

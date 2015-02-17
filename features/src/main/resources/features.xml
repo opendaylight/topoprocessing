@@ -18,6 +18,10 @@
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-spi/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-common-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-common-impl/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-parser-model/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-parser-impl/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-factory-model/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-factory-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/multitechnology-topology-model/${project.version}</bundle>

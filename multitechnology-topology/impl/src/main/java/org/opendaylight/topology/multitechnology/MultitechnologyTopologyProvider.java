@@ -18,6 +18,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -158,27 +159,30 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
 
     @Override
     public void onTopologyDeleted(final LogicalDatastoreType type,
-            final InstanceIdentifier<Topology> topologyInstanceId,
-            final Topology topology) {
+            final InstanceIdentifier<Topology> topologyInstanceId) {
+
     }
 
     @Override
     public void onNodeDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
-            final Node node) {
+            final NodeKey nodeKey) {
+
     }
 
     @Override
     public void onTpDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey,
-            final TerminationPoint tp) {
+            final TerminationPointKey tpKey) {
+
     }
 
     @Override
     public void onLinkDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
-            final Link link) {
+            final LinkKey linkKey) {
+
     }
 
     private void handleNodeAttributes(final LogicalDatastoreType type,

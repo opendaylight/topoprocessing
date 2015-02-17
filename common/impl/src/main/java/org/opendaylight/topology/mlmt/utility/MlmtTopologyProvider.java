@@ -13,7 +13,9 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
 
 public interface MlmtTopologyProvider {
 
@@ -52,20 +54,19 @@ public interface MlmtTopologyProvider {
             final Link link);
 
     public void onTopologyDeleted(final LogicalDatastoreType type,
-            final InstanceIdentifier<Topology> topologyInstanceId,
-            final Topology topology);
+            final InstanceIdentifier<Topology> topologyInstanceId);
 
     public void onNodeDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
-            final Node node);
+            final NodeKey nodeKey);
 
     public void onTpDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey,
-            final TerminationPoint tp);
+            final TerminationPointKey tpKey);
 
     public void onLinkDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
-            final Link link);
+            final LinkKey linkKey);
 }
 
