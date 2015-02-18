@@ -1,0 +1,118 @@
+module forwarding-adjacency-topology {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:forwarding-adjacency";
+    prefix "fa";
+
+    import yang-ext         { prefix "ext";   revision-date 2013-07-09; }
+
+    import network-topology { prefix "nt";    revision-date 2013-10-21; }
+    import multitechnology-topology
+                            { prefix "mt";    revision-date 2015-01-22; }
+    import multilayer-topology 
+                            { prefix "ml";    revision-date 2015-01-23; }
+
+    organization "Ericsson AB";
+    contact "TBD
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152
+             Italy";
+
+    description
+        "
+        Copyright (c)2015 Ericsson, AB. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        This module allows forwarding adjacency representaion 
+        in network-topology for a SDN context.";
+
+
+    revision "2015-01-23" {
+        description
+            "Initial revision.";
+    }
+
+    grouping forwarding-adjacency-topology-type {
+        container forwarding-adjacency-topology {
+            presence 
+                "indicates a forwarding adjacency aware topology.";
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:topology-types/mt:multitechnology-topology/ml:multilayer-topology" {
+        ext:augment-identifier "fa-topology-type";
+        uses forwarding-adjacency-topology-type;
+    }
+
+    typedef forwarding-adjacency-ref {
+        type leafref {
+            path "/nt:network-topology/nt:topology/forwarding-adjacency/fa-id";
+        }
+        description 
+            "A type for an absolute reference to an announced forwarding adjacency.";
+    }
+
+    augment "/nt:network-topology/nt:topology" {
+        when "../../ml:topology-types/mt:multitechnology-topology/ml:multilayer-topology/forwarding-adjacency-topology";
+        ext:augment-identifier "fa-topology";
+
+        list forwarding-adjacency {
+            description 
+                "The list of forwarding adjacencies announced in this topology.";
+            key "fa-id";
+            leaf fa-id {
+                type ml:fa-id;
+                description 
+                    "The same unique identifier returned by announcement.";
+            }
+            uses ml:forwarding-adjacency-attributes;
+        }
+    }
+
+    grouping ml-tp-attributes {
+        container supporting-fa {
+            leaf fa {
+                type forwarding-adjacency-ref;
+            }
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:node/nt:termination-point" {
+        when "../../nt:topology-types/ml:multilayer-topology-type";
+        description 
+            "If forwarding-adjacency end-point is not stitched,
+             a termination-point may be created
+             in order to represent the ability to forward or to receive 
+             traffic.
+             If this the case, termination-point should refer to
+             supporting forwarding-adjacency.";
+        ext:augment-identifier "ml-termination-point";
+        uses ml-tp-attributes;
+    }
+
+    grouping ml-link-attributes {
+        list supporting-fa {
+            key "fa";
+            leaf fa {
+                type forwarding-adjacency-ref;
+            }
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:link" {
+        when "../../nt:topology-types/ml:multilayer-topology-type";
+        description 
+            "If forwarding-adjacency end-point is not stitched,
+             a termination-point and related link may be created
+             in order to represent the ability to forward or to receive 
+             traffic across the network.
+             If this the case, link should refer to
+             supporting forwarding-adjacency.";
+        ext:augment-identifier "ml-link";
+        uses ml-link-attributes;
+    }
+}
