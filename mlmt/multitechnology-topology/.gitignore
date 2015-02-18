@@ -1,0 +1,9 @@
+# FOLDER
+target
+META-INF
+.settings
+yang-gen-config
+yang-gen-sal
+# FILE
+.classpath
+.project
