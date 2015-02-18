@@ -1,0 +1,223 @@
+module multilayer-topology {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:multilayer";
+    prefix "ml";
+
+    import yang-ext         { prefix "ext";   revision-date 2013-07-09; }
+
+    import ietf-inet-types  { prefix "inet";  revision-date 2010-09-24; }
+    import network-topology { prefix "nt";    revision-date 2013-10-21; }
+    import multitechnology-topology
+                            { prefix "mt";    revision-date 2015-01-22; }
+
+    organization "Ericsson AB";
+    contact "TBD
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152
+             Italy";
+
+    description
+        "
+        Copyright (c)2015 Ericsson, AB. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        This module introduces multilayer using forwarding adjacency concept 
+        in network-topology for a SDN context.";
+
+    revision "2015-01-23" {
+        description
+            "Initial revision.";
+    }
+
+    grouping multilayer-topology-type {
+        container multilayer-topology {
+            presence 
+                "Indicates a multilayer topology based on forwarding adjacency.";
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:topology-types/mt:multitechnology-topology" {
+        ext:augment-identifier "ml-topology-type";
+        uses multilayer-topology-type;
+    }
+
+    typedef fa-id {
+        type inet:uri;
+        description
+            "A unique identifier used by RPC to refer to an existing forwarding adjacency.";
+    }
+
+    grouping fa-end-point {
+        leaf node {
+            mandatory true;
+            type nt:node-ref;
+            description "Network node end point.";
+        }
+        leaf-list supporting-tp {
+            type nt:tp-ref;
+            description 
+                "List of termination points that support end point TP.
+                If forwarding adjacency announcement triggers termination point 
+                creation, this list is used to fill tp-ref attribute.";
+        }
+        leaf tp-id {
+            type nt:tp-id;
+            description 
+                "Forwarding adjacency interface unique identifier.
+                If forwarding adjacency announcement triggers termination point 
+                creation, this id is used for TP creation.";
+        }
+        container stitching-point {
+            description 
+                "Traffic patch to end-point.
+                If present, forwarding adjacency announcement refers to a FA segment.
+                If present, termination point may not be created.";
+            leaf-list supporting-tp {
+                description 
+                    "List of termination points that support stiching point TP.
+                    If forwarding adjacency announcement triggers termination point 
+                    creation, this list is used to fill tp-ref attribute.";
+                type nt:tp-ref;
+            }
+            leaf tp-id {
+                description 
+                    "Forwarding adjacency stitching TP unique identifier.";
+                type nt:tp-id;
+            }
+        }
+        uses mt:mt-info {
+            description "End-point multitechnology traffic engineering parameters.";
+        }
+    }
+
+    grouping fa-parameters {
+
+        choice directionality-info {
+            case unidirectional {
+                description "Forwarding adjacency is unidirectional.";
+                container unidirectional {
+                }
+            }
+            case reverse-fa {
+                description "Forwarding adjacency has a reverse forwarding adjacency";
+                container reverse-fa {
+                }
+            }
+            case reverse-co-routed-fa {
+                description "Forwarding adjacency has a reverse co-routed forwarding adjacency";
+                container reverse-co-routed-fa {
+                }
+            }
+            case bidirectional {
+                description "Forwarding adjacency is bidirectional, announcements updates will reflect on both directions.";
+                container bidirectional {
+                }
+            }
+        }
+        uses mt:mt-info {
+            description "Link multitechnology traffic engineering parameters used in case of link creation.";
+        }
+    }
+
+    grouping forwarding-adjacency-attributes {
+    
+        container head-end {
+            description "Head-point description of the forwarding adjacency.";
+            uses fa-end-point;
+        }
+        container tail-end {
+            description "Tail-point description of the forwarding adjacency.";
+            uses fa-end-point;
+        }
+
+        uses fa-parameters;
+
+        container announcement-context {
+            description "Optional information";
+            leaf id {
+                type inet:uri;
+                description 
+                    "An identifier for the entity announcing/providing
+                     forwarding adjacency.";
+            }
+            list supporting-resource {
+                ordered-by user;
+                key "resource";
+                leaf resource {
+                    description 
+                        "An ordered list from head-end to tail-end of 
+                         supporting resources.";
+                    type instance-identifier;
+                }
+            }
+        }
+    }
+
+    rpc forwarding-adj-announce {
+        input {
+            uses forwarding-adjacency-attributes;
+        }
+        output {
+            choice result {
+                case fa-id {
+                    leaf fa-id {
+                        type fa-id;
+                    }
+                }
+                case none {
+                    leaf none {
+                        type empty;
+                    }
+                }
+            }
+        }
+    }
+
+    rpc forwarding-adj-withdraw {
+        input {
+            leaf fa-id {
+                type fa-id;
+            }
+        }
+        output {
+            choice result {
+                case ok {
+                    leaf ok {
+                        type empty;
+                    }
+                }
+                case error {
+                    container error {
+                    }
+                }
+            }
+        }
+    }
+
+    rpc forwarding-adj-update {
+        input {
+            leaf fa-id {
+                type fa-id;
+            }
+            uses forwarding-adjacency-attributes;
+        }
+        output {
+            choice result {
+                case ok {
+                    leaf ok {
+                        type empty;
+                    }
+                }
+                case error {
+                    container error {
+                    }
+                }
+            }
+        }
+    }
+}

@@ -18,10 +18,7 @@
         <module>topoprocessing-api</module>
         <module>topoprocessing-spi</module>
         <module>topoprocessing-impl</module>
-        <module>features</module>
-        <module>common</module>
-        <module>multitechnology-topology</module>
-        <module>observer</module>
+        <module>mlmt</module>
     <module>distribution-karaf</module>
   </modules>
     <scm>
@@ -41,6 +38,8 @@
         <yang.ext.version>2013.09.07.7-SNAPSHOT</yang.ext.version>
         <ietf.model.version>2013.10.21.7-SNAPSHOT</ietf.model.version>
         <ietf.ted.version>2013.10.21.7-SNAPSHOT</ietf.ted.version>
+        <ietf.l3.unicast.igp.version>2013.10.21.7-SNAPSHOT</ietf.l3.unicast.igp.version>
+        <ietf.isis.version>2013.10.21.7-SNAPSHOT</ietf.isis.version>
         <config.version>0.3.0-SNAPSHOT</config.version>
         <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
         <sal.binding.api.version>1.2.0-SNAPSHOT</sal.binding.api.version>
