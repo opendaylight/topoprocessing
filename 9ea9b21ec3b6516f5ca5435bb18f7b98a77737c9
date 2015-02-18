@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_b797a147",
+        "filename": "mlmt/observer/impl/src/main/java/org/opendaylight/topology/mlmt/MlmtTopologyObserver.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 391
+      },
+      "writtenOn": "2015-02-18T13:03:21Z",
+      "side": 1,
+      "message": "Change to DELETED",
+      "revId": "9ea9b21ec3b6516f5ca5435bb18f7b98a77737c9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
