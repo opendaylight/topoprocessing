@@ -6,9 +6,7 @@
      <artifactId>topoprocessing-parent</artifactId>
      <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <groupId>org.opendaylight.mlmt</groupId>
   <artifactId>mlmt</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
     <module>common</module>
