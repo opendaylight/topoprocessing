@@ -44,6 +44,7 @@
         <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
         <sal.binding.api.version>1.2.0-SNAPSHOT</sal.binding.api.version>
         <sal.binding.config.version>1.2.0-SNAPSHOT</sal.binding.config.version>
+        <features.test.version>1.5.0-SNAPSHOT</features.test.version>
     </properties>
 
     <!-- Note: We can not use variables for these URLs because we need to 
@@ -104,9 +105,9 @@
                 <type>xml</type>
             </dependency>
             <dependency>
-                <groupId>org.opendaylight.yangtools</groupId>
+                <groupId>org.opendaylight.odlparent</groupId>
                 <artifactId>features-test</artifactId>
-                <version>${yangtools.version}</version>
+                <version>${features.test.version}</version>
             </dependency>
 
             <dependency>
