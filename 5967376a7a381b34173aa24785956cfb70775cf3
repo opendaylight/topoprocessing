@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a96c907_cca7374f",
+        "filename": "features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 3277
+      },
+      "writtenOn": "2015-02-23T12:31:14Z",
+      "side": 1,
+      "message": "This dependency seems redundant with dependency at line 91-95.",
+      "range": {
+        "startLine": 98,
+        "startChar": 12,
+        "endLine": 98,
+        "endChar": 13
+      },
+      "revId": "5967376a7a381b34173aa24785956cfb70775cf3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
