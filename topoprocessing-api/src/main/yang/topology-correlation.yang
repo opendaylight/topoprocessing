@@ -25,6 +25,21 @@
         type string;
     }
 
+    typedef correlation-item-enum {
+        description  "Supported corelation items";
+        type enumeration {
+            enum node {
+                description "node";
+            }
+            enum link {
+                description "link";
+            }
+            enum termination-point {
+                description "termination-point";
+            }
+        }
+    }
+
     identity correlation-base {
         description "Base identity for correlation types";
     }
@@ -44,15 +59,36 @@
                         base correlation-base;
                     }
                 }
+                leaf correlation-item {
+                    type correlation-item-enum;
+                }
                 choice correlation-type {
                     case equality-case {
                         container equality {
-                            leaf-list leaf {
-                                type leaf-path;
-                            }
+                            uses mapping-grouping;
+                        }
+                    }
+                    case unification-case {
+                        container unification {
+                            uses mapping-grouping;
                         }
                     }
                 }
+                
+            }
+        }
+    }
+
+    grouping mapping-grouping {
+        list mapping {
+            key "underlay-topology target-field";
+            leaf underlay-topology {
+                type string;
+                description "Input topology which will be used for aggregation.";
+            }
+            leaf target-field {
+                type leaf-path;
+                description "Path to target field";
             }
         }
     }

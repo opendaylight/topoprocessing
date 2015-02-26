@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.LeafPath;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.equality._case.Equality;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -36,9 +37,9 @@ public class EqualityCorrelationHandler {
      */
     public void handle(EqualityCase equalityCase) {
         Equality equality = equalityCase.getEquality();
-        List<LeafPath> leaves = equality.getLeaf();
-        for (LeafPath leafPath : leaves) {
-            String path = leafPath.getValue();
+        List<Mapping> mappings = equality.getMapping();
+        for (Mapping mapping : mappings) {
+            String path = mapping.getUnderlayTopology();
             YangInstanceIdentifier identifier = pathTranslator.translate(path);
         }
         // pass InstanceIdentifiers to EqualityAggregator / EqualityProvider
