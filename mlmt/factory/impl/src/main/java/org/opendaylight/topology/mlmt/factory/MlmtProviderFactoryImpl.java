@@ -9,6 +9,7 @@ package org.opendaylight.topology.mlmt.factory;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.HashMap;
 
 import com.google.common.base.Preconditions;
@@ -24,33 +25,44 @@ import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.topology.mlmt.utility.MlmtProviderFactory;
 import org.opendaylight.topology.multitechnology.MultitechnologyTopologyProvider;
 import org.opendaylight.topology.mlmt.parser.MultitechnologyAttributesParserImpl;
+import org.opendaylight.topology.mlmt.inventory.InventoryTopologyProvider;
+import org.opendaylight.topology.mlmt.parser.InventoryAttributesParserImpl;
 import org.slf4j.Logger;
 
 public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
 
     @Override
-    public HashMap<String, List<MlmtTopologyProvider>> createProvidersMap(DataBroker dataBroker,
-            final Logger logger, MlmtOperationProcessor processor, String mlmtTopologyName) {
-        try {
-            final TopologyId tid = new TopologyId(mlmtTopologyName);
-            final TopologyKey key = new TopologyKey(Preconditions.checkNotNull(tid));
-            final InstanceIdentifier<Topology> MLMT_TOPOLOGY_IID = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
-            HashMap<String, List<MlmtTopologyProvider>> map = new HashMap();
-            ArrayList<MlmtTopologyProvider> lProvider = new ArrayList<MlmtTopologyProvider>();
-            MultitechnologyAttributesParserImpl multitechnologyAttributesParser = new MultitechnologyAttributesParserImpl();
-            multitechnologyAttributesParser.init(logger);
-            MultitechnologyTopologyProvider multitechnologyTopologyProvider = new MultitechnologyTopologyProvider();
-            multitechnologyTopologyProvider.init(logger, processor, MLMT_TOPOLOGY_IID, multitechnologyAttributesParser);
-            multitechnologyTopologyProvider.setDataProvider(dataBroker);
-            lProvider.add(multitechnologyTopologyProvider);
-            map.put(mlmtTopologyName, lProvider);
+    public Map<String, List<MlmtTopologyProvider>> createProvidersMap(DataBroker dataBroker,
+        final Logger logger, MlmtOperationProcessor processor, String mlmtTopologyName) {
+        final TopologyId tid = new TopologyId(mlmtTopologyName);
+        final TopologyKey key = new TopologyKey(Preconditions.checkNotNull(tid));
+        final InstanceIdentifier<Topology> MLMT_TOPOLOGY_IID = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
+        Map<String, List<MlmtTopologyProvider>> map = new HashMap(2);
+        List<MlmtTopologyProvider> lProvider = new ArrayList<MlmtTopologyProvider>();
+        /*
+         * creating and adding inventory topology provider
+         */
+        InventoryAttributesParserImpl inventoryAttributesParser = new InventoryAttributesParserImpl();
+        inventoryAttributesParser.init(logger);
+        InventoryTopologyProvider inventoryTopologyProvider = new InventoryTopologyProvider();
+        inventoryTopologyProvider.init(logger, processor, MLMT_TOPOLOGY_IID, inventoryAttributesParser);
+        inventoryTopologyProvider.setDataProvider(dataBroker);
+        lProvider.add(inventoryTopologyProvider);
+        /*
+         * creating and adding multitechnology provider
+         */
+        MultitechnologyAttributesParserImpl multitechnologyAttributesParser = new MultitechnologyAttributesParserImpl();
+        multitechnologyAttributesParser.init(logger);
+        MultitechnologyTopologyProvider multitechnologyTopologyProvider = new MultitechnologyTopologyProvider();
+        multitechnologyTopologyProvider.init(logger, processor, MLMT_TOPOLOGY_IID, multitechnologyAttributesParser);
+        multitechnologyTopologyProvider.setDataProvider(dataBroker);
+        lProvider.add(multitechnologyTopologyProvider);
+        /*
+         * topologyname and related providers mapping configuration
+         */
+        map.put(mlmtTopologyName, lProvider);
 
-            return map;
-
-        } catch (final NullPointerException e) {
-            logger.error("MlmtProviderFactoryImpl.HashMap NullPointerException", e);
-            return null;
-        }
+        return map;
     }
 }
 

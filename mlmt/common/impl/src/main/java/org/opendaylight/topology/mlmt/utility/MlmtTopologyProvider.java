@@ -19,53 +19,53 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 
 public interface MlmtTopologyProvider {
 
-    public void onTopologyCreated(final LogicalDatastoreType type,
+    void onTopologyCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Topology topology);
 
-    public void onNodeCreated(final LogicalDatastoreType type,
+    void onNodeCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Node node);
 
-    public void onTpCreated(final LogicalDatastoreType type,
+    void onTpCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey,
             final TerminationPoint tp);
 
-    public void onLinkCreated(final LogicalDatastoreType type,
+    void onLinkCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Link link);
 
-    public void onTopologyUpdated(final LogicalDatastoreType type,
+    void onTopologyUpdated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Topology topology);
 
-    public void onNodeUpdated(final LogicalDatastoreType type,
+    void onNodeUpdated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Node node);
 
-    public void onTpUpdated(final LogicalDatastoreType type,
+    void onTpUpdated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey,
             final TerminationPoint tp);
 
-    public void onLinkUpdated(final LogicalDatastoreType type,
+    void onLinkUpdated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Link link);
 
-    public void onTopologyDeleted(final LogicalDatastoreType type,
+    void onTopologyDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId);
 
-    public void onNodeDeleted(final LogicalDatastoreType type,
+    void onNodeDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey);
 
-    public void onTpDeleted(final LogicalDatastoreType type,
+    void onTpDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey,
             final TerminationPointKey tpKey);
 
-    public void onLinkDeleted(final LogicalDatastoreType type,
+    void onLinkDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final LinkKey linkKey);
 }

@@ -19,5 +19,5 @@ public interface MlmtTopologyOperation {
      *
      * @param transaction Datastore transaction
      */
-    public void applyOperation(ReadWriteTransaction transaction);
+    void applyOperation(ReadWriteTransaction transaction);
 }

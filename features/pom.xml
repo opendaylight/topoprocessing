@@ -46,7 +46,13 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
-
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>features-flow</artifactId>
+            <version>${flow.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
         <!-- bundle dependencies -->
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
@@ -95,6 +101,21 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>multilayer-topology-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>multilayer-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+	    <groupId>org.opendaylight.topoprocessing</groupId>
+	    <artifactId>forwarding-adjacency-impl</artifactId>
+	    <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-factory-model</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -103,7 +124,7 @@
             <artifactId>mlmt-topology-factory-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
-                <dependency>
+        <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-parser-model</artifactId>
             <version>${project.version}</version>
@@ -112,6 +133,11 @@
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-parser-impl</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+	    <groupId>org.opendaylight.topoprocessing</groupId>
+	    <artifactId>mlmt-topology-inventory-impl</artifactId>
+	    <version>${project.version}</version>
         </dependency>
 
         <!-- test to validate features.xml -->

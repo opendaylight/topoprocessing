@@ -6,6 +6,7 @@
     <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-config/${config.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.controller/features-flow/${mdsal.version}/xml/features</repository>
     <feature name='odl-topoprocessing-all' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: All">
         <feature version='${yangtools.version}'>odl-yangtools-common</feature>
         <feature version='${yangtools.version}'>odl-yangtools-binding</feature>
@@ -13,18 +14,24 @@
         <feature version='${config.version}'>odl-config-api</feature>
         <feature version='${mdsal.version}'>odl-mdsal-common</feature>
         <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+        <feature version='${flow.version}'>odl-flow-model</feature>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-api/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-spi/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-common-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-common-impl/${project.version}</bundle>
-        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-model/${project.version}</bundle>
-        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/multitechnology-topology-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/multitechnology-topology-impl/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/multilayer-topology-model/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/multilayer-impl/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/forwarding-adjacency-impl/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-inventory-model/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-inventory-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-parser-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-parser-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-factory-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-factory-impl/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-model/${project.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-impl/${project.version}</bundle>
     </feature>
 </features>
