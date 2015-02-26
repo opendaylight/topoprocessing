@@ -16,6 +16,11 @@
       <artifactId>mlmt-topology-common-impl</artifactId>
       <version>0.0.1-SNAPSHOT</version>
     </dependency>
+   <dependency>
+      <groupId>org.opendaylight.topoprocessing</groupId>
+      <artifactId>mlmt-topology-inventory-impl</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
     <dependency>
       <groupId>org.opendaylight.topoprocessing</groupId>
       <artifactId>mlmt-topology-parser-impl</artifactId>

@@ -11,7 +11,9 @@
   <modules>
     <module>common</module>
     <module>multitechnology-topology</module>
+    <module>multilayer-topology</module>
     <module>parser</module>
+    <module>inventory</module>
     <module>factory</module>
     <module>observer</module>
   </modules>

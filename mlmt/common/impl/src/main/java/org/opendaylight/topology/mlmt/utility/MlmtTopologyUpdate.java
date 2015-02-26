@@ -17,18 +17,18 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 
 public interface MlmtTopologyUpdate{
 
-    public MlmtTopologyUpdateType getType();
+    MlmtTopologyUpdateType getType();
 
-    public LogicalDatastoreType getStoreType();
+    LogicalDatastoreType getStoreType();
 
-    public InstanceIdentifier<Topology> getTopologyInstanceId();
+    InstanceIdentifier<Topology> getTopologyInstanceId();
 
-    public Node getNode();
+    Node getNode();
 
-    public NodeKey getNodeKey();
+    NodeKey getNodeKey();
 
-    public TerminationPoint getTerminationPoint();
+    TerminationPoint getTerminationPoint();
 
-    public Link getLink();
+    Link getLink();
 }
 
