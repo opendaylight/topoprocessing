@@ -46,7 +46,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.te
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtLinkMetricAttributeValueBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
-import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyOperation;
@@ -62,16 +61,12 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
     private MultitechnologyAttributesParser parser;
 
     public void init(final Logger logger, MlmtOperationProcessor processor,
-            final InstanceIdentifier<Topology> destTopologyId, final MultitechnologyAttributesParser parser) {
-        try {
-            logger.info("MultitechnologyTopologyProvider.init");
-            this.LOG = logger;
-            this.DEST_TOPOLOGY_IID = destTopologyId;
-            this.processor = processor;
-            this.parser = parser;
-        } catch (final NullPointerException e) {
-             LOG.error("MultitechnologyTopologyProvider.init null pointer exception", e);
-        }
+        final InstanceIdentifier<Topology> destTopologyId, final MultitechnologyAttributesParser parser) {
+        logger.info("MultitechnologyTopologyProvider.init");
+        this.LOG = logger;
+        this.DEST_TOPOLOGY_IID = destTopologyId;
+        this.processor = processor;
+        this.parser = parser;
     }
 
     public void setDataProvider(DataBroker dataProvider) {
@@ -90,22 +85,18 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
         LOG.info("MultitechnologyTopologyProvider.onTopologyCreated");
         final InstanceIdentifier<Topology> targetTopologyId = DEST_TOPOLOGY_IID;
 
-            processor.enqueueOperation(new MlmtTopologyOperation() {
-                @Override
-                public void applyOperation(ReadWriteTransaction transaction) {
-                    try {
-                        final MultitechnologyTopologyBuilder multitechnologyTopologyBuilder = new MultitechnologyTopologyBuilder();
-                        final MtTopologyTypeBuilder mtTopologyTypeBuilder = new MtTopologyTypeBuilder();
-                        mtTopologyTypeBuilder.setMultitechnologyTopology(multitechnologyTopologyBuilder.build());
-                        InstanceIdentifier<MtTopologyType> target = DEST_TOPOLOGY_IID.child(TopologyTypes.class).
-                               augmentation(MtTopologyType.class);
-                        MtTopologyType top = mtTopologyTypeBuilder.build();
-                        transaction.merge(LogicalDatastoreType.OPERATIONAL, target, top, true);
-                    } catch (final NullPointerException e) {
-                        LOG.error("MultitechnologyTopologyProvider.createTopology null pointer exception", e);
-                    }
-                }
-            });
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                 final MultitechnologyTopologyBuilder multitechnologyTopologyBuilder = new MultitechnologyTopologyBuilder();
+                 final MtTopologyTypeBuilder mtTopologyTypeBuilder = new MtTopologyTypeBuilder();
+                 mtTopologyTypeBuilder.setMultitechnologyTopology(multitechnologyTopologyBuilder.build());
+                 InstanceIdentifier<MtTopologyType> target = DEST_TOPOLOGY_IID.child(TopologyTypes.class)
+                         .augmentation(MtTopologyType.class);
+                 MtTopologyType top = mtTopologyTypeBuilder.build();
+                 transaction.merge(LogicalDatastoreType.OPERATIONAL, target, top, true);
+            }
+        });
     }
 
     @Override
@@ -188,35 +179,27 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
     private void handleNodeAttributes(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Node node) {
-        try {
-            LOG.info("MultitechnologyTopologyProvider.onNodeCreated");
-            TedNodeAttributes tedNodeAttributes = parser.parseTedNodeAttributes(node);
-            if (tedNodeAttributes == null)
-                return;
-
-            setNativeMtNodeAttributes(type, topologyInstanceId, tedNodeAttributes, node.getKey());
-        } catch (final NullPointerException e) {
-             LOG.error("MultitechnologyTopologyProvider.onNodeCreated null pointer exception", e);
+        LOG.info("MultitechnologyTopologyProvider.onNodeCreated");
+        TedNodeAttributes tedNodeAttributes = parser.parseTedNodeAttributes(node);
+        if (tedNodeAttributes == null) {
+            return;
         }
+        setNativeMtNodeAttributes(type, topologyInstanceId, tedNodeAttributes, node.getKey());
     }
 
     private void handleLinkAttributes(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Link link) {
-        try {
-            LOG.info("MultitechnologyTopologyProvider.onLinkCreated");
-            Long metric = parser.parseLinkMetric(link);
-            if (metric != null)
-                setNativeMtLinkMetricAttribute(type, topologyInstanceId, metric, link.getKey());
-
-            TedLinkAttributes tedLinkAttributes = parser.parseTedLinkAttributes(link);
-            if (tedLinkAttributes == null)
-                return;
-
-            setNativeMtLinkTedAttribute(type, topologyInstanceId, tedLinkAttributes, link.getKey());
-        } catch (final NullPointerException e) {
-             LOG.error("MultitechnologyTopologyProvider.onLinkCreated null pointer exception", e);
+        LOG.info("MultitechnologyTopologyProvider.onLinkCreated");
+        Long metric = parser.parseLinkMetric(link);
+        if (metric != null) {
+            setNativeMtLinkMetricAttribute(type, topologyInstanceId, metric, link.getKey());
         }
+        TedLinkAttributes tedLinkAttributes = parser.parseTedLinkAttributes(link);
+        if (tedLinkAttributes == null) {
+            return;
+        }
+        setNativeMtLinkTedAttribute(type, topologyInstanceId, tedLinkAttributes, link.getKey());
     }
 
     private void setNativeMtLinkMetricAttribute(
@@ -239,7 +222,6 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             processor.enqueueOperation(new MlmtTopologyOperation() {
                 @Override
                 public void applyOperation(ReadWriteTransaction transaction) {
-                    try {
                         final MtLinkMetricAttributeValueBuilder mtLinkMetricAVBuilder = new MtLinkMetricAttributeValueBuilder();
                         mtLinkMetricAVBuilder.setMetric(metric);
                         final ValueBuilder valueBuilder = new ValueBuilder();
@@ -260,9 +242,6 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
                                 augmentation(MtInfoLink.class);
                             transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, mtInfoLinkBuilder.build(), true);
                         }
-                    } catch (final NullPointerException e) {
-                       LOG.error("MultitechnologyTopologyProvider.createTopology null pointer exception", e);
-                    }
                 }
             });
         } catch (final InterruptedException e) {
@@ -292,21 +271,25 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             processor.enqueueOperation(new MlmtTopologyOperation() {
                 @Override
                 public void applyOperation(ReadWriteTransaction transaction) {
-                    try {
                         final MtTedLinkAttributeValueBuilder mtTedLAVBuilder = new MtTedLinkAttributeValueBuilder();
-                        if (ted.getMaxLinkBandwidth() != null)
+                        if (ted.getMaxLinkBandwidth() != null) {
                             mtTedLAVBuilder.setMaxLinkBandwidth(ted.getMaxLinkBandwidth());
-                        if (ted.getMaxResvLinkBandwidth() != null)
+                        }
+                        if (ted.getMaxResvLinkBandwidth() != null) {
                             mtTedLAVBuilder.setMaxResvLinkBandwidth(ted.getMaxResvLinkBandwidth());
-                        if (ted.getUnreservedBandwidth() != null)
+                        }
+                        if (ted.getUnreservedBandwidth() != null) {
                             mtTedLAVBuilder.setUnreservedBandwidth(ted.getUnreservedBandwidth());
-                        if (ted.getColor() != null)
+                        }
+                        if (ted.getColor() != null) {
                             mtTedLAVBuilder.setColor(ted.getColor());
-                        if (ted.getSrlg() != null)
+                        }
+                        if (ted.getSrlg() != null) {
                             mtTedLAVBuilder.setSrlg(ted.getSrlg());
-                        if (ted.getTeDefaultMetric() != null)
+                        }
+                        if (ted.getTeDefaultMetric() != null) {
                             mtTedLAVBuilder.setTeDefaultMetric(ted.getTeDefaultMetric());
-
+                        }
                         final ValueBuilder valueBuilder = new ValueBuilder();
                         valueBuilder.addAugmentation(MtTedLinkAttributeValue.class, mtTedLAVBuilder.build());
                         final AttributeBuilder attributeBuilder = new AttributeBuilder();
@@ -326,9 +309,6 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
                                 augmentation(MtInfoLink.class);
                             transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, mtInfoLinkBuilder.build(), true);
                         }
-                    } catch (final NullPointerException e) {
-                        LOG.error("MultitechnologyTopologyProvider.setNativeMtLinkTedAttribute null pointer exception", e);
-                    }
                 }
             });
         } catch (final InterruptedException e) {
@@ -358,19 +338,22 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             processor.enqueueOperation(new MlmtTopologyOperation() {
                 @Override
                 public void applyOperation(ReadWriteTransaction transaction) {
-                    try {
                         final MtTedNodeAttributeValueBuilder tedNodeAttrValueBuilder = new MtTedNodeAttributeValueBuilder();
-                        if (ted.getTeRouterIdIpv4() != null)
+                        if (ted.getTeRouterIdIpv4() != null) {
                             tedNodeAttrValueBuilder.setTeRouterIdIpv4(ted.getTeRouterIdIpv4());
-                        if (ted.getTeRouterIdIpv6() != null)
+                        }
+                        if (ted.getTeRouterIdIpv6() != null) {
                             tedNodeAttrValueBuilder.setTeRouterIdIpv6(ted.getTeRouterIdIpv6());
-                        if (ted.getIpv4LocalAddress() != null)
+                        }
+                        if (ted.getIpv4LocalAddress() != null) {
                             tedNodeAttrValueBuilder.setIpv4LocalAddress(ted.getIpv4LocalAddress());
-                        if (ted.getIpv6LocalAddress() != null)
+                        }
+                        if (ted.getIpv6LocalAddress() != null) {
                             tedNodeAttrValueBuilder.setIpv6LocalAddress(ted.getIpv6LocalAddress());
-                        if (ted.getPccCapabilities() != null)
+                        }
+                        if (ted.getPccCapabilities() != null) {
                             tedNodeAttrValueBuilder.setPccCapabilities(ted.getPccCapabilities());
-
+                        }
                         final InstanceIdentifier<Topology> targetTopologyId = DEST_TOPOLOGY_IID;
                         final ValueBuilder valueBuilder = new ValueBuilder();
                         valueBuilder.addAugmentation(MtTedNodeAttributeValue.class, tedNodeAttrValueBuilder.build());
@@ -390,9 +373,6 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
                                     augmentation(MtInfoNode.class);
                             transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, mtInfoNodeBuilder.build(), true);
                         }
-                    } catch (final NullPointerException e) {
-                        LOG.error("MultitechnologyTopologyProvider.setNativeMtNodeAttributes null pointer exception", e);
-                    }
                 }
             });
          } catch (final InterruptedException e) {

@@ -8,14 +8,14 @@
 package org.opendaylight.topology.mlmt.utility;
 
 import java.util.List;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.slf4j.Logger;
 
 public interface MlmtProviderFactory {
 
-    HashMap<String, List<MlmtTopologyProvider>> createProvidersMap(DataBroker dataBroker,
+    Map<String, List<MlmtTopologyProvider>> createProvidersMap(DataBroker dataBroker,
             final Logger logger, MlmtOperationProcessor processor, String mlmtTopologyName);
 }
 

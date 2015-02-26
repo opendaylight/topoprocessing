@@ -9,6 +9,6 @@ package org.opendaylight.topology.mlmt.utility;
 
 public interface MlmtTopologyUpdateListener {
 
-    public void update(MlmtTopologyUpdate update);
+    void update(MlmtTopologyUpdate update);
 }
 
