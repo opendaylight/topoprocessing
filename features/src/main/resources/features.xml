@@ -24,7 +24,6 @@
         <bundle>mvn:org.opendaylight.topoprocessing/multitechnology-topology-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/multilayer-topology-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/multilayer-impl/${project.version}</bundle>
-        <bundle>mvn:org.opendaylight.topoprocessing/forwarding-adjacency-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-inventory-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-inventory-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-parser-model/${project.version}</bundle>

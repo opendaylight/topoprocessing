@@ -110,11 +110,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-	    <groupId>org.opendaylight.topoprocessing</groupId>
-	    <artifactId>forwarding-adjacency-impl</artifactId>
-	    <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-factory-model</artifactId>
             <version>${project.version}</version>
