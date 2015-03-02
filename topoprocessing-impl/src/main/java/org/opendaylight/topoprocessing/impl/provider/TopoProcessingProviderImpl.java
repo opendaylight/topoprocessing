@@ -8,16 +8,16 @@
 
 package org.opendaylight.topoprocessing.impl.provider;
 
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.listener.TopologyRequestListener;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
  * @author michal.polkorab
@@ -25,13 +25,13 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
-    private DataBroker dataBroker;
-    private ListenerRegistration<DataChangeListener> topologyRequestListenerRegistration;
+    private DOMDataBroker dataBroker;
+    private ListenerRegistration<DOMDataChangeListener> topologyRequestListenerRegistration;
 
     /**
      * @param dataBroker
      */
-    public TopoProcessingProviderImpl(DataBroker dataBroker) {
+    public TopoProcessingProviderImpl(DOMDataBroker dataBroker) {
         this.dataBroker = dataBroker;
         startup();
     }
@@ -47,8 +47,9 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     }
 
     private void registerTopologyRequestListener() {
-        InstanceIdentifier<Topology> identifier =
-                InstanceIdentifier.create(NetworkTopology.class).child(Topology.class);
+        YangInstanceIdentifier identifier = 
+                YangInstanceIdentifier.of(NetworkTopology.QNAME).node(Topology.QNAME);
+
         topologyRequestListenerRegistration =
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                         identifier, new TopologyRequestListener(), DataChangeScope.BASE);
