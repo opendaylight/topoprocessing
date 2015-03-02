@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
- 
+
  module topoprocessing-provider-impl {
     yang-version 1;
     namespace "urn:opendaylight:params:xml:ns:yang:topoprocessing:provider:impl";
@@ -14,7 +14,6 @@
     import topoprocessing-provider {prefix topoproc;}
     import config {prefix config; revision-date 2013-04-05;}
     import opendaylight-md-sal-dom {prefix dom; revision-date 2013-10-28;}
-    import opendaylight-md-sal-binding {prefix binding; revision-date 2013-10-28;}
 
     description
         "Topology Processing Framework module definition";
@@ -33,11 +32,11 @@
     augment "/config:modules/config:module/config:configuration" {
         case topoprocessing-provider-impl {
             when "/config:modules/config:module/config:type = 'topoprocessing-provider-impl'";
-            container data-broker {
+            container dom-data-broker {
                 uses config:service-ref {
                     refine type {
                         mandatory true;
-                        config:required-identity binding:binding-async-data-broker;
+                        config:required-identity dom:dom-async-data-broker;
                     }
                 }
             }
