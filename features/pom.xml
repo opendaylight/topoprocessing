@@ -134,6 +134,11 @@
 	    <artifactId>mlmt-topology-inventory-impl</artifactId>
 	    <version>${project.version}</version>
         </dependency>
+       <dependency>
+	    <groupId>org.opendaylight.topoprocessing</groupId>
+	    <artifactId>mlmt-topology-inventory-model</artifactId>
+	    <version>${project.version}</version>
+        </dependency>
 
         <!-- test to validate features.xml -->
         <dependency>
