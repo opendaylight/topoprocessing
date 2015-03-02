@@ -8,75 +8,59 @@
 
 package org.opendaylight.topoprocessing.impl.listener;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.handler.TopologyRequestHandler;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
-import com.google.common.base.Preconditions;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 
 /**
  * Listens on new overlay topology requests
+ *
  * @author michal.polkorab
  */
-public class TopologyRequestListener implements DataChangeListener {
+public class TopologyRequestListener implements DOMDataChangeListener {
 
-    private ArrayList<TopologyRequestHandler> topoRequestHandlers = new ArrayList<>();
+    private HashMap<YangInstanceIdentifier, TopologyRequestHandler> topoRequestHandlers = new HashMap<>();
 
     @Override
     public void onDataChanged(
-            AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+            AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
         processCreatedData(change.getCreatedData());
         processRemovedData(change.getRemovedPaths());
     }
 
-    private void processCreatedData(Map<InstanceIdentifier<?>, DataObject> map) {
-        Iterator<DataObject> iterator = map.values().iterator();
+    private void processCreatedData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map) {
+        for(Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : map.entrySet()) {
+            YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
+            NormalizedNode<?, ?> normalizedNode = entry.getValue();
+            if(normalizedNode.getNodeType().equals(Topology.QNAME)) {
+                if (((Topology) normalizedNode).getAugmentation(CorrelationAugment.class) != null) {
+                    TopologyRequestHandler requestHandler = new TopologyRequestHandler();
+                    topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
+                    requestHandler.processNewRequest((Topology) normalizedNode);
+                }
+            }
+        }
+    }
+
+    private void processRemovedData(Set<YangInstanceIdentifier> removedPaths) {
+        Iterator<YangInstanceIdentifier> iterator = removedPaths.iterator();
         while (iterator.hasNext()) {
-            DataObject dataObject = iterator.next();
-            if (dataObject instanceof Topology) {
-                TopologyRequestHandler requestHandler = new TopologyRequestHandler();
-                topoRequestHandlers.add(requestHandler);
-                requestHandler.processNewRequest((Topology) dataObject);
+            YangInstanceIdentifier yangInstanceIdentifier = iterator.next();
+            if (topoRequestHandlers.containsKey(yangInstanceIdentifier)) {
+                TopologyRequestHandler topologyRequestHandler = topoRequestHandlers.get(yangInstanceIdentifier);
+                topologyRequestHandler.processDeletionRequest();
+                topoRequestHandlers.remove(yangInstanceIdentifier);
+                break;
             }
         }
     }
-
-    private void processRemovedData(Set<InstanceIdentifier<?>> removedPaths) {
-        Iterator<InstanceIdentifier<?>> iterator = removedPaths.iterator();
-        while (iterator.hasNext()) {
-            InstanceIdentifier<?> identifier = iterator.next();
-            if (identifier.getTargetType().equals(Topology.class)) {
-                TopologyKey topologyKey = identifier.firstKeyOf(Topology.class, TopologyKey.class);
-                String topologyId = topologyKey.getTopologyId().getValue();
-                TopologyRequestHandler requestHandler = findTopologyRequestHandlerById(topologyId);
-                Preconditions.checkNotNull(requestHandler, "TopologyRequest handler for topology-id: "
-                            + topologyId + " was not found");
-                requestHandler.processDeletionRequest();
-            }
-        }
-    }
-
-    /**
-     * @param topologyId
-     * @return {@link TopologyRequestHandler} that handles topology with specified topology id
-     * or null if no handler was found
-     */
-    private TopologyRequestHandler findTopologyRequestHandlerById(String topologyId) {
-        for (TopologyRequestHandler handler : topoRequestHandlers) {
-            if (handler.getTopologyId().equals(topologyId)) {
-                return handler;
-            }
-        }
-        return null;
-    }
-
 }
