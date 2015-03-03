@@ -44,20 +44,20 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class MlmtTopologyBuilder {
 
-    private Logger LOG;
+    private Logger log;
     private DataBroker dataBroker;
     private MlmtOperationProcessor processor;
 
-    public void init(final String name, final DataBroker dataProvider, Logger logger, MlmtOperationProcessor theProcessor) {
-        dataBroker = dataProvider;
-        LOG = logger;
-        processor = theProcessor;
+    public void init(final String name, final DataBroker dataProvider, Logger logger, MlmtOperationProcessor processor) {
+        this.dataBroker = dataProvider;
+        this.log = logger;
+        this.processor = processor;
     }
 
     public void createUnderlayTopology(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final TopologyId underlayTopologyRef) {
-        LOG.info("MlmtTopologyBuilder.createUnderlayTopology");
+        log.info("MlmtTopologyBuilder.createUnderlayTopology");
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
@@ -83,7 +83,7 @@ public class MlmtTopologyBuilder {
     public void createTopology(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final TopologyId underlayTopologyRef) {
-        LOG.info("MlmtTopologyBuilder.createTopology");
+        log.info("MlmtTopologyBuilder.createTopology");
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
@@ -110,7 +110,7 @@ public class MlmtTopologyBuilder {
 
      public void deleteTopology(final LogicalDatastoreType type,
              final InstanceIdentifier<Topology> topologyInstanceId) {
-         LOG.info("MlmtTopologyBuilder::deleteTopology");
+         log.info("MlmtTopologyBuilder::deleteTopology");
          processor.enqueueOperation(new MlmtTopologyOperation() {
               @Override
               public void applyOperation(ReadWriteTransaction transaction) {
@@ -123,7 +123,7 @@ public class MlmtTopologyBuilder {
             final InstanceIdentifier<Topology> topologyInstanceId,
             final TopologyId nodeTopologyId,
             final Node node) {
-        LOG.info("MlmtTopologyBuilder.createNode");
+        log.info("MlmtTopologyBuilder.createNode");
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
@@ -148,7 +148,7 @@ public class MlmtTopologyBuilder {
     public void deleteNode(final LogicalDatastoreType type,
              final InstanceIdentifier<Topology> topologyInstanceId,
              final NodeKey nodeKey) {
-        LOG.info("MlmtTopologyBuilder.deleteNode");
+        log.info("MlmtTopologyBuilder.deleteNode");
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
@@ -162,7 +162,7 @@ public class MlmtTopologyBuilder {
            final InstanceIdentifier<Topology> topologyInstanceId,
            final NodeKey nodeKey,
            final TerminationPoint tp) {
-        LOG.info("MlmtTopologyBuilder.createTp");
+        log.info("MlmtTopologyBuilder.createTp");
         processor.enqueueOperation(new MlmtTopologyOperation() {
              @Override
              public void applyOperation(ReadWriteTransaction transaction) {
@@ -185,7 +185,7 @@ public class MlmtTopologyBuilder {
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey,
             final TerminationPointKey tpKey) {
-        LOG.info("MlmtTopologyBuilder.deleteTp");
+        log.info("MlmtTopologyBuilder.deleteTp");
         processor.enqueueOperation(new MlmtTopologyOperation() {
         @Override
              public void applyOperation(ReadWriteTransaction transaction) {
@@ -199,7 +199,7 @@ public class MlmtTopologyBuilder {
     public void createLink(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Link link) {
-         LOG.info("MlmtTopologyBuilder.createLink");
+         log.info("MlmtTopologyBuilder.createLink");
          processor.enqueueOperation(new MlmtTopologyOperation() {
              @Override
              public void applyOperation(ReadWriteTransaction transaction) {
@@ -227,7 +227,7 @@ public class MlmtTopologyBuilder {
     public void deleteLink(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final LinkKey linkKey) {
-        LOG.info("MlmtTopologyBuilder.deleteLink");
+        log.info("MlmtTopologyBuilder.deleteLink");
         processor.enqueueOperation(new MlmtTopologyOperation() {
              @Override
              public void applyOperation(ReadWriteTransaction transaction) {

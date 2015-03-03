@@ -20,10 +20,10 @@ import org.opendaylight.topology.multitechnology.MultitechnologyAttributesParser
 
 public class MultitechnologyAttributesParserImpl implements MultitechnologyAttributesParser {
 
-     private static Logger LOG;
+     private static Logger log;
 
      public void init(final Logger logger) {
-         LOG = logger;
+         log = logger;
      }
 
      private IgpNodeAttributes getIgpNodeAttributes(final Node node) {
@@ -45,6 +45,7 @@ public class MultitechnologyAttributesParserImpl implements MultitechnologyAttri
          if (igpNodeAttributes1 == null) {
              return null;
          }
+
          return igpNodeAttributes1.getIsisNodeAttributes();
      }
 
@@ -71,7 +72,7 @@ public class MultitechnologyAttributesParserImpl implements MultitechnologyAttri
 
         final Link1 link1 = link.getAugmentation(Link1.class);
         if (link1 == null) {
-           LOG.error("MultitechnologyAttributesParserImpl.parseTedLinkAttributes link1 is null");
+           log.error("MultitechnologyAttributesParserImpl.parseTedLinkAttributes link1 is null");
            return null;
         }
         final IgpLinkAttributes igpLinkAttributes = link1.getIgpLinkAttributes();
@@ -100,7 +101,7 @@ public class MultitechnologyAttributesParserImpl implements MultitechnologyAttri
 
         final Link1 link1 = link.getAugmentation(Link1.class);
         if (link1 == null) {
-           LOG.error("MultitechnologyAttributesParserImpl.parseLinkMetric link1 is null");
+           log.error("MultitechnologyAttributesParserImpl.parseLinkMetric link1 is null");
            return null;
         }
         final IgpLinkAttributes igpLinkAttributes = link1.getIgpLinkAttributes();

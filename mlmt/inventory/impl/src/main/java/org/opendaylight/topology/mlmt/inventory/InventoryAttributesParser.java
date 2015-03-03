@@ -12,5 +12,5 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 
 public interface InventoryAttributesParser {
 
-     public NodeRef parseInventoryNodeAttributes(final Node node);
+    NodeRef parseInventoryNodeAttributes(final Node node);
 }

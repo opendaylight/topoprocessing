@@ -32,17 +32,17 @@ import org.opendaylight.topology.mlmt.utility.MlmtTopologyOperation;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 
 public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyProvider {
-    private static Logger LOG;
+    private Logger log;
     private DataBroker dataProvider;
     private MlmtOperationProcessor processor;
-    private InstanceIdentifier<Topology> DEST_TOPOLOGY_IID;
+    private InstanceIdentifier<Topology> destTopologyId;
     private InventoryAttributesParser parser;
 
     public void init(final Logger logger, MlmtOperationProcessor processor,
         final InstanceIdentifier<Topology> destTopologyId, final InventoryAttributesParser parser) {
         logger.info("InventoryTopologyProvider.init");
-        this.LOG = logger;
-        this.DEST_TOPOLOGY_IID = destTopologyId;
+        this.log = logger;
+        this.destTopologyId = destTopologyId;
         this.processor = processor;
         this.parser = parser;
     }
@@ -112,10 +112,11 @@ public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyPro
     private void handleNodeAttributes(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Node node) {
-            LOG.info("InventoryTopologyProvider.onNodeCreated");
+        log.info("InventoryTopologyProvider.onNodeCreated");
         NodeRef nodeRefAttributes = parser.parseInventoryNodeAttributes(node);
-        if (nodeRefAttributes == null)
+        if (nodeRefAttributes == null) {
             return;
+        }
 
         setNodeRefNodeAttributes(type, topologyInstanceId, nodeRefAttributes, node.getKey());
     }
@@ -126,8 +127,8 @@ public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyPro
             final NodeRef nodeRef,
             final NodeKey nodeKey) {
         try {
-            LOG.info("InventoryTopologyProvider.setNodeRefNodeAttributes");
-            final InstanceIdentifier<Topology> targetTopologyId = DEST_TOPOLOGY_IID;
+            log.info("InventoryTopologyProvider.setNodeRefNodeAttributes");
+            final InstanceIdentifier<Topology> targetTopologyId = destTopologyId;
             final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
             final InstanceIdentifier<InventoryNode> instanceInvNodeId =
                     targetTopologyId.child(Node.class, nodeKey).augmentation(InventoryNode.class);
@@ -137,24 +138,19 @@ public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyPro
             processor.enqueueOperation(new MlmtTopologyOperation() {
                 @Override
                 public void applyOperation(ReadWriteTransaction transaction) {
-                    try {
-                        final InventoryNodeBuilder inventoryNodeBuilder = new InventoryNodeBuilder();
-                        inventoryNodeBuilder.setInventoryNodeRef(nodeRef);
-
-                        if (sourceAttributeObject != null && sourceAttributeObject.isPresent() && sourceAttributeObject.get() != null) {
-                            transaction.put(LogicalDatastoreType.OPERATIONAL, instanceInvNodeId, inventoryNodeBuilder.build());
-                        } else {
-                            transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceInvNodeId, inventoryNodeBuilder.build());
-                        }
-                    } catch (final Exception e) {
-                        LOG.error("MultitechnologyTopologyProvider.setNativeMtNodeAttributes exception", e);
+                    final InventoryNodeBuilder inventoryNodeBuilder = new InventoryNodeBuilder();
+                    inventoryNodeBuilder.setInventoryNodeRef(nodeRef);
+                    if (sourceAttributeObject != null && sourceAttributeObject.isPresent() && sourceAttributeObject.get() != null) {
+                        transaction.put(LogicalDatastoreType.OPERATIONAL, instanceInvNodeId, inventoryNodeBuilder.build());
+                    } else {
+                        transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceInvNodeId, inventoryNodeBuilder.build());
                     }
                 }
             });
          } catch (final InterruptedException e) {
-             LOG.error("onNodeCreated interrupted exception", e);
+             log.error("onNodeCreated interrupted exception", e);
          } catch (final ExecutionException e) {
-             LOG.error("onNodeCreated execution exception", e);
+             log.error("onNodeCreated execution exception", e);
          }
     }
 }

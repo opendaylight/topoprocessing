@@ -52,8 +52,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.mlmt.topology.obse
 public class MlmtTopologyObserver extends AbstractBindingAwareProvider implements AutoCloseable, DataChangeListener, MlmtTopologyObserverRuntimeMXBean,
         MlmtTopologyProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MlmtTopologyObserver.class);
-    private InstanceIdentifier<Topology> MLMT_TOPOLOGY_IID;
+    private static final Logger log = LoggerFactory.getLogger(MlmtTopologyObserver.class);
+    private InstanceIdentifier<Topology> mlmtTopologyId;
     private ListenerRegistration<DataChangeListener> listenerRegistration;
     private DataBroker dataBroker;
     private MlmtOperationProcessor processor;
@@ -88,7 +88,7 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
      */
     @Override
     public synchronized void onSessionInitiated(final ProviderContext session) {
-        LOG.info("MlmtTopologyObserver.onSessionInitiated");
+        log.info("MlmtTopologyObserver.onSessionInitiated");
         dataBroker = session.getSALService(DataBroker.class);
         processor = new MlmtOperationProcessor(dataBroker);
         thread = new Thread(processor);
@@ -96,16 +96,16 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
         thread.setName("MlmtOperationProcessor");
         thread.start();
 
-        MLMT_TOPOLOGY_IID = buildTopologyIid(mlmt);
+        mlmtTopologyId = buildTopologyIid(mlmt);
         mlmtTopologyBuilder = new MlmtTopologyBuilder();
-        mlmtTopologyBuilder.init("builder:1", dataBroker, LOG, processor);
+        mlmtTopologyBuilder.init("builder:1", dataBroker, log, processor);
         underlayTopologies = new ArrayList<String>();
         Map<String, List<MlmtTopologyProvider>> providersMap =
-                (new MlmtProviderFactoryImpl()).createProvidersMap(dataBroker, LOG, processor, mlmt);
+                (new MlmtProviderFactoryImpl()).createProvidersMap(session, dataBroker, log, processor, mlmt);
         mlmtProviders = providersMap.get(mlmt);
 
         listenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                MLMT_TOPOLOGY_IID, this, DataBroker.DataChangeScope.SUBTREE);
+                mlmtTopologyId, this, DataBroker.DataChangeScope.SUBTREE);
     }
 
     private InstanceIdentifier<Topology> buildTopologyIid(final String topologyName) {
@@ -116,19 +116,19 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
 
     private void onObservedTopologyCreated(final LogicalDatastoreType type,
         final InstanceIdentifier<Topology> topologyInstanceId, final Topology topology) {
-        LOG.info("MlmtTopologyObserver.onObservedTopologyCreated topologyInstanceId " + topologyInstanceId.toString());
+        log.info("MlmtTopologyObserver.onObservedTopologyCreated topologyInstanceId " + topologyInstanceId.toString());
         List<Node> lNode = topology.getNode();
         List<Link> lLink = topology.getLink();
         if (lNode != null && lNode.isEmpty() == false) {
             for (Node node : lNode) {
                 TopologyKey topologyKey = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
-                mlmtTopologyBuilder.createNode(LogicalDatastoreType.OPERATIONAL, MLMT_TOPOLOGY_IID,
+                mlmtTopologyBuilder.createNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId,
                         topologyKey.getTopologyId(), node);
             }
         }
         if (lLink != null && lLink.isEmpty() == false) {
             for (Link link : lLink) {
-                mlmtTopologyBuilder.createLink(LogicalDatastoreType.OPERATIONAL, MLMT_TOPOLOGY_IID, link);
+                mlmtTopologyBuilder.createLink(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, link);
             }
         }
         for (MlmtTopologyProvider provider : mlmtProviders) {
@@ -138,7 +138,7 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
 
     private void onMlmtTopologyCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId, final Topology topology) {
-        LOG.info("MlmtTopologyObserver::onMlmtTopologyCreated topologyInstanceId " + topologyInstanceId.toString());
+        log.info("MlmtTopologyObserver::onMlmtTopologyCreated topologyInstanceId " + topologyInstanceId.toString());
         List<UnderlayTopology> lUnderlay = topology.getUnderlayTopology();
         for (UnderlayTopology underlayTopology : lUnderlay) {
             TopologyId underlayTopologyId = underlayTopology.getTopologyRef();
@@ -149,7 +149,7 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
                 continue;
             }
             String topologyName = new String(m.group(1));
-            LOG.debug("MlmtTopologyObserver.onMlmtTopologyCreated underlay topology name = " + topologyName);
+            log.debug("MlmtTopologyObserver.onMlmtTopologyCreated underlay topology name = " + topologyName);
             underlayTopologies.add(topologyName);
             TopologyId topologyId = new TopologyId(topologyName);
             TopologyKey key = new TopologyKey(Preconditions.checkNotNull(topologyId));
@@ -169,8 +169,8 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
     @Override
     public void onTopologyCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId, final Topology topology) {
-        LOG.info("MlmtTopologyObserver.onTopologyCreated topologyInstanceId: " + topologyInstanceId.toString());
-        if (topologyInstanceId.equals(MLMT_TOPOLOGY_IID)) {
+        log.info("MlmtTopologyObserver.onTopologyCreated topologyInstanceId: " + topologyInstanceId.toString());
+        if (topologyInstanceId.equals(mlmtTopologyId)) {
             onMlmtTopologyCreated(type, topologyInstanceId, topology);
         }
         String observedTopologyName = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class).getTopologyId().getValue();
@@ -182,10 +182,10 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
     @Override
     public void onNodeCreated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final Node node) {
-        LOG.info("MlmtTopologyObserver::onNodeCreated topologyInstanceId: " + topologyInstanceId.toString() +
+        log.info("MlmtTopologyObserver::onNodeCreated topologyInstanceId: " + topologyInstanceId.toString() +
                 " nodeId: " + node.getNodeId());
         TopologyKey topologyKey = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
-        mlmtTopologyBuilder.createNode(LogicalDatastoreType.OPERATIONAL, MLMT_TOPOLOGY_IID, topologyKey.getTopologyId(), node);
+        mlmtTopologyBuilder.createNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, topologyKey.getTopologyId(), node);
 
         for (MlmtTopologyProvider provider : mlmtProviders) {
             provider.onNodeCreated(type, topologyInstanceId, node);
@@ -195,9 +195,9 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
     @Override
     public void onTpCreated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey, final TerminationPoint tp) {
-        LOG.info("MlmtTopologyObserver::onNodeCreated topologyInstanceId: " + topologyInstanceId.toString() +
+        log.info("MlmtTopologyObserver::onNodeCreated topologyInstanceId: " + topologyInstanceId.toString() +
                 " nodeKey: " + nodeKey.toString() + " terminationPointId: " + tp.getTpId());
-        mlmtTopologyBuilder.createTp(LogicalDatastoreType.OPERATIONAL, MLMT_TOPOLOGY_IID, nodeKey, tp);
+        mlmtTopologyBuilder.createTp(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, nodeKey, tp);
 
         for (MlmtTopologyProvider provider : mlmtProviders) {
             provider.onTpCreated(type, topologyInstanceId, nodeKey, tp);
@@ -207,9 +207,9 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
     @Override
     public void onLinkCreated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final Link link) {
-        LOG.info("MlmtTopologyObserver::onLinkCreated topologyInstanceId: " + topologyInstanceId.toString() +
+        log.info("MlmtTopologyObserver::onLinkCreated topologyInstanceId: " + topologyInstanceId.toString() +
                 " linkId: " + link.getLinkId());
-        mlmtTopologyBuilder.createLink(LogicalDatastoreType.OPERATIONAL, MLMT_TOPOLOGY_IID, link);
+        mlmtTopologyBuilder.createLink(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, link);
 
         for (MlmtTopologyProvider provider : mlmtProviders) {
             provider.onLinkCreated(type, topologyInstanceId, link);
@@ -219,7 +219,7 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
     @Override
     public void onTopologyUpdated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final Topology topology) {
-        LOG.info("MlmtTopologyObserver::onTopologyUpdated topologyInstanceId: " + topologyInstanceId.toString());
+        log.info("MlmtTopologyObserver::onTopologyUpdated topologyInstanceId: " + topologyInstanceId.toString());
         for (MlmtTopologyProvider provider : mlmtProviders) {
             provider.onTopologyUpdated(type, topologyInstanceId, topology);
         }
@@ -228,9 +228,8 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
     @Override
     public void onNodeUpdated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final Node node) {
-         LOG.info("MlmtTopologyObserver::onNodeUpdated topologyInstanceId: " + topologyInstanceId.toString() +
+         log.info("MlmtTopologyObserver::onNodeUpdated topologyInstanceId: " + topologyInstanceId.toString() +
                  " nodeKey: " + node.getKey().toString());
-
          for (MlmtTopologyProvider provider : mlmtProviders) {
              provider.onNodeUpdated(type, topologyInstanceId, node);
          }
@@ -239,7 +238,7 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
     @Override
     public void onTpUpdated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey, final TerminationPoint tp) {
-        LOG.info("MlmtTopologyObserver::onNodeUpdated topologyInstanceId: " + topologyInstanceId.toString() +
+        log.info("MlmtTopologyObserver::onNodeUpdated topologyInstanceId: " + topologyInstanceId.toString() +
                 " nodeKey: " + nodeKey.toString() + " terminationPointKey " + tp.getKey());
         for (MlmtTopologyProvider provider : mlmtProviders) {
             provider.onTpUpdated(type, topologyInstanceId, nodeKey, tp);
@@ -249,7 +248,7 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
     @Override
     public void onLinkUpdated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final Link link) {
-        LOG.info("MlmtTopologyObserver::onLinkUpdated topologyInstanceId: " + topologyInstanceId.toString() +
+        log.info("MlmtTopologyObserver::onLinkUpdated topologyInstanceId: " + topologyInstanceId.toString() +
                 " linkKey: " + link.getKey().toString());
         for (MlmtTopologyProvider provider : mlmtProviders) {
             provider.onLinkUpdated(type, topologyInstanceId, link);
@@ -258,54 +257,54 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
 
     @Override
     public void onTopologyDeleted(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId) {
-        LOG.info("MlmtTopologyObserver::onLinkUpdated topologyInstanceId: " + topologyInstanceId.toString());
+        log.info("MlmtTopologyObserver::onLinkUpdated topologyInstanceId: " + topologyInstanceId.toString());
         for (MlmtTopologyProvider provider : mlmtProviders) {
             provider.onTopologyDeleted(type, topologyInstanceId);
         }
-        mlmtTopologyBuilder.deleteTopology(LogicalDatastoreType.OPERATIONAL, MLMT_TOPOLOGY_IID);
+        mlmtTopologyBuilder.deleteTopology(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId);
     }
 
     @Override
     public void onNodeDeleted(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey) {
-         LOG.info("MlmtTopologyObserver::onLinkUpdated topologyInstanceId: " + topologyInstanceId.toString() +
+         log.info("MlmtTopologyObserver::onLinkUpdated topologyInstanceId: " + topologyInstanceId.toString() +
                  " nodeKey: " + nodeKey.toString());
          for (MlmtTopologyProvider provider : mlmtProviders) {
              provider.onNodeDeleted(type, topologyInstanceId, nodeKey);
          }
-         mlmtTopologyBuilder.deleteNode(LogicalDatastoreType.OPERATIONAL, MLMT_TOPOLOGY_IID, nodeKey);
+         mlmtTopologyBuilder.deleteNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, nodeKey);
     }
 
     @Override
     public void onTpDeleted(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey, final TerminationPointKey tpKey) {
-         LOG.info("MlmtTopologyObserver::onLinkUpdated topologyInstanceId: " + topologyInstanceId.toString() +
+         log.info("MlmtTopologyObserver::onLinkUpdated topologyInstanceId: " + topologyInstanceId.toString() +
                  " nodeKey: " + nodeKey.toString() + " tpKey: " + tpKey.toString());
          for (MlmtTopologyProvider provider : mlmtProviders) {
              provider.onTpDeleted(type, topologyInstanceId, nodeKey, tpKey);
          }
-         mlmtTopologyBuilder.deleteTp(LogicalDatastoreType.OPERATIONAL, MLMT_TOPOLOGY_IID, nodeKey, tpKey);
+         mlmtTopologyBuilder.deleteTp(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, nodeKey, tpKey);
     }
 
     @Override
     public void onLinkDeleted(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final LinkKey linkKey) {
-        LOG.info("MlmtTopologyObserver::onLinkUpdated topologyInstanceId: " + topologyInstanceId.toString() +
+        log.info("MlmtTopologyObserver::onLinkUpdated topologyInstanceId: " + topologyInstanceId.toString() +
                 " linkKey: " + linkKey.toString());
         for (MlmtTopologyProvider provider : mlmtProviders) {
             provider.onLinkDeleted(type, topologyInstanceId, linkKey);
         }
-        mlmtTopologyBuilder.deleteLink(LogicalDatastoreType.OPERATIONAL, MLMT_TOPOLOGY_IID, linkKey);
+        mlmtTopologyBuilder.deleteLink(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, linkKey);
     }
 
     @Override
     public synchronized void close() throws InterruptedException {
-        LOG.info("MlmtTopologyObserver stopped.");
+        log.info("MlmtTopologyObserver stopped.");
         if (this.listenerRegistration != null) {
             try {
                 this.listenerRegistration.close();
             } catch (final Exception e) {
-                LOG.error("Failed to close listener registration", e);
+                log.error("Failed to close listener registration", e);
             }
             listenerRegistration = null;
         }
@@ -326,22 +325,22 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
         try {
             this.close();
         } catch (final InterruptedException e) {
-            LOG.error("Failed to stop provider", e);
+            log.error("Failed to stop provider", e);
         }
     }
 
     private void dumpMap(final Map<InstanceIdentifier<?>, DataObject> map, MlmtDataChangeEventType type){
-        LOG.debug("---" + type.toString() + "---");
+        log.debug("---" + type.toString() + "---");
         Iterator<InstanceIdentifier<?>> iter = map.keySet().iterator();
         while (iter.hasNext()){
             InstanceIdentifier<?> iid = iter.next();
-            LOG.debug("Key: " + iid);
+            log.debug("Key: " + iid);
             DataObject d = Preconditions.checkNotNull(map.get(iid));
             if (d != null) {
-                LOG.debug("Value: " + d.toString());
+                log.debug("Value: " + d.toString());
             }
         }
-        LOG.debug("-------------");
+        log.debug("-------------");
      }
 
     /*
@@ -354,36 +353,36 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
             InstanceIdentifier<?> iid = iter.next();
             TopologyKey topologyKey = iid.firstKeyOf(Topology.class, TopologyKey.class);
             String topologyName = topologyKey.getTopologyId().getValue();
-            LOG.info("MlmtTopologyObserver.handleData " + changeType + " topologyName " + topologyName);
+            log.info("MlmtTopologyObserver.handleData " + changeType + " topologyName " + topologyName);
             if (iid.getTargetType().equals(Topology.class)) {
                 Topology topology = (Topology)c.get(iid);
                 InstanceIdentifier<Topology> topologyInstanceId =
                         InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
                 if (underlayTopologies.contains(topologyName)) {
-                    LOG.info("MlmtTopologyObserver.onDataChanged " + changeType + " Topology Id " + mlmt);
+                    log.info("MlmtTopologyObserver.onDataChanged " + changeType + " Topology Id " + mlmt);
                     onTopologyCreated(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, topology);
                 }
                 if (topologyName.equals(mlmt)) {
-                    LOG.info("MlmtTopologyObserver::onDataChanged " + changeType + " Topology Id " + mlmt);
-                    onTopologyCreated(LogicalDatastoreType.CONFIGURATION, MLMT_TOPOLOGY_IID, topology);
+                    log.info("MlmtTopologyObserver::onDataChanged " + changeType + " Topology Id " + mlmt);
+                    onTopologyCreated(LogicalDatastoreType.CONFIGURATION, mlmtTopologyId, topology);
                 }
             }
             else if (iid.getTargetType().equals(Node.class)) {
-                LOG.info("MlmtTopologyObserver.onDataChanged " + changeType +
+                log.info("MlmtTopologyObserver.onDataChanged " + changeType +
                         " Node.class Topology Key " + topologyKey.toString());
                 if (underlayTopologies.contains(topologyName)) {
                     InstanceIdentifier<Topology> topologyInstanceId =
                             InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
                     final Node node = (Node)c.get(iid);
                     final NodeId nodeId = node.getNodeId();
-                    LOG.info("MlmtTopologyObserver.onDataChanged Node Id " + changeType +
+                    log.info("MlmtTopologyObserver.onDataChanged Node Id " + changeType +
                             " Node.class Node Id " +  nodeId.toString());
                     onNodeCreated(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, node);
                 } // end if
             } // end if target == Node.class
             else if (iid.getTargetType().equals(TerminationPoint.class)) {
                 NodeKey nodeKey = iid.firstKeyOf(Node.class, NodeKey.class);
-                LOG.info("MlmtTopologyObserver.onDataChanged " + changeType +
+                log.info("MlmtTopologyObserver.onDataChanged " + changeType +
                        " TerminationPoint.class Topology Key " + topologyKey.toString() +
                        " Node Key " + nodeKey.toString());
                 if (underlayTopologies.contains(topologyName)) {
@@ -391,14 +390,14 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
                              InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
                      final TerminationPoint tp = (TerminationPoint)c.get(iid);
                      final TpId tpId = tp.getTpId();
-                     LOG.info("MlmtTopologyObserver.onDataChanged Node Id " + changeType +
+                     log.info("MlmtTopologyObserver.onDataChanged Node Id " + changeType +
                              " Node.class Node Id " +  tpId.toString());
                      onTpCreated(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, nodeKey, tp);
                 } // end underlayTopologies
             } // end if target == TerminationPoint.class
             else if (iid.getTargetType().equals(Link.class)) {
                 LinkKey linkKey = iid.firstKeyOf(Link.class, LinkKey.class);
-                LOG.info("MlmtTopologyObserver.onDataChanged" + changeType +
+                log.info("MlmtTopologyObserver.onDataChanged" + changeType +
                         " TerminationPoint.class Topology Key " + topologyKey.toString() +
                         " Link Key " + linkKey.toString());
                 if (underlayTopologies.contains(topologyName)) {
@@ -406,7 +405,7 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
                             InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
                     final Link link = (Link)c.get(iid);
                     final LinkId linkId = link.getLinkId();
-                    LOG.debug("MlmtTopologyObserver.onDataChanged Node Id " + type.toString() +
+                    log.debug("MlmtTopologyObserver.onDataChanged Node Id " + type.toString() +
                             " Link.class Link Id " + linkId.toString());
                     onLinkCreated(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, link);
                  } // end if underlayTopologies
@@ -422,32 +421,31 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
         while (iter.hasNext()) {
             InstanceIdentifier<?> iid = iter.next();
             TopologyKey topologyKey = iid.firstKeyOf(Topology.class, TopologyKey.class);
-            LOG.info("Removed Key " + iid.toString());
+            log.info("Removed Key " + iid.toString());
             if (iid.getTargetType().equals(Topology.class)) {
-                LOG.info("MlmtTopologyObserver removed Key Topology.class");
+                log.info("MlmtTopologyObserver removed Key Topology.class");
                 InstanceIdentifier<Topology> topologyInstanceId =
                         InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
                 onTopologyDeleted(LogicalDatastoreType.OPERATIONAL, topologyInstanceId);
             }
             else if (iid.getTargetType().equals(Node.class)) {
-                LOG.info("MlmtTopologyObserver::removed Key Node.class");
+                log.info("MlmtTopologyObserver::removed Key Node.class");
                 NodeKey nodeKey = iid.firstKeyOf(Node.class, NodeKey.class);
                 InstanceIdentifier<Topology> topologyInstanceId =
                         InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
                 onNodeDeleted(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, nodeKey);
             }
             else if (iid.getTargetType().equals(TerminationPoint.class)) {
-                LOG.info("MlmtTopologyObserver::removed Key Tp.class");
+                log.info("MlmtTopologyObserver::removed Key Tp.class");
                 NodeKey nodeKey = iid.firstKeyOf(Node.class, NodeKey.class);
                 TerminationPointKey tpKey = iid.firstKeyOf(TerminationPoint.class, TerminationPointKey.class);
                 InstanceIdentifier<Topology> topologyInstanceId =
                         InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
                 InstanceIdentifier<Node> nodeInstanceId = topologyInstanceId.child(Node.class, nodeKey);
-                InstanceIdentifier<TerminationPoint> tpInstanceId = nodeInstanceId.child(TerminationPoint.class, tpKey);
                 onTpDeleted(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, nodeKey, tpKey);
             }
             else if (iid.getTargetType().equals(Link.class)) {
-                LOG.info("MlmtTopologyObserver::removed Key Link.class");
+                log.info("MlmtTopologyObserver::removed Key Link.class");
                 InstanceIdentifier<Topology> topologyInstanceId =
                         InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
                 LinkKey linkKey = iid.firstKeyOf(Link.class, LinkKey.class);
@@ -458,7 +456,7 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
 
     @Override
     public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-         LOG.info("MlmtTopologyObserver.onDataChanged");
+         log.info("MlmtTopologyObserver.onDataChanged");
          Map<InstanceIdentifier<?>, DataObject> c = change.getCreatedData();
          this.dumpMap(c, MlmtDataChangeEventType.CREATED);
          if (c != null) {

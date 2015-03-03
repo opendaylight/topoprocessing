@@ -15,10 +15,10 @@ import org.opendaylight.topology.mlmt.inventory.InventoryAttributesParser;
 
 public class InventoryAttributesParserImpl implements InventoryAttributesParser {
 
-     private static Logger LOG;
+     private static Logger log;
 
      public void init(final Logger logger) {
-         LOG = logger;
+         log = logger;
      }
 
      @Override

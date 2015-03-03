@@ -14,10 +14,10 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev13
 
 public interface MultitechnologyAttributesParser {
 
-    public TedNodeAttributes parseTedNodeAttributes(final Node node);
+    TedNodeAttributes parseTedNodeAttributes(final Node node);
 
-    public TedLinkAttributes parseTedLinkAttributes(final Link link);
+    TedLinkAttributes parseTedLinkAttributes(final Link link);
 
-    public Long parseLinkMetric(final Link link);
+    Long parseLinkMetric(final Link link);
 }
 

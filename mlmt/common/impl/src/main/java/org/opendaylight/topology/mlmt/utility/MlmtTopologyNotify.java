@@ -13,15 +13,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.slf4j.Logger;
 
 public class MlmtTopologyNotify implements Runnable {
-    private static Logger LOG;
+    private Logger log;
     private final BlockingQueue<MlmtTopologyUpdate> notifyQ;
     private static final int MAX_NOTIFY_Q_LENGTH = 54;
+    private static final int THREAD_SLEEP = 100;
     private MlmtTopologyUpdate entry;
     private MlmtTopologyUpdateListener listener;
     private volatile boolean finishing = false;
 
     public MlmtTopologyNotify(final MlmtTopologyUpdateListener listener, final Logger logger) {
-        this.LOG = logger;
+        this.log = logger;
         this.listener = listener;
         this.notifyQ = new LinkedBlockingQueue<MlmtTopologyUpdate>(MAX_NOTIFY_Q_LENGTH);
      }
@@ -38,12 +39,12 @@ public class MlmtTopologyNotify implements Runnable {
                 entry = notifyQ.take();
                 listener.update(entry);
                 // Lets sleep for sometime to allow aggregation of event
-                Thread.sleep(100);
+                Thread.sleep(THREAD_SLEEP);
             } catch (final InterruptedException e) {
-                LOG.error("MlmtTopologyNotify Thread interrupted", e);
+                log.error("MlmtTopologyNotify Thread interrupted", e);
                 finishing = true;
             } catch (final Exception e) {
-                LOG.error("MlmtTopologyNotify Thread exception", e);
+                log.error("MlmtTopologyNotify Thread exception", e);
             }
         }
         cleanNotifyQueue();
