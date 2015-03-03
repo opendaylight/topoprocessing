@@ -33,14 +33,6 @@
     augment "/config:modules/config:module/config:configuration" {
         case topoprocessing-provider-impl {
             when "/config:modules/config:module/config:type = 'topoprocessing-provider-impl'";
-            container schema-service {
-                uses config:service-ref {
-                    refine type {
-                        mandatory true;
-                        config:required-identity dom:schema-service;
-                    }
-                }
-            }
             container data-broker {
                 uses config:service-ref {
                     refine type {

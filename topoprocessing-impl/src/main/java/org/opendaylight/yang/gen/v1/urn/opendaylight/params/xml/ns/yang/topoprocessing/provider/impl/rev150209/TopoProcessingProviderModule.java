@@ -18,7 +18,7 @@ public class TopoProcessingProviderModule extends org.opendaylight.yang.gen.v1.u
 
     @Override
     public java.lang.AutoCloseable createInstance() {
-        return new TopoProcessingProviderImpl(getSchemaServiceDependency(), getDataBrokerDependency());
+        return new TopoProcessingProviderImpl(getDataBrokerDependency());
     }
 
 }
