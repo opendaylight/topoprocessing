@@ -118,17 +118,16 @@ public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyPro
             return;
         }
 
-        setNodeRefNodeAttributes(type, topologyInstanceId, nodeRefAttributes, node.getKey());
+        setNodeRefNodeAttributes(destTopologyId, nodeRefAttributes, node.getKey());
     }
 
     private void setNodeRefNodeAttributes(
-            final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeRef nodeRef,
             final NodeKey nodeKey) {
         try {
             log.info("InventoryTopologyProvider.setNodeRefNodeAttributes");
-            final InstanceIdentifier<Topology> targetTopologyId = destTopologyId;
+            final InstanceIdentifier<Topology> targetTopologyId = topologyInstanceId;
             final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
             final InstanceIdentifier<InventoryNode> instanceInvNodeId =
                     targetTopologyId.child(Node.class, nodeKey).augmentation(InventoryNode.class);

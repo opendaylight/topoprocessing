@@ -7,7 +7,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 
 public class MultilayerTopologyProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.impl.rev150123.AbstractMultilayerTopologyProviderModule {
-    private static final Logger log = LoggerFactory.getLogger(MultilayerTopologyProviderModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MultilayerTopologyProviderModule.class);
 
     public MultilayerTopologyProviderModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
@@ -25,7 +25,7 @@ public class MultilayerTopologyProviderModule extends org.opendaylight.yang.gen.
     @Override
     public java.lang.AutoCloseable createInstance() {
 
-        log.info("*** MultilayerTopologyProviderModule createInstance. ***");
+        LOG.info("*** MultilayerTopologyProviderModule createInstance. ***");
 
         final MultilayerTopologyProvider mlTopologyProvider = new MultilayerTopologyProvider();
 
@@ -44,20 +44,20 @@ public class MultilayerTopologyProviderModule extends org.opendaylight.yang.gen.
            public void close() throws Exception {
                runtimeReg.close();
                closeQuietly(mlTopologyProvider);
-               log.info("MultiTechnology provider (instance {}) torn down.", this);
+               LOG.info("MultiTechnology provider (instance {}) torn down.", this);
            }
 
            private void closeQuietly(final AutoCloseable resource) {
                try {
                    resource.close();
                } catch (final Exception e) {
-                   log.debug("Ignoring exception while closing {}", resource, e);
+                   LOG.debug("Ignoring exception while closing {}", resource, e);
                }
            }
        }
 
        AutoCloseable ret = new AutoCloseableMultilayerTopology();
-       log.info("Multilayer provider (instance {}) initialized.", ret);
+       LOG.info("Multilayer provider (instance {}) initialized.", ret);
        return ret;
     }
 

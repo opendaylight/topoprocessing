@@ -58,19 +58,20 @@ public class MlmtTopologyBuilder {
             final InstanceIdentifier<Topology> topologyInstanceId,
             final TopologyId underlayTopologyRef) {
         log.info("MlmtTopologyBuilder.createUnderlayTopology");
+        final UnderlayTopologyBuilder underlayTopologyBuilder = new UnderlayTopologyBuilder();
+        final TopologyTypesBuilder topologyTypesBuilder = new TopologyTypesBuilder();
+        final TopologyKey key = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
+        final TopologyBuilder tbuilder = new TopologyBuilder();
+
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
-                final UnderlayTopologyBuilder underlayTopologyBuilder = new UnderlayTopologyBuilder();
                 underlayTopologyBuilder.setTopologyRef(underlayTopologyRef);
                 UnderlayTopologyKey underlayKey = new UnderlayTopologyKey(underlayTopologyRef);
                 underlayTopologyBuilder.setKey(underlayKey);
                 UnderlayTopology underlayTopology = underlayTopologyBuilder.build();
                 List<UnderlayTopology> lUnderlayTopology = new ArrayList<UnderlayTopology>();
                 lUnderlayTopology.add(underlayTopology);
-                final TopologyTypesBuilder topologyTypesBuilder = new TopologyTypesBuilder();
-                final TopologyKey key = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
-                final TopologyBuilder tbuilder = new TopologyBuilder();
                 tbuilder.setKey(key);
                 final Topology top = tbuilder.setServerProvided(Boolean.FALSE)
                         .setTopologyTypes(topologyTypesBuilder.build())
@@ -84,18 +85,19 @@ public class MlmtTopologyBuilder {
             final InstanceIdentifier<Topology> topologyInstanceId,
             final TopologyId underlayTopologyRef) {
         log.info("MlmtTopologyBuilder.createTopology");
+        final UnderlayTopologyBuilder underlayTopologyBuilder = new UnderlayTopologyBuilder();
+        final TopologyKey key = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
+        final TopologyBuilder tbuilder = new TopologyBuilder();
+
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
-                final UnderlayTopologyBuilder underlayTopologyBuilder = new UnderlayTopologyBuilder();
                 underlayTopologyBuilder.setTopologyRef(underlayTopologyRef);
                 UnderlayTopologyKey underlayKey = new UnderlayTopologyKey(underlayTopologyRef);
                 underlayTopologyBuilder.setKey(underlayKey);
                 UnderlayTopology underlayTopology = underlayTopologyBuilder.build();
                 List<UnderlayTopology> lUnderlayTopology = new ArrayList<UnderlayTopology>();
                 lUnderlayTopology.add(underlayTopology);
-                final TopologyKey key = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
-                final TopologyBuilder tbuilder = new TopologyBuilder();
                 tbuilder.setKey(key);
                 TopologyTypesBuilder topologyTypesBuilder = new TopologyTypesBuilder();
                 final Topology top = tbuilder.setServerProvided(Boolean.FALSE)
@@ -200,12 +202,13 @@ public class MlmtTopologyBuilder {
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Link link) {
          log.info("MlmtTopologyBuilder.createLink");
+         final LinkBuilder linkBuilder = new LinkBuilder();
+         final LinkKey linkKey = link.getKey();
+         final LinkId linkId = link.getLinkId();
+
          processor.enqueueOperation(new MlmtTopologyOperation() {
              @Override
              public void applyOperation(ReadWriteTransaction transaction) {
-                  final LinkBuilder linkBuilder = new LinkBuilder();
-                  final LinkKey linkKey = link.getKey();
-                  final LinkId linkId = link.getLinkId();
                   linkBuilder.setKey(linkKey);
                   linkBuilder.setLinkId(linkId);
                   linkBuilder.setSource(link.getSource());

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 
 public class MultitechnologyTopologyProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.impl.rev150122.AbstractMultitechnologyTopologyProviderModule {
-    private static final Logger log = LoggerFactory.getLogger(MultitechnologyTopologyProviderModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MultitechnologyTopologyProviderModule.class);
 
     public MultitechnologyTopologyProviderModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
@@ -27,7 +27,7 @@ public class MultitechnologyTopologyProviderModule extends org.opendaylight.yang
 
         DataBroker dataBrokerService = getDataBrokerDependency();
         mtTopologyProvider.setDataProvider(dataBrokerService);
-        log.info("*** MultitechnologyTopologyProviderModule createInstance. ***");
+        LOG.info("*** MultitechnologyTopologyProviderModule createInstance. ***");
 
         final MultitechnologyTopologyProviderRuntimeRegistration runtimeReg = getRootRuntimeBeanRegistratorWrapper().register(
                 mtTopologyProvider);
@@ -38,20 +38,20 @@ public class MultitechnologyTopologyProviderModule extends org.opendaylight.yang
            public void close() throws Exception {
                runtimeReg.close();
                closeQuietly(mtTopologyProvider);
-               log.info("MultiTechnology provider (instance {}) torn down.", this);
+               LOG.info("MultiTechnology provider (instance {}) torn down.", this);
            }
 
            private void closeQuietly(final AutoCloseable resource) {
                try {
                    resource.close();
                } catch (final Exception e) {
-                   log.debug("Ignoring exception while closing {}", resource, e);
+                   LOG.debug("Ignoring exception while closing {}", resource, e);
                }
            }
        }
 
        AutoCloseable ret = new AutoCloseableMultitechnologyTopology();
-       log.info("Multitechnology provider (instance {}) initialized.", ret);
+       LOG.info("Multitechnology provider (instance {}) initialized.", ret);
        return ret;
     }
 }
