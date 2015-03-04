@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_bd8f1fcc",
+        "filename": "topoprocessing-impl/src/main/yang/topoprocessing-provider-impl.yang",
+        "patchSetId": 2
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-04T14:34:27Z",
+      "side": 0,
+      "message": "once this module is removed, we probably don\u0027t need the dependency on sal-binding-config, please remove it from both pom.xml files",
+      "range": {
+        "startLine": 17,
+        "startChar": 11,
+        "endLine": 17,
+        "endChar": 38
+      },
+      "revId": "be9499e1fc15b498e961dbc079587da709263344",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}

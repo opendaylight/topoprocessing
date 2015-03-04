@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_ddda2be9",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/TopologyRequestListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-04T14:34:27Z",
+      "side": 1,
+      "message": "can\u0027t occur in onDataChanged() method - map would be overwritten with new map each time this method is called",
+      "range": {
+        "startLine": 36,
+        "startChar": 8,
+        "endLine": 36,
+        "endChar": 92
+      },
+      "revId": "02b3f3d4e7da714a7f102541057c95b00117aba0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_1d9f3305",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/TopologyRequestListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-04T14:34:27Z",
+      "side": 1,
+      "message": "this condition won\u0027t be true, please use normalizedNode.getNodeType().getLocalName(\"Topology\") instead",
+      "range": {
+        "startLine": 45,
+        "startChar": 15,
+        "endLine": 45,
+        "endChar": 51
+      },
+      "revId": "02b3f3d4e7da714a7f102541057c95b00117aba0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_5d95bbe2",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/TopologyRequestListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-04T14:34:27Z",
+      "side": 1,
+      "message": "don\u0027t forget to remove found handler from map",
+      "range": {
+        "startLine": 61,
+        "startChar": 39,
+        "endLine": 61,
+        "endChar": 64
+      },
+      "revId": "02b3f3d4e7da714a7f102541057c95b00117aba0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
