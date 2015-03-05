@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_b1bd0805",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 391
+      },
+      "writtenOn": "2015-03-05T16:45:08Z",
+      "side": 1,
+      "message": "Is this repository needed with the elimination of the odl-flow-model below?",
+      "revId": "abb59bac6850171713989fcdc42f2d6b07bea116",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
