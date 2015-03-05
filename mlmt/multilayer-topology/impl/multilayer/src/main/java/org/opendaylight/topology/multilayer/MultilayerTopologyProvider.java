@@ -87,8 +87,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
     }
 
     public void registerRpcImpl(final ProviderContext session) {
-        final BindingAwareBroker.RpcRegistration<MultilayerTopologyService> peopleRpcReg = session
-                .addRpcImplementation(MultilayerTopologyService.class, this);
+        session.addRpcImplementation(MultilayerTopologyService.class, this);
     }
 
     @Override
