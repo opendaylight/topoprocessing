@@ -1,0 +1,95 @@
+module otn-layer-protocol {
+    namespace "urn:opendaylight:logicalterminationpoint:otn";
+    prefix otn-lp;
+
+    import logical-termination-point {prefix ltp; revision-date "2015-02-18";}
+    
+    revision "2015-02-18" {
+        description "Initial revision of the Ethernet Layer Protocol model";
+    }
+
+    grouping otn-layer-protocol-type {
+    	container otn-layer-protocol {
+    	    presence "indicates OTN Layer Protocol";
+        }
+    }
+
+    typedef otn-ltp-features {
+        type bits {
+            bit odu0-rate;
+            bit oxu1-rate;
+            bit oduflex-rate;
+            bit oxu2-rate;
+            bit oxu2e-rate;
+            bit oxu3-rate;
+            bit oxu3e-rate;
+            bit oxu4-rate;
+            bit ODTUkj;
+            bit ODTUk-ts;
+            bit tribslot-size-1g25; // TS unit
+            bit tribslot-size-2g50;
+            bit tribport-size-odu0; // switch granularity
+            bit tribport-size-odu1;            
+            bit tribport-size-oduflex; 
+            bit tribport-size-odu2;  
+            bit tribport-size-odu2e;  
+            bit tribport-size-odu3; 
+            bit tribport-size-odu4; 
+        }
+    }
+
+    typedef otu-fec-type {
+        description "OTU FEC Algorithm";
+        
+        type enumeration {
+            enum none;
+            enum rs8;
+          
+            // Propriety 
+            enum ufec;
+            enum scfec;
+            enum bch20;
+            enum pfec;  
+            enum qfec;
+        }
+    }
+
+    grouping otn-lp-attributes {
+        description "Features/attributes supported by an OTN port";
+
+        leaf otn-feature {
+            type otn-ltp-features;
+            description "OTN Features supported by the LTP";
+        }
+
+        leaf payload-type {
+            type uint8;
+            description "Payload value";
+        }
+
+        leaf-list supported-payload-types {
+            type uint8;
+            description "Supported payload types";
+		}
+
+        leaf is-otu {
+            type boolean;
+            description "Is it an OTU ? - (True-OTU, False-ODU)";
+        }
+
+        leaf otu-fec {
+            type otu-fec-type;
+        }
+
+    }
+
+    augment "/ltp:logical-termination-point/ltp:layer-protocol-types" {
+    	uses otn-layer-protocol-type;
+    }
+
+    augment "/ltp:logical-termination-point/ltp:layer-protocol-attributes" {
+    	when "ltp:logical-termination-point/otn-layer-protocol";
+    	uses otn-lp-attributes;
+    }
+
+}

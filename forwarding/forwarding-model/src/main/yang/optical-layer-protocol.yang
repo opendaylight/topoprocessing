@@ -1,0 +1,107 @@
+module optical-layer-protocol {
+    namespace "urn:opendaylight:logicalterminationpoint:optical";
+    prefix otn-lp;
+
+    import logical-termination-point { prefix ltp; revision-date "2015-02-18"; }
+
+    revision "2015-02-18" {
+        description "Initial revision of the Ethernet Layer Protocol model";
+    }
+
+    grouping optical-layer-protocol-type {
+        container optical-layer-protocol {
+            presence "indicates Optical Layer Protocol";
+        }
+    }
+
+    typedef optical-ltp-types {
+        description "Further qualification of the optical LTP's type";
+
+        type enumeration {
+            enum optical-channel;
+            enum optical-multiplex-section;
+            enum control-plane-link;
+        }
+    }
+
+    typedef optical-ltp-features {
+        description "Features supported by an optical port";
+        type bits {
+            bit rx-tune;    // Receiver is tunable
+            bit tx-tune;    // Transmit is tunable
+            bit tx-pwr;     // Power is configurable
+            bit use-freq;   // Use Frequency, not wavelength (in the optical-ltp attributes)
+        }
+    }
+
+    grouping optical-lp-attributes {
+        description "Features/attributes supported by an optical port";
+
+        leaf optical-ltp-type {
+            type optical-ltp-types;
+        }
+
+        leaf features {
+            type optical-ltp-features;
+        }
+
+        leaf tx_min_freq_lambda {
+            type uint32;
+            description "Transmit minimum Frequency/Wavelength in MHz/nm";
+        }
+
+        leaf tx_max_freq_lambda {
+            type uint32;
+            description "Transmit maximum Frequency/Wavelength in MHz/nm";
+        }
+
+        leaf tx_grid_freq_lambda {
+            type uint32;
+            description "Transmit Grid Frequency/Wavelength spacing in MHz/nm";
+        }
+
+        leaf rx_min_freq_lambda {
+            type uint32;
+            description "Receiver minimum Frequency/Wavelength in MHz/nm";
+        }
+
+        leaf rx_max_freq_lambda {
+            type uint32;
+            description "Receiver maximum Frequency/Wavelength in MHz/nm";
+        }
+
+        leaf rx_grid_freq_lambda {
+            type uint32;
+            description "Receiver Grid Frequency/Wavelength spacing in MHz/nm";
+        }
+
+        leaf tx_power_min {
+            type uint16;
+            description "Minimum transmit power";
+        }
+
+        leaf tx_power_max {
+            type uint16;
+            description "Maximum transmit power";
+        }
+
+        list correlation-list {
+            key "name";
+            leaf name {
+                type string;
+            }
+            leaf value {
+                type string;
+            }
+        }
+    }
+
+    augment "/ltp:logical-termination-point/ltp:layer-protocol-types" {
+        uses optical-layer-protocol-type;
+    }
+
+    augment "/ltp:logical-termination-point/ltp:layer-protocol-attributes" {
+        when "ltp:logical-termination-point/optical-layer-protocol";
+        uses optical-lp-attributes;
+    }
+}
