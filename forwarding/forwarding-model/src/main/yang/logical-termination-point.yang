@@ -1,0 +1,156 @@
+module logical-termination-point {
+    namespace "urn:opendaylight:logicalterminationpoint";
+    prefix ltp;
+
+    import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
+    
+    revision "2015-02-18" {
+        description "Initial revision of Logical Termination Point model";
+    }
+
+    //
+    //  These appear to be layer-specific.  Do we need them and if so, should we move them into the layer protocol?
+    typedef port-config {
+        type bits {
+            bit PORT-DOWN;
+            bit NO-RECV;
+            bit NO-FWD;
+            bit NO-PACKET-IN;
+        }
+    }
+
+    grouping port-state {
+        leaf link-down {
+            type boolean;
+        }
+        leaf blocked {
+            type boolean;
+        }   
+        leaf live {
+            type boolean;
+        }
+    }
+
+    container logical-termination-point {
+        leaf ltp-number {
+            type uint32; 
+            description "A unique id of the LTP within the logical switch";
+        }
+
+        leaf name {
+            type string;
+            description "Human readable name of the port";                    
+        }
+
+        leaf configuration {
+            type port-config;
+            description "Bit map of OFPPC-* flags";          
+        }
+
+        container state {
+            uses port-state;
+            description "Description of state of port";            
+        }
+
+        leaf latency {
+            type uint32;
+            description "Tx Latency from this LTP to LTP on other end";
+        }
+
+        leaf is-external {
+            type boolean;
+            description "External or internal termination point (True = external)";            
+        }
+
+        list shared-risk-link-groups {
+            description "The shared risk link groups this LTP belongs to";
+            key  "shared-risk-link-group";
+            leaf shared-risk-link-group {
+                 type uint16;
+             }
+        }
+
+        list client-ltps {
+            description "List of client LTPs for this LTP";
+            key  "client-ltp";
+            leaf client-ltp {
+                 type inv:node-connector-id;
+             }
+        }
+        
+        list server-ltps {
+            description "List of server LTPs for this LTP";
+            key  "server-ltp";
+            leaf server-ltp {
+                 type inv:node-connector-id;
+             }
+        }
+
+        list peer-ltps {
+            description "List of peer LTPs for this LTP";
+            key "peer-ltp";
+            leaf peer-ltp {
+                 type inv:node-connector-id;
+             }
+        }
+
+        leaf admin-weight {
+            type uint16;
+            description "The admin weight provisioned on the link associated with this LTP";
+        }
+
+        list group-list {
+            description "List of the port groups this LTP is associated with";
+            key  "group-id";
+            leaf group-id {
+                 type string;
+             }
+        }
+
+        list forwarding-ltps {
+            description "List of LTPs that this LTP is allowed to forward to";
+            key  "forwarding-ltp";
+            leaf forwarding-ltp {
+                 type inv:node-connector-id;
+             }
+        }
+
+        container layer-protocol-types {
+            description "This container is used to identify the type of the layer protocol.
+                The set of layer protocols is expected to increase over time.
+                To add support for a new layer protocol, an augmenting module
+                needs to augment this container with a new empty optional
+                container to indicate the new layer protocol.
+                The use of a container allows to indicate a subcategorization
+                of layer protocol.
+                The container SHALL NOT be augmented with any data nodes
+                that serve a purpose other than identifying a particular
+            	layer protocol.";
+        }
+        container layer-protocol-attributes {
+            description "This container is used to identify the layer protocol attributes.
+                To add support for a new layer protocol, an augmenting module
+                needs to augment this container with new layer-specific attributes.";
+        }
+    }
+
+/*
+    These may be needed for notifications?  There were no notifications defined in the original forwarding-port-types.yang
+
+    typedef port-reason {
+        type enumeration {
+            enum add;
+            enum delete;
+            enum update;
+        }
+    }
+    
+    grouping forwarding-port-status {
+        leaf reason {
+            type port-reason;
+        }
+        
+        uses logical-termination-point;
+    }
+*/
+}
