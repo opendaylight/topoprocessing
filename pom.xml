@@ -19,6 +19,7 @@
         <module>topoprocessing-spi</module>
         <module>topoprocessing-impl</module>
         <module>mlmt</module>
+        <module>forwarding</module>
         <module>features</module>
         <module>distribution-karaf</module>
     </modules>
