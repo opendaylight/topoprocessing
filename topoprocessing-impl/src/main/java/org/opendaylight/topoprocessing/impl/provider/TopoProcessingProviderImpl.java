@@ -52,6 +52,6 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
         topologyRequestListenerRegistration =
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                        identifier, new TopologyRequestListener(), DataChangeScope.BASE);
+                        identifier, new TopologyRequestListener(dataBroker), DataChangeScope.BASE);
     }
 }

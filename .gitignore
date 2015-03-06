@@ -7,4 +7,6 @@ maven-eclipse.xml
 .checkstyle
 .idea/
 *.iml
+*.ipr
+*.iws
 
