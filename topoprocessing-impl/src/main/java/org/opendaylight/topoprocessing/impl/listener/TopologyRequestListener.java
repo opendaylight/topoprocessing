@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.handler.TopologyRequestHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
@@ -28,7 +29,13 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
  */
 public class TopologyRequestListener implements DOMDataChangeListener {
 
+    private DOMDataBroker dataBroker;
+
     private HashMap<YangInstanceIdentifier, TopologyRequestHandler> topoRequestHandlers = new HashMap<>();
+
+    public TopologyRequestListener(DOMDataBroker dataBroker) {
+        this.dataBroker = dataBroker;
+    }
 
     @Override
     public void onDataChanged(
@@ -43,7 +50,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
             NormalizedNode<?, ?> normalizedNode = entry.getValue();
             if(normalizedNode.getNodeType().equals(Topology.QNAME)) {
                 if (((Topology) normalizedNode).getAugmentation(CorrelationAugment.class) != null) {
-                    TopologyRequestHandler requestHandler = new TopologyRequestHandler();
+                    TopologyRequestHandler requestHandler = new TopologyRequestHandler(dataBroker);
                     topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
                     requestHandler.processNewRequest((Topology) normalizedNode);
                 }
