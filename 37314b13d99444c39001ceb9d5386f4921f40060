@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_49e8947c",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/PathTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-09T15:10:17Z",
+      "side": 1,
+      "message": "remove this line - as the method is implemented in this change",
+      "range": {
+        "startLine": 34,
+        "startChar": 7,
+        "endLine": 34,
+        "endChar": 80
+      },
+      "revId": "37314b13d99444c39001ceb9d5386f4921f40060",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_e9e1609b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/PathTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-09T15:10:17Z",
+      "side": 1,
+      "message": "remove declaration",
+      "range": {
+        "startLine": 39,
+        "startChar": 7,
+        "endLine": 39,
+        "endChar": 25
+      },
+      "revId": "37314b13d99444c39001ceb9d5386f4921f40060",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_c9e4a4ae",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/PathTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-09T15:10:17Z",
+      "side": 1,
+      "message": "replace by separator",
+      "range": {
+        "startLine": 61,
+        "startChar": 33,
+        "endLine": 61,
+        "endChar": 36
+      },
+      "revId": "37314b13d99444c39001ceb9d5386f4921f40060",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
