@@ -15,9 +15,11 @@ import java.util.concurrent.TimeoutException;
 
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadTransaction;
+import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
@@ -76,6 +78,8 @@ public class TopologyRequestHandler {
                             .node(getCorrelationItemQname(correlation.getCorrelationItem()))
                             .build();
                     MapNode mapNode = readData(yangInstanceIdentifier);
+                    YangInstanceIdentifier pathIdentifier = new PathTranslator().
+                           translate(mapping.getTargetField().getValue());
                     // TODO - register topology change listeners, create aggregators and providers
                 }
             }
