@@ -8,6 +8,7 @@
 
 package org.opendaylight.topoprocessing.impl.handler;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -16,9 +17,13 @@ import java.util.concurrent.TimeoutException;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadTransaction;
+import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
+import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -26,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.CorrelationType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev130712.network.topology.topology.TopologyTypes;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -54,6 +60,10 @@ public class TopologyRequestHandler {
     private DOMDataBroker domDataBroker;
     private Topology topology;
 
+    private TopologyManager manager = new TopologyAggregator();
+
+    private PathTranslator translator = new PathTranslator();
+
     public TopologyRequestHandler(DOMDataBroker domDataBroker) {
         this.domDataBroker = domDataBroker;
     }
@@ -67,21 +77,22 @@ public class TopologyRequestHandler {
             CorrelationAugment augmentation = topology.getAugmentation(CorrelationAugment.class);
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
+                ArrayList pathIdentifiers = new ArrayList();
                 CorrelationType correlationType = correlation.getCorrelationType();
                 EqualityCase equalityCase = (EqualityCase) correlationType;
                 List<Mapping> mappings = equalityCase.getEquality().getMapping();
                 for (Mapping mapping : mappings) {
-                    YangInstanceIdentifier yangInstanceIdentifier = YangInstanceIdentifier.builder()
-                            .node(NetworkTopology.QNAME)
-                            .node(Topology.QNAME)
-                            .nodeWithKey(Topology.QNAME, QName.create("topology-id"), mapping.getUnderlayTopology())
-                            .node(getCorrelationItemQname(correlation.getCorrelationItem()))
-                            .build();
-                    MapNode mapNode = readData(yangInstanceIdentifier);
-                    YangInstanceIdentifier pathIdentifier = new PathTranslator().
-                           translate(mapping.getTargetField().getValue());
-                    // TODO - register topology change listeners, create aggregators and providers
+                    YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue());
+                    pathIdentifiers.add(pathIdentifier);
                 }
+                UnderlayTopologyListener listener = new UnderlayTopologyListener(manager, pathIdentifiers);
+                YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder()
+                        .node(NetworkTopology.QNAME)
+                        .node(Topology.QNAME)
+                        .node(Node.QNAME)
+                        .build();
+                this.domDataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, nodeIdentifier,
+                        listener, AsyncDataBroker.DataChangeScope.SUBTREE);
             }
         } catch (Exception e) {
             LOG.warn("Processing new request for topology change failed.", e);
