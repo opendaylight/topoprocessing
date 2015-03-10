@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_b052d911",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-10T15:38:38Z",
+      "side": 1,
+      "message": "each underlayTopologyListener will listen only on changes from one topology, so the constructor should contain only one pathIdentifier",
+      "range": {
+        "startLine": 88,
+        "startChar": 90,
+        "endLine": 88,
+        "endChar": 105
+      },
+      "revId": "89148b11b9100f1f6511d0f84b9625939a59e8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_f019417a",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-10T15:38:38Z",
+      "side": 1,
+      "message": "listener creation and registration must occur inside mapping loop (for), as we need an underlayTopologyListener for each underlay topology",
+      "range": {
+        "startLine": 88,
+        "startChar": 16,
+        "endLine": 88,
+        "endChar": 107
+      },
+      "revId": "89148b11b9100f1f6511d0f84b9625939a59e8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_3010094e",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-10T15:38:38Z",
+      "side": 1,
+      "message": "why changed to .node(Node.QNAME) ?",
+      "range": {
+        "startLine": 92,
+        "startChar": 24,
+        "endLine": 92,
+        "endChar": 41
+      },
+      "revId": "89148b11b9100f1f6511d0f84b9625939a59e8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_10138d5d",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-10T15:38:38Z",
+      "side": 1,
+      "message": "only DataChangeScope.SUBTREE should be used",
+      "range": {
+        "startLine": 95,
+        "startChar": 34,
+        "endLine": 95,
+        "endChar": 50
+      },
+      "revId": "89148b11b9100f1f6511d0f84b9625939a59e8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_5009152b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-10T15:38:38Z",
+      "side": 1,
+      "message": "this method can be removed since it is not used",
+      "range": {
+        "startLine": 125,
+        "startChar": 4,
+        "endLine": 146,
+        "endChar": 5
+      },
+      "revId": "89148b11b9100f1f6511d0f84b9625939a59e8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_f047014a",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-10T15:38:38Z",
+      "side": 1,
+      "message": "only one YangInstanceIdentifier should be present",
+      "range": {
+        "startLine": 32,
+        "startChar": 12,
+        "endLine": 32,
+        "endChar": 73
+      },
+      "revId": "89148b11b9100f1f6511d0f84b9625939a59e8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_90747d9d",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-10T15:38:38Z",
+      "side": 1,
+      "message": "here we should collect data into a collection, and once this processing is done, we should pass this collection to TopologyManager",
+      "range": {
+        "startLine": 53,
+        "startChar": 20,
+        "endLine": 53,
+        "endChar": 74
+      },
+      "revId": "89148b11b9100f1f6511d0f84b9625939a59e8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_30ac89ed",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyAggregator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-10T15:38:38Z",
+      "side": 1,
+      "message": "Please change to common template - e.g. @author matus.marko (same for other classes)",
+      "range": {
+        "startLine": 4,
+        "startChar": 3,
+        "endLine": 4,
+        "endChar": 37
+      },
+      "revId": "89148b11b9100f1f6511d0f84b9625939a59e8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
