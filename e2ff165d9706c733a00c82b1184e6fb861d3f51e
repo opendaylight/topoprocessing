@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_bad87854",
+        "filename": "forwarding/forwarding-model/pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 3277
+      },
+      "writtenOn": "2015-03-10T08:33:16Z",
+      "side": 1,
+      "message": "Some space characters to be deleted.",
+      "revId": "e2ff165d9706c733a00c82b1184e6fb861d3f51e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_5addb441",
+        "filename": "forwarding/forwarding-model/pom.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 3277
+      },
+      "writtenOn": "2015-03-10T08:33:16Z",
+      "side": 1,
+      "message": "Some space characters to be deleted",
+      "revId": "e2ff165d9706c733a00c82b1184e6fb861d3f51e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
