@@ -68,6 +68,11 @@
                             uses mapping-grouping;
                         }
                     }
+                    case unification-case {
+                        container unification {
+                            uses mapping-grouping;
+                        }
+                    }
                 }
             }
         }

@@ -13,9 +13,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import com.google.common.base.Optional;
-import com.google.common.util.concurrent.ListenableFuture;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadTransaction;
@@ -26,10 +23,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.CorrelationType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.UnificationCase;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -37,6 +35,9 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Optional;
+import com.google.common.util.concurrent.ListenableFuture;
 
 
 /**
@@ -67,9 +68,7 @@ public class TopologyRequestHandler {
             CorrelationAugment augmentation = topology.getAugmentation(CorrelationAugment.class);
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
-                CorrelationType correlationType = correlation.getCorrelationType();
-                EqualityCase equalityCase = (EqualityCase) correlationType;
-                List<Mapping> mappings = equalityCase.getEquality().getMapping();
+                List<Mapping> mappings = getCorrelationMapping(correlation);
                 for (Mapping mapping : mappings) {
                     YangInstanceIdentifier yangInstanceIdentifier = YangInstanceIdentifier.builder()
                             .node(NetworkTopology.QNAME)
@@ -86,6 +85,21 @@ public class TopologyRequestHandler {
         } catch (Exception e) {
             LOG.warn("Processing new request for topology change failed.", e);
         }
+    }
+
+    private static List<Mapping> getCorrelationMapping(Correlation correlation) {
+        List<Mapping> mapping = null;
+        CorrelationType correlationType = correlation.getCorrelationType();
+        if (correlationType instanceof EqualityCase) {
+            EqualityCase equalityCase = (EqualityCase) correlationType;
+            mapping = equalityCase.getEquality().getMapping();
+        } else if (correlationType instanceof UnificationCase) {
+            UnificationCase unificationCase = (UnificationCase) correlationType;
+            mapping = unificationCase.getUnification().getMapping();
+        } else {
+            throw new IllegalStateException("Unknown correlation type " + correlationType.toString());
+        }
+        return mapping;
     }
 
     private QName getCorrelationItemQname(CorrelationItemEnum correlationItemEnum) throws Exception {
