@@ -157,8 +157,8 @@
                 <configuration>
                     <bootFeatures>
                         <feature>standard</feature>
-                        <feature>odl-topoprocessing-all</feature>
-                        <feature>odl-restconf</feature>
+                        <feature>odl-topoprocessing-framework</feature>
+                        <feature>odl-topoprocessing-mlmt</feature>
                     </bootFeatures>
                 </configuration>
                 <executions>
