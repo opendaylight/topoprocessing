@@ -9,6 +9,7 @@
 package org.opendaylight.topoprocessing.impl.handler;
 
 import java.util.List;
+
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
@@ -31,6 +32,8 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+
 
 /**
  * Picks up information from topology request, engages corresponding
@@ -39,18 +42,17 @@ import org.slf4j.LoggerFactory;
  */
 public class TopologyRequestHandler {
 
-    /** Timeout for read transactions in seconds */
-    private static final long TIMEOUT = 10;
-
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
 
     private DOMDataBroker domDataBroker;
     private Topology topology;
-
     private TopologyManager manager = new TopologyManager();
-
     private PathTranslator translator = new PathTranslator();
 
+    /**
+     * Default constructor
+     * @param domDataBroker
+     */
     public TopologyRequestHandler(DOMDataBroker domDataBroker) {
         this.domDataBroker = domDataBroker;
     }
@@ -59,8 +61,11 @@ public class TopologyRequestHandler {
      * @param topology overlay topology request
      */
     public void processNewRequest(Topology topology) {
+        LOG.debug("Processing overlay topology creation request");
+        Preconditions.checkNotNull(topology, "Received topology can't be null");
         this.topology = topology;
         try {
+            LOG.debug("Processing correlation configuration");
             CorrelationAugment augmentation = topology.getAugmentation(CorrelationAugment.class);
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
@@ -76,16 +81,21 @@ public class TopologyRequestHandler {
                             .nodeWithKey(Topology.QNAME, QName.create("topology-id"), mapping.getUnderlayTopology())
                             .node(getCorrelationItemQname(correlation.getCorrelationItem()))
                             .build();
+                    LOG.debug("Registering underlay topology listener for topology: "
+                            + mapping.getUnderlayTopology());
                     this.domDataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, nodeIdentifier,
                             listener, DataChangeScope.SUBTREE);
+                    LOG.debug("Underlay topology listener for topology: " + mapping.getUnderlayTopology()
+                            + " has been successfully registered");
                 }
             }
+            LOG.debug("Correlation configuration successfully read");
         } catch (Exception e) {
             LOG.warn("Processing new request for topology change failed.", e);
         }
     }
 
-    private QName getCorrelationItemQname(CorrelationItemEnum correlationItemEnum) throws Exception {
+    private static QName getCorrelationItemQname(CorrelationItemEnum correlationItemEnum) throws Exception {
         QName result;
         switch (correlationItemEnum) {
             case Node:
@@ -114,6 +124,6 @@ public class TopologyRequestHandler {
      * Closes all registered listeners and providers
      */
     public void processDeletionRequest() {
-        // TODO - implement after discussion on how to interconnect with mlmt-observer/provider
+        LOG.debug("Processing overlay topology deletion request");
     }
 }

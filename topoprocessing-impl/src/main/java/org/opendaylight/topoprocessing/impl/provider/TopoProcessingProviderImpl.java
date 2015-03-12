@@ -22,12 +22,18 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 
 /**
  * @author michal.polkorab
  *
  */
 public class TopoProcessingProviderImpl implements TopoProcessingProvider {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TopoProcessingProviderImpl.class);
 
     private DOMDataBroker dataBroker;
     private ListenerRegistration<DOMDataChangeListener> topologyRequestListenerRegistration;
@@ -39,6 +45,8 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
      * @param dataBroker
      */
     public TopoProcessingProviderImpl(SchemaService schemaService, DOMDataBroker dataBroker) {
+        Preconditions.checkNotNull(schemaService, "SchemaService can't be null");
+        Preconditions.checkNotNull(schemaService, "DOMDataBroker can't be null");
         this.schemaService = schemaService;
         this.dataBroker = dataBroker;
         GlobalSchemaContextHolder.setSchemaContext(schemaService.getGlobalContext());
@@ -47,6 +55,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
     @Override
     public void startup() {
+        LOGGER.debug("TopoProcessingProvider - startup()");
         schemaContextListenerRegistration =
                 schemaService.registerSchemaContextListener(new GlobalSchemaContextListener());
         registerTopologyRequestListener();
@@ -54,16 +63,20 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
     @Override
     public void close() throws Exception {
+        LOGGER.debug("TopoProcessingProvider - close()");
         schemaContextListenerRegistration.close();
         topologyRequestListenerRegistration.close();
+        LOGGER.debug("TopoProcessingProvider - successfully closed");
     }
 
     private void registerTopologyRequestListener() {
+        LOGGER.debug("Registering Topology Request Listener");
         YangInstanceIdentifier identifier =
                 YangInstanceIdentifier.of(NetworkTopology.QNAME).node(Topology.QNAME);
 
         topologyRequestListenerRegistration =
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                         identifier, new TopologyRequestListener(dataBroker), DataChangeScope.BASE);
+        LOGGER.debug("Topology Request Listener has been successfully registered");
     }
 }

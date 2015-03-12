@@ -21,6 +21,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 
 /**
  * Listens on new overlay topology requests
@@ -29,22 +33,31 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
  */
 public class TopologyRequestListener implements DOMDataChangeListener {
 
-    private DOMDataBroker dataBroker;
+    private static final Logger LOGGER = LoggerFactory.getLogger(TopologyRequestListener.class);
 
+    private DOMDataBroker dataBroker;
     private HashMap<YangInstanceIdentifier, TopologyRequestHandler> topoRequestHandlers = new HashMap<>();
 
+    /**
+     * Default contructor
+     * @param dataBroker
+     */
     public TopologyRequestListener(DOMDataBroker dataBroker) {
+        Preconditions.checkNotNull(dataBroker, "DOMDataBroker can't be null");
         this.dataBroker = dataBroker;
+        LOGGER.debug("Topology Request Listener created");
     }
 
     @Override
     public void onDataChanged(
             AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
+        LOGGER.debug("DataChange event notification received");
         processCreatedData(change.getCreatedData());
         processRemovedData(change.getRemovedPaths());
     }
 
     private void processCreatedData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map) {
+        LOGGER.debug("Processing created data changes");
         for(Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : map.entrySet()) {
             YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
             NormalizedNode<?, ?> normalizedNode = entry.getValue();
@@ -56,9 +69,11 @@ public class TopologyRequestListener implements DOMDataChangeListener {
                 }
             }
         }
+        LOGGER.debug("Created data processed");
     }
 
     private void processRemovedData(Set<YangInstanceIdentifier> removedPaths) {
+        LOGGER.debug("Processing removed data changes");
         Iterator<YangInstanceIdentifier> iterator = removedPaths.iterator();
         while (iterator.hasNext()) {
             YangInstanceIdentifier yangInstanceIdentifier = iterator.next();
@@ -69,5 +84,6 @@ public class TopologyRequestListener implements DOMDataChangeListener {
                 break;
             }
         }
+        LOGGER.debug("Removed data processed");
     }
 }

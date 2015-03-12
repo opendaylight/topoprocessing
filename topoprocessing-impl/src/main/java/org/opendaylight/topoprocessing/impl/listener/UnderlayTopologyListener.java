@@ -30,12 +30,16 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
     }
 
     private TopologyManager topologyManager;
+    private YangInstanceIdentifier pathIdentifier;
 
-    private YangInstanceIdentifier yangInstanceIdConfiguration;
-
-    public UnderlayTopologyListener(TopologyManager topologyManager, YangInstanceIdentifier yangInstanceIdConfiguration) {
+    /**
+     * Default constructor
+     * @param topologyManager processes received notifications (aggregates /filters them)
+     * @param pathIdentifier identifies leaf (node), which aggregation / filtering will be based on
+     */
+    public UnderlayTopologyListener(TopologyManager topologyManager, YangInstanceIdentifier pathIdentifier) {
         this.topologyManager = topologyManager;
-        this.yangInstanceIdConfiguration = yangInstanceIdConfiguration;
+        this.pathIdentifier = pathIdentifier;
     }
 
     @Override
@@ -52,7 +56,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
             Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry = iterator.next();
             if (entry.getValue().getNodeType().equals(Node.QNAME))
             {
-                Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), yangInstanceIdConfiguration);
+                Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
                 if (node.isPresent()) {
                     resultEntries.put(entry.getKey(), entry.getValue());
                 }
@@ -67,7 +71,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
             YangInstanceIdentifier identifierOperational = iterator.next();
             // TODO check if is functioning
             if (identifierOperational.getLastPathArgument().getNodeType().equals(
-                    yangInstanceIdConfiguration.getLastPathArgument().getNodeType()))
+                    pathIdentifier.getLastPathArgument().getNodeType()))
             {
                 // TODO - set entry to the TopologyManager with action
             }
