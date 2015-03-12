@@ -11,6 +11,8 @@ package org.opendaylight.topoprocessing.impl.listener;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Listens on {@link SchemaContext} update and updates
@@ -20,8 +22,11 @@ import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
  */
 public class GlobalSchemaContextListener implements SchemaContextListener {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalSchemaContextListener.class);
+
     @Override
     public void onGlobalContextUpdated(SchemaContext context) {
+        LOGGER.debug("SchemaContext updated");
         GlobalSchemaContextHolder.setSchemaContext(context);
     }
 

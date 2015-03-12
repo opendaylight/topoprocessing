@@ -14,6 +14,8 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceI
 import org.opendaylight.yangtools.yang.model.api.DataSchemaNode;
 import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Splitter;
 
@@ -23,6 +25,8 @@ import com.google.common.base.Splitter;
  *
  */
 public class PathTranslator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PathTranslator.class);
 
     private SchemaContext globalSchemaContext;
 
@@ -34,6 +38,7 @@ public class PathTranslator {
      * @throws IllegalArgumentException if yangPath is in incorrect format
      */
     public YangInstanceIdentifier translate(String yangPath) throws IllegalArgumentException {
+        LOGGER.debug("Translating target-item path: " + yangPath);
         InstanceIdentifierBuilder builder = YangInstanceIdentifier.builder();
         globalSchemaContext = GlobalSchemaContextHolder.getSchemaContext();
 
