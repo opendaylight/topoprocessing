@@ -49,7 +49,7 @@ public class TopologyRequestHandler {
 
     private TopologyManager manager = new TopologyManager();
 
-    private PathTranslator translator = new PathTranslator();
+    private PathTranslator translator;// = new PathTranslator();
 
     public TopologyRequestHandler(DOMDataBroker domDataBroker) {
         this.domDataBroker = domDataBroker;
@@ -61,13 +61,17 @@ public class TopologyRequestHandler {
     public void processNewRequest(Topology topology) {
         this.topology = topology;
         try {
+            System.out.println("som v processNewRequest");
             CorrelationAugment augmentation = topology.getAugmentation(CorrelationAugment.class);
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
+                System.out.println("som v correlation loop");
                 CorrelationType correlationType = correlation.getCorrelationType();
                 EqualityCase equalityCase = (EqualityCase) correlationType;
                 List<Mapping> mappings = equalityCase.getEquality().getMapping();
                 for (Mapping mapping : mappings) {
+                    System.out.println("Mapping loop");
+                    System.out.println("pred databroker");
                     YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue());
                     UnderlayTopologyListener listener = new UnderlayTopologyListener(manager, pathIdentifier);
                     YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder()
@@ -80,9 +84,16 @@ public class TopologyRequestHandler {
                             listener, DataChangeScope.SUBTREE);
                 }
             }
+            System.out.println("koniec");
         } catch (Exception e) {
+            System.out.println("exception" + e);
             LOG.warn("Processing new request for topology change failed.", e);
         }
+    }
+
+    
+    public void setTranslator(PathTranslator translator) {
+        this.translator = translator;
     }
 
     private QName getCorrelationItemQname(CorrelationItemEnum correlationItemEnum) throws Exception {

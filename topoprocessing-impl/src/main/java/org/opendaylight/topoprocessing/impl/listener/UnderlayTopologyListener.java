@@ -9,6 +9,8 @@
 package org.opendaylight.topoprocessing.impl.listener;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
@@ -35,6 +37,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
 
     public UnderlayTopologyListener(TopologyManager topologyManager, YangInstanceIdentifier yangInstanceIdConfiguration) {
         this.topologyManager = topologyManager;
+        Preconditions.checkNotNull(yangInstanceIdConfiguration, "yangInstanceIdConfiguration je null");
         this.yangInstanceIdConfiguration = yangInstanceIdConfiguration;
     }
 
