@@ -9,17 +9,19 @@
 package org.opendaylight.topoprocessing.impl.translator;
 
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.model.api.DataSchemaNode;
 import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 
+import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
 
 
 /**
- * @author michal.polkorab
+ * @author martin.uhlir
  *
  */
 public class PathTranslator {
@@ -36,26 +38,36 @@ public class PathTranslator {
     public YangInstanceIdentifier translate(String yangPath) throws IllegalArgumentException {
         InstanceIdentifierBuilder builder = YangInstanceIdentifier.builder();
         globalSchemaContext = GlobalSchemaContextHolder.getSchemaContext();
-
-        Iterable<String> pathArguments = Splitter.on("/").split(yangPath);
+        Iterable<String> pathArguments = splitYangPath(yangPath);
         for (String pathArgument : pathArguments) {
             int index = getSeparatorIndex(pathArgument, ':');
             String moduleName = getModuleName(pathArgument, index);
             Module module = globalSchemaContext.findModuleByName(moduleName, null);
-            String childName = getChildName(pathArgument, index);
+            String childName = getChildName(pathArgument, index + 1);
             DataSchemaNode dataChildByName = module.getDataChildByName(childName);
-            builder.node(dataChildByName.getQName());
+            QName qName = dataChildByName.getQName();
+            builder.node(qName);
         }
         return builder.build();
     }
 
+    private Iterable<String> splitYangPath(String yangPath) {
+        if (yangPath == null) {
+            throw new IllegalArgumentException("YangPath cannot be null");
+        } else {
+            return Splitter.on("/").split(yangPath);
+        }
+    }
+
     private static int getSeparatorIndex(String s, char separator) {
         int index = s.indexOf(separator);
-        if (index == -1) {
+         if (index == -1) {
             throw new IllegalArgumentException("Invalid format of yang path, ':' not found in " + s);
         } else if (s.lastIndexOf(separator) != index) {
             throw new IllegalArgumentException("Invalid format of yang path, only one occurence of ':'"
                     + " is valid in " + s);
+        } else if (index == s.length() - 1 || index == 0) {
+            throw new IllegalArgumentException("Invalid format of yang path, format [module name]:[child name] expected in " + s);
         }
         return index;
     }
