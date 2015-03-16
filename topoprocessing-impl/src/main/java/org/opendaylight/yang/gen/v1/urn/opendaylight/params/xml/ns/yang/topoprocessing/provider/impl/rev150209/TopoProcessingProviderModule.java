@@ -3,6 +3,7 @@ package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topopro
 import org.opendaylight.topoprocessing.impl.provider.TopoProcessingProviderImpl;
 
 public class TopoProcessingProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.AbstractTopoProcessingProviderModule {
+
     public TopoProcessingProviderModule(org.opendaylight.controller.config.api.ModuleIdentifier identifier, org.opendaylight.controller.config.api.DependencyResolver dependencyResolver) {
         super(identifier, dependencyResolver);
     }

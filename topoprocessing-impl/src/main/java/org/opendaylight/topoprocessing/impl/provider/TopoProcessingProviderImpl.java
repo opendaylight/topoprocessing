@@ -45,6 +45,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
      * @param dataBroker
      */
     public TopoProcessingProviderImpl(SchemaService schemaService, DOMDataBroker dataBroker) {
+        LOGGER.debug("Creating TopoProcessingProvider");
         Preconditions.checkNotNull(schemaService, "SchemaService can't be null");
         Preconditions.checkNotNull(schemaService, "DOMDataBroker can't be null");
         this.schemaService = schemaService;
