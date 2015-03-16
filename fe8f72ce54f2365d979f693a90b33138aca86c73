@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_c3bc6f6f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/PathTranslator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-16T11:18:06Z",
+      "side": 1,
+      "message": "import not needed",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 41
+      },
+      "revId": "fe8f72ce54f2365d979f693a90b33138aca86c73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_2390b3eb",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/PathTranslator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-16T11:18:06Z",
+      "side": 1,
+      "message": "no need for else",
+      "range": {
+        "startLine": 57,
+        "startChar": 8,
+        "endLine": 57,
+        "endChar": 16
+      },
+      "revId": "fe8f72ce54f2365d979f693a90b33138aca86c73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_039337fb",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/PathTranslator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-16T11:18:06Z",
+      "side": 1,
+      "message": "wrap line please",
+      "range": {
+        "startLine": 70,
+        "startChar": 12,
+        "endLine": 70,
+        "endChar": 100
+      },
+      "revId": "fe8f72ce54f2365d979f693a90b33138aca86c73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_839f4703",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/translator/PathTranslatorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-16T11:18:06Z",
+      "side": 1,
+      "message": "new line please",
+      "range": {
+        "startLine": 45,
+        "startChar": 4,
+        "endLine": 45,
+        "endChar": 11
+      },
+      "revId": "fe8f72ce54f2365d979f693a90b33138aca86c73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_83b66789",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/translator/PathTranslatorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-16T11:18:06Z",
+      "side": 1,
+      "message": "add javadocs for tests",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 50,
+        "endChar": 9
+      },
+      "revId": "fe8f72ce54f2365d979f693a90b33138aca86c73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_e3308b58",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/translator/PathTranslatorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-16T11:18:06Z",
+      "side": 1,
+      "message": "change to throws declaration",
+      "range": {
+        "startLine": 69,
+        "startChar": 8,
+        "endLine": 71,
+        "endChar": 9
+      },
+      "revId": "fe8f72ce54f2365d979f693a90b33138aca86c73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_83350748",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/translator/PathTranslatorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-16T11:18:06Z",
+      "side": 1,
+      "message": "change to throws declaration",
+      "range": {
+        "startLine": 114,
+        "startChar": 8,
+        "endLine": 116,
+        "endChar": 9
+      },
+      "revId": "fe8f72ce54f2365d979f693a90b33138aca86c73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
