@@ -8,8 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+
 /**
  * @author matus.marko
  */
 public class TopologyAggregator implements TopologyOperator {
+
+    public void remove(YangInstanceIdentifier identifier) {
+
+    }
 }
