@@ -8,11 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.handler;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
@@ -27,12 +30,11 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
 
 
 /**
@@ -42,20 +44,40 @@ import com.google.common.base.Preconditions;
  */
 public class TopologyRequestHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
-
     private DOMDataBroker domDataBroker;
+    
     private Topology topology;
     private TopologyManager manager = new TopologyManager();
+
     private PathTranslator translator = new PathTranslator();
+
+    private ArrayList<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+
+    private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
 
     /**
      * Default constructor
-     * @param domDataBroker
+     * @param domDataBroker broker used for transaction operations
      */
     public TopologyRequestHandler(DOMDataBroker domDataBroker) {
         this.domDataBroker = domDataBroker;
     }
+
+    /** Only for testing purposes */
+    public void setManager(TopologyManager manager) {
+        this.manager = manager;
+    }
+
+    /** Only for testing purposes */
+    public void setTranslator(PathTranslator translator) { this.translator = translator; }
+
+    /** Only for testing purposes */
+    public void setListeners(ArrayList<ListenerRegistration<DOMDataChangeListener>> listeners) {
+        this.listeners = listeners;
+    }
+
+    /** Only for testing purposes */
+    public ArrayList<ListenerRegistration<DOMDataChangeListener>> getListeners() { return listeners; }
 
     /**
      * @param topology overlay topology request
@@ -75,18 +97,19 @@ public class TopologyRequestHandler {
                 for (Mapping mapping : mappings) {
                     YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue());
                     UnderlayTopologyListener listener = new UnderlayTopologyListener(manager, pathIdentifier);
-                    YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder()
+                    YangInstanceIdentifier.InstanceIdentifierBuilder nodeIdentifierBuilder = YangInstanceIdentifier.builder()
                             .node(NetworkTopology.QNAME)
                             .node(Topology.QNAME)
-                            .nodeWithKey(Topology.QNAME, QName.create("topology-id"), mapping.getUnderlayTopology())
-                            .node(getCorrelationItemQname(correlation.getCorrelationItem()))
-                            .build();
+                            .nodeWithKey(Topology.QNAME, QName.create("topology-id"), mapping.getUnderlayTopology());
+                    YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(nodeIdentifierBuilder, correlation.getCorrelationItem());
                     LOG.debug("Registering underlay topology listener for topology: "
                             + mapping.getUnderlayTopology());
-                    this.domDataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL, nodeIdentifier,
-                            listener, DataChangeScope.SUBTREE);
+                    ListenerRegistration<DOMDataChangeListener> listenerRegistration =
+                            this.domDataBroker.registerDataChangeListener(
+                                    LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
                     LOG.debug("Underlay topology listener for topology: " + mapping.getUnderlayTopology()
                             + " has been successfully registered");
+                    listeners.add(listenerRegistration);
                 }
             }
             LOG.debug("Correlation configuration successfully read");
@@ -95,22 +118,24 @@ public class TopologyRequestHandler {
         }
     }
 
-    private static QName getCorrelationItemQname(CorrelationItemEnum correlationItemEnum) throws Exception {
-        QName result;
+    private YangInstanceIdentifier buildNodeIdentifier(YangInstanceIdentifier.InstanceIdentifierBuilder builder,
+                                                       CorrelationItemEnum correlationItemEnum) throws Exception {
         switch (correlationItemEnum) {
             case Node:
-                result = Node.QNAME;
+                builder.node(Node.QNAME);
                 break;
             case Link:
-                result = Link.QNAME;
+                builder.node(Link.QNAME);
                 break;
             case TerminationPoint:
-                result = TerminationPoint.QNAME;
+                builder.node(Node.QNAME);
+                builder.node(TerminationPoint.QNAME);
                 break;
             default:
                 throw new Exception("Wrong Correlation Item set");
         }
-        return result;
+
+        return builder.build();
     }
 
     /**
@@ -125,5 +150,8 @@ public class TopologyRequestHandler {
      */
     public void processDeletionRequest() {
         LOG.debug("Processing overlay topology deletion request");
+        for (ListenerRegistration<DOMDataChangeListener> listener : listeners) {
+            listener.close();
+        }
     }
 }
