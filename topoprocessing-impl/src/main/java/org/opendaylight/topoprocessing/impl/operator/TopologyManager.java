@@ -8,8 +8,15 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+
+import java.util.HashMap;
+
 /**
  * @author matus.marko
  */
 public class TopologyManager {
+
+    private HashMap<YangInstanceIdentifier, LogicalNode> map;
 }
