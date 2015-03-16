@@ -45,17 +45,20 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
      * @param dataBroker
      */
     public TopoProcessingProviderImpl(SchemaService schemaService, DOMDataBroker dataBroker) {
+        LOGGER.error("TOPOPROCESSINGPROVIDER");
+        LOGGER.error("Creating TopoProcessingProvider");
         Preconditions.checkNotNull(schemaService, "SchemaService can't be null");
         Preconditions.checkNotNull(schemaService, "DOMDataBroker can't be null");
         this.schemaService = schemaService;
         this.dataBroker = dataBroker;
         GlobalSchemaContextHolder.setSchemaContext(schemaService.getGlobalContext());
+        System.exit(0);
         startup();
     }
 
     @Override
     public void startup() {
-        LOGGER.debug("TopoProcessingProvider - startup()");
+        LOGGER.error("TopoProcessingProvider - startup()");
         schemaContextListenerRegistration =
                 schemaService.registerSchemaContextListener(new GlobalSchemaContextListener());
         registerTopologyRequestListener();
@@ -63,20 +66,20 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
     @Override
     public void close() throws Exception {
-        LOGGER.debug("TopoProcessingProvider - close()");
+        LOGGER.error("TopoProcessingProvider - close()");
         schemaContextListenerRegistration.close();
         topologyRequestListenerRegistration.close();
-        LOGGER.debug("TopoProcessingProvider - successfully closed");
+        LOGGER.error("TopoProcessingProvider - successfully closed");
     }
 
     private void registerTopologyRequestListener() {
-        LOGGER.debug("Registering Topology Request Listener");
+        LOGGER.error("Registering Topology Request Listener");
         YangInstanceIdentifier identifier =
                 YangInstanceIdentifier.of(NetworkTopology.QNAME).node(Topology.QNAME);
 
         topologyRequestListenerRegistration =
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                         identifier, new TopologyRequestListener(dataBroker), DataChangeScope.BASE);
-        LOGGER.debug("Topology Request Listener has been successfully registered");
+        LOGGER.error("Topology Request Listener has been successfully registered");
     }
 }

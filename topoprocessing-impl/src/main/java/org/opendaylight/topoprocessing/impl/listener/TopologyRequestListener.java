@@ -45,19 +45,19 @@ public class TopologyRequestListener implements DOMDataChangeListener {
     public TopologyRequestListener(DOMDataBroker dataBroker) {
         Preconditions.checkNotNull(dataBroker, "DOMDataBroker can't be null");
         this.dataBroker = dataBroker;
-        LOGGER.debug("Topology Request Listener created");
+        LOGGER.error("Topology Request Listener created");
     }
 
     @Override
     public void onDataChanged(
             AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
-        LOGGER.debug("DataChange event notification received");
+        LOGGER.error("DataChange event notification received");
         processCreatedData(change.getCreatedData());
         processRemovedData(change.getRemovedPaths());
     }
 
     private void processCreatedData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map) {
-        LOGGER.debug("Processing created data changes");
+        LOGGER.error("Processing created data changes");
         for(Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : map.entrySet()) {
             YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
             NormalizedNode<?, ?> normalizedNode = entry.getValue();
@@ -69,11 +69,11 @@ public class TopologyRequestListener implements DOMDataChangeListener {
                 }
             }
         }
-        LOGGER.debug("Created data processed");
+        LOGGER.error("Created data processed");
     }
 
     private void processRemovedData(Set<YangInstanceIdentifier> removedPaths) {
-        LOGGER.debug("Processing removed data changes");
+        LOGGER.error("Processing removed data changes");
         Iterator<YangInstanceIdentifier> iterator = removedPaths.iterator();
         while (iterator.hasNext()) {
             YangInstanceIdentifier yangInstanceIdentifier = iterator.next();
@@ -84,6 +84,6 @@ public class TopologyRequestListener implements DOMDataChangeListener {
                 break;
             }
         }
-        LOGGER.debug("Removed data processed");
+        LOGGER.error("Removed data processed");
     }
 }

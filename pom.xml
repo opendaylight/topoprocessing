@@ -51,6 +51,13 @@
         <flow.version>1.2.0-SNAPSHOT</flow.version>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+    </dependencies>
     <dependencyManagement>
         <dependencies>
             <!-- feature dependencies -->
@@ -76,6 +83,13 @@
                 <type>xml</type>
             </dependency>
             <dependency>
+                <groupId>org.opendaylight.controller</groupId>
+                <artifactId>features-restconf</artifactId>
+                <version>${mdsal.version}</version>
+                <classifier>features</classifier>
+                <type>xml</type>
+            </dependency>
+            <dependency>
                 <groupId>org.opendaylight.odlparent</groupId>
                 <artifactId>features-test</artifactId>
                 <version>${features.test.version}</version>
@@ -95,11 +109,6 @@
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>sal-core-api</artifactId>
                 <version>${mdsal.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
@@ -174,6 +183,27 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>1.8</version>
+                    <executions>
+                        <execution>
+                            <id>add-resource</id>
+                            <goals>
+                                <goal>add-resource</goal>
+                            </goals>
+                            <phase>generate-resources</phase>
+                            <configuration>
+                                <resources>
+                                <resource>
+                                    <directory>src/main/yang</directory>
+                                </resource>
+                                </resources>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
