@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_fe758232",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-16T14:16:23Z",
+      "side": 1,
+      "message": "use new line please + add javadoc",
+      "range": {
+        "startLine": 56,
+        "startChar": 64,
+        "endLine": 56,
+        "endChar": 101
+      },
+      "revId": "cafe06037a923c0b16ea15f1c4b48528e6292bdc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_3ea3ea9f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-16T14:16:23Z",
+      "side": 1,
+      "message": "please make sure all lines are at most 120 characters long",
+      "range": {
+        "startLine": 88,
+        "startChar": 20,
+        "endLine": 96,
+        "endChar": 121
+      },
+      "revId": "cafe06037a923c0b16ea15f1c4b48528e6292bdc",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
