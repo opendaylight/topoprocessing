@@ -53,6 +53,13 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
+            <artifactId>features-restconf</artifactId>
+            <version>${mdsal.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
         <!-- bundle dependencies -->
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
@@ -67,6 +74,11 @@
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>topoprocessing-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>topoprocessing-config</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
