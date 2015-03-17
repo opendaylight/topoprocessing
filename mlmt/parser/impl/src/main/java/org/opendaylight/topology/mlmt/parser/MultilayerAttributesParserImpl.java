@@ -9,6 +9,8 @@ package org.opendaylight.topology.mlmt.parser;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -20,29 +22,161 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.DestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SupportingLink;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Source;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Destination;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjacencyAttributes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaEndPoint;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.Unidirectional;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.Bidirectional;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.DirectionalityInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.HeadEnd;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.TailEnd;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjAnnounceInput;
-
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.Attribute;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfo;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoLink;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoLinkBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoTerminationPoint;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoTerminationPointBuilder;
 import org.slf4j.Logger;
 import org.opendaylight.topology.multilayer.MultilayerAttributesParser;
 
 public class MultilayerAttributesParserImpl implements MultilayerAttributesParser {
 
     private static Logger log;
+    private static final String FA_ID_PREFIX = "FA/";
+    private static final String FA_ID_UNIDIR = "uni/";
+    private static final String FA_ID_BIDIR = "bid/";
+    private static final String FA_ID_NODE_SEP = "/";
+    private static final String FA_ID_TP_SEP = "/";
+    private static final String FA_ID_NODE_START = "node[node-id='";
+    private static final String FA_ID_TP_START = "node:tp[tp-id='";
+    private static final String FA_ID_NODE_END = "']";
+    private static final String FA_ID_TP_END = "']";
+    private static final String FA_ID_NODE_SUBEXP = FA_ID_NODE_START + "'(.*)'" + FA_ID_NODE_END;
+    private static final String FA_ID_NODE_TP_SUBEXP =
+            FA_ID_NODE_START + "'(.*)'" + FA_ID_NODE_END + FA_ID_NODE_SEP + FA_ID_TP_START + "'(.*)'" + FA_ID_TP_END;
+    private static final String FA_ID_UNIDIR_EXP = FA_ID_NODE_TP_SUBEXP + FA_ID_TP_SEP + FA_ID_NODE_SUBEXP;
+    private static final String FA_ID_BIDIR_EXP = FA_ID_NODE_TP_SUBEXP + FA_ID_TP_SEP + FA_ID_NODE_TP_SUBEXP;
+    private static final String REG_NODE_BASE = "/node\\[node-id='(.*)'\\]";
+    private static final String REG_TP_BASE = "/node:tp\\[tp-id='(.*)'\\]";
+    private static final String REG_BASE_1 = REG_NODE_BASE + "\\" + REG_TP_BASE + "\\" + REG_NODE_BASE;
+    private static final String REG_BASE_2 = REG_BASE_1 + "\\" + REG_TP_BASE;
+    private static final String REG_UNI_MATCH = "^FA\\" + "/uni\\" + REG_BASE_1;
+    private static final String REG_BID_MATCH = "^FA\\" + "/bid\\" + REG_BASE_2;
+    private Bidirectional bidirectional;
+    private Unidirectional unidirectional;
 
     public void init(final Logger logger) {
         log = logger;
+        log.debug("REG_UNI_MATCH " + REG_UNI_MATCH);
+        log.debug("REG_BID_MATCH " + REG_BID_MATCH);
+
+        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.bidirectional.BidirectionalBuilder
+            bidirectionalBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.bidirectional.BidirectionalBuilder();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.BidirectionalBuilder
+            bidirectionalBuilder2 = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.BidirectionalBuilder();
+        bidirectionalBuilder2.setBidirectional(bidirectionalBuilder.build());
+        bidirectional = bidirectionalBuilder2.build();
+
+        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.unidirectional.UnidirectionalBuilder
+            unidirectionalBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.unidirectional.UnidirectionalBuilder();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.UnidirectionalBuilder
+            unidirectionalBuilder2 = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.UnidirectionalBuilder();
+        unidirectionalBuilder2.setUnidirectional(unidirectionalBuilder.build());
+        unidirectional = unidirectionalBuilder2.build();
     }
 
     @Override
-    public NodeId parseNodeId(ForwardingAdjAnnounceInput input) {
-
-        return input.getHeadEnd().getNode();
+    public FaEndPoint parseHeadEnd(ForwardingAdjacencyAttributes input) {
+        return input.getHeadEnd();
     }
 
     @Override
-    public LinkBuilder parseLinkBuilder(ForwardingAdjAnnounceInput input) {
+    public FaEndPoint parseTailEnd(ForwardingAdjacencyAttributes input) {
+        return input.getTailEnd();
+    }
+
+    @Override
+    public NodeId parseNodeId(FaEndPoint faEndPoint) {
+        return faEndPoint.getNode();
+    }
+
+    @Override
+    public TpId parseTpId(FaEndPoint faEndPoint) {
+        return faEndPoint.getTpId();
+    }
+
+    @Override
+    public List<Attribute> parseMtInfoAttribute(MtInfo mtInfo) {
+        return mtInfo.getAttribute();
+    }
+
+    @Override
+    public List<TpId> parseSupportingTp(FaEndPoint faEndPoint) {
+        return faEndPoint.getSupportingTp();
+    }
+
+    @Override
+    public String parseFaId(NodeId sourceNodeId, TpId sourceTpId, NodeId destNodeId, TpId destTpId, boolean bidFlag) {
+        String faId = FA_ID_PREFIX;
+        if (bidFlag) {
+           faId = faId + FA_ID_BIDIR;
+        }
+        else {
+           faId = faId + FA_ID_UNIDIR;
+        }
+        faId = faId + FA_ID_NODE_START;
+        faId = faId + sourceNodeId.getValue().toString();
+        faId = faId + FA_ID_NODE_END + FA_ID_NODE_SEP + FA_ID_TP_START;
+        faId = faId + sourceTpId.getValue().toString();
+        faId = faId + FA_ID_TP_END + FA_ID_TP_SEP + FA_ID_NODE_START;
+        faId = faId + destNodeId.getValue().toString();
+        faId = faId + FA_ID_NODE_END;
+        if (destTpId != null) {
+            faId = faId + FA_ID_NODE_SEP + FA_ID_TP_START;
+            faId = faId + destTpId.getValue().toString();
+            faId = faId + FA_ID_TP_END;
+        }
+
+        return faId;
+    }
+
+    @Override
+    public DirectionalityInfo parseDirection(FaId faId) {
+        final String strFaId = faId.getValue();
+        Pattern r = Pattern.compile(REG_UNI_MATCH);
+        Matcher m = r.matcher(strFaId);
+        if (m.find()) {
+            return unidirectional;
+        }
+        r = Pattern.compile(REG_BID_MATCH);
+        m = r.matcher(strFaId);
+        if (m.find()) {
+            return bidirectional;
+        }
+
+        return null;
+    }
+
+    @Override
+    public String swapFaId(FaId faId) {
+        final String strFaId = faId.getValue();
+        Pattern r = Pattern.compile(REG_BID_MATCH);
+        Matcher m = r.matcher(strFaId);
+        if (m.find()) {
+            NodeId sourceNodeId = new NodeId(m.group(1));
+            TpId sourceTpId = new TpId(m.group(2));
+            NodeId destNodeId = new NodeId(m.group(3));
+            TpId destTpId = new TpId(m.group(4));
+            return parseFaId(destNodeId, destTpId, sourceNodeId, sourceTpId, true);
+        }
+
+        return null;
+    }
+
+    @Override
+    public LinkBuilder parseLinkBuilder(ForwardingAdjacencyAttributes input, String faId) {
         final HeadEnd headEnd = input.getHeadEnd();
         final NodeId headNodeId = headEnd.getNode();
         final TpId headTpId = headEnd.getTpId();
@@ -52,10 +186,13 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         final SourceBuilder sourceBuilder = new SourceBuilder();
         sourceBuilder.setSourceNode(headNodeId).setSourceTp(headTpId);
         final DestinationBuilder destinationBuilder = new DestinationBuilder();
-        destinationBuilder.setDestNode(headNodeId).setDestTp(tailTpId);
+        destinationBuilder.setDestNode(tailNodeId).setDestTp(tailTpId);
         final LinkBuilder linkBuilder = new LinkBuilder();
-        final LinkId linkId = new LinkId(headNodeId.toString());
+        final LinkId linkId = new LinkId(faId);
         final LinkKey linkKey = new LinkKey(linkId);
+        final MtInfoLinkBuilder mtInfoLinkBuilder = new MtInfoLinkBuilder();
+        mtInfoLinkBuilder.setAttribute(parseMtInfoAttribute(input));
+        linkBuilder.addAugmentation(MtInfoLink.class, mtInfoLinkBuilder.build());
         linkBuilder.setSource(sourceBuilder.build()).setDestination(destinationBuilder.build())
                 .setKey(linkKey).setLinkId(linkId)
                 .setSupportingLink(Collections.<SupportingLink>emptyList());
@@ -64,13 +201,38 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
      }
 
     @Override
-    public TerminationPointBuilder parseTerminationPointBuilder(TpId tpId, List<TpId> lSupportingTp) {
+    public TerminationPointBuilder parseTerminationPointBuilder(FaEndPoint faEndPoint) {
 
-        TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
-        tpBuilder.setTpId(tpId);
-        tpBuilder.setTpRef(lSupportingTp);
-        tpBuilder.setKey(new TerminationPointKey(tpId));
+        final TpId tpId = parseTpId(faEndPoint);
+        final List<TpId> lSupportingTp = parseSupportingTp(faEndPoint);
+        final TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
+        final TerminationPointKey tpKey = new TerminationPointKey(tpId);
+        tpBuilder.setTpId(tpId).setTpRef(lSupportingTp).setKey(tpKey);
+        final MtInfoTerminationPointBuilder mtInfoTpBuilder = new MtInfoTerminationPointBuilder();
+        final List<Attribute> tailEndAttribute = parseMtInfoAttribute(faEndPoint);
+        mtInfoTpBuilder.setAttribute(tailEndAttribute);
+        tpBuilder.addAugmentation(MtInfoTerminationPoint.class, mtInfoTpBuilder.build());
 
         return tpBuilder;
+    }
+
+    @Override
+    public LinkBuilder swapSourceDestination(LinkBuilder linkBuilder) {
+        Source source = linkBuilder.getSource();
+        Destination destination = linkBuilder.getDestination();
+        final SourceBuilder sourceBuilder = new SourceBuilder();
+        sourceBuilder.setSourceNode(destination.getDestNode()).setSourceTp(destination.getDestTp());
+        final DestinationBuilder destinationBuilder = new DestinationBuilder();
+        destinationBuilder.setDestNode(source.getSourceNode()).setDestTp(source.getSourceTp());
+        linkBuilder.setDestination(destinationBuilder.build());
+        linkBuilder.setSource(sourceBuilder.build());
+        String faId = parseFaId(
+                destination.getDestNode(), destination.getDestTp(),
+                source.getSourceNode(), source.getSourceTp(), true);
+        LinkId linkId = new LinkId(faId);
+        LinkKey linkKey = new LinkKey(linkId);
+        linkBuilder.setKey(linkKey);
+
+        return linkBuilder;
     }
 }
