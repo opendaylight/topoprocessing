@@ -11,7 +11,6 @@ package org.opendaylight.topoprocessing.impl.handler;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
@@ -25,16 +24,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.CorrelationType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 
 
 /**
@@ -45,12 +46,9 @@ import org.slf4j.LoggerFactory;
 public class TopologyRequestHandler {
 
     private DOMDataBroker domDataBroker;
-    
     private Topology topology;
     private TopologyManager manager = new TopologyManager();
-
     private PathTranslator translator = new PathTranslator();
-
     private ArrayList<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
@@ -95,21 +93,25 @@ public class TopologyRequestHandler {
                 EqualityCase equalityCase = (EqualityCase) correlationType;
                 List<Mapping> mappings = equalityCase.getEquality().getMapping();
                 for (Mapping mapping : mappings) {
+                    String underlayTopologyId = mapping.getUnderlayTopology();
                     YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue());
-                    UnderlayTopologyListener listener = new UnderlayTopologyListener(manager, pathIdentifier);
+                    UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
+                            underlayTopologyId, pathIdentifier);
                     YangInstanceIdentifier.InstanceIdentifierBuilder nodeIdentifierBuilder = YangInstanceIdentifier.builder()
                             .node(NetworkTopology.QNAME)
                             .node(Topology.QNAME)
-                            .nodeWithKey(Topology.QNAME, QName.create("topology-id"), mapping.getUnderlayTopology());
+                            .nodeWithKey(Topology.QNAME, QName.create("topology-id"), underlayTopologyId);
                     YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(nodeIdentifierBuilder, correlation.getCorrelationItem());
                     LOG.debug("Registering underlay topology listener for topology: "
-                            + mapping.getUnderlayTopology());
+                            + underlayTopologyId);
                     ListenerRegistration<DOMDataChangeListener> listenerRegistration =
                             this.domDataBroker.registerDataChangeListener(
                                     LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
-                    LOG.debug("Underlay topology listener for topology: " + mapping.getUnderlayTopology()
+                    LOG.debug("Underlay topology listener for topology: " + underlayTopologyId
                             + " has been successfully registered");
                     listeners.add(listenerRegistration);
+
+                    manager.initializeTopologyStore(underlayTopologyId);
                 }
             }
             LOG.debug("Correlation configuration successfully read");
