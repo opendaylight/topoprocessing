@@ -85,7 +85,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
             if (identifierOperational.getLastPathArgument().getNodeType().equals(
                     pathIdentifier.getLastPathArgument().getNodeType()))
             {
-                // TODO - set entry to the TopologyManager with action
+                topologyManager.delete(identifierOperational, underlayTopologyId);
             }
         }
     }
