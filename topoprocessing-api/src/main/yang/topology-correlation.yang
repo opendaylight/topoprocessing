@@ -12,6 +12,7 @@
     prefix "topo-correlation";
 
     import network-topology {prefix topo; revision-date "2013-10-21";}
+    import ietf-inet-types {prefix inet;}
     import yang-ext {prefix ext; revision-date "2013-07-09";}
 
     revision "2015-01-21" {
@@ -45,7 +46,19 @@
     }
 
     identity equality {
-        description "All referenced leaves must be equal (of the same value)";
+        description "Only aggregated correlation-items (nodes/links/termination points) will
+                     be present in overlay topology.";
+        base correlation-base;
+    }
+
+    identity unification {
+        description "All correlation-items (nodes/links/termination points) will be present
+                     in overlay topology. Those that can be aggregated, will be aggregated";
+        base correlation-base;
+    }
+
+    identity node-ip-filtration {
+        description "Only nodes with specific leaf value will be present in overlay topology.";
         base correlation-base;
     }
 
@@ -71,6 +84,24 @@
                     case unification-case {
                         container unification {
                             uses mapping-grouping;
+                        }
+                    }
+                    case node-ip-filtration-case {
+                        container node-ip-filtration {
+                            list filter {
+                                key "underlay-topology";
+                                leaf underlay-topology {
+                                    type string;
+                                    description "Input topology which will be filtered.";
+                                }
+                                leaf target-field {
+                                    type leaf-path;
+                                    description "Path to target field";
+                                }
+                                leaf value {
+                                    type inet:ipv4-address;
+                                }
+                            }
                         }
                     }
                 }
