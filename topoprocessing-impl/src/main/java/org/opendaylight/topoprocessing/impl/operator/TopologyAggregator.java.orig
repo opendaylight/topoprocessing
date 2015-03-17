@@ -8,11 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+<<<<<<< HEAD
+=======
 import java.util.HashMap;
 import java.util.Map;
 
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+>>>>>>> Aggregation - create data implementation
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
@@ -20,6 +23,11 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public class TopologyAggregator implements TopologyOperator {
 
+<<<<<<< HEAD
+    public void remove(YangInstanceIdentifier identifier) {
+
+    }
+=======
     Map<YangInstanceIdentifier,LogicalNode> aggregationMap = new HashMap<>();
     
     public void remove(YangInstanceIdentifier identifier) {
@@ -44,4 +52,5 @@ public class TopologyAggregator implements TopologyOperator {
             LogicalNode logicalNode) {
         aggregationMap.put(logicalNodeIdentifier, logicalNode);
     }
+>>>>>>> Aggregation - create data implementation
 }

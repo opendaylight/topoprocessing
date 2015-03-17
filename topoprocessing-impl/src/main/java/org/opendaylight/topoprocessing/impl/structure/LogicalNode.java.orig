@@ -14,12 +14,17 @@ import java.util.ArrayList;
  * @author matus.marko
  */
 public class LogicalNode {
+<<<<<<< HEAD
 
+=======
+>>>>>>> Aggregation - create data implementation
     private ArrayList<PhysicalNode> physicalNodes;
 
     public LogicalNode(ArrayList<PhysicalNode> physicalNodes) {
         this.physicalNodes = physicalNodes;
     }
+<<<<<<< HEAD
+=======
     
     /**
      * Create Logical node from two Physical nodes
@@ -31,6 +36,7 @@ public class LogicalNode {
         physicalNodes.add(physicalNode1);
         physicalNodes.add(physicalNode2);
     }
+>>>>>>> Aggregation - create data implementation
 
     public ArrayList<PhysicalNode> getPhysicalNodes() {
         return physicalNodes;

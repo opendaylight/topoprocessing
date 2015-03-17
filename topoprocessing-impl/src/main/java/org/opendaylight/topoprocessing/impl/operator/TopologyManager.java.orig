@@ -10,27 +10,36 @@ package org.opendaylight.topoprocessing.impl.operator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+<<<<<<< HEAD
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+=======
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+>>>>>>> Aggregation - create data implementation
 
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
+<<<<<<< HEAD
 import com.google.common.base.Predicates;
 
+=======
+>>>>>>> Aggregation - create data implementation
 /**
  * @author matus.marko
  */
 public class TopologyManager {
 
-    TopologyAggregator aggregator = new TopologyAggregator();
     private Map<YangInstanceIdentifier, LogicalNode> map = new HashMap<>();
     private List<TopologyStore> topologyStores = new ArrayList<>();
+<<<<<<< HEAD
 
     /**
      * Process newly created changes
@@ -38,6 +47,15 @@ public class TopologyManager {
      * @param topologyId
      */
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> newEntries, final String topologyId) {
+=======
+    TopologyAggregator aggregator = new TopologyAggregator();
+
+    /**
+     * @param newEntries
+     * @param topologyId
+     */
+    public void create(Map<YangInstanceIdentifier, PhysicalNode> newEntries, final String topologyId) {
+>>>>>>> Aggregation - create data implementation
         for (TopologyStore ts : topologyStores) {
             if (ts.getId().equals(topologyId)) {
                 for (Entry<YangInstanceIdentifier, PhysicalNode> newEntry : newEntries.entrySet()) {
@@ -47,17 +65,47 @@ public class TopologyManager {
                 for (Entry<YangInstanceIdentifier, PhysicalNode> newEntry : newEntries.entrySet()) {
                     for (Entry<YangInstanceIdentifier, PhysicalNode> entry : ts.getPhysicalNodes().entrySet()) {
                         if (newEntry.getValue().getLeafNode().equals(entry.getValue().getLeafNode())) {
+                            // TODO do aggregation
+<<<<<<< HEAD
+=======
                             YangInstanceIdentifier logicalNodeIdentifier = getLogicalNodeYiidStub();
                             newEntry.getValue().setLogicalIdentifier(logicalNodeIdentifier);
                             entry.getValue().setLogicalIdentifier(logicalNodeIdentifier);
                             LogicalNode logicalNode = aggregator.createLogicalNode(newEntry.getValue(), 
                                     entry.getValue());
-                            aggregator.createAggregationdMap(logicalNodeIdentifier, logicalNode);
+                            //aggregator.createAggregationdMap
+                            
+                            
+>>>>>>> Aggregation - create data implementation
                         }
                     }
                 }
             }
         }
+    }
+
+<<<<<<< HEAD
+    public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> resultEntries) {
+
+    }
+
+    public void processDeletedChanges(YangInstanceIdentifier identifier) {
+=======
+    /**
+     * 
+     */
+    private YangInstanceIdentifier getLogicalNodeYiidStub() {
+        // TODO Auto-generated method stub
+        throw new RuntimeException();
+    }
+
+    public void update(Map<YangInstanceIdentifier, PhysicalNode> resultEntries) {
+
+    }
+
+    public void delete(YangInstanceIdentifier identifier) {
+>>>>>>> Aggregation - create data implementation
+
     }
 
     /**
@@ -67,19 +115,6 @@ public class TopologyManager {
     public void initializeTopologyStore(String underlayTopology) {
         topologyStores.add(new TopologyStore(underlayTopology,
                 new HashMap<YangInstanceIdentifier, PhysicalNode>()));
-    }
-
-    private YangInstanceIdentifier getLogicalNodeYiidStub() {
-        // TODO temporary method stub - this has to be properly implemented or totally changed 
-        throw new RuntimeException();
-    }
-
-    public void update(Map<YangInstanceIdentifier, PhysicalNode> resultEntries) {
-
-    }
-
-    public void delete(YangInstanceIdentifier identifier) {
-
     }
 
 }

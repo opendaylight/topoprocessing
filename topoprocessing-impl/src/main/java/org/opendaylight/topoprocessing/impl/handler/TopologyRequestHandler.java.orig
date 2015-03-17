@@ -99,7 +99,11 @@ public class TopologyRequestHandler {
                     String underlayTopologyId = mapping.getUnderlayTopology();
                     YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue());
                     UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
+<<<<<<< HEAD
                             underlayTopologyId, pathIdentifier);
+=======
+                            mapping.getUnderlayTopology(), pathIdentifier);
+>>>>>>> Aggregation - create data implementation
                     YangInstanceIdentifier.InstanceIdentifierBuilder nodeIdentifierBuilder = YangInstanceIdentifier.builder()
                             .node(NetworkTopology.QNAME)
                             .node(Topology.QNAME)
@@ -114,7 +118,11 @@ public class TopologyRequestHandler {
                             + " has been successfully registered");
                     listeners.add(listenerRegistration);
 
+<<<<<<< HEAD
                     manager.initializeTopologyStore(underlayTopologyId);
+=======
+                    manager.initializeTopologyStore(mapping.getUnderlayTopology());
+>>>>>>> Aggregation - create data implementation
                 }
             }
             LOG.debug("Correlation configuration successfully read");
