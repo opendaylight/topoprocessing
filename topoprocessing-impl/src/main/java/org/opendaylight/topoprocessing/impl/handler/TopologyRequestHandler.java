@@ -8,6 +8,7 @@
 
 package org.opendaylight.topoprocessing.impl.handler;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
@@ -15,6 +16,8 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
+import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -22,10 +25,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.CorrelationType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -74,7 +77,8 @@ public class TopologyRequestHandler {
                 List<Mapping> mappings = equalityCase.getEquality().getMapping();
                 for (Mapping mapping : mappings) {
                     YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue());
-                    UnderlayTopologyListener listener = new UnderlayTopologyListener(manager, pathIdentifier);
+                    UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
+                            mapping.getUnderlayTopology(), pathIdentifier);
                     YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder()
                             .node(NetworkTopology.QNAME)
                             .node(Topology.QNAME)
@@ -87,6 +91,9 @@ public class TopologyRequestHandler {
                             listener, DataChangeScope.SUBTREE);
                     LOG.debug("Underlay topology listener for topology: " + mapping.getUnderlayTopology()
                             + " has been successfully registered");
+
+                    TopologyManager.topologyStores.add(new TopologyStore(mapping.getUnderlayTopology(), 
+                            new HashMap<YangInstanceIdentifier, PhysicalNode>()));
                 }
             }
             LOG.debug("Correlation configuration successfully read");
