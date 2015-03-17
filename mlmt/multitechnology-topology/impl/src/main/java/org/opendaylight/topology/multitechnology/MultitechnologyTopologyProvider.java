@@ -330,7 +330,8 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             final TedNodeAttributes ted,
             final NodeKey nodeKey) {
         try {
-            log.info("MultitechnologyTopologyProvider.setNativeMtNodeAttributes");
+            log.info("MultitechnologyTopologyProvider.setNativeMtNodeAttributes type: " + type +
+                    " topologyInstanceId: " + topologyInstanceId.toString() + " nodeKey: " + nodeKey.toString());
             final InstanceIdentifier<Topology> targetTopologyId = topologyInstanceId;
             final String path = "native-ted:1";
             final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();

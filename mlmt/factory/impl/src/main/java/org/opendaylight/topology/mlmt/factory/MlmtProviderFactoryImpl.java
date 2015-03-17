@@ -24,12 +24,12 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.topology.mlmt.utility.MlmtProviderFactory;
+import org.opendaylight.topology.mlmt.inventory.InventoryTopologyProvider;
 import org.opendaylight.topology.multitechnology.MultitechnologyTopologyProvider;
 import org.opendaylight.topology.multilayer.MultilayerTopologyProvider;
-import org.opendaylight.topology.mlmt.parser.MultitechnologyAttributesParserImpl;
-import org.opendaylight.topology.mlmt.inventory.InventoryTopologyProvider;
 import org.opendaylight.topology.mlmt.parser.InventoryAttributesParserImpl;
 import org.opendaylight.topology.mlmt.parser.MultilayerAttributesParserImpl;
+import org.opendaylight.topology.mlmt.parser.MultitechnologyAttributesParserImpl;
 import org.slf4j.Logger;
 
 public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
@@ -40,7 +40,7 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
         final TopologyId tid = new TopologyId(mlmtTopologyName);
         final TopologyKey key = new TopologyKey(Preconditions.checkNotNull(tid));
         final InstanceIdentifier<Topology> mlmtTopologyId = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
-        Map<String, List<MlmtTopologyProvider>> map = new HashMap(2);
+        Map<String, List<MlmtTopologyProvider>> map = new HashMap();
         List<MlmtTopologyProvider> lProvider = new ArrayList<MlmtTopologyProvider>();
         /*
          * creating and adding inventory topology provider

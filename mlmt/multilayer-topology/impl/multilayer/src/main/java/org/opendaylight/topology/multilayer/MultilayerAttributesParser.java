@@ -13,14 +13,37 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjAnnounceInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjacencyAttributes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaEndPoint;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.DirectionalityInfo;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfo;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.Attribute;
 
 public interface MultilayerAttributesParser {
 
-    NodeId parseNodeId(ForwardingAdjAnnounceInput input);
+    String parseFaId(NodeId sourceNodeId, TpId sourceTpId, NodeId destNodeId, TpId destTpId, boolean bidFlag);
 
-    LinkBuilder parseLinkBuilder(ForwardingAdjAnnounceInput input);
+    FaEndPoint parseHeadEnd(ForwardingAdjacencyAttributes input);
 
-    TerminationPointBuilder parseTerminationPointBuilder(TpId tpId, List<TpId> lSupportingTp);
+    FaEndPoint parseTailEnd(ForwardingAdjacencyAttributes input);
+
+    NodeId parseNodeId(FaEndPoint faEndPoint);
+
+    TpId parseTpId(FaEndPoint faEndPoint);
+
+    List<Attribute> parseMtInfoAttribute(MtInfo mtInfo);
+
+    List<TpId> parseSupportingTp(FaEndPoint faEndPoint);
+
+    LinkBuilder parseLinkBuilder(ForwardingAdjacencyAttributes input, String faId);
+
+    TerminationPointBuilder parseTerminationPointBuilder(FaEndPoint faEndPoint);
+
+    LinkBuilder swapSourceDestination(LinkBuilder linkBuilder);
+
+    DirectionalityInfo parseDirection(FaId faId);
+
+    String swapFaId(FaId faId);
 }
 

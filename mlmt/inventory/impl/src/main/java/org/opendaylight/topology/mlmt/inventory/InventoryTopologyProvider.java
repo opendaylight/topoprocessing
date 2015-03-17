@@ -24,7 +24,10 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
@@ -56,9 +59,11 @@ public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyPro
 
     }
 
+    @Override
     public void onTopologyCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
-            final Topology topology) {}
+            final Topology topology) {
+    }
 
     @Override
     public void onNodeCreated(final LogicalDatastoreType type,
@@ -67,52 +72,73 @@ public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyPro
         handleNodeAttributes(type, topologyInstanceId, node);
     }
 
+    @Override
     public void onTpCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey,
-            final TerminationPoint tp) {}
+            final TerminationPoint tp) {
+        handleTpAttributes(type, topologyInstanceId, nodeKey, tp);
+    }
 
+    @Override
     public void onLinkCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
-            final Link link) {}
+            final Link link) {
+    }
 
+    @Override
     public void onTopologyUpdated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
-            final Topology topology) {}
+            final Topology topology) {
+    }
 
+    @Override
     public void onNodeUpdated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
-            final Node node) {}
+            final Node node) {
+    }
 
+    @Override
     public void onTpUpdated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey,
-            final TerminationPoint tp) {}
+            final TerminationPoint tp) {
+    }
 
+    @Override
     public void onLinkUpdated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
-            final Link link) {}
+            final Link link) {
+    }
 
+    @Override
     public void onTopologyDeleted(final LogicalDatastoreType type,
-            final InstanceIdentifier<Topology> topologyInstanceId) {}
+            final InstanceIdentifier<Topology> topologyInstanceId) {
+    }
 
+    @Override
     public void onNodeDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
-            final NodeKey nodeKey) {}
+            final NodeKey nodeKey) {
+    }
 
+    @Override
     public void onTpDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey,
-            final TerminationPointKey tpKey) {}
+            final TerminationPointKey tpKey) {
+    }
 
+    @Override
     public void onLinkDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
-            final LinkKey linkKey){}
+            final LinkKey linkKey){
+    }
 
     private void handleNodeAttributes(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Node node) {
-        log.info("InventoryTopologyProvider.onNodeCreated");
+        log.info("InventoryTopologyProvider.handleNodeAttributes");
         NodeRef nodeRefAttributes = parser.parseInventoryNodeAttributes(node);
         if (nodeRefAttributes == null) {
             return;
@@ -126,7 +152,9 @@ public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyPro
             final NodeRef nodeRef,
             final NodeKey nodeKey) {
         try {
-            log.info("InventoryTopologyProvider.setNodeRefNodeAttributes");
+            log.info("InventoryTopologyProvider.setNodeRefNodeAttributes topologyInstanceId: "
+                    + topologyInstanceId.toString() + " nodeRef: " + nodeRef.toString()
+                    + " nodeKey: " + nodeKey.toString());
             final InstanceIdentifier<Topology> targetTopologyId = topologyInstanceId;
             final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
             final InstanceIdentifier<InventoryNode> instanceInvNodeId =
@@ -143,6 +171,55 @@ public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyPro
                         transaction.put(LogicalDatastoreType.OPERATIONAL, instanceInvNodeId, inventoryNodeBuilder.build());
                     } else {
                         transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceInvNodeId, inventoryNodeBuilder.build());
+                    }
+                }
+            });
+         } catch (final InterruptedException e) {
+             log.error("onNodeCreated interrupted exception", e);
+         } catch (final ExecutionException e) {
+             log.error("onNodeCreated execution exception", e);
+         }
+    }
+
+    private void handleTpAttributes(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final NodeKey nodeKey,
+            final TerminationPoint tp) {
+        log.info("InventoryTopologyProvider.handleTpAttributes");
+        NodeConnectorRef nodeConnectorRefAttributes = parser.parseInventoryNodeConnectorAttributes(tp);
+        if (nodeConnectorRefAttributes == null) {
+            log.info("InventoryTopologyProvider.handleTpAttributes: nodeConnectorRefAttributes is null");
+            return;
+        }
+        setNodeConnectorRefTpAttributes(destTopologyId, nodeConnectorRefAttributes, nodeKey, tp.getKey());
+    }
+
+    private void setNodeConnectorRefTpAttributes(
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final NodeConnectorRef nodeConnectorRef,
+            final NodeKey nodeKey,
+            final TerminationPointKey tpKey) {
+        try {
+            log.info("InventoryTopologyProvider.setNodeRefNodeAttributes topologyInstanceId: "
+                    + topologyInstanceId.toString() + " nodeKey: " + nodeKey.toString()
+                    + " terminationPointKey: " + tpKey.toString());
+            final InstanceIdentifier<Topology> targetTopologyId = topologyInstanceId;
+            final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
+            final InstanceIdentifier<InventoryNodeConnector> instanceInvNodeConnectorId =
+                    targetTopologyId.child(Node.class, nodeKey).child(TerminationPoint.class, tpKey)
+                    .augmentation(InventoryNodeConnector.class);
+            final Optional<InventoryNodeConnector> sourceAttributeObject =
+                    rx.read(LogicalDatastoreType.OPERATIONAL, instanceInvNodeConnectorId).get();
+
+            processor.enqueueOperation(new MlmtTopologyOperation() {
+                @Override
+                public void applyOperation(ReadWriteTransaction transaction) {
+                    final InventoryNodeConnectorBuilder inventoryNodeConnectorBuilder = new InventoryNodeConnectorBuilder();
+                    inventoryNodeConnectorBuilder.setInventoryNodeConnectorRef(nodeConnectorRef);
+                    if (sourceAttributeObject != null && sourceAttributeObject.isPresent() && sourceAttributeObject.get() != null) {
+                        transaction.put(LogicalDatastoreType.OPERATIONAL, instanceInvNodeConnectorId, inventoryNodeConnectorBuilder.build());
+                    } else {
+                        transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceInvNodeConnectorId, inventoryNodeConnectorBuilder.build());
                     }
                 }
             });
