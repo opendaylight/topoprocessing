@@ -8,8 +8,59 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
+import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+
+import com.google.common.base.Predicates;
+
 /**
  * @author matus.marko
  */
 public class TopologyManager {
+
+    private Map<YangInstanceIdentifier, LogicalNode> map = new HashMap<>();
+    public static List<TopologyStore> topologyStores = new ArrayList<>();
+
+    /**
+     * @param newEntries
+     * @param topologyId 
+     */
+    public void create(Map<YangInstanceIdentifier, PhysicalNode> newEntries, final String topologyId) {
+        for (TopologyStore ts : topologyStores) {
+            if (ts.getId().equals(topologyId)) {
+                for (Entry<YangInstanceIdentifier, PhysicalNode> newEntry : newEntries.entrySet()) {
+                    ts.getPhysicalNodes().put(newEntry.getKey(), newEntry.getValue());
+                }
+            } else {
+                for (Entry<YangInstanceIdentifier, PhysicalNode> newEntry : newEntries.entrySet()) {
+                    for (Entry<YangInstanceIdentifier, PhysicalNode> entry : ts.getPhysicalNodes().entrySet()) {
+                        if (newEntry.getValue().getLeafNode().equals(entry.getValue().getLeafNode())) {
+                            // TODO do aggregation
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+
+
+    public void update(Map<YangInstanceIdentifier, PhysicalNode> resultEntries) {
+
+    }
+
+    public void delete(YangInstanceIdentifier identifier) {
+
+    }
+
 }
