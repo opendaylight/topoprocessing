@@ -58,8 +58,16 @@ public class TopologyManager {
 
     }
 
-    public void processDeletedChanges(YangInstanceIdentifier identifier) {
-
+    public void processDeletedChanges(YangInstanceIdentifier identifier, final String topologyId) {
+        for (TopologyStore ts : topologyStores) {
+            if (ts.getId().equals(topologyId)) {
+                Map<YangInstanceIdentifier, PhysicalNode> physicalNodes = ts.getPhysicalNodes();
+                PhysicalNode physicalNode = physicalNodes.remove(identifier);
+                if (null != physicalNode) {
+                    // TODO remove from aggregator map
+                }
+            }
+        }
     }
 
     /**
