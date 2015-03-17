@@ -8,16 +8,21 @@
 
 package org.opendaylight.topoprocessing.impl.listener;
 
-import com.google.common.base.Optional;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
+import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev130712.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 
-import java.util.*;
+import com.google.common.base.Optional;
 
 /**
  * Listens on underlay topology changes
@@ -31,16 +36,21 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
 
     private TopologyManager topologyManager;
     private YangInstanceIdentifier pathIdentifier;
+    private String underlayTopologyId;
 
     /**
      * Default constructor
      * @param topologyManager processes received notifications (aggregates /filters them)
+     * @param underlayTopologyId underlay topology identifier
      * @param pathIdentifier identifies leaf (node), which aggregation / filtering will be based on
      */
-    public UnderlayTopologyListener(TopologyManager topologyManager, YangInstanceIdentifier pathIdentifier) {
+    public UnderlayTopologyListener(TopologyManager topologyManager, String underlayTopologyId,
+            YangInstanceIdentifier pathIdentifier) {
         this.topologyManager = topologyManager;
+        this.underlayTopologyId = underlayTopologyId;
         this.pathIdentifier = pathIdentifier;
     }
+
 
     @Override
     public void onDataChanged(AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
@@ -50,7 +60,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
     }
 
     private void proceedChangeRequest(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map, RequestAction requestAction) {
-        Map<YangInstanceIdentifier, NormalizedNode<?, ?>> resultEntries = new HashMap<>();
+        Map<YangInstanceIdentifier, PhysicalNode> resultEntries = new HashMap<>();
         Iterator<Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator = map.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry = iterator.next();
@@ -58,11 +68,15 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
             {
                 Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
                 if (node.isPresent()) {
-                    resultEntries.put(entry.getKey(), entry.getValue());
+                    PhysicalNode physicalNode = new PhysicalNode(entry.getValue(), node.get());
+                    resultEntries.put(entry.getKey(), physicalNode);
                 }
             }
         }
         // TODO - set entry to the TopologyManager with action
+        if (requestAction == RequestAction.CREATE) {
+            topologyManager.processCreatedChanges(resultEntries, underlayTopologyId);
+        }
     }
 
     private void proceedDeletionRequest(Set<YangInstanceIdentifier> set) {
