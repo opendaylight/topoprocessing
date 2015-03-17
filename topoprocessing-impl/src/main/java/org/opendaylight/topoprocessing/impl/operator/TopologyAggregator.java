@@ -8,6 +8,12 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
+import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
@@ -15,7 +21,32 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public class TopologyAggregator implements TopologyOperator {
 
+    Map<YangInstanceIdentifier,LogicalNode> aggregationMap = new HashMap<>();
+
     public void remove(YangInstanceIdentifier identifier) {
 
+    }
+
+    /**
+     * Creates logical node
+     * @param physicalNodes 
+     * @return new logical node
+     */
+    public LogicalNode createLogicalNode(List<PhysicalNode> physicalNodes) {
+        return new LogicalNode(physicalNodes);
+    }
+
+    /**
+     * Adds logical node to the map
+     * @param logicalNodeIdentifier
+     * @param logicalNode
+     */
+    public void addLogicalNode(YangInstanceIdentifier logicalNodeIdentifier,
+            LogicalNode logicalNode) {
+        if (logicalNodeIdentifier != null) {
+            aggregationMap.put(logicalNodeIdentifier, logicalNode);
+        } else {
+            throw new IllegalArgumentException("Logical node identifier cannto be null.");
+        }
     }
 }
