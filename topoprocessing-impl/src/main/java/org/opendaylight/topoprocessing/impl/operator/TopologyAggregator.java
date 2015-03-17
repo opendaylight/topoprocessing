@@ -8,12 +8,17 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
@@ -21,10 +26,49 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public class TopologyAggregator implements TopologyOperator {
 
-    Map<YangInstanceIdentifier,LogicalNode> aggregationMap = new HashMap<>();
+    private Map<YangInstanceIdentifier,LogicalNode> aggregationMap = new HashMap<>();
+    private IdentifierGenerator idGenerator = new IdentifierGenerator();
+    private CorrelationItemEnum correlationItem;
 
-    public void remove(YangInstanceIdentifier identifier) {
+    /**
+     * Constructor
+     * @param correlationItem
+     */
+    public TopologyAggregator(CorrelationItemEnum correlationItem) {
+        this.correlationItem = correlationItem;
+    }
 
+    /**
+     * Process newly created changes
+     * @param createdEntries
+     * @param topologyId
+     * @param topologyStores 
+     */
+    public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, 
+            final String topologyId, List<TopologyStore> topologyStores) {
+        for (TopologyStore ts : topologyStores) {
+            if (ts.getId().equals(topologyId)) {
+                for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
+                    ts.getPhysicalNodes().put(createdEntry.getKey(), createdEntry.getValue());
+                }
+            } else {
+                for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
+                    for (Entry<YangInstanceIdentifier, PhysicalNode> entry : ts.getPhysicalNodes().entrySet()) {
+                        if (createdEntry.getValue().getLeafNode().equals(entry.getValue().getLeafNode())) {
+                            YangInstanceIdentifier logicalNodeIdentifier =
+                                    idGenerator.getNextIdentifier(topologyId, correlationItem);
+                            createdEntry.getValue().setLogicalIdentifier(logicalNodeIdentifier);
+                            entry.getValue().setLogicalIdentifier(logicalNodeIdentifier);
+                            List<PhysicalNode> physicalNodes = new ArrayList<>();
+                            physicalNodes.add(createdEntry.getValue());
+                            physicalNodes.add(entry.getValue());
+                            LogicalNode logicalNode = createLogicalNode(physicalNodes);
+                            addLogicalNode(logicalNodeIdentifier, logicalNode);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
