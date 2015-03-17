@@ -9,16 +9,55 @@
 package org.opendaylight.topoprocessing.impl.structure;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author matus.marko
+ * @author martin.uhlir
  */
 public class LogicalNode {
 
-    private ArrayList<PhysicalNode> physicalNodes;
+    private ArrayList<PhysicalNode> physicalNodes = new ArrayList<>();
 
-    public LogicalNode(ArrayList<PhysicalNode> physicalNodes) {
-        this.physicalNodes = physicalNodes;
+    /**
+     * Creates logical node
+     * @param physicalNodes
+     */
+    public LogicalNode(List<PhysicalNode> physicalNodes) {
+        physicalNodes.addAll(physicalNodes);
+    }
+
+    /**
+     * Adds a physical node to the list of nodes
+     * @param physicalNode physical node to be added
+     */
+    public void addPhysicalNode(PhysicalNode physicalNode) {
+        physicalNodes.add(physicalNode);
+    }
+
+    /**
+     * Removes physical node from the list of nodes
+     * @param nodeToRemove physical node to be removed
+     */
+    public void removePhysicalNode(PhysicalNode nodeToRemove) {
+        boolean removed = physicalNodes.remove(nodeToRemove); 
+        if (!removed) {
+            throw new IllegalArgumentException("Node to remove not found in the list.");
+        }
+    }
+
+    /**
+     * Update physical node. Old node will be replaced by the new one.
+     * @param oldNode 
+     * @param newNode
+     */
+    public void updatePhysicalNode(PhysicalNode oldNode, PhysicalNode newNode) {
+        boolean removed = physicalNodes.remove(oldNode); 
+        if (removed) {
+            physicalNodes.add(newNode);
+        } else {
+            throw new IllegalArgumentException("Node to replace not found in the list.");
+        }
     }
 
     public ArrayList<PhysicalNode> getPhysicalNodes() {

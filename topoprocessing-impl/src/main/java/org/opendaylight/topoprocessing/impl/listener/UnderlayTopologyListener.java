@@ -56,7 +56,8 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         this.proceedDeletionRequest(change.getRemovedPaths());
     }
 
-    private void proceedChangeRequest(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map, RequestAction requestAction) {
+    private void proceedChangeRequest(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map,
+            RequestAction requestAction) {
         Map<YangInstanceIdentifier, PhysicalNode> resultEntries = new HashMap<>();
         Iterator<Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator = map.entrySet().iterator();
         while (iterator.hasNext()) {
