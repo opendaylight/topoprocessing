@@ -8,10 +8,7 @@
 
 package org.opendaylight.topoprocessing.impl.listener;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
@@ -80,6 +77,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
     }
 
     private void proceedDeletionRequest(Set<YangInstanceIdentifier> set) {
+        ArrayList<YangInstanceIdentifier> identifiers = new ArrayList<>();
         Iterator<YangInstanceIdentifier> iterator = set.iterator();
         while (iterator.hasNext()) {
             YangInstanceIdentifier identifierOperational = iterator.next();
@@ -87,8 +85,9 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
             if (identifierOperational.getLastPathArgument().getNodeType().equals(
                     pathIdentifier.getLastPathArgument().getNodeType()))
             {
-                // TODO - set entry to the TopologyManager with action
+                identifiers.add(identifierOperational);
             }
         }
+        topologyManager.processDeletedChanges(identifiers, underlayTopologyId);
     }
 }
