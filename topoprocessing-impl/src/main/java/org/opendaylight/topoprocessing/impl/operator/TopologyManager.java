@@ -28,6 +28,7 @@ import com.google.common.base.Predicates;
  */
 public class TopologyManager {
 
+    TopologyAggregator aggregator = new TopologyAggregator();
     private Map<YangInstanceIdentifier, LogicalNode> map = new HashMap<>();
     private List<TopologyStore> topologyStores = new ArrayList<>();
 
@@ -46,16 +47,19 @@ public class TopologyManager {
                 for (Entry<YangInstanceIdentifier, PhysicalNode> newEntry : newEntries.entrySet()) {
                     for (Entry<YangInstanceIdentifier, PhysicalNode> entry : ts.getPhysicalNodes().entrySet()) {
                         if (newEntry.getValue().getLeafNode().equals(entry.getValue().getLeafNode())) {
-                            // TODO do aggregation
+                            YangInstanceIdentifier logicalNodeIdentifier = getLogicalNodeYiidStub();
+                            newEntry.getValue().setLogicalIdentifier(logicalNodeIdentifier);
+                            entry.getValue().setLogicalIdentifier(logicalNodeIdentifier);
+                            List<PhysicalNode> physicalNodes = new ArrayList<>();
+                            physicalNodes.add(newEntry.getValue());
+                            physicalNodes.add(entry.getValue());
+                            LogicalNode logicalNode = aggregator.createLogicalNode(physicalNodes);
+                            aggregator.addLogicalNode(logicalNodeIdentifier, logicalNode);
                         }
                     }
                 }
             }
         }
-    }
-
-    public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> resultEntries) {
-
     }
 
     /**
@@ -84,6 +88,19 @@ public class TopologyManager {
     public void initializeTopologyStore(String underlayTopology) {
         topologyStores.add(new TopologyStore(underlayTopology,
                 new HashMap<YangInstanceIdentifier, PhysicalNode>()));
+    }
+
+    private YangInstanceIdentifier getLogicalNodeYiidStub() {
+        // TODO temporary method stub - this has to be properly implemented or totally changed 
+        throw new RuntimeException();
+    }
+
+    public void update(Map<YangInstanceIdentifier, PhysicalNode> resultEntries) {
+
+    }
+
+    public void delete(YangInstanceIdentifier identifier) {
+
     }
 
 }

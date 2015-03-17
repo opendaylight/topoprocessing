@@ -16,29 +16,26 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
  */
 public class PhysicalNode {
 
-    private NormalizedNode node;
-    private NormalizedNode leafNode;
+    private NormalizedNode<?, ?> node;
+    private NormalizedNode<?, ?> leafNode;
     private YangInstanceIdentifier logicalIdentifier;
 
-    public PhysicalNode(NormalizedNode node, NormalizedNode leafNode) {
+    /**
+     * Constructor
+     * @param node
+     * @param leafNode
+     */
+    public PhysicalNode(NormalizedNode<?, ?> node, NormalizedNode<?, ?> leafNode) {
         this.node = node;
         this.leafNode = leafNode;
     }
 
-    public NormalizedNode getNode() {
+    public NormalizedNode<?, ?> getNode() {
         return node;
     }
 
-    public void setNode(NormalizedNode node) {
-        this.node = node;
-    }
-
-    public NormalizedNode getLeafNode() {
+    public NormalizedNode<?, ?> getLeafNode() {
         return leafNode;
-    }
-
-    public void setLeafNode(NormalizedNode leafNode) {
-        this.leafNode = leafNode;
     }
 
     public YangInstanceIdentifier getLogicalIdentifier() {
