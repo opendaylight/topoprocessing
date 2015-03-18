@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.UUID;
 
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -45,25 +46,13 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
 
     private static Logger log;
     private static final String FA_ID_PREFIX = "FA/";
-    private static final String FA_ID_UNIDIR = "uni/";
-    private static final String FA_ID_BIDIR = "bid/";
-    private static final String FA_ID_NODE_SEP = "/";
-    private static final String FA_ID_TP_SEP = "/";
-    private static final String FA_ID_NODE_START = "node[node-id='";
-    private static final String FA_ID_TP_START = "node:tp[tp-id='";
-    private static final String FA_ID_NODE_END = "']";
-    private static final String FA_ID_TP_END = "']";
-    private static final String FA_ID_NODE_SUBEXP = FA_ID_NODE_START + "'(.*)'" + FA_ID_NODE_END;
-    private static final String FA_ID_NODE_TP_SUBEXP =
-            FA_ID_NODE_START + "'(.*)'" + FA_ID_NODE_END + FA_ID_NODE_SEP + FA_ID_TP_START + "'(.*)'" + FA_ID_TP_END;
-    private static final String FA_ID_UNIDIR_EXP = FA_ID_NODE_TP_SUBEXP + FA_ID_TP_SEP + FA_ID_NODE_SUBEXP;
-    private static final String FA_ID_BIDIR_EXP = FA_ID_NODE_TP_SUBEXP + FA_ID_TP_SEP + FA_ID_NODE_TP_SUBEXP;
-    private static final String REG_NODE_BASE = "/node\\[node-id='(.*)'\\]";
-    private static final String REG_TP_BASE = "/node:tp\\[tp-id='(.*)'\\]";
-    private static final String REG_BASE_1 = REG_NODE_BASE + "\\" + REG_TP_BASE + "\\" + REG_NODE_BASE;
-    private static final String REG_BASE_2 = REG_BASE_1 + "\\" + REG_TP_BASE;
-    private static final String REG_UNI_MATCH = "^FA\\" + "/uni\\" + REG_BASE_1;
-    private static final String REG_BID_MATCH = "^FA\\" + "/bid\\" + REG_BASE_2;
+    private static final String FA_ID_UNIDIR = "unidir/";
+    private static final String FA_ID_BIDIR = "bidir/";
+    private static final String FA_SUBID_FIRSTLEG = "0";
+    private static final String FA_SUBID_SECONDLEG = "1";
+    private static final String FA_ID_ITEM_SEP = "/";
+    private static final String REG_UNI_MATCH = "^FA\\" + "/unidir\\" + "/(.*)\\" + "/(.*)";
+    private static final String REG_BID_MATCH = "^FA\\" + "/bidir\\" + "/(.*)\\" + "/(.*)";
     private Bidirectional bidirectional;
     private Unidirectional unidirectional;
 
@@ -117,29 +106,50 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         return faEndPoint.getSupportingTp();
     }
 
-    @Override
-    public String parseFaId(NodeId sourceNodeId, TpId sourceTpId, NodeId destNodeId, TpId destTpId, boolean bidFlag) {
+    private String allocFaId() {
+        return UUID.randomUUID().toString();
+    }
+
+    private String getFaSubId(boolean secondLeg) {
+        if (secondLeg) {
+           return FA_SUBID_SECONDLEG;
+        }
+
+        return FA_SUBID_FIRSTLEG;
+    }
+
+    private String buildFaId(String strFaId, boolean bidirFlag, boolean secondLeg) {
         String faId = FA_ID_PREFIX;
-        if (bidFlag) {
+        if (bidirFlag) {
            faId = faId + FA_ID_BIDIR;
         }
         else {
            faId = faId + FA_ID_UNIDIR;
         }
-        faId = faId + FA_ID_NODE_START;
-        faId = faId + sourceNodeId.getValue().toString();
-        faId = faId + FA_ID_NODE_END + FA_ID_NODE_SEP + FA_ID_TP_START;
-        faId = faId + sourceTpId.getValue().toString();
-        faId = faId + FA_ID_TP_END + FA_ID_TP_SEP + FA_ID_NODE_START;
-        faId = faId + destNodeId.getValue().toString();
-        faId = faId + FA_ID_NODE_END;
-        if (destTpId != null) {
-            faId = faId + FA_ID_NODE_SEP + FA_ID_TP_START;
-            faId = faId + destTpId.getValue().toString();
-            faId = faId + FA_ID_TP_END;
-        }
+        faId = faId + strFaId + FA_ID_ITEM_SEP + getFaSubId(secondLeg);
 
         return faId;
+    }
+
+    private String buildFaId(int faIdValue, boolean bidirFlag, boolean secondLeg) {
+        return buildFaId(Integer.toString(faIdValue), bidirFlag, secondLeg);
+    }
+
+    @Override
+    public String parseFaId(boolean bidirFlag, boolean secondLeg) {
+        return buildFaId(allocFaId(), bidirFlag, secondLeg);
+    }
+
+    @Override
+    public String parseFaId(String faId, boolean bidirFlag, boolean secondLeg) {
+        return buildFaId(faId, bidirFlag, secondLeg);
+    }
+
+    @Override
+    public String parseFaId(FaId faId, boolean bidirFlag, boolean secondLeg) {
+        String strFaId = extractFaId(faId.getValue().toString());
+
+        return parseFaId(strFaId, true, true);
     }
 
     @Override
@@ -159,17 +169,16 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         return null;
     }
 
-    @Override
-    public String swapFaId(FaId faId) {
-        final String strFaId = faId.getValue();
-        Pattern r = Pattern.compile(REG_BID_MATCH);
+    String extractFaId(String strFaId) {
+        Pattern r = Pattern.compile(REG_UNI_MATCH);
         Matcher m = r.matcher(strFaId);
         if (m.find()) {
-            NodeId sourceNodeId = new NodeId(m.group(1));
-            TpId sourceTpId = new TpId(m.group(2));
-            NodeId destNodeId = new NodeId(m.group(3));
-            TpId destTpId = new TpId(m.group(4));
-            return parseFaId(destNodeId, destTpId, sourceNodeId, sourceTpId, true);
+            return m.group(1);
+        }
+        r = Pattern.compile(REG_BID_MATCH);
+        m = r.matcher(strFaId);
+        if (m.find()) {
+            return m.group(1);
         }
 
         return null;
@@ -226,9 +235,8 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         destinationBuilder.setDestNode(source.getSourceNode()).setDestTp(source.getSourceTp());
         linkBuilder.setDestination(destinationBuilder.build());
         linkBuilder.setSource(sourceBuilder.build());
-        String faId = parseFaId(
-                destination.getDestNode(), destination.getDestTp(),
-                source.getSourceNode(), source.getSourceTp(), true);
+        String strFaId = extractFaId(linkBuilder.getLinkId().getValue().toString());
+        String faId = parseFaId(strFaId, true, true);
         LinkId linkId = new LinkId(faId);
         LinkKey linkKey = new LinkKey(linkId);
         linkBuilder.setKey(linkKey);

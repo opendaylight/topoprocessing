@@ -70,7 +70,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>org.opendaylight.controller.config.yang.config.multitechnology_topology_provider.impl</Export-Package>
+            <Export-Package>org.opendaylight.yang.gen.v1.urn.opendaylight.topology.mlmt.topology.observer.impl</Export-Package>
             <Import-Package>*</Import-Package>
             <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
           </instructions>
