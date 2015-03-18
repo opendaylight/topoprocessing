@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_fb14abf6",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-18T09:50:33Z",
+      "side": 1,
+      "message": "remove unused imports",
+      "range": {
+        "startLine": 21,
+        "startChar": 27,
+        "endLine": 22,
+        "endChar": 28
+      },
+      "revId": "aa6a0510d720d74decd4669b7ed33be70a052a63",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_7b009baa",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-18T09:50:33Z",
+      "side": 1,
+      "message": "parameter must be List\u003cPhysicalNode\u003e",
+      "range": {
+        "startLine": 35,
+        "startChar": 41,
+        "endLine": 35,
+        "endChar": 95
+      },
+      "revId": "aa6a0510d720d74decd4669b7ed33be70a052a63",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_1b2dd746",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-18T09:50:33Z",
+      "side": 1,
+      "message": "method name differs from its functionality",
+      "range": {
+        "startLine": 43,
+        "startChar": 16,
+        "endLine": 43,
+        "endChar": 37
+      },
+      "revId": "aa6a0510d720d74decd4669b7ed33be70a052a63",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_db268f68",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/structure/LogicalNode.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-18T09:50:33Z",
+      "side": 1,
+      "message": "please add addPhysicalNode, updatePhysicalNode and removePhysicalNode methods",
+      "revId": "aa6a0510d720d74decd4669b7ed33be70a052a63",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
