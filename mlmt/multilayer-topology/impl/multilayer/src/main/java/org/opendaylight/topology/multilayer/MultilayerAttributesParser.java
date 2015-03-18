@@ -22,7 +22,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.re
 
 public interface MultilayerAttributesParser {
 
-    String parseFaId(NodeId sourceNodeId, TpId sourceTpId, NodeId destNodeId, TpId destTpId, boolean bidFlag);
+    String parseFaId(boolean bidirFlag, boolean secondLeg);
+
+    String parseFaId(String faId, boolean bidirFlag, boolean secondLeg);
+
+    String parseFaId(FaId faId, boolean bidirFlag, boolean secondLeg);
 
     FaEndPoint parseHeadEnd(ForwardingAdjacencyAttributes input);
 
@@ -43,7 +47,5 @@ public interface MultilayerAttributesParser {
     LinkBuilder swapSourceDestination(LinkBuilder linkBuilder);
 
     DirectionalityInfo parseDirection(FaId faId);
-
-    String swapFaId(FaId faId);
 }
 

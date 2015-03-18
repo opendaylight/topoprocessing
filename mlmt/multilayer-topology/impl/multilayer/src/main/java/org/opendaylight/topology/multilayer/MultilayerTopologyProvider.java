@@ -231,7 +231,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
             bidirFlag = true;
         }
 
-        String faId = parser.parseFaId(headEnd.getNode(), headEndTpId, tailEnd.getNode(), tailEndTpId, bidirFlag);
+        String faId = parser.parseFaId(bidirFlag, false);
         final FaId outFaId = new FaId(faId);
         LinkBuilder linkBuilder = parser.parseLinkBuilder(input, faId);
         InstanceIdentifier<Link> linkInstanceId = destTopologyId.child(Link.class, linkBuilder.getKey());
@@ -346,6 +346,13 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
         transaction.merge(LogicalDatastoreType.OPERATIONAL, linkInstanceId, linkBuilder.build());
 
+        DirectionalityInfo directionalityInfo = input.getDirectionalityInfo();
+        if (directionalityInfo instanceof Bidirectional) {
+            linkBuilder = parser.swapSourceDestination(linkBuilder);
+            linkInstanceId = destTopologyId.child(Link.class, linkBuilder.getKey());
+            transaction.merge(LogicalDatastoreType.OPERATIONAL, linkInstanceId, linkBuilder.build());
+        }
+
         try {
             transaction.submit().checkedGet();
         } catch (final TransactionCommitFailedException e) {
@@ -371,7 +378,6 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
         FaId faId = input.getFaId();
         DirectionalityInfo directionalityInfo = parser.parseDirection(faId);
-
         LinkId linkId = new LinkId(faId.getValue());
         LinkKey linkKey = new LinkKey(linkId);
         InstanceIdentifier<Link> instanceId = destTopologyId.child(Link.class, linkKey);
@@ -382,7 +388,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         transaction.delete(LogicalDatastoreType.OPERATIONAL, instanceId);
 
         if (directionalityInfo instanceof Bidirectional) {
-            String strFaId = parser.swapFaId(faId);
+            String strFaId = parser.parseFaId(faId, true, true);
             if (strFaId != null) {
                 linkId = new LinkId(strFaId);
                 linkKey = new LinkKey(linkId);
@@ -394,7 +400,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         try {
             transaction.submit().checkedGet();
         } catch (final TransactionCommitFailedException e) {
-            log.warn("TransactionCommitFailedException ", e);
+            log.warn("MultilayerTopologyProvider.forwardingAdjWithdraw RPC: TransactionCommitFailedException ", e);
             transactionChain.close();
             transactionChain = dataProvider.createTransactionChain(this);
 
