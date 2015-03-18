@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_f65fe270",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 3312
+      },
+      "writtenOn": "2015-03-18T16:20:25Z",
+      "side": 1,
+      "message": "I\u0027d like to rename this variable (and \u0027new entry\u0027 variable as well), but I cannot find better name...",
+      "range": {
+        "startLine": 40,
+        "startChar": 80,
+        "endLine": 40,
+        "endChar": 90
+      },
+      "revId": "b4f30620d6aa6a7e763772c5ef9cc398b2f2fa05",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_b6515a64",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyManager.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 3312
+      },
+      "writtenOn": "2015-03-18T16:20:25Z",
+      "side": 1,
+      "message": "I\u0027d like to rename this variable...",
+      "range": {
+        "startLine": 48,
+        "startChar": 69,
+        "endLine": 48,
+        "endChar": 74
+      },
+      "revId": "b4f30620d6aa6a7e763772c5ef9cc398b2f2fa05",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
