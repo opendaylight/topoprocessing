@@ -22,6 +22,30 @@
       "revId": "78f6b81cd71df22411b03525c1646bcf833ed89f",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_b0d882f0",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyManager.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 3585
+      },
+      "writtenOn": "2015-03-18T08:48:15Z",
+      "side": 1,
+      "message": "But in the next step I need to call a method which will remove this entry from an aggregation map.",
+      "parentUuid": "5a93c517_07325e10",
+      "range": {
+        "startLine": 70,
+        "startChar": 20,
+        "endLine": 70,
+        "endChar": 57
+      },
+      "revId": "78f6b81cd71df22411b03525c1646bcf833ed89f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
