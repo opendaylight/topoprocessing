@@ -27,7 +27,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public class TopologyManager {
 
-    //private List<TopologyOperator> aggregators = new ArrayList<TopologyOperator>();
     TopologyAggregator aggregator = null;
     private List<TopologyStore> topologyStores = new ArrayList<>();
     /**
@@ -35,34 +34,23 @@ public class TopologyManager {
      * @param topologyId
      */
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> newEntries, final String topologyId) {
-        aggregator.processCreatedChanges(newEntries, topologyId, topologyStores);
+        aggregator.processCreatedChanges(newEntries, topologyId);
     }
 
     /**
-     * Delete node from Aggregation map
+     * Process Deleted changes
      * @param identifier Yang Instance Identifier
      * @param topologyId Topology Identification
      */
     public void processDeletedChanges(ArrayList<YangInstanceIdentifier> identifiers, final String topologyId) {
-        //TODO to be moved to the TopologyAggregator(?)
-//        for (TopologyStore ts : topologyStores) {
-//            if (ts.getId().equals(topologyId)) {
-//                Map<YangInstanceIdentifier, PhysicalNode> physicalNodes = ts.getPhysicalNodes();
-//                for (YangInstanceIdentifier identifier : identifiers) {
-//                    PhysicalNode physicalNode = physicalNodes.remove(identifier);
-//                    if (null != physicalNode) {
-//                        // TODO remove from aggregator map
-//                    }
-//                }
-//            }
-//        }
+        aggregator.processRemovedChanges(identifiers, topologyId);
     }
 
     /**
      * @param correlation
      */
     public void initializeStructure(Correlation correlation) {
-        aggregator = new TopologyAggregator(correlation.getCorrelationItem());
+        aggregator = new TopologyAggregator(correlation.getCorrelationItem(), topologyStores);
 
         CorrelationType correlationType = correlation.getCorrelationType();
         EqualityCase equalityCase = (EqualityCase) correlationType;
