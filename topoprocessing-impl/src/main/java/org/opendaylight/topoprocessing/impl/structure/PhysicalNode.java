@@ -34,6 +34,10 @@ public class PhysicalNode {
         return node;
     }
 
+    public void setNode(NormalizedNode<?, ?> node) {
+        this.node = node;
+    }
+
     public NormalizedNode<?, ?> getLeafNode() {
         return leafNode;
     }

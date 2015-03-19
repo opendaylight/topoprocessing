@@ -32,7 +32,8 @@ public class IdentifierGenerator {
         return id;
     }
 
-    private YangInstanceIdentifier createIdentifier(String topologyId, CorrelationItemEnum topologyType, int uniqueId) {
+    private static YangInstanceIdentifier createIdentifier(String topologyId,
+            CorrelationItemEnum topologyType, int uniqueId) {
         YangInstanceIdentifier.InstanceIdentifierBuilder yiid = YangInstanceIdentifier.builder()
                 .node(NetworkTopology.QNAME)
                 .node(Topology.QNAME)
@@ -52,6 +53,8 @@ public class IdentifierGenerator {
                 yiid.node(TerminationPoint.QNAME);
                 yiid.nodeWithKey(TerminationPoint.QNAME, QName.create("terminationPoint-id"), uniqueId);
                 break;
+            default:
+                throw new IllegalStateException("Unknown topology type: " + topologyType);
         }
 
         return yiid.build();

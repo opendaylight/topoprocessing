@@ -89,7 +89,7 @@ public class TopologyRequestHandler {
             CorrelationAugment augmentation = topology.getAugmentation(CorrelationAugment.class);
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
-                manager.initializeStructure(correlation);
+                manager.initializeStructures(correlation);
                 CorrelationType correlationType = correlation.getCorrelationType();
                 EqualityCase equalityCase = (EqualityCase) correlationType;
                 List<Mapping> mappings = equalityCase.getEquality().getMapping();
