@@ -33,8 +33,13 @@ public class TopologyManager {
      * @param createdEntries
      * @param topologyId
      */
+<<<<<<< HEAD
+    public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> newEntries, final String topologyId) {
+        aggregator.processCreatedChanges(newEntries, topologyId);
+=======
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, final String topologyId) {
-        aggregator.processCreatedChanges(createdEntries, topologyId);
+        aggregator.processCreatedChanges(createdEntries, topologyId, topologyStores);
+>>>>>>> Aggregation - updated data handling
     }
 
     /**
@@ -52,14 +57,14 @@ public class TopologyManager {
      */
     public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
             String topologyId) {
-        aggregator.processUpdatedChanges(updatedEntries, topologyId);
+        aggregator.processUpdatedChanges(updatedEntries, topologyId, topologyStores);
         
     }
 
     /**
      * @param correlation
      */
-    public void initializeStructures(Correlation correlation) {
+    public void initializeStructure(Correlation correlation) {
         aggregator = new TopologyAggregator(correlation.getCorrelationItem(), topologyStores);
 
         CorrelationType correlationType = correlation.getCorrelationType();

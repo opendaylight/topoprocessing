@@ -74,6 +74,8 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         // TODO - set entry to the TopologyManager with action
         if (requestAction == RequestAction.CREATE) {
             topologyManager.processCreatedChanges(resultEntries, underlayTopologyId);
+        } else if (requestAction == RequestAction.CREATE) {
+            topologyManager.processUpdatedChanges(resultEntries, underlayTopologyId);
         }
     }
 
