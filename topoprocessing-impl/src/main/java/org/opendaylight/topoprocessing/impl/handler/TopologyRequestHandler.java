@@ -89,6 +89,7 @@ public class TopologyRequestHandler {
             CorrelationAugment augmentation = topology.getAugmentation(CorrelationAugment.class);
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
+                manager.initializeStructure(correlation);
                 CorrelationType correlationType = correlation.getCorrelationType();
                 EqualityCase equalityCase = (EqualityCase) correlationType;
                 List<Mapping> mappings = equalityCase.getEquality().getMapping();
@@ -110,8 +111,6 @@ public class TopologyRequestHandler {
                     LOG.debug("Underlay topology listener for topology: " + underlayTopologyId
                             + " has been successfully registered");
                     listeners.add(listenerRegistration);
-
-                    manager.initializeTopologyStore(underlayTopologyId);
                 }
             }
             LOG.debug("Correlation configuration successfully read");
