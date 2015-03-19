@@ -45,26 +45,76 @@ public class TopologyAggregator implements TopologyOperator {
      * @param createdEntries
      * @param topologyId
      */
+    public void processCreatedChanges_old(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, 
+            final String topologyId) {
+        if (createdEntries != null) {
+            for (TopologyStore ts : topologyStores) {
+                if (ts.getId().equals(topologyId)) {
+                    for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
+                        ts.getPhysicalNodes().put(createdEntry.getKey(), createdEntry.getValue());
+                    }
+                } else {
+                    for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
+                        for (Entry<YangInstanceIdentifier, PhysicalNode> entry : ts.getPhysicalNodes().entrySet()) {
+                            if (createdEntry.getValue().getLeafNode().equals(entry.getValue().getLeafNode())) {
+                                YangInstanceIdentifier logicalNodeIdentifier =
+                                        idGenerator.getNextIdentifier(topologyId, correlationItem);
+                                createdEntry.getValue().setLogicalIdentifier(logicalNodeIdentifier);
+                                entry.getValue().setLogicalIdentifier(logicalNodeIdentifier);
+                                List<PhysicalNode> physicalNodes = new ArrayList<>();
+                                physicalNodes.add(createdEntry.getValue());
+                                physicalNodes.add(entry.getValue());
+                                LogicalNode logicalNode = new LogicalNode(physicalNodes);
+                                aggregationMap.put(logicalNodeIdentifier, logicalNode);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Process newly created changes
+     * @param createdEntries
+     * @param topologyId
+     */
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, 
             final String topologyId) {
-        for (TopologyStore ts : topologyStores) {
-            if (ts.getId().equals(topologyId)) {
-                for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
+        for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
+            for (TopologyStore ts : topologyStores) {
+                if (ts.getId().equals(topologyId)) {
                     ts.getPhysicalNodes().put(createdEntry.getKey(), createdEntry.getValue());
                 }
-            } else {
-                for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
-                    for (Entry<YangInstanceIdentifier, PhysicalNode> entry : ts.getPhysicalNodes().entrySet()) {
-                        if (createdEntry.getValue().getLeafNode().equals(entry.getValue().getLeafNode())) {
+            }
+            createAggregatedNodes(createdEntry.getValue(), topologyId);
+        }
+    }
+
+    /**
+     * @param newNode
+     * @param topologyId
+     */
+    private void createAggregatedNodes(PhysicalNode newNode,String topologyId) {
+        for (TopologyStore ts : topologyStores) {
+            if (!ts.getId().equals(topologyId)) {
+                for (Entry<YangInstanceIdentifier, PhysicalNode> topoStoreEntry : ts.getPhysicalNodes().entrySet()) {
+                    PhysicalNode topoStoreNode = topoStoreEntry.getValue();
+                    if (topoStoreNode.getLeafNode().equals(newNode.getLeafNode())) {
+                        if (topoStoreNode.getLogicalIdentifier() == null) {
+                            // create new logical node
+                            List<PhysicalNode> nodesToAggregate = new ArrayList<>();
+                            nodesToAggregate.add(newNode);
+                            nodesToAggregate.add(topoStoreNode);
+                            LogicalNode logicalNode = new LogicalNode(nodesToAggregate);
                             YangInstanceIdentifier logicalNodeIdentifier =
                                     idGenerator.getNextIdentifier(topologyId, correlationItem);
-                            createdEntry.getValue().setLogicalIdentifier(logicalNodeIdentifier);
-                            entry.getValue().setLogicalIdentifier(logicalNodeIdentifier);
-                            List<PhysicalNode> physicalNodes = new ArrayList<>();
-                            physicalNodes.add(createdEntry.getValue());
-                            physicalNodes.add(entry.getValue());
-                            LogicalNode logicalNode = createLogicalNode(physicalNodes);
-                            addLogicalNode(logicalNodeIdentifier, logicalNode);
+                            aggregationMap.put(logicalNodeIdentifier, logicalNode);
+                        } else {
+                            // add new physical node to existing logical node
+                            YangInstanceIdentifier logicalIdentifier = topoStoreNode.getLogicalIdentifier();
+                            newNode.setLogicalIdentifier(logicalIdentifier);
+                            aggregationMap.get(logicalIdentifier).addPhysicalNode(newNode);
                         }
                     }
                 }
@@ -74,7 +124,7 @@ public class TopologyAggregator implements TopologyOperator {
 
     /**
      * Delete node from Aggregation map
-     * @param identifier Yang Instance Identifier
+     * @param identifiers Yang Instance Identifier
      * @param topologyId Topology Identification
      */
     public void processRemovedChanges(ArrayList<YangInstanceIdentifier> identifiers, final String topologyId) {
@@ -87,45 +137,77 @@ public class TopologyAggregator implements TopologyOperator {
                     if (null != physicalNode) {
                         YangInstanceIdentifier logicalIdentifier = physicalNode.getLogicalIdentifier();
                         // if physical node is part of some logical node
-                        if (null != logicalIdentifier) {
-                            LogicalNode logicalNode = this.aggregationMap.get(logicalIdentifier);
-                            ArrayList<PhysicalNode> aggregatedNodes = logicalNode.getPhysicalNodes();
-                            // if logical node consists only of 2 physical nodes
-                            if (2 == aggregatedNodes.size()) {
-                                aggregatedNodes.remove(physicalNode);
-                                PhysicalNode restNode = aggregatedNodes.iterator().next();
-                                restNode.setLogicalIdentifier(null);
-                                aggregationMap.remove(logicalIdentifier);
-                            } else {
-                                aggregatedNodes.remove(physicalNode);
-                            }
-                        }
+                        removePhysicalNodeFromLogicalNode(physicalNode, logicalIdentifier);
                     }
                 }
             }
         }
     }
 
-    /**
-     * Creates logical node
-     * @param physicalNodes 
-     * @return new logical node
-     */
-    public LogicalNode createLogicalNode(List<PhysicalNode> physicalNodes) {
-        return new LogicalNode(physicalNodes);
+    private void removePhysicalNodeFromLogicalNode(PhysicalNode physicalNode,
+            YangInstanceIdentifier logicalIdentifier) {
+        if (null != logicalIdentifier) {
+            LogicalNode logicalNode = this.aggregationMap.get(logicalIdentifier);
+            ArrayList<PhysicalNode> aggregatedNodes = logicalNode.getPhysicalNodes();
+            // if logical node consists only of 2 physical nodes
+            if (2 == aggregatedNodes.size()) {
+                aggregatedNodes.remove(physicalNode);
+                PhysicalNode restNode = aggregatedNodes.iterator().next();
+                restNode.setLogicalIdentifier(null);
+                aggregationMap.remove(logicalIdentifier);
+            } else {
+                aggregatedNodes.remove(physicalNode);
+            }
+        }
     }
 
     /**
-     * Adds logical node to the map
-     * @param logicalNodeIdentifier
-     * @param logicalNode
+     * @param updatedEntries
+     * @param topologyId
+     * @param topologyStores 
      */
-    public void addLogicalNode(YangInstanceIdentifier logicalNodeIdentifier,
-            LogicalNode logicalNode) {
-        if (logicalNodeIdentifier != null) {
-            aggregationMap.put(logicalNodeIdentifier, logicalNode);
-        } else {
-            throw new IllegalArgumentException("Logical node identifier cannto be null.");
+    public void processUpdatedChanges_old(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
+            String topologyId) {
+        if (updatedEntries != null) {
+            for (TopologyStore ts : topologyStores) {
+                if(ts.getId().equals(topologyId)) {
+                    for (Entry<YangInstanceIdentifier, PhysicalNode> updatedEntry : updatedEntries.entrySet()) {
+                        PhysicalNode oldPhysicalNode = ts.getPhysicalNodes().get(updatedEntry.getKey());
+                        if (oldPhysicalNode == null) {
+                            throw new IllegalStateException("Updated physical node not found in Topology Store");
+                        }
+                        if (oldPhysicalNode.getLeafNode().equals(updatedEntry.getValue().getLeafNode())) {
+                            oldPhysicalNode.setNode(updatedEntry.getValue().getNode());
+                        } else {
+                            removePhysicalNodeFromLogicalNode(oldPhysicalNode,
+                                    oldPhysicalNode.getLogicalIdentifier());
+                        }
+                    }
+                } else {
+                    // option 1
+                    //createLogicalNodeFromPhysicalNodes(updatedEntries, topologyId, ts);
+                }
+            }
+        }
+    }
+
+    public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
+            String topologyId) {
+        for (Entry<YangInstanceIdentifier, PhysicalNode> updatedEntry : updatedEntries.entrySet()) {
+            for (TopologyStore ts : topologyStores) {
+                if (ts.getId().equals(topologyId)) {
+                    PhysicalNode oldPhysicalNode = ts.getPhysicalNodes().get(updatedEntry.getKey());
+                    if (oldPhysicalNode == null) {
+                        throw new IllegalStateException("Updated physical node not found in Topology Store");
+                    }
+                    if(oldPhysicalNode.getLeafNode().equals(updatedEntry.getValue().getLeafNode())) {
+                        oldPhysicalNode.setNode(updatedEntry.getValue().getNode());
+                    } else {
+                        removePhysicalNodeFromLogicalNode(oldPhysicalNode, oldPhysicalNode.getLogicalIdentifier());
+                    }
+                }
+            }
+            createAggregatedNodes(updatedEntry.getValue(), topologyId);
         }
     }
 }
