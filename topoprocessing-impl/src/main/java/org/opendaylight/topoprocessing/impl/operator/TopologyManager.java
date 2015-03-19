@@ -30,11 +30,11 @@ public class TopologyManager {
     TopologyAggregator aggregator = null;
     private List<TopologyStore> topologyStores = new ArrayList<>();
     /**
-     * @param newEntries
+     * @param createdEntries
      * @param topologyId
      */
-    public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> newEntries, final String topologyId) {
-        aggregator.processCreatedChanges(newEntries, topologyId);
+    public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, final String topologyId) {
+        aggregator.processCreatedChanges(createdEntries, topologyId);
     }
 
     /**
@@ -47,9 +47,19 @@ public class TopologyManager {
     }
 
     /**
+     * @param resultEntries
+     * @param underlayTopologyId
+     */
+    public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
+            String topologyId) {
+        aggregator.processUpdatedChanges(updatedEntries, topologyId);
+        
+    }
+
+    /**
      * @param correlation
      */
-    public void initializeStructure(Correlation correlation) {
+    public void initializeStructures(Correlation correlation) {
         aggregator = new TopologyAggregator(correlation.getCorrelationItem(), topologyStores);
 
         CorrelationType correlationType = correlation.getCorrelationType();
@@ -60,4 +70,5 @@ public class TopologyManager {
                     new HashMap<YangInstanceIdentifier, PhysicalNode>()));
         }
     }
+
 }

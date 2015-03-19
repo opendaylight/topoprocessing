@@ -71,9 +71,10 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                 }
             }
         }
-        // TODO - set entry to the TopologyManager with action
         if (requestAction == RequestAction.CREATE) {
             topologyManager.processCreatedChanges(resultEntries, underlayTopologyId);
+        } else if (requestAction == RequestAction.UPDATE) {
+            topologyManager.processUpdatedChanges(resultEntries, underlayTopologyId);
         }
     }
 
@@ -82,7 +83,6 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         Iterator<YangInstanceIdentifier> iterator = set.iterator();
         while (iterator.hasNext()) {
             YangInstanceIdentifier identifierOperational = iterator.next();
-            // TODO check if is functioning
             if (identifierOperational.getLastPathArgument().getNodeType().equals(
                     pathIdentifier.getLastPathArgument().getNodeType()))
             {
