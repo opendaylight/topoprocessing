@@ -18,7 +18,7 @@ public class PhysicalNode {
 
     private NormalizedNode<?, ?> node;
     private NormalizedNode<?, ?> leafNode;
-    private YangInstanceIdentifier logicalIdentifier;
+    private YangInstanceIdentifier logicalIdentifier = null;
 
     /**
      * Constructor
