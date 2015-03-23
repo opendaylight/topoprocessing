@@ -13,13 +13,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NodeIpFiltration;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.CorrelationType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.NodeIpFiltrationCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.UnificationCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.node.ip.filtration._case.node.ip.filtration.Filter;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
@@ -27,7 +34,9 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public class TopologyManager {
 
-    TopologyAggregator aggregator = null;
+    private TopologyOperator aggregator = null;
+    private TopologyOperator filtrator = null;
+    private IdentifierGenerator idGenerator = new IdentifierGenerator();
     private List<TopologyStore> topologyStores = new ArrayList<>();
     /**
      * @param createdEntries
@@ -57,18 +66,48 @@ public class TopologyManager {
     }
 
     /**
-     * @param correlation
+     * Set correlation and initialize stores
+     * @param correlation Correlation
      */
     public void initializeStructures(Correlation correlation) {
-        aggregator = new TopologyAggregator(correlation.getCorrelationItem(), topologyStores);
+        //TODO Pipelining
+        if (correlation.getName().equals(Equality.class)) {
+            EqualityCase typeCase = (EqualityCase) correlation.getCorrelationType();
+            List<Mapping> mappings = typeCase.getEquality().getMapping();
+            iterateMappings(mappings);
 
-        CorrelationType correlationType = correlation.getCorrelationType();
-        EqualityCase equalityCase = (EqualityCase) correlationType;
-        List<Mapping> mappings = equalityCase.getEquality().getMapping();
-        for (Mapping mapping : mappings) {
-            topologyStores.add(new TopologyStore(mapping.getUnderlayTopology(),
-                    new HashMap<YangInstanceIdentifier, PhysicalNode>()));
+            aggregator = new TopologyAggregator(correlation.getCorrelationItem(), topologyStores, idGenerator);
+        }
+        else if (correlation.getName().equals(Unification.class)) {
+            UnificationCase typeCase = (UnificationCase) correlation.getCorrelationType();
+            List<Mapping> mappings = typeCase.getUnification().getMapping();
+            iterateMappings(mappings);
+
+            //TODO Unification Operator
+        }
+        else if (correlation.getName().equals(NodeIpFiltration.class)) {
+            NodeIpFiltrationCase typeCase = (NodeIpFiltrationCase) correlation.getCorrelationType();
+            List<Filter> filters = typeCase.getNodeIpFiltration().getFilter();
+            for (Filter filter : filters) {
+                initStore(filter.getUnderlayTopology());
+            }
+
+            filtrator = new TopologyFiltrator(correlation, topologyStores, idGenerator);
         }
     }
 
+    private void iterateMappings(List<Mapping> mappings ) {
+        for (Mapping mapping : mappings) {
+            initStore(mapping.getUnderlayTopology());
+        }
+    }
+
+    private void initStore(String id) {
+        for (TopologyStore topologyStore : topologyStores) {
+            if (id == topologyStore.getId()) {
+                return;
+            }
+        }
+        topologyStores.add(new TopologyStore(id, new HashMap<YangInstanceIdentifier, PhysicalNode>()));
+    }
 }
