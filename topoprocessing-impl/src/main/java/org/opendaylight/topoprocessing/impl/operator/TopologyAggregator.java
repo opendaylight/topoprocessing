@@ -9,7 +9,6 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,8 +27,8 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public class TopologyAggregator implements TopologyOperator {
 
-    private Map<YangInstanceIdentifier,LogicalNode> aggregationMap = new HashMap<>();
-    private IdentifierGenerator idGenerator = new IdentifierGenerator();
+    private Map<YangInstanceIdentifier,LogicalNode> aggregationMap = new AggregationMap();
+    private IdentifierGenerator idGenerator;
     private CorrelationItemEnum correlationItem;
     private List<TopologyStore> topologyStores;
 
@@ -37,17 +36,16 @@ public class TopologyAggregator implements TopologyOperator {
      * Constructor
      * @param correlationItem
      * @param topologyStores
+     * @param idGenerator 
      */
-    public TopologyAggregator(CorrelationItemEnum correlationItem, List<TopologyStore> topologyStores) {
+    public TopologyAggregator(CorrelationItemEnum correlationItem, List<TopologyStore> topologyStores,
+                              IdentifierGenerator idGenerator) {
         this.correlationItem = correlationItem;
         this.topologyStores = topologyStores;
+        this.idGenerator = idGenerator;
     }
 
-    /**
-     * Process newly created changes
-     * @param createdEntries
-     * @param topologyId
-     */
+    @Override
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries,
             final String topologyId) {
         for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
@@ -81,7 +79,9 @@ public class TopologyAggregator implements TopologyOperator {
                             // add new physical node into existing logical node
                             YangInstanceIdentifier logicalIdentifier = topoStoreNode.getLogicalIdentifier();
                             newNode.setLogicalIdentifier(logicalIdentifier);
-                            aggregationMap.get(logicalIdentifier).addPhysicalNode(newNode);
+                            LogicalNode logicalNode = aggregationMap.get(logicalIdentifier);
+                            logicalNode.addPhysicalNode(newNode);
+                            aggregationMap.put(logicalIdentifier, logicalNode);
                             return;
                         }
                     }
@@ -95,6 +95,7 @@ public class TopologyAggregator implements TopologyOperator {
      * @param identifiers Yang Instance Identifier
      * @param topologyId Topology Identification
      */
+    @Override
     public void processRemovedChanges(ArrayList<YangInstanceIdentifier> identifiers, final String topologyId) {
         for (TopologyStore ts : topologyStores) {
             if (ts.getId().equals(topologyId)) {
@@ -117,23 +118,19 @@ public class TopologyAggregator implements TopologyOperator {
         if (null != logicalIdentifier) {
             LogicalNode logicalNode = this.aggregationMap.get(logicalIdentifier);
             ArrayList<PhysicalNode> aggregatedNodes = logicalNode.getPhysicalNodes();
-            // if logical node consists only of 2 physical nodes
-            if (2 == aggregatedNodes.size()) {
-                aggregatedNodes.remove(physicalNode);
+            aggregatedNodes.remove(physicalNode);
+            // if logical node consists only of 1 physical node
+            if (1 == aggregatedNodes.size()) {
                 PhysicalNode restNode = aggregatedNodes.iterator().next();
                 restNode.setLogicalIdentifier(null);
                 aggregationMap.remove(logicalIdentifier);
             } else {
-                aggregatedNodes.remove(physicalNode);
+                aggregationMap.put(logicalIdentifier, logicalNode);
             }
         }
     }
 
-    /**
-     * Process updated changes
-     * @param updatedEntries
-     * @param topologyId
-     */
+    @Override
     public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
             String topologyId) {
         for (Entry<YangInstanceIdentifier, PhysicalNode> updatedEntry : updatedEntries.entrySet()) {
