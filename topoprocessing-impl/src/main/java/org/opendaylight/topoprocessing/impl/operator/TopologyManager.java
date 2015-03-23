@@ -27,7 +27,8 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public class TopologyManager {
 
-    TopologyAggregator aggregator = null;
+    TopologyOperator aggregator = null;
+    TopologyOperator filtrator = null;
     private List<TopologyStore> topologyStores = new ArrayList<>();
     /**
      * @param createdEntries
