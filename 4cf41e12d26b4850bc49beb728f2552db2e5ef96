@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_9549aad2",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-23T12:54:27Z",
+      "side": 1,
+      "message": "UPDATE",
+      "range": {
+        "startLine": 77,
+        "startChar": 50,
+        "endLine": 77,
+        "endChar": 57
+      },
+      "revId": "4cf41e12d26b4850bc49beb728f2552db2e5ef96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_58d11756",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyAggregator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-23T12:54:27Z",
+      "side": 1,
+      "message": "logicalNodeIdentifier must be set into topoStoreNode and newNode",
+      "range": {
+        "startLine": 75,
+        "startChar": 47,
+        "endLine": 75,
+        "endChar": 68
+      },
+      "revId": "4cf41e12d26b4850bc49beb728f2552db2e5ef96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_78d65351",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyAggregator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-23T12:54:27Z",
+      "side": 1,
+      "message": "when the aggregation occurs, we must leave this method - we don\u0027t need to look into other topologyStore-s",
+      "revId": "4cf41e12d26b4850bc49beb728f2552db2e5ef96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_38d0cb4f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyAggregator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-23T12:54:27Z",
+      "side": 1,
+      "message": "this method should be at line 145 - we have to check for aggregated nodes only when the leafNode changed",
+      "range": {
+        "startLine": 148,
+        "startChar": 12,
+        "endLine": 148,
+        "endChar": 71
+      },
+      "revId": "4cf41e12d26b4850bc49beb728f2552db2e5ef96",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
