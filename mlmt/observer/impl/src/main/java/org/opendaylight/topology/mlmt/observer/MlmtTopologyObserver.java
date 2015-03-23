@@ -23,6 +23,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -49,7 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.mlmt.topology.observer.impl.rev150122.MlmtTopologyObserverRuntimeMXBean;
 
-public class MlmtTopologyObserver extends AbstractBindingAwareProvider implements AutoCloseable, DataChangeListener, MlmtTopologyObserverRuntimeMXBean,
+public class MlmtTopologyObserver implements AutoCloseable, DataChangeListener, MlmtTopologyObserverRuntimeMXBean,
         MlmtTopologyProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(MlmtTopologyObserver.class);
@@ -81,15 +82,9 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
         }
     }
 
-    /**
-     * Gets called on start of a bundle.
-     *
-     * @param session
-     */
-    @Override
-    public synchronized void onSessionInitiated(final ProviderContext session) {
-        LOG.info("MlmtTopologyObserver.onSessionInitiated");
-        dataBroker = session.getSALService(DataBroker.class);
+    public void init(DataBroker dataBroker, RpcProviderRegistry rpcRegistry) {
+        LOG.info("MlmtTopologyObserver.init");
+        this.dataBroker = dataBroker;
         processor = new MlmtOperationProcessor(dataBroker);
         thread = new Thread(processor);
         thread.setDaemon(true);
@@ -101,7 +96,7 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
         mlmtTopologyBuilder.init(dataBroker, LOG, processor);
         underlayTopologies = new ArrayList<String>();
         Map<String, List<MlmtTopologyProvider>> providersMap =
-                (new MlmtProviderFactoryImpl()).createProvidersMap(session, dataBroker, LOG, processor, mlmt);
+                (new MlmtProviderFactoryImpl()).createProvidersMap(rpcRegistry, dataBroker, LOG, processor, mlmt);
         mlmtProviders = providersMap.get(mlmt);
 
         listenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
@@ -312,20 +307,6 @@ public class MlmtTopologyObserver extends AbstractBindingAwareProvider implement
             thread.interrupt();
             thread.join();
             thread = null;
-        }
-    }
-
-    /**
-     * Gets called during stop bundle
-     *
-     * @param context The execution context of the bundle being stopped.
-     */
-    @Override
-    public void stopImpl(final BundleContext context) {
-        try {
-            this.close();
-        } catch (final InterruptedException e) {
-            LOG.error("Failed to stop provider", e);
         }
     }
 

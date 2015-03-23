@@ -35,5 +35,6 @@
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-factory-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-impl/${project.version}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/60-mlmt-observer-provider-config.xml" override="true">mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-impl/0.0.1-SNAPSHOT/xml/config</configfile>
     </feature>
 </features>
