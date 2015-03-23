@@ -12,7 +12,7 @@ import com.google.common.base.Optional;
 import java.util.concurrent.Future;
 import java.util.concurrent.ExecutionException;
 
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -88,12 +88,14 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
     }
 
     public void setDataProvider(DataBroker dataProvider) {
+        log.info("MultilayerTopologyProvider.setDataProvider");
         this.dataProvider = dataProvider;
         this.transactionChain = dataProvider.createTransactionChain(this);
     }
 
-    public void registerRpcImpl(final ProviderContext session) {
-        session.addRpcImplementation(MultilayerTopologyService.class, this);
+    public void registerRpcImpl(final RpcProviderRegistry rpcProviderRegistry) {
+        log.info("MultilayerTopologyProvider.registerRpcImpl");
+        rpcProviderRegistry.addRpcImplementation(MultilayerTopologyService.class, this);
     }
 
     @Override

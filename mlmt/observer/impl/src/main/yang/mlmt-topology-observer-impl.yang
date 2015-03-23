@@ -1,4 +1,4 @@
-module mlmt-observer-impl {
+module mlmt-topology-observer-impl {
 
     yang-version 1;
     namespace "urn:opendaylight:topology:mlmt-topology-observer:impl";

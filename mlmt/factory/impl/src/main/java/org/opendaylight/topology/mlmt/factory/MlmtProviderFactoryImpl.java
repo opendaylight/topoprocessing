@@ -15,7 +15,7 @@ import java.util.HashMap;
 import com.google.common.base.Preconditions;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
 
     @Override
-    public Map<String, List<MlmtTopologyProvider>> createProvidersMap(final ProviderContext session,
+    public Map<String, List<MlmtTopologyProvider>> createProvidersMap(final RpcProviderRegistry rpcProviderRegistry,
             final DataBroker dataBroker, final Logger logger, MlmtOperationProcessor processor, String mlmtTopologyName) {
         final TopologyId tid = new TopologyId(mlmtTopologyName);
         final TopologyKey key = new TopologyKey(Preconditions.checkNotNull(tid));
@@ -68,7 +68,7 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
         MultilayerTopologyProvider multilayerTopologyProvider = new MultilayerTopologyProvider();
         multilayerTopologyProvider.init(logger, processor, mlmtTopologyId, multilayerAttributesParser);
         multilayerTopologyProvider.setDataProvider(dataBroker);
-        multilayerTopologyProvider.registerRpcImpl(session);
+        multilayerTopologyProvider.registerRpcImpl(rpcProviderRegistry);
         lProvider.add(multilayerTopologyProvider);
         /*
          * topologyname and related providers mapping configuration

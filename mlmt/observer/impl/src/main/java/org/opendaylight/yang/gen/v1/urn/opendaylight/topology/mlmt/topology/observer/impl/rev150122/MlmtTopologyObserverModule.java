@@ -22,10 +22,9 @@ public class MlmtTopologyObserverModule extends org.opendaylight.yang.gen.v1.urn
 
     @Override
     public java.lang.AutoCloseable createInstance() {
-        final MlmtTopologyObserver mlmtTopologyObserver = new MlmtTopologyObserver();
-
         LOG.info("*** MlmtTopologyObserverModule createInstance. ***");
-
+        final MlmtTopologyObserver mlmtTopologyObserver = new MlmtTopologyObserver();
+        mlmtTopologyObserver.init(getDataBrokerDependency(), getRpcRegistryDependency());
         getRootRuntimeBeanRegistratorWrapper().register(mlmtTopologyObserver);
 
         return mlmtTopologyObserver;
