@@ -89,6 +89,6 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                 identifiers.add(identifierOperational);
             }
         }
-        topologyManager.processDeletedChanges(identifiers, underlayTopologyId);
+        topologyManager.processRemovedChanges(identifiers, underlayTopologyId);
     }
 }
