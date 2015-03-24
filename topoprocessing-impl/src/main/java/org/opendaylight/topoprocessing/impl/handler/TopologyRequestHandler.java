@@ -20,10 +20,15 @@ import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NodeIpFiltration;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.CorrelationType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.NodeIpFiltrationCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.UnificationCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.node.ip.filtration._case.node.ip.filtration.Filter;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
@@ -90,27 +95,22 @@ public class TopologyRequestHandler {
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
                 manager.initializeStructures(correlation);
-                CorrelationType correlationType = correlation.getCorrelationType();
-                EqualityCase equalityCase = (EqualityCase) correlationType;
-                List<Mapping> mappings = equalityCase.getEquality().getMapping();
-                for (Mapping mapping : mappings) {
-                    String underlayTopologyId = mapping.getUnderlayTopology();
-                    YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue());
-                    UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
-                            underlayTopologyId, pathIdentifier);
-                    YangInstanceIdentifier.InstanceIdentifierBuilder nodeIdentifierBuilder = YangInstanceIdentifier.builder()
-                            .node(NetworkTopology.QNAME)
-                            .node(Topology.QNAME)
-                            .nodeWithKey(Topology.QNAME, QName.create("topology-id"), underlayTopologyId);
-                    YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(nodeIdentifierBuilder, correlation.getCorrelationItem());
-                    LOG.debug("Registering underlay topology listener for topology: "
-                            + underlayTopologyId);
-                    ListenerRegistration<DOMDataChangeListener> listenerRegistration =
-                            this.domDataBroker.registerDataChangeListener(
-                                    LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
-                    LOG.debug("Underlay topology listener for topology: " + underlayTopologyId
-                            + " has been successfully registered");
-                    listeners.add(listenerRegistration);
+                if (correlation.getName().equals(Equality.class)) {
+                    EqualityCase equalityCase = (EqualityCase) correlation.getCorrelationType();
+                    List<Mapping> mappings = equalityCase.getEquality().getMapping();
+                    iterateMappings(mappings, correlation.getCorrelationItem());
+                }
+                else if (correlation.getName().equals(Unification.class)) {
+                    UnificationCase unificationCase = (UnificationCase) correlation.getCorrelationType();
+                    List<Mapping> mappings = unificationCase.getUnification().getMapping();
+                    iterateMappings(mappings, correlation.getCorrelationItem());
+                }
+                else if (correlation.getName().equals(NodeIpFiltration.class)) {
+                    NodeIpFiltrationCase nodeIpFiltrationCase = (NodeIpFiltrationCase) correlation.getCorrelationType();
+                    List<Filter> filters = nodeIpFiltrationCase.getNodeIpFiltration().getFilter();
+                    iterateFilters(filters, correlation.getCorrelationItem());
+                } else {
+                    throw new IllegalStateException("Unknown correlation: " + correlation.getName());
                 }
             }
             LOG.debug("Correlation configuration successfully read");
@@ -119,8 +119,58 @@ public class TopologyRequestHandler {
         }
     }
 
-    private YangInstanceIdentifier buildNodeIdentifier(YangInstanceIdentifier.InstanceIdentifierBuilder builder,
-                                                       CorrelationItemEnum correlationItemEnum) throws Exception {
+    private void iterateFilters(List<Filter> filters, CorrelationItemEnum correlationItem) {
+        for (Filter filter : filters) {
+            String underlayTopologyId = filter.getUnderlayTopology();
+            YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue());
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
+                    underlayTopologyId, pathIdentifier);
+            YangInstanceIdentifier.InstanceIdentifierBuilder nodeIdentifierBuilder =
+                    createTopologyIdentifier(underlayTopologyId);
+            YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(nodeIdentifierBuilder, correlationItem);
+            LOG.debug("Registering filtering underlay topology listener for topology: "
+                    + underlayTopologyId);
+            ListenerRegistration<DOMDataChangeListener> listenerRegistration =
+                    domDataBroker.registerDataChangeListener(
+                            LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+            LOG.debug("Filtering Underlay topology listener for topology: " + underlayTopologyId
+                    + " has been successfully registered");
+            listeners.add(listenerRegistration);
+        }
+    }
+
+    private void iterateMappings(List<Mapping> mappings, CorrelationItemEnum correlationItem) {
+        for (Mapping mapping : mappings) {
+            String underlayTopologyId = mapping.getUnderlayTopology();
+            YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue());
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
+                    underlayTopologyId, pathIdentifier);
+            YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
+                    createTopologyIdentifier(underlayTopologyId);
+            YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
+            LOG.debug("Registering underlay topology listener for topology: "
+                    + underlayTopologyId);
+            ListenerRegistration<DOMDataChangeListener> listenerRegistration =
+                    domDataBroker.registerDataChangeListener(
+                            LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+            LOG.debug("Underlay topology listener for topology: " + underlayTopologyId
+                    + " has been successfully registered");
+            listeners.add(listenerRegistration);
+        }
+    }
+
+    private static YangInstanceIdentifier.InstanceIdentifierBuilder createTopologyIdentifier(
+            String underlayTopologyId) {
+        YangInstanceIdentifier.InstanceIdentifierBuilder nodeIdentifierBuilder = YangInstanceIdentifier.builder()
+                .node(NetworkTopology.QNAME)
+                .node(Topology.QNAME)
+                .nodeWithKey(Topology.QNAME, QName.create("topology-id"), underlayTopologyId);
+        return nodeIdentifierBuilder;
+    }
+
+    private static YangInstanceIdentifier buildNodeIdentifier(
+            YangInstanceIdentifier.InstanceIdentifierBuilder builder, CorrelationItemEnum correlationItemEnum)
+                    throws IllegalStateException {
         switch (correlationItemEnum) {
             case Node:
                 builder.node(Node.QNAME);
@@ -133,9 +183,8 @@ public class TopologyRequestHandler {
                 builder.node(TerminationPoint.QNAME);
                 break;
             default:
-                throw new Exception("Wrong Correlation Item set");
+                throw new IllegalArgumentException("Wrong Correlation item set: " + correlationItemEnum);
         }
-
         return builder.build();
     }
 
