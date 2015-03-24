@@ -92,7 +92,7 @@ public class TopologyManager {
                 initStore(filter.getUnderlayTopology());
             }
 
-            filtrator = new TopologyFiltrator(correlation, topologyStores, idGenerator);
+            filtrator = new TopologyFiltrator(correlation);
         }
     }
 
