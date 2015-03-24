@@ -91,6 +91,13 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>mlmt-topology-observer-impl</artifactId>
+            <version>${project.version}</version>
+            <type>xml</type>
+            <classifier>config</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>multitechnology-topology-model</artifactId>
             <version>${project.version}</version>
         </dependency>
