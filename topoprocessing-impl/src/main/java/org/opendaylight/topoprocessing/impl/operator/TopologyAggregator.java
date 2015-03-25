@@ -8,17 +8,17 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * @author matus.marko
@@ -34,6 +34,7 @@ public class TopologyAggregator implements TopologyOperator {
      * Constructor
      * @param correlationItem
      * @param topologyStores
+     * @param idGenerator
      */
     public TopologyAggregator(CorrelationItemEnum correlationItem, List<TopologyStore> topologyStores,
                               IdentifierGenerator idGenerator) {
@@ -42,11 +43,7 @@ public class TopologyAggregator implements TopologyOperator {
         this.idGenerator = idGenerator;
     }
 
-    /**
-     * Process newly created changes
-     * @param createdEntries
-     * @param topologyId
-     */
+    @Override
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, 
             final String topologyId) {
         for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
@@ -92,12 +89,8 @@ public class TopologyAggregator implements TopologyOperator {
         }
     }
 
-    /**
-     * Delete node from Aggregation map
-     * @param identifiers Yang Instance Identifier
-     * @param topologyId Topology Identification
-     */
-    public void processRemovedChanges(ArrayList<YangInstanceIdentifier> identifiers, final String topologyId) {
+    @Override
+    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId) {
         for (TopologyStore ts : topologyStores) {
             if (ts.getId().equals(topologyId)) {
                 Map<YangInstanceIdentifier, PhysicalNode> physicalNodes = ts.getPhysicalNodes();
@@ -118,7 +111,7 @@ public class TopologyAggregator implements TopologyOperator {
             YangInstanceIdentifier logicalIdentifier) {
         if (null != logicalIdentifier) {
             LogicalNode logicalNode = this.aggregationMap.get(logicalIdentifier);
-            ArrayList<PhysicalNode> aggregatedNodes = logicalNode.getPhysicalNodes();
+            List<PhysicalNode> aggregatedNodes = logicalNode.getPhysicalNodes();
             aggregatedNodes.remove(physicalNode);
             // if logical node consists only of 1 physical node
             if (1 == aggregatedNodes.size()) {
@@ -131,6 +124,7 @@ public class TopologyAggregator implements TopologyOperator {
         }
     }
 
+    @Override
     public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
             String topologyId) {
         for (Entry<YangInstanceIdentifier, PhysicalNode> updatedEntry : updatedEntries.entrySet()) {

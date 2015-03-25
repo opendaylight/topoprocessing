@@ -54,7 +54,7 @@ public class TopologyRequestHandler {
     private Topology topology;
     private TopologyManager manager = new TopologyManager();
     private PathTranslator translator = new PathTranslator();
-    private ArrayList<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+    private List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
 
@@ -75,12 +75,12 @@ public class TopologyRequestHandler {
     public void setTranslator(PathTranslator translator) { this.translator = translator; }
 
     /** Only for testing purposes */
-    public void setListeners(ArrayList<ListenerRegistration<DOMDataChangeListener>> listeners) {
+    public void setListeners(List<ListenerRegistration<DOMDataChangeListener>> listeners) {
         this.listeners = listeners;
     }
 
     /** Only for testing purposes */
-    public ArrayList<ListenerRegistration<DOMDataChangeListener>> getListeners() { return listeners; }
+    public List<ListenerRegistration<DOMDataChangeListener>> getListeners() { return listeners; }
 
     /**
      * @param topology overlay topology request
@@ -183,7 +183,7 @@ public class TopologyRequestHandler {
                 builder.node(TerminationPoint.QNAME);
                 break;
             default:
-                throw new IllegalStateException("Wrong Correlation item set: " + correlationItemEnum);
+                throw new IllegalStateException("Wrong Correlation item used: " + correlationItemEnum);
         }
         return builder.build();
     }

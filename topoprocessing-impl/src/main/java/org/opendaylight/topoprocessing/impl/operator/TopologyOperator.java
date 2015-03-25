@@ -11,7 +11,7 @@ package org.opendaylight.topoprocessing.impl.operator;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,8 +35,8 @@ public interface TopologyOperator {
 
     /**
      * Process newly deleted changes
-     * @param identifiers Yang Instance Identifier
+     * @param identifiers Yang instance identifier
      * @param topologyId Topology Identification
      */
-    public void processRemovedChanges(ArrayList<YangInstanceIdentifier> identifiers, final String topologyId);
+    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId);
 }

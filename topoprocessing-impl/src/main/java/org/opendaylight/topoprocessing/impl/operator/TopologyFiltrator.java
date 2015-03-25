@@ -75,7 +75,7 @@ public class TopologyFiltrator implements TopologyOperator {
     }
 
     @Override
-    public void processRemovedChanges(ArrayList<YangInstanceIdentifier> identifiers, String topologyId) {
+    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
         //TODO handle result
         return; // identifiers
     }

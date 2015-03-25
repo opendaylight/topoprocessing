@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class LogicalNode {
 
-    private ArrayList<PhysicalNode> physicalNodes = new ArrayList<>();
+    private List<PhysicalNode> physicalNodes = new ArrayList<>();
 
     /**
      * Creates logical node
@@ -60,11 +60,11 @@ public class LogicalNode {
         }
     }
 
-    public ArrayList<PhysicalNode> getPhysicalNodes() {
+    public List<PhysicalNode> getPhysicalNodes() {
         return physicalNodes;
     }
 
-    public void setPhysicalNodes(ArrayList<PhysicalNode> physicalNodes) {
+    public void setPhysicalNodes(List<PhysicalNode> physicalNodes) {
         this.physicalNodes = physicalNodes;
     }
 }
