@@ -36,7 +36,7 @@ public class TopologyAggregator implements TopologyOperator {
      * Constructor
      * @param correlationItem
      * @param topologyStores
-     * @param idGenerator 
+     * @param idGenerator
      */
     public TopologyAggregator(CorrelationItemEnum correlationItem, List<TopologyStore> topologyStores,
                               IdentifierGenerator idGenerator) {
@@ -90,13 +90,8 @@ public class TopologyAggregator implements TopologyOperator {
         }
     }
 
-    /**
-     * Delete node from Aggregation map
-     * @param identifiers Yang Instance Identifier
-     * @param topologyId Topology Identification
-     */
     @Override
-    public void processRemovedChanges(ArrayList<YangInstanceIdentifier> identifiers, final String topologyId) {
+    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId) {
         for (TopologyStore ts : topologyStores) {
             if (ts.getId().equals(topologyId)) {
                 Map<YangInstanceIdentifier, PhysicalNode> physicalNodes = ts.getPhysicalNodes();
@@ -117,7 +112,7 @@ public class TopologyAggregator implements TopologyOperator {
             YangInstanceIdentifier logicalIdentifier) {
         if (null != logicalIdentifier) {
             LogicalNode logicalNode = this.aggregationMap.get(logicalIdentifier);
-            ArrayList<PhysicalNode> aggregatedNodes = logicalNode.getPhysicalNodes();
+            List<PhysicalNode> aggregatedNodes = logicalNode.getPhysicalNodes();
             aggregatedNodes.remove(physicalNode);
             // if logical node consists only of 1 physical node
             if (1 == aggregatedNodes.size()) {
