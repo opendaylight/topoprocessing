@@ -33,13 +33,13 @@ public class IdentifierGenerator {
     }
 
     private static YangInstanceIdentifier createIdentifier(String topologyId,
-            CorrelationItemEnum topologyType, int uniqueId) {
+            CorrelationItemEnum correlationItem, int uniqueId) {
         YangInstanceIdentifier.InstanceIdentifierBuilder yiid = YangInstanceIdentifier.builder()
                 .node(NetworkTopology.QNAME)
                 .node(Topology.QNAME)
                 .nodeWithKey(Topology.QNAME, QName.create("topology-id"), topologyId);
 
-        switch (topologyType) {
+        switch (correlationItem) {
             case Node:
                 yiid.node(Node.QNAME);
                 yiid.nodeWithKey(Node.QNAME, QName.create("node-id"), uniqueId);
@@ -54,17 +54,18 @@ public class IdentifierGenerator {
                 yiid.nodeWithKey(TerminationPoint.QNAME, QName.create("terminationPoint-id"), uniqueId);
                 break;
             default:
-                throw new IllegalStateException("Unknown topology type: " + topologyType);
+                throw new IllegalStateException("Unknown Correlation item used: " + correlationItem);
         }
-
         return yiid.build();
     }
 
     /**
      * Create unique YangInstanceIdentifier
-     * @return YangInstanceIdentifier
+     * @param topologyId 
+     * @param correlationItem 
+     * @return unique 
      */
-    public YangInstanceIdentifier getNextIdentifier(String topologyId, CorrelationItemEnum topologyType) {
-        return createIdentifier(topologyId, topologyType, getNextId());
+    public YangInstanceIdentifier getNextIdentifier(String topologyId, CorrelationItemEnum correlationItem) {
+        return createIdentifier(topologyId, correlationItem, getNextId());
     }
 }
