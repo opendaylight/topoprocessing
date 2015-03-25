@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_4c663053",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-25T13:04:27Z",
+      "side": 1,
+      "message": "this should be topology identifier",
+      "range": {
+        "startLine": 148,
+        "startChar": 61,
+        "endLine": 148,
+        "endChar": 75
+      },
+      "revId": "c4e8a99d63fb66bd8324abc0400d744a95ac83e5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_cc6a401a",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-25T13:04:27Z",
+      "side": 1,
+      "message": "rename to createTopologyIdentifier",
+      "range": {
+        "startLine": 162,
+        "startChar": 74,
+        "endLine": 162,
+        "endChar": 93
+      },
+      "revId": "c4e8a99d63fb66bd8324abc0400d744a95ac83e5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_cc51e063",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-25T13:04:27Z",
+      "side": 1,
+      "message": "IllegalArgumentException",
+      "range": {
+        "startLine": 186,
+        "startChar": 26,
+        "endLine": 186,
+        "endChar": 47
+      },
+      "revId": "c4e8a99d63fb66bd8324abc0400d744a95ac83e5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_ccf56084",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-25T13:04:27Z",
+      "side": 1,
+      "message": "break;",
+      "range": {
+        "startLine": 81,
+        "startChar": 24,
+        "endLine": 81,
+        "endChar": 31
+      },
+      "revId": "c4e8a99d63fb66bd8324abc0400d744a95ac83e5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_6cf20c9c",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-25T13:04:27Z",
+      "side": 1,
+      "message": "move to new method",
+      "range": {
+        "startLine": 92,
+        "startChar": 12,
+        "endLine": 100,
+        "endChar": 13
+      },
+      "revId": "c4e8a99d63fb66bd8324abc0400d744a95ac83e5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
