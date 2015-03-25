@@ -16,6 +16,24 @@
       "revId": "ccd53011e7457ec89bafe0b843d674e2d90c3e4c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_27641f21",
+        "filename": "features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 396
+      },
+      "writtenOn": "2015-03-25T16:31:11Z",
+      "side": 1,
+      "message": "I think we need the first \u003cdependency\u003e in lines 87-91, too. We cannot delete it.\n\nSince we need two artifacts here; 1) mlmt-topology-observer-impl-0.0.1.jar ,and 2) mlmt-topology-observer-impl-0.0.1-config.xml, we need two \u003cdependency\u003e for mlmt-topology-observer-impl.\n\nThe first \u003cdependency\u003e is for mlmt-topology-observer-impl-0.0.1.jar, and the second \u003cdependency\u003e is for mlmt-topology-observer-impl-0.0.1-config.xml.\n\nPlease note that the default value of \u003cclassifier\u003e is null, and the default value of \u003ctype\u003e is jar. Therefore, we can omit the \u003ctype\u003e and \u003cclassifier\u003e attributes in the first \u003cdependency\u003e definition in lines 87-91.",
+      "parentUuid": "5a93c517_6cbe8c01",
+      "revId": "ccd53011e7457ec89bafe0b843d674e2d90c3e4c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
