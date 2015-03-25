@@ -8,91 +8,87 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author matus.marko
  */
-public class AggregationMap extends HashMap {
+public class AggregationMap<K, V> extends HashMap<K, V> {
 
-    private List createdData = new ArrayList();
-    private List updatedData = new ArrayList();
-    private List deletedData = new ArrayList();
+    private Map<K, V> createdData = new HashMap<>();
+    private Map<K, V> updatedData = new HashMap<>();
+    private List<Object> removedData = new ArrayList<>();
 
     /**
      * Mark entry as created
-     * @param key
+     * @param key      key
+     * @param value    value
      */
-    public void markCreated(Object key) {
-        this.createdData.add(key);
+    public void markCreated(K key, V value) {
+        createdData.put(key, value);
     }
 
     /**
      * Mark entry as updated
-     * @param key
+     * @param key key
+     * @param value value
      */
-    public void markUpdated(Object key) {
-        this.updatedData.add(key);
+    public void markUpdated(K key, V value) {
+        updatedData.put(key, value);
     }
 
     /**
      * Mark entry as deleted
-     * @param key
+     * @param key key
      */
     public void markDeleted(Object key) {
-        this.deletedData.add(key);
+        removedData.add(key);
     }
 
     @Override
-    public Object put(Object key, Object value) {
-        Object obj = super.put(key, value);
+    public V put(K key, V value) {
+        V obj = super.put(key, value);
         if (null == obj) {
-            this.markCreated(key);
+            markCreated(key, value);
         } else {
-            this.markUpdated(key);
+            markUpdated(key, value);
         }
         return obj;
     }
 
     @Override
-    public Object remove(Object key) {
-        this.markDeleted(key);
+    public V remove(Object key) {
+        markDeleted(key);
         return super.remove(key);
     }
 
     /**
      * Return map with created data
-     * @return
+     * @return map
      */
-    public HashMap getCreatedData() {
-        HashMap map = new HashMap();
-        for (Object key : this.createdData) {
-            map.put(key, this.get(key));
-        }
-        this.createdData.clear();
+    public Map<K, V> getCreatedData() {
+        Map<K, V> map = Collections.unmodifiableMap(createdData);
+        createdData.clear();
         return map;
     }
 
     /**
      * Return map with updated data
-     * @return
+     * @return map
      */
-    public HashMap getUpdatedData() {
-        HashMap map = new HashMap();
-        for (Object key : this.updatedData) {
-            map.put(key, this.get(key));
-        }
-        this.updatedData.clear();
+    public Map<K, V> getUpdatedData() {
+        Map<K, V> map = Collections.unmodifiableMap(updatedData);
+        updatedData.clear();
         return map;
     }
 
     /**
      * Return list with removed data
-     * @return
+     * @return list
      */
-    public List getRemovedData() {
-        return this.deletedData;
+    public List<Object> getRemovedData() {
+        List<Object> list = Collections.unmodifiableList(removedData);
+        removedData.clear();
+        return list;
     }
 }
