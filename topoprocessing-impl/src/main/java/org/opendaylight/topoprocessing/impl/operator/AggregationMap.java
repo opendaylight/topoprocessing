@@ -20,7 +20,7 @@ public class AggregationMap extends HashMap<YangInstanceIdentifier, LogicalNode>
 
     private Map<YangInstanceIdentifier, LogicalNode> createdData = new HashMap<>();
     private Map<YangInstanceIdentifier, LogicalNode> updatedData = new HashMap<>();
-    private List<Object> removedData = new ArrayList<>();
+    private List<YangInstanceIdentifier> removedData = new ArrayList<>();
 
     public AggregationMap() {
     }
@@ -51,7 +51,7 @@ public class AggregationMap extends HashMap<YangInstanceIdentifier, LogicalNode>
      * Mark entry as deleted
      * @param key key
      */
-    public void markDeleted(Object key) {
+    public void markDeleted(YangInstanceIdentifier key) {
         removedData.add(key);
     }
 
@@ -68,7 +68,7 @@ public class AggregationMap extends HashMap<YangInstanceIdentifier, LogicalNode>
 
     @Override
     public LogicalNode remove(Object key) {
-        markDeleted(key);
+        markDeleted((YangInstanceIdentifier) key);
         return super.remove(key);
     }
 
@@ -96,8 +96,8 @@ public class AggregationMap extends HashMap<YangInstanceIdentifier, LogicalNode>
      * Return list with removed data
      * @return list
      */
-    public List<Object> getRemovedData() {
-        List<Object> list = new ArrayList<>(removedData);
+    public List<YangInstanceIdentifier> getRemovedData() {
+        List<YangInstanceIdentifier> list = new ArrayList<>(removedData);
         removedData.clear();
         return list;
     }
