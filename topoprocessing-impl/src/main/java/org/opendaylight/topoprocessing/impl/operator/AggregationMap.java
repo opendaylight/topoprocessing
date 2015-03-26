@@ -8,23 +8,33 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+
 import java.util.*;
 
 /**
  * @author matus.marko
  */
-public class AggregationMap<K, V> extends HashMap<K, V> {
+public class AggregationMap extends HashMap<YangInstanceIdentifier, LogicalNode> {
 
-    private Map<K, V> createdData = new HashMap<>();
-    private Map<K, V> updatedData = new HashMap<>();
+    private Map<YangInstanceIdentifier, LogicalNode> createdData = new HashMap<>();
+    private Map<YangInstanceIdentifier, LogicalNode> updatedData = new HashMap<>();
     private List<Object> removedData = new ArrayList<>();
+
+    public AggregationMap() {
+    }
+
+    public AggregationMap(Map<? extends YangInstanceIdentifier, ? extends LogicalNode> m) {
+        super(m);
+    }
 
     /**
      * Mark entry as created
      * @param key      key
      * @param value    value
      */
-    public void markCreated(K key, V value) {
+    public void markCreated(YangInstanceIdentifier key, LogicalNode value) {
         createdData.put(key, value);
     }
 
@@ -33,7 +43,7 @@ public class AggregationMap<K, V> extends HashMap<K, V> {
      * @param key key
      * @param value value
      */
-    public void markUpdated(K key, V value) {
+    public void markUpdated(YangInstanceIdentifier key, LogicalNode value) {
         updatedData.put(key, value);
     }
 
@@ -46,8 +56,8 @@ public class AggregationMap<K, V> extends HashMap<K, V> {
     }
 
     @Override
-    public V put(K key, V value) {
-        V obj = super.put(key, value);
+    public LogicalNode put(YangInstanceIdentifier key, LogicalNode value) {
+        LogicalNode obj = super.put(key, value);
         if (null == obj) {
             markCreated(key, value);
         } else {
@@ -57,7 +67,7 @@ public class AggregationMap<K, V> extends HashMap<K, V> {
     }
 
     @Override
-    public V remove(Object key) {
+    public LogicalNode remove(Object key) {
         markDeleted(key);
         return super.remove(key);
     }
@@ -66,8 +76,8 @@ public class AggregationMap<K, V> extends HashMap<K, V> {
      * Return map with created data
      * @return map
      */
-    public Map<K, V> getCreatedData() {
-        Map<K, V> map = Collections.unmodifiableMap(createdData);
+    public Map<YangInstanceIdentifier, LogicalNode> getCreatedData() {
+        Map<YangInstanceIdentifier, LogicalNode> map = new HashMap<>(createdData);
         createdData.clear();
         return map;
     }
@@ -76,8 +86,8 @@ public class AggregationMap<K, V> extends HashMap<K, V> {
      * Return map with updated data
      * @return map
      */
-    public Map<K, V> getUpdatedData() {
-        Map<K, V> map = Collections.unmodifiableMap(updatedData);
+    public Map<YangInstanceIdentifier, LogicalNode> getUpdatedData() {
+        Map<YangInstanceIdentifier, LogicalNode> map = new HashMap<>(updatedData);
         updatedData.clear();
         return map;
     }
@@ -87,7 +97,7 @@ public class AggregationMap<K, V> extends HashMap<K, V> {
      * @return list
      */
     public List<Object> getRemovedData() {
-        List<Object> list = Collections.unmodifiableList(removedData);
+        List<Object> list = new ArrayList<>(removedData);
         removedData.clear();
         return list;
     }
