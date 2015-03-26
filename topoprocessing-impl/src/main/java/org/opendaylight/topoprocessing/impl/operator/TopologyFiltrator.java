@@ -14,7 +14,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.node.ip.filtration._case.node.ip.filtration.Filter;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,7 @@ import java.util.Map;
 /**
  * @author matus.marko
  */
-public class TopologyFiltrator implements TopologyOperator {
+public class TopologyFiltrator {
 
     private Correlation correlation;
     private Filter filter;
@@ -39,8 +38,7 @@ public class TopologyFiltrator implements TopologyOperator {
         filter = filters.get(0);
     }
 
-    @Override
-    public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, String topologyId) {
+    public Map<YangInstanceIdentifier, PhysicalNode> processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, String topologyId) {
         Map<YangInstanceIdentifier, PhysicalNode> createdData = new HashMap<>();
         for (Map.Entry<YangInstanceIdentifier, PhysicalNode> changeEntry : createdEntries.entrySet()) {
             //TODO check leaf expected node value (Ipv4Address)
@@ -49,11 +47,10 @@ public class TopologyFiltrator implements TopologyOperator {
             }
         }
         // TODO handle result
-        return; //createdData
+        return createdData;
     }
 
-    @Override
-    public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId) {
+    public Map<YangInstanceIdentifier, PhysicalNode> processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId) {
         Map<YangInstanceIdentifier, PhysicalNode> updatedData = new HashMap<>();
         for (Map.Entry<YangInstanceIdentifier, PhysicalNode> changeEntry : updatedEntries.entrySet()) {
             //TODO check leaf expected node value (Ipv4Address)
@@ -62,12 +59,11 @@ public class TopologyFiltrator implements TopologyOperator {
             }
         }
         // TODO handle result
-        return; //updatedData
+        return updatedData;
     }
 
-    @Override
-    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
+    public List<YangInstanceIdentifier> processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
         //TODO handle result
-        return; // identifiers
+        return identifiers;
     }
 }

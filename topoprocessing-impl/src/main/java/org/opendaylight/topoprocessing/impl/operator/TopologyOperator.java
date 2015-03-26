@@ -24,19 +24,19 @@ public interface TopologyOperator {
      * @param createdEntries
      * @param topologyId
      */
-    public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, final String topologyId);
+    AggregationMap processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, final String topologyId);
 
     /**
      * Process newly updated changes
      * @param updatedEntries
      * @param topologyId
      */
-    public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId);
+    AggregationMap processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId);
 
     /**
      * Process newly deleted changes
      * @param identifiers Yang instance identifier
      * @param topologyId Topology Identification
      */
-    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId);
+    List<YangInstanceIdentifier> processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId);
 }

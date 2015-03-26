@@ -33,7 +33,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 public class TopologyManager {
 
     private TopologyOperator aggregator = null;
-    private TopologyOperator filtrator = null;
+    private TopologyFiltrator filtrator = null;
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
     private List<TopologyStore> topologyStores = new ArrayList<>();
 

@@ -24,7 +24,7 @@ public class LogicalNode {
      * @param physicalNodes
      */
     public LogicalNode(List<PhysicalNode> physicalNodes) {
-        physicalNodes.addAll(physicalNodes);
+        this.physicalNodes.addAll(physicalNodes);
     }
 
     /**
