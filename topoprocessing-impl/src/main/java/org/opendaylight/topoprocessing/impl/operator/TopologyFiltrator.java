@@ -40,7 +40,7 @@ public class TopologyFiltrator implements TopologyOperator {
     }
 
     @Override
-    public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, String topologyId) {
+    public Map<YangInstanceIdentifier, PhysicalNode> processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, String topologyId) {
         Map<YangInstanceIdentifier, PhysicalNode> createdData = new HashMap<>();
         for (Map.Entry<YangInstanceIdentifier, PhysicalNode> changeEntry : createdEntries.entrySet()) {
             //TODO check leaf expected node value (Ipv4Address)
@@ -49,11 +49,11 @@ public class TopologyFiltrator implements TopologyOperator {
             }
         }
         // TODO handle result
-        return; //createdData
+        return createdData;
     }
 
     @Override
-    public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId) {
+    public Map<YangInstanceIdentifier, PhysicalNode> processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId) {
         Map<YangInstanceIdentifier, PhysicalNode> updatedData = new HashMap<>();
         for (Map.Entry<YangInstanceIdentifier, PhysicalNode> changeEntry : updatedEntries.entrySet()) {
             //TODO check leaf expected node value (Ipv4Address)
@@ -62,12 +62,12 @@ public class TopologyFiltrator implements TopologyOperator {
             }
         }
         // TODO handle result
-        return; //updatedData
+        return updatedData;
     }
 
     @Override
-    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
+    public List<YangInstanceIdentifier> processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
         //TODO handle result
-        return; // identifiers
+        return identifiers;
     }
 }
