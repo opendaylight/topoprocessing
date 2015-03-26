@@ -27,7 +27,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public class TopologyAggregator implements TopologyOperator {
 
-    private Map<YangInstanceIdentifier,LogicalNode> aggregationMap = new AggregationMap();
+    private AggregationMap aggregationMap = new AggregationMap();
     private IdentifierGenerator idGenerator;
     private CorrelationItemEnum correlationItem;
     private List<TopologyStore> topologyStores;
@@ -46,8 +46,8 @@ public class TopologyAggregator implements TopologyOperator {
     }
 
     @Override
-    public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries,
-            final String topologyId) {
+    public Map<YangInstanceIdentifier, LogicalNode> processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries,
+                                                                           final String topologyId) {
         for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
             for (TopologyStore ts : topologyStores) {
                 if (ts.getId().equals(topologyId)) {
@@ -56,6 +56,7 @@ public class TopologyAggregator implements TopologyOperator {
             }
             createAggregatedNodes(createdEntry.getValue(), topologyId);
         }
+        return aggregationMap.getCreatedData();
     }
 
     private void createAggregatedNodes(PhysicalNode newNode,String topologyId) {
@@ -91,7 +92,7 @@ public class TopologyAggregator implements TopologyOperator {
     }
 
     @Override
-    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId) {
+    public List<YangInstanceIdentifier> processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId) {
         for (TopologyStore ts : topologyStores) {
             if (ts.getId().equals(topologyId)) {
                 Map<YangInstanceIdentifier, PhysicalNode> physicalNodes = ts.getPhysicalNodes();
@@ -106,6 +107,7 @@ public class TopologyAggregator implements TopologyOperator {
                 }
             }
         }
+        return aggregationMap.getRemovedData();
     }
 
     private void removePhysicalNodeFromLogicalNode(PhysicalNode physicalNode,
@@ -126,8 +128,8 @@ public class TopologyAggregator implements TopologyOperator {
     }
 
     @Override
-    public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
-            String topologyId) {
+    public Map<YangInstanceIdentifier, LogicalNode> processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
+                                                                String topologyId) {
         for (Entry<YangInstanceIdentifier, PhysicalNode> updatedEntry : updatedEntries.entrySet()) {
             for (TopologyStore ts : topologyStores) {
                 if (ts.getId().equals(topologyId)) {
@@ -144,5 +146,6 @@ public class TopologyAggregator implements TopologyOperator {
                 }
             }
         }
+        return aggregationMap.getUpdatedData();
     }
 }
