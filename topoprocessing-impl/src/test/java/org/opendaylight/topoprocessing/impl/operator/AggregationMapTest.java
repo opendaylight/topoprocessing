@@ -26,7 +26,7 @@ public class AggregationMapTest {
 
     private static final int YIIDS_COUNT = 6;
     private AggregationMap aggregationMap;
-    List<YangInstanceIdentifier> yiids = new ArrayList<>();
+    private List<YangInstanceIdentifier> yiids = new ArrayList<>();
 
     @Mock
     LogicalNode pn0, pn1, pn2, pn3, pn4, pn5;
