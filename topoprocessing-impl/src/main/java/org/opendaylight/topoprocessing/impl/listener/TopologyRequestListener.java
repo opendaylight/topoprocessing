@@ -62,7 +62,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
             YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
             NormalizedNode<?, ?> normalizedNode = entry.getValue();
             if(normalizedNode.getNodeType().equals(Topology.QNAME)) {
-                if (((Topology) normalizedNode).getAugmentation(CorrelationAugment.class) != null) {
+                if (((Topology) normalizedNode.getValue()).getAugmentation(CorrelationAugment.class) != null) {
                     TopologyRequestHandler requestHandler = new TopologyRequestHandler(dataBroker);
                     topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
                     requestHandler.processNewRequest((Topology) normalizedNode);
