@@ -30,7 +30,6 @@ public class TopologyFiltrator implements TopologyOperator {
     /**
      * Constructor
      * @param correlation
-     * @param topologyStores
      */
     public TopologyFiltrator(Correlation correlation) {
         this.correlation = correlation;
