@@ -37,6 +37,24 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_8d5bc486",
+        "filename": "features/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3277
+      },
+      "writtenOn": "2015-03-31T09:13:55Z",
+      "side": 1,
+      "message": "I intended that in addition to what already added within this patch.",
+      "parentUuid": "5a93c517_ad1000a9",
+      "revId": "0fb87132fd4a310fe0f886974025ba9366db2cc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_4db05c43",
         "filename": "pom.xml",
         "patchSetId": 3
