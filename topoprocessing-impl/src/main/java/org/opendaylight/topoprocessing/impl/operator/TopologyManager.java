@@ -26,6 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.UnificationCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.node.ip.filtration._case.node.ip.filtration.Filter;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author matus.marko
@@ -36,14 +38,17 @@ public class TopologyManager {
     private TopologyOperator filtrator = null;
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
     private List<TopologyStore> topologyStores = new ArrayList<>();
-
+    private static final Logger LOG = LoggerFactory.getLogger(TopologyManager.class);
+    
     /**
      * Process created changes
      * @param createdEntries
      * @param topologyId
      */
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, final String topologyId) {
-        aggregator.processCreatedChanges(createdEntries, topologyId);
+        if (operatorNotNull(aggregator)) {
+            aggregator.processCreatedChanges(createdEntries, topologyId);
+        }
     }
 
     /**
@@ -51,8 +56,10 @@ public class TopologyManager {
      * @param identifiers which were removed in this change
      * @param topologyId id of topology on which this method was called
      */
-    public void processRemovedChanges(ArrayList<YangInstanceIdentifier> identifiers, final String topologyId) {
-        aggregator.processRemovedChanges(identifiers, topologyId);
+    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId) {
+        if (operatorNotNull(aggregator)) {
+            aggregator.processRemovedChanges(identifiers, topologyId);
+        }
     }
 
     /**
@@ -62,7 +69,18 @@ public class TopologyManager {
      */
     public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
             String topologyId) {
-        aggregator.processUpdatedChanges(updatedEntries, topologyId);
+        if (operatorNotNull(aggregator)) {
+            aggregator.processUpdatedChanges(updatedEntries, topologyId);
+        }
+    }
+
+    private static boolean operatorNotNull(TopologyOperator operator) {
+        if (operator == null) {
+            throw new IllegalStateException("Operator needs to be initialized in the method: " +
+                    Thread.currentThread().getStackTrace()[2].getMethodName());
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -93,8 +111,10 @@ public class TopologyManager {
     }
 
     private void iterateMappings(List<Mapping> mappings) {
-        for (Mapping mapping : mappings) {
-            initializeStore(mapping.getUnderlayTopology());
+        if (mappings != null) {
+            for (Mapping mapping : mappings) {
+                initializeStore(mapping.getUnderlayTopology());
+            }
         }
     }
 
@@ -106,5 +126,12 @@ public class TopologyManager {
         }
         topologyStores.add(new TopologyStore(underlayTopologyId,
                 new HashMap<YangInstanceIdentifier, PhysicalNode>()));
+    }
+
+    /**
+     * @return the topologyStores
+     */
+    public List<TopologyStore> getTopologyStores() {
+        return topologyStores;
     }
 }
