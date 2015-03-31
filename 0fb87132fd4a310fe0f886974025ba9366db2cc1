@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_6d6438e5",
+        "filename": "features/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3277
+      },
+      "writtenOn": "2015-03-31T07:25:34Z",
+      "side": 1,
+      "message": "Wondering if a dependency such as:\n\n\u003cdependency\u003e\n    \u003cgroupId\u003eorg.opendaylight.topoprocessing\u003c/groupId\u003e\n    \u003cartifactId\u003etopoprocessing-config\u003c/artifactId\u003e\n    \u003cversion\u003e${project.version}\u003c/version\u003e\n    \u003ctype\u003exml\u003c/type\u003e\n    \u003cclassifier\u003econfig\u003c/classifier\u003e\n \u003c/dependency\u003e\n\nmay be needed.",
+      "revId": "0fb87132fd4a310fe0f886974025ba9366db2cc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_4db05c43",
+        "filename": "pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3277
+      },
+      "writtenOn": "2015-03-31T07:25:34Z",
+      "side": 1,
+      "message": "Is it then dependendency on \"slf4j-log4j12\" sufficient ?",
+      "revId": "0fb87132fd4a310fe0f886974025ba9366db2cc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_2d5e3013",
+        "filename": "topoprocessing-impl/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3277
+      },
+      "writtenOn": "2015-03-31T07:25:34Z",
+      "side": 1,
+      "message": "Some trailing spaces at line 34.",
+      "revId": "0fb87132fd4a310fe0f886974025ba9366db2cc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
