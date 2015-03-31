@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "5a93c517_ad1000a9",
+        "filename": "features/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-31T09:06:02Z",
+      "side": 1,
+      "message": "we need to provide dependency to the module, which the config file is located in ... \n\nsimilar as in mlmt case -\n         \u003cdependency\u003e\n            \u003cgroupId\u003eorg.opendaylight.topoprocessing\u003c/groupId\u003e\n            \u003cartifactId\u003emlmt-topology-observer-impl\u003c/artifactId\u003e\n            \u003cversion\u003e${project.version}\u003c/version\u003e\n            \u003ctype\u003exml\u003c/type\u003e\n            \u003cclassifier\u003econfig\u003c/classifier\u003e\n        \u003c/dependency\u003e\n\nbut I can test it and if we don\u0027t need the dependency, that I will remove it",
+      "parentUuid": "5a93c517_6d6438e5",
+      "revId": "0fb87132fd4a310fe0f886974025ba9366db2cc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5a93c517_4db05c43",
         "filename": "pom.xml",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2015-03-31T07:25:34Z",
       "side": 1,
       "message": "Is it then dependendency on \"slf4j-log4j12\" sufficient ?",
+      "revId": "0fb87132fd4a310fe0f886974025ba9366db2cc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_0d21f4fa",
+        "filename": "pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-03-31T09:06:02Z",
+      "side": 1,
+      "message": "Yes, it should be enough to add concrete logger to bundles that need it ... as it is also provided by odlparent",
+      "parentUuid": "5a93c517_4db05c43",
       "revId": "0fb87132fd4a310fe0f886974025ba9366db2cc1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
