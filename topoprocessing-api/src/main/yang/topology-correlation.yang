@@ -99,7 +99,7 @@
                                     description "Path to target field";
                                 }
                                 leaf value {
-                                    type inet:ipv4-address;
+                                    type inet:ip-prefix;
                                 }
                             }
                         }
