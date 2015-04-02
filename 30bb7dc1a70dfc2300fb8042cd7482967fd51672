@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_0cca516e",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-04-02T09:20:27Z",
+      "side": 1,
+      "message": "please define constants first",
+      "range": {
+        "startLine": 41,
+        "startChar": 4,
+        "endLine": 41,
+        "endChar": 85
+      },
+      "revId": "30bb7dc1a70dfc2300fb8042cd7482967fd51672",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_ec95a540",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-04-02T09:20:27Z",
+      "side": 1,
+      "message": "please use Preconditions.checkNotNull(...) instead of this method",
+      "range": {
+        "startLine": 77,
+        "startChar": 4,
+        "endLine": 84,
+        "endChar": 5
+      },
+      "revId": "30bb7dc1a70dfc2300fb8042cd7482967fd51672",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a93c517_ac49ddd1",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TopologyManagerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-04-02T09:20:27Z",
+      "side": 1,
+      "message": "typo - underlay",
+      "range": {
+        "startLine": 45,
+        "startChar": 73,
+        "endLine": 45,
+        "endChar": 80
+      },
+      "revId": "30bb7dc1a70dfc2300fb8042cd7482967fd51672",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
