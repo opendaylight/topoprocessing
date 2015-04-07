@@ -90,7 +90,7 @@ public class TopologyManager {
             UnificationCase typeCase = (UnificationCase) correlation.getCorrelationType();
             List<Mapping> mappings = typeCase.getUnification().getMapping();
             iterateMappings(mappings);
-            //TODO Unification Operator
+            aggregator = new UnificationAggregator(correlation.getCorrelationItem(), topologyStores, idGenerator);
         }
         else if (correlation.getName().equals(NodeIpFiltration.class)) {
             NodeIpFiltrationCase typeCase = (NodeIpFiltrationCase) correlation.getCorrelationType();
