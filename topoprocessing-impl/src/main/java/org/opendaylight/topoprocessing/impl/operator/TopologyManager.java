@@ -84,13 +84,13 @@ public class TopologyManager {
             EqualityCase typeCase = (EqualityCase) correlation.getCorrelationType();
             List<Mapping> mappings = typeCase.getEquality().getMapping();
             iterateMappings(mappings);
-            aggregator = new TopologyAggregator(correlation.getCorrelationItem(), topologyStores, idGenerator);
+            aggregator = new EqualityAggregator(correlation.getCorrelationItem(), topologyStores, idGenerator);
         }
         else if (correlation.getName().equals(Unification.class)) {
             UnificationCase typeCase = (UnificationCase) correlation.getCorrelationType();
             List<Mapping> mappings = typeCase.getUnification().getMapping();
             iterateMappings(mappings);
-            //TODO Unification Operator
+            aggregator = new UnificationAggregator(correlation.getCorrelationItem(), topologyStores, idGenerator);
         }
         else if (correlation.getName().equals(NodeIpFiltration.class)) {
             NodeIpFiltrationCase typeCase = (NodeIpFiltrationCase) correlation.getCorrelationType();
