@@ -14,6 +14,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import java.util.*;
 
 /**
+ * Meets functionality of classical hash map with tracking records of created, updated and removed data.
  * @author matus.marko
  */
 public class AggregationMap extends HashMap<YangInstanceIdentifier, LogicalNode> {
