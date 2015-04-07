@@ -26,7 +26,7 @@ import java.util.Map;
  * @author matus.marko
  */
 @RunWith(MockitoJUnitRunner.class)
-public class TopologyAggregatorTest {
+public class EqualityAggregatorTest {
 
     private static final QName ROOT_QNAME = QName.create("foo", "2014-03-13", "bar");
     private static final QName LIST_IP_QNAME = QName.create(ROOT_QNAME, "ip");
@@ -39,7 +39,7 @@ public class TopologyAggregatorTest {
     private static final String TOPO3 = "topo3";
     private static final String TOPO4 = "topo4";
 
-    private TopologyAggregator aggregator;
+    private EqualityAggregator aggregator;
     private List<TopologyStore> topologyStores;
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
     private YangInstanceIdentifier leafYiid11, leafYiid12, leafYiid21, leafYiid22, leafYiid23;
@@ -66,7 +66,7 @@ public class TopologyAggregatorTest {
     @Before
     public void setUp() throws Exception {
 
-        // make topology stores
+        // initialize topology stores
         TopologyStore topo1 = new TopologyStore(TOPO1, new HashMap<YangInstanceIdentifier, PhysicalNode>());
         TopologyStore topo2 = new TopologyStore(TOPO2, new HashMap<YangInstanceIdentifier, PhysicalNode>());
         TopologyStore topo3 = new TopologyStore(TOPO3, new HashMap<YangInstanceIdentifier, PhysicalNode>());
@@ -93,7 +93,7 @@ public class TopologyAggregatorTest {
         topo2.getPhysicalNodes().put(leafYiid12, physicalNode2);
 
         CorrelationItemEnum correlationItem = CorrelationItemEnum.Node;
-        aggregator = new TopologyAggregator(correlationItem, topologyStores, idGenerator);
+        aggregator = new EqualityAggregator(correlationItem, topologyStores, idGenerator);
     }
 
     /**
@@ -145,14 +145,16 @@ public class TopologyAggregatorTest {
         physicalNodes1.put(leafYiid22, physicalNode2);
 
         AggregationMap created1 = aggregator.processCreatedChanges(physicalNodes1, TOPO2);
+        //expecting: one created aggregated topology
         Assert.assertEquals(1, created1.getCreatedData().size());
         Assert.assertEquals(0, created1.getUpdatedData().size());
         Assert.assertEquals(0, created1.getRemovedData().size());
 
         List<PhysicalNode> createdPhysicalNodes1 = created1.entrySet().iterator().next().getValue().getPhysicalNodes();
+        //expecting: newly created logical node contains 2 physical nodes (node21 and node11)
         Assert.assertEquals("Count of physical nodes in aggregation should be 2", 2, createdPhysicalNodes1.size());
 
-        // change 2
+        // change 2 - adding new physical node to previously created logical node
         leafYiid23 = YangInstanceIdentifier.builder()
                 .nodeWithKey(LIST_IP_QNAME, LEAF_IP_QNAME, "23").build();
         LeafNode<Object> leafNode23 = ImmutableLeafNodeBuilder.create()
@@ -163,18 +165,21 @@ public class TopologyAggregatorTest {
         physicalNodes2.put(leafYiid23, physicalNode3);
 
         AggregationMap created2 = aggregator.processCreatedChanges(physicalNodes2, TOPO3);
+        //expecting: no new logical node created
         Assert.assertEquals(0, created2.getCreatedData().size());
         Map<YangInstanceIdentifier, LogicalNode> updatedData = created2.getUpdatedData();
+        //expecting: 1 logical node updated
         Assert.assertEquals(1, updatedData.size());
+        //expecting: no logical node removed
         Assert.assertEquals(0, created2.getRemovedData().size());
 
         List<PhysicalNode> createdPhysicalNodes2 = updatedData.entrySet().iterator().next().getValue().getPhysicalNodes();
         Assert.assertEquals("Count of physical nodes in aggregation should be 3", 3, createdPhysicalNodes2.size());
-        Assert.assertEquals("1. physical node in the aggregated point doesn't equals to the original one",
+        Assert.assertEquals("1st physical node in the logical node is not equal with the original one",
                 createdPhysicalNodes2.get(0), physicalNode1);
-        Assert.assertEquals("2. physical node in the aggregated point doesn't equals to the original one",
+        Assert.assertEquals("2nd physical node in the logical node is not equal with the node created in Change 1",
                 createdPhysicalNodes2.get(1), topologyStores.get(0).getPhysicalNodes().get(leafYiid11));
-        Assert.assertEquals("3. physical node in ths aggregated point doesn't equals to the original one",
+        Assert.assertEquals("3rd physical node in the logical node is not equal with the node created in Change 2",
                 createdPhysicalNodes2.get(2), physicalNode3);
     }
 
@@ -202,23 +207,32 @@ public class TopologyAggregatorTest {
      */
     @Test
     public void testProcessRemovedChanges() throws Exception {
+        // in order to remove nodes, aggregated topology from "create" method will be used
         testProcessCreatedChanges();
 
         ArrayList<YangInstanceIdentifier> remove1 = new ArrayList<>();
         remove1.add(leafYiid11);
         AggregationMap resultMap1 = aggregator.processRemovedChanges(remove1, TOPO1);
+        //expecting: no new created node
         Assert.assertEquals(0, resultMap1.getCreatedData().size());
         Map<YangInstanceIdentifier, LogicalNode> updatedData = resultMap1.getUpdatedData();
+        //expecting: one updated logical node
         Assert.assertEquals(1, updatedData.size());
+        //expecting: no removed logical node
         Assert.assertEquals(0, resultMap1.getRemovedData().size());
         List<PhysicalNode> updatedPhysicalNodes = updatedData.entrySet().iterator().next().getValue().getPhysicalNodes();
+        //expecting: logical node containing 3 physical nodes minus 1 = now containing 2 physical nodes
         Assert.assertEquals("Count of physical nodes in aggregation should be 2", 2, updatedPhysicalNodes.size());
 
         ArrayList<YangInstanceIdentifier> remove2 = new ArrayList<>();
         remove2.add(leafYiid21);
         AggregationMap resultMap2 = aggregator.processRemovedChanges(remove2, TOPO2);
+        //expecting: no new created node
         Assert.assertEquals(0, resultMap2.getCreatedData().size());
+        //expecting: no new updated node
         Assert.assertEquals(0, resultMap2.getUpdatedData().size());
+        //expecting: from logical node originally containing 2 physical nodes one node was removed = logical node with
+        //one physical node should not exist and should be removed
         Assert.assertEquals(1, resultMap2.getRemovedData().size());
     }
 
@@ -249,6 +263,7 @@ public class TopologyAggregatorTest {
      */
     @Test
     public void testProcessUpdatedChanges1() throws Exception {
+        // in order to update nodes, aggregated topology from "create" method will be used
         testProcessCreatedChanges();
 
         LeafNode<Object> leafNode31 = ImmutableLeafNodeBuilder.create()
@@ -258,8 +273,11 @@ public class TopologyAggregatorTest {
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();
         update.put(leafYiid11, physicalNode);
         AggregationMap resultMap1 = aggregator.processUpdatedChanges(update, TOPO1);
+        //expecting: 1 new logical node created, containing two physical nodes with IP 192.168.1.2
         Assert.assertEquals(1, resultMap1.getCreatedData().size());
+        //expecting: 1 updated logical node (containing two physical nodes with IP 192.168.1.1)
         Assert.assertEquals(1, resultMap1.getUpdatedData().size());
+        //expecting: no logical node removed
         Assert.assertEquals(0, resultMap1.getRemovedData().size());
     }
 
@@ -297,11 +315,18 @@ public class TopologyAggregatorTest {
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();
         update.put(leafYiid23, physicalNode);
         AggregationMap resultMap1 = aggregator.processUpdatedChanges(update, TOPO3);
+        //expecting: no created logical node
         Assert.assertEquals(0, resultMap1.getCreatedData().size());
+        //expecting: 1 updated logical node (containing three physical nodes with IP 192.168.1.2)
         Assert.assertEquals(1, resultMap1.getUpdatedData().size());
+        //expecting: 1 removed logical node (originally containing two physical nodes with IP 192.168.1.1)
         Assert.assertEquals(1, resultMap1.getRemovedData().size());
     }
 
+    /**
+     * In physical node, leafnode attribute remains the same, node attribute is modified
+     * @throws Exception
+     */
     @Test
     public void testProcessUpdatedChanges3() throws Exception {
         testProcessCreatedChanges();
@@ -312,9 +337,11 @@ public class TopologyAggregatorTest {
         AggregationMap resultMap1 = aggregator.processUpdatedChanges(update, TOPO1);
         Assert.assertEquals(0, resultMap1.getCreatedData().size());
         Map<YangInstanceIdentifier, LogicalNode> updatedData = resultMap1.getUpdatedData();
+        //expecting: 1 updated logical node
         Assert.assertEquals(1, updatedData.size());
         Assert.assertEquals(0, resultMap1.getRemovedData().size());
 
+        //expecting: the physical node in logical node has been modified
         boolean equals = false;
         List<PhysicalNode> physicalNodes = updatedData.entrySet().iterator().next().getValue().getPhysicalNodes();
         for (PhysicalNode node : physicalNodes) {
@@ -322,6 +349,6 @@ public class TopologyAggregatorTest {
                 equals = true;
             }
         }
-        Assert.assertTrue("Set nodes doesn't equals", equals);
+        Assert.assertTrue("Set nodes doesn't equal", equals);
     }
 }
