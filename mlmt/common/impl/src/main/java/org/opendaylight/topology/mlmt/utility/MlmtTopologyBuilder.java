@@ -7,11 +7,15 @@
  */
 package org.opendaylight.topology.mlmt.utility;
 
+import com.google.common.base.Optional;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -121,7 +125,49 @@ public class MlmtTopologyBuilder {
               public void applyOperation(ReadWriteTransaction transaction) {
                   transaction.delete(type, topologyInstanceId);
               }
+
+              @Override
+              public boolean isCommitNow() { return true; };
          });
+    }
+
+    public void copyTopology(final LogicalDatastoreType fromType,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final LogicalDatastoreType toType) {
+        try {
+            log.info("MlmtTopologyBuilder.copyTopology type: " + fromType + " topologyInstanceId: "
+                    + topologyInstanceId.toString() + " toType: " + toType);
+            Optional<Topology> sourceTopologyObject = null;
+            final ReadOnlyTransaction rx = dataBroker.newReadOnlyTransaction();
+            sourceTopologyObject = rx.read(fromType, topologyInstanceId).get();
+            if (sourceTopologyObject == null) {
+                log.info("MlmtTopologyBuilder.copyTopology source topologyObject null");
+                return;
+            }
+            if (sourceTopologyObject.isPresent() == false) {
+                log.info("MlmtTopologyBuilder.copyTopology sourceTopologyObject not present");
+                return;
+            }
+            final Topology sourceTopology = sourceTopologyObject.get();
+            if (sourceTopology == null){
+                log.info("MlmtTopologyBuilder.copyTopology dest sourceTopology is null\n");
+                return;
+            }
+
+            processor.enqueueOperation(new MlmtTopologyOperation() {
+                @Override
+                public void applyOperation(ReadWriteTransaction transaction) {
+                    transaction.put(toType, topologyInstanceId, sourceTopology);
+                }
+
+                @Override
+                public boolean isCommitNow() { return true; };
+            });
+        } catch (final InterruptedException e) {
+            log.error("MlmtTopologyBuilder.copyTopology interrupted exception", e);
+        } catch (final ExecutionException e) {
+            log.error("MlmtTopologyBuilder.copyTopology execution exception", e);
+        }
     }
 
     public void createNode(final LogicalDatastoreType type,
@@ -155,7 +201,7 @@ public class MlmtTopologyBuilder {
     public void deleteNode(final LogicalDatastoreType type,
              final InstanceIdentifier<Topology> topologyInstanceId,
              final NodeKey nodeKey) {
-        log.info("MlmtTopologyBuilder.createNode type: " + type + " topologyInstanceId: "
+        log.info("MlmtTopologyBuilder.deleteNode type: " + type + " topologyInstanceId: "
                 + topologyInstanceId.toString() + " TopologyId: " + topologyInstanceId.toString()
                 + " nodeKey: " + nodeKey.toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
@@ -164,6 +210,9 @@ public class MlmtTopologyBuilder {
                 final InstanceIdentifier<Node> nodeInstanceId = topologyInstanceId.child(Node.class, nodeKey);
                 transaction.delete(type, nodeInstanceId);
             }
+
+            @Override
+            public boolean isCommitNow() { return true; };
         });
     }
 
@@ -206,6 +255,9 @@ public class MlmtTopologyBuilder {
                  InstanceIdentifier<TerminationPoint> tpInstanceId = nodeInstanceId.child(TerminationPoint.class, tpKey);
                  transaction.delete(type, tpInstanceId);
              }
+
+             @Override
+             public boolean isCommitNow() { return true; };
         });
     }
 
@@ -250,6 +302,9 @@ public class MlmtTopologyBuilder {
                  InstanceIdentifier<Link> linkInstanceId = topologyInstanceId.child(Link.class, linkKey);
                  transaction.delete(type, linkInstanceId);
              }
+
+             @Override
+             public boolean isCommitNow() { return true; };
         });
     }
 }

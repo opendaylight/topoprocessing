@@ -59,7 +59,7 @@ public final class MlmtOperationProcessor implements AutoCloseable, Runnable, Tr
                         op.applyOperation(tx);
 
                         ops++;
-                        if (ops < MAX_TRANSACTION_OPERATIONS) {
+                        if (ops < MAX_TRANSACTION_OPERATIONS && !op.isCommitNow()) {
                             op = queue.poll();
                         } else {
                             op = null;

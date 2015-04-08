@@ -19,6 +19,7 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
@@ -31,6 +32,7 @@ import org.opendaylight.topology.mlmt.parser.InventoryAttributesParserImpl;
 import org.opendaylight.topology.mlmt.parser.MultilayerAttributesParserImpl;
 import org.opendaylight.topology.mlmt.parser.MultitechnologyAttributesParserImpl;
 import org.slf4j.Logger;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyType;
 
 public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
 
@@ -76,6 +78,11 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
         map.put(mlmtTopologyName, lProvider);
 
         return map;
+    }
+
+    @Override
+    public boolean isBuildingTopologyType(TopologyTypes topologyType) {
+        return true;
     }
 }
 

@@ -13,11 +13,13 @@ import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
  * Internal interface for submitted operations. Implementations of this
  * interface are enqueued and batched into data store transactions.
  */
-public interface MlmtTopologyOperation {
+public abstract class MlmtTopologyOperation {
     /**
      * Execute the operation on top of the transaction.
      *
      * @param transaction Datastore transaction
      */
-    void applyOperation(ReadWriteTransaction transaction);
+    abstract public void applyOperation(ReadWriteTransaction transaction);
+
+    public boolean isCommitNow() { return false; };
 }
