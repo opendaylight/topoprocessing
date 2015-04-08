@@ -1,1 +1,8 @@
-/target-ide
+# FOLDER
+target
+.settings
+yang-gen-config
+yang-gen-sal
+# FILE
+.classpath
+.project
