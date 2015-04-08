@@ -45,8 +45,6 @@ public class UnificationAggregator implements TopologyOperator {
             for (TopologyStore ts : topologyStores) {
                 if (ts.getId().equals(topologyId)) {
                     ts.getPhysicalNodes().put(createdEntry.getKey(), createdEntry.getValue());
-                    // create logical node with one physical node
-                    createAggregatedNodes(createdEntry.getValue(), topologyId);
                 }
             }
             createAggregatedNodes(createdEntry.getValue(), topologyId);
@@ -92,11 +90,12 @@ public class UnificationAggregator implements TopologyOperator {
                 }
             } else {
                 // create Logical Node with one Physical Node
+                YangInstanceIdentifier logicalNodeIdentifier =
+                        idGenerator.getNextIdentifier(topologyId, correlationItem);
+                newNode.setLogicalIdentifier(logicalNodeIdentifier);
                 List<PhysicalNode> nodesToAggregate = new ArrayList<>();
                 nodesToAggregate.add(newNode);
                 LogicalNode logicalNode = new LogicalNode(nodesToAggregate);
-                YangInstanceIdentifier logicalNodeIdentifier =
-                        idGenerator.getNextIdentifier(topologyId, correlationItem);
                 unificationMap.put(logicalNodeIdentifier, logicalNode);
             }
         }
@@ -164,5 +163,26 @@ public class UnificationAggregator implements TopologyOperator {
             }
         }
         return unificationMap;
+    }
+
+    /**
+     * Creates one logical node per each physical node from topology store
+     * @param initTopologyStores - physical nodes from topology store
+     */
+    public void initialize(List<TopologyStore> initTopologyStores) {
+        for (TopologyStore ts : initTopologyStores) {
+            for (Entry<YangInstanceIdentifier, PhysicalNode> topoStoreEntry : ts.getPhysicalNodes().entrySet()) {
+                // create Logical Node with one Physical Node
+                YangInstanceIdentifier logicalNodeIdentifier =
+                        idGenerator.getNextIdentifier(ts.getId(), correlationItem);
+                topoStoreEntry.getValue().setLogicalIdentifier(logicalNodeIdentifier);
+                List<PhysicalNode> nodesToAggregate = new ArrayList<>();
+                nodesToAggregate.add(topoStoreEntry.getValue());
+                LogicalNode logicalNode = new LogicalNode(nodesToAggregate);
+                unificationMap.put(logicalNodeIdentifier, logicalNode);
+            }
+        }
+        // reset createdData hash map
+        unificationMap.getCreatedData();
     }
 }

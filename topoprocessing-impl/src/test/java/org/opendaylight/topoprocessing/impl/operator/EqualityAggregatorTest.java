@@ -66,7 +66,7 @@ public class EqualityAggregatorTest {
     @Before
     public void setUp() throws Exception {
 
-        // make topology stores
+        // initialize topology stores
         TopologyStore topo1 = new TopologyStore(TOPO1, new HashMap<YangInstanceIdentifier, PhysicalNode>());
         TopologyStore topo2 = new TopologyStore(TOPO2, new HashMap<YangInstanceIdentifier, PhysicalNode>());
         TopologyStore topo3 = new TopologyStore(TOPO3, new HashMap<YangInstanceIdentifier, PhysicalNode>());
