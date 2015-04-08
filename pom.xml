@@ -46,6 +46,7 @@
         <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
         <sal.binding.api.version>1.2.0-SNAPSHOT</sal.binding.api.version>
         <sal.binding.config.version>1.2.0-SNAPSHOT</sal.binding.config.version>
+        <sal.core.api.version>1.2.0-SNAPSHOT</sal.core.api.version>
         <features.test.version>1.5.0-SNAPSHOT</features.test.version>
         <model.topology.version>1.2.0-SNAPSHOT</model.topology.version>
         <flow.version>1.2.0-SNAPSHOT</flow.version>
