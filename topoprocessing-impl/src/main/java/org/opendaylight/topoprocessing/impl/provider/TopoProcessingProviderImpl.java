@@ -19,6 +19,7 @@ import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
@@ -39,17 +40,22 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private ListenerRegistration<DOMDataChangeListener> topologyRequestListenerRegistration;
     private SchemaService schemaService;
     private ListenerRegistration<SchemaContextListener> schemaContextListenerRegistration;
+    private BindingNormalizedNodeSerializer nodeSerializer;
 
     /**
      * @param schemaService 
      * @param dataBroker
+     * @param nodeSerializer 
      */
-    public TopoProcessingProviderImpl(SchemaService schemaService, DOMDataBroker dataBroker) {
+    public TopoProcessingProviderImpl(SchemaService schemaService, DOMDataBroker dataBroker,
+            BindingNormalizedNodeSerializer nodeSerializer) {
         LOGGER.debug("Creating TopoProcessingProvider");
         Preconditions.checkNotNull(schemaService, "SchemaService can't be null");
-        Preconditions.checkNotNull(schemaService, "DOMDataBroker can't be null");
+        Preconditions.checkNotNull(dataBroker, "DOMDataBroker can't be null");
+        Preconditions.checkNotNull(nodeSerializer, "BindingNormalizedNodeSerializer can't be null");
         this.schemaService = schemaService;
         this.dataBroker = dataBroker;
+        this.nodeSerializer = nodeSerializer;
         GlobalSchemaContextHolder.setSchemaContext(schemaService.getGlobalContext());
         startup();
     }
@@ -77,7 +83,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
         topologyRequestListenerRegistration =
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                        identifier, new TopologyRequestListener(dataBroker), DataChangeScope.BASE);
+                        identifier, new TopologyRequestListener(dataBroker, nodeSerializer), DataChangeScope.ONE);
         LOGGER.debug("Topology Request Listener has been successfully registered");
     }
 }
