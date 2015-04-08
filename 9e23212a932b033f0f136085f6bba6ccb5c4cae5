@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_05177152",
+        "filename": "mlmt/common/impl/src/test/java/org/opendaylight/topology/mlmt/utility/MlmtOperationProcessorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-04-08T13:21:19Z",
+      "side": 1,
+      "message": "I don\u0027t think this is correct JUnit test. This is more of an integration test - it tests dataBroker more than the OperationProcessor. We should use Mock objects when creating junit tests and focus on testing our classes. By the use of Mock objects we don\u0027t have to wait for so long periods (at max 10000)",
+      "range": {
+        "startLine": 43,
+        "startChar": 13,
+        "endLine": 43,
+        "endChar": 39
+      },
+      "revId": "9e23212a932b033f0f136085f6bba6ccb5c4cae5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
