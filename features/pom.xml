@@ -20,6 +20,7 @@
     </scm>
 
     <properties>
+        <bgp.version>0.4.0-SNAPSHOT</bgp.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <karaf.empty.version>1.5.0-SNAPSHOT</karaf.empty.version>
         <features.file>features.xml</features.file>
@@ -31,6 +32,13 @@
         <dependency>
             <groupId>org.opendaylight.yangtools</groupId>
             <artifactId>features-yangtools</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.bgpcep</groupId>
+            <artifactId>features-pcep</artifactId>
+            <version>${bgp.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
