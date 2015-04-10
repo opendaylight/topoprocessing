@@ -155,8 +155,6 @@
                 <configuration>
                     <bootFeatures>
                         <feature>standard</feature>
-                        <feature>odl-topoprocessing-framework</feature>
-                        <feature>odl-topoprocessing-mlmt</feature>
                     </bootFeatures>
                 </configuration>
                 <executions>
