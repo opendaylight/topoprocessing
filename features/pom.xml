@@ -48,15 +48,15 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
-            <artifactId>features-flow</artifactId>
-            <version>${flow.version}</version>
+            <artifactId>features-restconf</artifactId>
+            <version>${mdsal.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>features-restconf</artifactId>
-            <version>${mdsal.version}</version>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>features-openflowplugin</artifactId>
+            <version>${openflowplugin.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
