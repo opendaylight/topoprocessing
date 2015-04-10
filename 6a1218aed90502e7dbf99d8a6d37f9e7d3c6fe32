@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a93c517_3068a4f4",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 3277
+      },
+      "writtenOn": "2015-04-10T10:19:21Z",
+      "side": 1,
+      "message": "Would it be possible to just include the following two bundles: \n\u003cbundle\u003emvn:org.opendaylight.controller.model/model-inventory/${mdsal.version}\u003c/bundle\u003e\n\t\u003cbundle\u003emvn:org.opendaylight.controller.model/model-topology/${mdsal.version}\u003c/bundle\u003e\n\nin place of features-openflowplugin (and odl-flow-model) ?",
+      "revId": "6a1218aed90502e7dbf99d8a6d37f9e7d3c6fe32",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
