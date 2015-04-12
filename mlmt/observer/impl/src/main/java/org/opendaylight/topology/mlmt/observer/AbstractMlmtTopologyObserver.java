@@ -14,7 +14,9 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
@@ -24,6 +26,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -87,28 +90,46 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
         return InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
     }
 
-    private void buildTopology(final InstanceIdentifier<Topology> buildTopologyId, Topology topology) {
+    private void buildTopology(final LogicalDatastoreType type, final InstanceIdentifier<Topology> buildTopologyId,
+            Topology topology) {
         List<Node> lNode = topology.getNode();
         List<Link> lLink = topology.getLink();
-        if (lNode != null && lNode.isEmpty() == false) {
+        if (lNode != null && !lNode.isEmpty()) {
             for (Node node : lNode) {
                 TopologyKey topologyKey = buildTopologyId.firstKeyOf(Topology.class, TopologyKey.class);
                 mlmtTopologyBuilder.createNode(LogicalDatastoreType.OPERATIONAL, buildTopologyId,
                         topology.getTopologyId(), node);
+                for (MlmtTopologyProvider provider : mlmtProviders) {
+                   LOG.info("MlmtTopologyObserver.onNodeCreated: provider.onNodeCreated");
+                   provider.onNodeCreated(type, buildTopologyId, node);
+                }
+                List<TerminationPoint> lTp = node.getTerminationPoint();
+                if (lTp != null && !lTp.isEmpty()) {
+                    for (TerminationPoint tp : lTp) {
+                        for (MlmtTopologyProvider provider : mlmtProviders) {
+                            provider.onTpCreated(type, buildTopologyId, node.getKey(), tp);
+                        }
+                    }
+                }
             }
         }
-        if (lLink != null && lLink.isEmpty() == false) {
+        if (lLink != null && !lLink.isEmpty()) {
             for (Link link : lLink) {
                 mlmtTopologyBuilder.createLink(LogicalDatastoreType.OPERATIONAL, buildTopologyId, link);
+                   for (MlmtTopologyProvider provider : mlmtProviders) {
+                       LOG.info("MlmtTopologyObserver.onNodeCreated: provider.onNodeCreated");
+                       provider.onLinkCreated(type, buildTopologyId, link);
+                }
             }
         }
     }
+
     protected void onObservedTopologyCreated(final LogicalDatastoreType type,
         final InstanceIdentifier<Topology> topologyInstanceId, final Topology topology) {
         LOG.info("MlmtTopologyObserver.onObservedTopologyCreated topologyInstanceId " + topologyInstanceId.toString());
         boolean isBuildingTopologyType = mlmtProviderFactory.isBuildingTopologyType(topology.getTopologyTypes());
         if (isBuildingTopologyType) {
-            buildTopology(mlmtTopologyId, topology);
+            buildTopology(type, mlmtTopologyId, topology);
         }
         for (MlmtTopologyProvider provider : mlmtProviders) {
             provider.onTopologyCreated(type, topologyInstanceId, topology);
@@ -163,11 +184,29 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
     @Override
     public void onNodeCreated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final Node node) {
-        LOG.info("MlmtTopologyObserver.onNodeCreated topologyInstanceId: " + topologyInstanceId.toString() +
-                " nodeId: " + node.getNodeId());
-        TopologyKey topologyKey = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
-        mlmtTopologyBuilder.createNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, topologyKey.getTopologyId(), node);
+        boolean isBuildingTopologyType = true;
 
+        try {
+            LOG.info("MlmtTopologyObserver.onNodeCreated topologyInstanceId: " + topologyInstanceId.toString() +
+                    " nodeId: " + node.getNodeId());
+            ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+            Optional<Topology> optional = rTx.read(type, topologyInstanceId).get();
+            if (optional.isPresent()) {
+                Topology rxTopology = optional.get();
+                if (rxTopology != null) {
+                    isBuildingTopologyType = mlmtProviderFactory.isBuildingTopologyType(rxTopology.getTopologyTypes());
+                }
+            }
+        } catch (InterruptedException e) {
+          LOG.error("MlmtTopologyObserver.onNodeCreated interrupted exception", e);
+        } catch (ExecutionException e) {
+          LOG.error("MlmtTopologyObserver.onNodeCreated execution exception", e);
+        }
+
+        if (isBuildingTopologyType) {
+            TopologyKey topologyKey = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
+            mlmtTopologyBuilder.createNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, topologyKey.getTopologyId(), node);
+        }
         for (MlmtTopologyProvider provider : mlmtProviders) {
             provider.onNodeCreated(type, topologyInstanceId, node);
         }
