@@ -122,7 +122,8 @@ public class TopologyRequestHandler {
     private void iterateFilters(List<Filter> filters, CorrelationItemEnum correlationItem) {
         for (Filter filter : filters) {
             String underlayTopologyId = filter.getUnderlayTopology();
-            YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue());
+            YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
+                    correlationItem);
             UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
                     underlayTopologyId, pathIdentifier);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
@@ -142,7 +143,8 @@ public class TopologyRequestHandler {
     private void iterateMappings(List<Mapping> mappings, CorrelationItemEnum correlationItem) {
         for (Mapping mapping : mappings) {
             String underlayTopologyId = mapping.getUnderlayTopology();
-            YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue());
+            YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
+                    correlationItem);
             UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
                     underlayTopologyId, pathIdentifier);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =

@@ -54,8 +54,8 @@ public class TopologyRequestHandlerTest {
     SchemaContext mockContext;
 
     private Topology topology;
-    public static final String TOPOLOGY_1 = "openflow:1";
-    public static final String TOPOLOGY_2 = "bgp-node:4";
+    private static final String TOPOLOGY_1 = "openflow:1";
+    private static final String TOPOLOGY_2 = "bgp-node:4";
 
     @Before
     public void setUp() {
@@ -94,7 +94,8 @@ public class TopologyRequestHandlerTest {
         handler.setTranslator(mockTranslator);
 
         YangInstanceIdentifier identifier = YangInstanceIdentifier.builder().node(Node.QNAME).build();
-        Mockito.when(mockTranslator.translate(Matchers.anyString())).thenReturn(identifier);
+        Mockito.when(mockTranslator.translate(Matchers.anyString(), Matchers.eq(CorrelationItemEnum.Node)))
+                    .thenReturn(identifier);
 
         GlobalSchemaContextHolder.setSchemaContext(mockContext);
 
