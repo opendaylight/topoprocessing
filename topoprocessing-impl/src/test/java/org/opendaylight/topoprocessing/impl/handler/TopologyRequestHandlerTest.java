@@ -94,7 +94,7 @@ public class TopologyRequestHandlerTest {
         handler.setTranslator(mockTranslator);
 
         YangInstanceIdentifier identifier = YangInstanceIdentifier.builder().node(Node.QNAME).build();
-        Mockito.when(mockTranslator.translate(Matchers.anyString())).thenReturn(identifier);
+        Mockito.when(mockTranslator.translate(Matchers.anyString(), CorrelationItemEnum.Node)).thenReturn(identifier);
 
         GlobalSchemaContextHolder.setSchemaContext(mockContext);
 

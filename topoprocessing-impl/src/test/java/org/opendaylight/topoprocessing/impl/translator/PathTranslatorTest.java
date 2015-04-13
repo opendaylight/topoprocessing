@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.DataSchemaNode;
@@ -67,7 +68,8 @@ public class PathTranslatorTest {
         Mockito.when(mockDataSchemaNode2.getQName()).thenReturn(qName2);
 
         YangInstanceIdentifier yangInstanceIdentifier =
-                pathTranslator.translate("flow-node-inventory:flowcapablenode/flow-node-inventory:ip-address");
+                pathTranslator.translate("flow-node-inventory:flowcapablenode/flow-node-inventory:ip-address",
+                        CorrelationItemEnum.Node);
         YangInstanceIdentifier expectedIdentifier =
                 YangInstanceIdentifier.builder().node(qName1).node(qName2).build();
         Assert.assertTrue("Incorrect valid YangInstanceIdentifier",
@@ -79,7 +81,7 @@ public class PathTranslatorTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testTwoColonsIllegalArgument() {
-        pathTranslator.translate("bgpnode::bgp/desc:desc/ip:ip");
+        pathTranslator.translate("bgpnode::bgp/desc:desc/ip:ip", CorrelationItemEnum.Node);
     }
 
     /**
@@ -87,7 +89,7 @@ public class PathTranslatorTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testNoColonsIllegalArgument() {
-        pathTranslator.translate("bgpnodebgp/desc:desc/ip:ip");
+        pathTranslator.translate("bgpnodebgp/desc:desc/ip:ip", CorrelationItemEnum.Node);
     }
 
     /**
@@ -95,7 +97,7 @@ public class PathTranslatorTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testColonAtLastPosition() {
-        pathTranslator.translate("bgpnode:/desc:desc/ip:ip");
+        pathTranslator.translate("bgpnode:/desc:desc/ip:ip", CorrelationItemEnum.Node);
     }
 
     /**
@@ -103,7 +105,7 @@ public class PathTranslatorTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testColonAtFirstPosition() {
-        pathTranslator.translate(":bgp/desc:desc/ip:ip");
+        pathTranslator.translate(":bgp/desc:desc/ip:ip", CorrelationItemEnum.Node);
     }
 
     /**
@@ -111,7 +113,7 @@ public class PathTranslatorTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testEmptyString() {
-        pathTranslator.translate("");
+        pathTranslator.translate("", CorrelationItemEnum.Node);
     }
 
     /**
@@ -119,7 +121,7 @@ public class PathTranslatorTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testYangPathNull() {
-        pathTranslator.translate(null);
+        pathTranslator.translate(null, CorrelationItemEnum.Node);
     }
 
     /**
@@ -135,6 +137,6 @@ public class PathTranslatorTest {
         Mockito.when(mockModule.getDataChildByName("bgp")).thenReturn(mockDataSchemaNode1);
         Mockito.when(mockDataSchemaNode1.getQName()).thenReturn(qName);
 
-        pathTranslator.translate("bgpnode:bgp");
+        pathTranslator.translate("bgpnode:bgp", CorrelationItemEnum.Node);
     }
 }
