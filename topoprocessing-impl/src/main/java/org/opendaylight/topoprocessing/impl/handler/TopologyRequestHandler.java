@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.UnificationCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.node.ip.filtration._case.node.ip.filtration.Filter;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -122,7 +123,8 @@ public class TopologyRequestHandler {
     private void iterateFilters(List<Filter> filters, CorrelationItemEnum correlationItem) {
         for (Filter filter : filters) {
             String underlayTopologyId = filter.getUnderlayTopology();
-            YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue());
+            YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
+                    correlationItem);
             UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
                     underlayTopologyId, pathIdentifier);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
@@ -142,17 +144,28 @@ public class TopologyRequestHandler {
     private void iterateMappings(List<Mapping> mappings, CorrelationItemEnum correlationItem) {
         for (Mapping mapping : mappings) {
             String underlayTopologyId = mapping.getUnderlayTopology();
-            YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue());
+            YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
+                    correlationItem);
+            LOG.error("PATHIDENTIFIER: " + pathIdentifier);
+            YangInstanceIdentifier.InstanceIdentifierBuilder testBuilder = YangInstanceIdentifier.builder()
+                    .node(NetworkTopology.QNAME)
+                    .nodeWithKey(Topology.QNAME, QName.create("topology-id"), underlayTopologyId);
+            LOG.error("TESTIDENTIFIER: " + testBuilder.build());
+            
+            
             UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
                     underlayTopologyId, pathIdentifier);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
+            LOG.error("TOPOLOGYIDENTIFIER: " + topologyIdentifier.build());
             YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
+            LOG.error("NODEIDENTIFIER: " + nodeIdentifier);
             LOG.debug("Registering underlay topology listener for topology: "
                     + underlayTopologyId);
             ListenerRegistration<DOMDataChangeListener> listenerRegistration =
                     domDataBroker.registerDataChangeListener(
-                            LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+                            LogicalDatastoreType.OPERATIONAL, nodeIdentifier,
+                            listener, DataChangeScope.SUBTREE);
             LOG.debug("Underlay topology listener for topology: " + underlayTopologyId
                     + " has been successfully registered");
             listeners.add(listenerRegistration);
@@ -164,7 +177,7 @@ public class TopologyRequestHandler {
         YangInstanceIdentifier.InstanceIdentifierBuilder nodeIdentifierBuilder = YangInstanceIdentifier.builder()
                 .node(NetworkTopology.QNAME)
                 .node(Topology.QNAME)
-                .nodeWithKey(Topology.QNAME, QName.create("topology-id"), underlayTopologyId);
+                .nodeWithKey(Topology.QNAME, QName.create("(urn:TBD:params:xml:ns:yang:network-topology?revision=2013-10-21)topology-id"), underlayTopologyId);
         return nodeIdentifierBuilder;
     }
 

@@ -8,17 +8,26 @@
 
 package org.opendaylight.topoprocessing.impl.translator;
 
+import java.util.List;
+
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
+import org.opendaylight.yangtools.yang.model.api.ContainerSchemaNode;
 import org.opendaylight.yangtools.yang.model.api.DataSchemaNode;
+import org.opendaylight.yangtools.yang.model.api.LeafSchemaNode;
+import org.opendaylight.yangtools.yang.model.api.ListSchemaNode;
 import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
+import org.opendaylight.yangtools.yang.model.api.SchemaNode;
+import org.opendaylight.yangtools.yang.model.api.SchemaPath;
+import org.opendaylight.yangtools.yang.model.api.UnknownSchemaNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
- import com.google.common.base.Splitter;
+import com.google.common.base.Splitter;
 
 
 /**
@@ -35,21 +44,56 @@ public class PathTranslator {
      * Translates yang path into {@link YangInstanceIdentifier}
      *
      * @param yangPath path to target node
+     * @param correlationItem 
      * @return {@link YangInstanceIdentifier} leading to target node
      * @throws IllegalArgumentException if yangPath is in incorrect format
      */
-    public YangInstanceIdentifier translate(String yangPath) throws IllegalArgumentException {
-        LOGGER.debug("Translating target-item path: " + yangPath);
+    public YangInstanceIdentifier translate(String yangPath, CorrelationItemEnum correlationItem) throws IllegalArgumentException {
+        LOGGER.error("Translating target-item path: " + yangPath);
         InstanceIdentifierBuilder builder = YangInstanceIdentifier.builder();
         globalSchemaContext = GlobalSchemaContextHolder.getSchemaContext();
+        ListSchemaNode node = null;
+        SchemaPath path = null;
+        if (correlationItem.equals(CorrelationItemEnum.Node)) {
+            LOGGER.error("MODULE NAME: opendaylight-inventory");
+            Module module = globalSchemaContext.findModuleByName("opendaylight-inventory", null);
+            LOGGER.error("MODULE: " + module);
+            LOGGER.error("CHILDS: " + module.getChildNodes());
+            DataSchemaNode nodes = module.getDataChildByName("nodes");
+            LOGGER.error("NODES CHILDS: " + ((ContainerSchemaNode) nodes).getChildNodes());
+            node = ((ListSchemaNode)((ContainerSchemaNode) nodes).getDataChildByName("node"));
+            LOGGER.error("NODE CHILDS: " + node.getChildNodes());
+            LOGGER.error("UNKNOWN SCHEMA NODES: " + node.getUnknownSchemaNodes());
+            LOGGER.error("NODE AUGMENTATIONS: " + node.getAvailableAugmentations());
+            LOGGER.error("NODE FLOWCAPABLE? : " + node.getDataChildByName("flow-capable-node"));
+//            DataSchemaNode ipAddressNode = node.getDataChildByName("ip-address");
+            
+        }
         Iterable<String> pathArguments = splitYangPath(yangPath);
         for (String pathArgument : pathArguments) {
+//            LOGGER.error("IP ADDRESS: " + ipAddressNode);
+//            LeafSchemaNode leafnode = (LeafSchemaNode) ipAddressNode;
+//            LOGGER.error("IP ADDRESS SCHEMA PATH: " + leafnode.getPath());
+            
             int index = getSeparatorIndex(pathArgument, ':');
             String moduleName = getModuleName(pathArgument, index);
+            LOGGER.error("MODULE NAME: " + moduleName);
             Module module = globalSchemaContext.findModuleByName(moduleName, null);
+            LOGGER.error("MODULE: " + module);
             String childName = getChildName(pathArgument, index + 1);
-            DataSchemaNode dataChildByName = module.getDataChildByName(childName);
-            QName qName = dataChildByName.getQName();
+            LOGGER.error("CHILDNAME: " + childName);
+            DataSchemaNode byName = node.getDataChildByName(childName);
+            path = byName.getPath();
+            
+//            LOGGER.error("CHILDS: " + module.getChildNodes());
+//            DataSchemaNode dataChildByName = module.getDataChildByName(childName);
+//            LOGGER.error("DATACHILDBYNAME: " + dataChildByName);
+//            QName qName = dataChildByName.getQName();
+//            LOGGER.error("QNAME: " + qName);
+//            builder.node(qName);
+        }
+        Iterable<QName> pathFromRoot = path.getPathFromRoot();
+        for (QName qName : pathFromRoot) {
             builder.node(qName);
         }
         return builder.build();

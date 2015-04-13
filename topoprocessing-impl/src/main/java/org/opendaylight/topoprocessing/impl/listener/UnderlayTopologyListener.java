@@ -8,7 +8,11 @@
 
 package org.opendaylight.topoprocessing.impl.listener;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
@@ -16,8 +20,11 @@ import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev130712.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 
@@ -27,6 +34,8 @@ import com.google.common.base.Optional;
  */
 public class UnderlayTopologyListener implements DOMDataChangeListener {
 
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(UnderlayTopologyListener.class);
     public enum RequestAction {
         CREATE, UPDATE, DELETE
     }
@@ -51,6 +60,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
 
     @Override
     public void onDataChanged(AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
+        LOGGER.error("DATACHANGEEVENT: " + change);
         this.proceedChangeRequest(change.getCreatedData(), RequestAction.CREATE);
         this.proceedChangeRequest(change.getUpdatedData(), RequestAction.UPDATE);
         this.proceedDeletionRequest(change.getRemovedPaths());
@@ -62,12 +72,15 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         Iterator<Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator = map.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry = iterator.next();
-            if (entry.getValue().getNodeType().equals(Node.QNAME))
-            {
-                Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
-                if (node.isPresent()) {
-                    PhysicalNode physicalNode = new PhysicalNode(entry.getValue(), node.get());
-                    resultEntries.put(entry.getKey(), physicalNode);
+            LOGGER.error("CREATED ENTRY: " + entry.getValue());
+            if (! (entry.getValue() instanceof AugmentationNode)) {
+                if (entry.getValue().getNodeType().equals(Node.QNAME))
+                {
+                    Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
+                    if (node.isPresent()) {
+                        PhysicalNode physicalNode = new PhysicalNode(entry.getValue(), node.get());
+                        resultEntries.put(entry.getKey(), physicalNode);
+                    }
                 }
             }
         }
