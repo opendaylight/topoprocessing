@@ -89,7 +89,6 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
                 topologyInstanceId, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);
     }
 
-    @Ignore
     @Test(timeout = 10000)
     public void testPutConfiguration() throws Exception {
         assertNotNull(processor);
@@ -113,7 +112,6 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
         assertNotNull(rxNetworkTopology);
     }
 
-    @Ignore
     @Test(timeout = 10000)
     public void testPutOperational() throws Exception {
         processor.enqueueOperation(new MlmtTopologyOperation() {
@@ -136,7 +134,6 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
         assertNotNull(rxNetworkTopology);
     }
 
-    @Ignore
     @Test(timeout = 10000)
     public void testMergeConfiguration() throws Exception {
         processor.enqueueOperation(new MlmtTopologyOperation() {
@@ -159,7 +156,6 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
         assertNotNull(rxTopology);
     }
 
-    @Ignore
     @Test(timeout = 10000)
     public void testMergeOperational() throws Exception {
         processor.enqueueOperation(new MlmtTopologyOperation() {

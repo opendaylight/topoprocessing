@@ -191,45 +191,38 @@ public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
         assertEquals(lNode.get(0).getNodeId().getValue().toString(), nodeName);
     }
 
-    @Ignore
     @Test(timeout = 10000)
     public void testCreateTopologyConfiguration() throws Exception {
         createTopology(LogicalDatastoreType.CONFIGURATION);
     }
 
-    @Ignore
     @Test(timeout = 10000)
     public void testCreateTopologyOperational() throws Exception {
         createTopology(LogicalDatastoreType.OPERATIONAL);
     }
 
-    @Ignore
     @Test(timeout = 10000)
     public void testCreateUnderlayTopologyConfiguration() throws Exception {
         createUnderlayTopology(LogicalDatastoreType.CONFIGURATION, "underlay:1");
     }
 
-    @Ignore
     @Test(timeout = 10000)
     public void testCreateUnderlayTopologyOperational() throws Exception {
         createUnderlayTopology(LogicalDatastoreType.OPERATIONAL, "underlay:1");
     }
 
-    @Ignore
     @Test(timeout = 10000)
     public void testDeleteTopologyConfiguration() throws Exception {
         createTopology(LogicalDatastoreType.CONFIGURATION);
         deleteTopology(LogicalDatastoreType.CONFIGURATION);
     }
 
-    @Ignore
     @Test(timeout = 10000)
     public void testDeleteTopologyOperational() throws Exception {
         createTopology(LogicalDatastoreType.OPERATIONAL);
         deleteTopology(LogicalDatastoreType.OPERATIONAL);
     }
 
-    @Ignore
     @Test(timeout = 10000)
     public void testCreateNodeConfiguration() throws Exception {
         createTopology(LogicalDatastoreType.CONFIGURATION);
@@ -254,3 +247,4 @@ public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
         // NOOP
     }
 }
+
