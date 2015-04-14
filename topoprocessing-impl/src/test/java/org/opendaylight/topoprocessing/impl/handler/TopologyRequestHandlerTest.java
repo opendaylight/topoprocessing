@@ -102,14 +102,18 @@ public class TopologyRequestHandlerTest {
         YangInstanceIdentifier nodeIdentifier1 = YangInstanceIdentifier.builder()
                 .node(NetworkTopology.QNAME)
                 .node(Topology.QNAME)
-                .nodeWithKey(Topology.QNAME, QName.create("topology-id"), TOPOLOGY_1)
+                .nodeWithKey(Topology.QNAME,
+                        QName.create("(urn:TBD:params:xml:ns:yang:network-topology?revision=2013-10-21)topology-id"),
+                        TOPOLOGY_1)
                 .node(Node.QNAME)
                 .build();
 
         YangInstanceIdentifier nodeIdentifier2 = YangInstanceIdentifier.builder()
                 .node(NetworkTopology.QNAME)
                 .node(Topology.QNAME)
-                .nodeWithKey(Topology.QNAME, QName.create("topology-id"), TOPOLOGY_2)
+                .nodeWithKey(Topology.QNAME,
+                        QName.create("(urn:TBD:params:xml:ns:yang:network-topology?revision=2013-10-21)topology-id"),
+                        TOPOLOGY_2)
                 .node(Node.QNAME)
                 .build();
 

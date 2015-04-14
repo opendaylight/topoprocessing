@@ -166,7 +166,9 @@ public class TopologyRequestHandler {
         YangInstanceIdentifier.InstanceIdentifierBuilder nodeIdentifierBuilder = YangInstanceIdentifier.builder()
                 .node(NetworkTopology.QNAME)
                 .node(Topology.QNAME)
-                .nodeWithKey(Topology.QNAME, QName.create("topology-id"), underlayTopologyId);
+                .nodeWithKey(Topology.QNAME,
+                        QName.create("(urn:TBD:params:xml:ns:yang:network-topology?revision=2013-10-21)topology-id"),
+                        underlayTopologyId);
         return nodeIdentifierBuilder;
     }
 
