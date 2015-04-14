@@ -50,8 +50,9 @@ public class TopologyManager {
      */
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, final String topologyId) {
         Preconditions.checkNotNull(aggregator, "Operator needs to be initialized.");
-        LOG.debug("CreatedChanges processed");
+        LOG.debug("Processing createdChanges");
         aggregator.processCreatedChanges(createdEntries, topologyId);
+        LOG.debug("CreatedChanges processed");
     }
 
     /**
@@ -74,8 +75,9 @@ public class TopologyManager {
     public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
             String topologyId) {
         Preconditions.checkNotNull(aggregator, "Operator needs to be initialized.");
-        LOG.debug("UpdatedChanges processed");
+        LOG.debug("Processing updatedChanges");
         aggregator.processUpdatedChanges(updatedEntries, topologyId);
+        LOG.debug("UpdatedChanges processed");
     }
 
     /**

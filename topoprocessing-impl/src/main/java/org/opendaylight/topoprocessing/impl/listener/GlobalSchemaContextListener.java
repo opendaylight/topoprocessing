@@ -23,11 +23,19 @@ import org.slf4j.LoggerFactory;
 public class GlobalSchemaContextListener implements SchemaContextListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalSchemaContextListener.class);
+    private GlobalSchemaContextHolder schemaHolder;
+
+    /**
+     * @param schemaHolder
+     */
+    public GlobalSchemaContextListener(GlobalSchemaContextHolder schemaHolder) {
+        this.schemaHolder = schemaHolder;
+    }
 
     @Override
     public void onGlobalContextUpdated(SchemaContext context) {
         LOGGER.debug("SchemaContext updated");
-        GlobalSchemaContextHolder.setSchemaContext(context);
+        schemaHolder.updateSchemaContext(context);
     }
 
 }

@@ -18,8 +18,10 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev130712.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
+import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.slf4j.Logger;
@@ -60,29 +62,47 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
     @Override
     public void onDataChanged(AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Notification received: " + change);
+            LOGGER.debug("DataChangeEvent received: " + change);
         }
-        LOGGER.debug("Processing createdData");
-        this.proceedChangeRequest(change.getCreatedData(), RequestAction.CREATE);
-        LOGGER.debug("Processing updatedData");
-        this.proceedChangeRequest(change.getUpdatedData(), RequestAction.UPDATE);
-        LOGGER.debug("Processing removedData");
-        this.proceedDeletionRequest(change.getRemovedPaths());
-        LOGGER.debug("Notification processed");
+        if (! change.getCreatedData().isEmpty()) {
+            LOGGER.debug("Received createdData");
+            this.proceedChangeRequest(change.getCreatedData(), RequestAction.CREATE);
+        }
+        if (! change.getUpdatedData().isEmpty()) {
+            LOGGER.debug("Received updatedData");
+            this.proceedChangeRequest(change.getUpdatedData(), RequestAction.UPDATE);
+        }
+        if (! change.getRemovedPaths().isEmpty()) {
+            LOGGER.debug("Received removedData");
+            this.proceedDeletionRequest(change.getRemovedPaths());
+        }
+        LOGGER.debug("DataChangeEvent processed");
     }
 
     private void proceedChangeRequest(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map,
             RequestAction requestAction) {
+        YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder().node(Node.QNAME).build();
         Map<YangInstanceIdentifier, PhysicalNode> resultEntries = new HashMap<>();
         Iterator<Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator = map.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry = iterator.next();
-            if (entry.getValue().getNodeType().equals(Node.QNAME))
-            {
-                Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
-                if (node.isPresent()) {
-                    PhysicalNode physicalNode = new PhysicalNode(entry.getValue(), node.get());
-                    resultEntries.put(entry.getKey(), physicalNode);
+            LOGGER.debug("Entry received: " + entry);
+            if (! (entry.getValue() instanceof AugmentationNode)) {
+                if (entry.getValue().getNodeType().equals(Node.QNAME)) {
+                    if (! entry.getKey().getLastPathArgument().equals(nodeIdentifier.getLastPathArgument())) {
+                        LOGGER.debug("Processing entry: " + entry.getValue());
+                        LOGGER.debug("Finding node: " + pathIdentifier);
+                        Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
+                        LOGGER.debug("Found node: " + node.get());
+                        String value = "";
+                        if (node.isPresent()) {
+                            LeafNode<?> leafnode = (LeafNode<?>) node.get();
+                            value = (String) leafnode.getValue();
+                            PhysicalNode physicalNode = new PhysicalNode(entry.getValue(), leafnode);
+                            resultEntries.put(entry.getKey(), physicalNode);
+                            LOGGER.debug("Created PhysicalNode: " + physicalNode);
+                        }
+                    }
                 }
             }
         }
@@ -108,4 +128,5 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         }
         topologyManager.processRemovedChanges(identifiers, underlayTopologyId);
     }
+
 }

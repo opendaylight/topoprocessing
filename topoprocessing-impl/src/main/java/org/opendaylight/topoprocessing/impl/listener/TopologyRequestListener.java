@@ -18,9 +18,12 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.handler.TopologyRequestHandler;
+import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -42,15 +45,19 @@ public class TopologyRequestListener implements DOMDataChangeListener {
     private YangInstanceIdentifier identifier;
     private BindingNormalizedNodeSerializer nodeSerializer;
     private HashMap<YangInstanceIdentifier, TopologyRequestHandler> topoRequestHandlers = new HashMap<>();
+    private GlobalSchemaContextHolder schemaHolder;
 
     /**
      * Default contructor
      * @param dataBroker
      * @param nodeSerializer 
+     * @param schemaHolder 
      */
-    public TopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer) {
+    public TopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
+            GlobalSchemaContextHolder schemaHolder) {
         this.dataBroker = dataBroker;
         this.nodeSerializer = nodeSerializer;
+        this.schemaHolder = schemaHolder;
         identifier = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME).node(Topology.QNAME).build();
         LOGGER.debug("Topology Request Listener created");
     }
@@ -75,7 +82,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
                             nodeSerializer.fromNormalizedNode(identifier, normalizedNode);
                     Topology topology = (Topology) fromNormalizedNode.getValue();
                     if (topology.getAugmentation(CorrelationAugment.class) != null) {
-                        TopologyRequestHandler requestHandler = new TopologyRequestHandler(dataBroker);
+                        TopologyRequestHandler requestHandler = new TopologyRequestHandler(dataBroker, schemaHolder);
                         topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
                         requestHandler.processNewRequest(topology);
                     }

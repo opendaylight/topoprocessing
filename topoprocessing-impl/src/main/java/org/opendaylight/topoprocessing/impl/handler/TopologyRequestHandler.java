@@ -18,6 +18,8 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
+import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
@@ -57,13 +59,16 @@ public class TopologyRequestHandler {
     private List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
+    private GlobalSchemaContextHolder schemaHolder;
 
     /**
      * Default constructor
      * @param domDataBroker broker used for transaction operations
+     * @param schemaHolder
      */
-    public TopologyRequestHandler(DOMDataBroker domDataBroker) {
+    public TopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder) {
         this.domDataBroker = domDataBroker;
+        this.schemaHolder = schemaHolder;
     }
 
     /** Only for testing purposes */
@@ -123,7 +128,7 @@ public class TopologyRequestHandler {
         for (Filter filter : filters) {
             String underlayTopologyId = filter.getUnderlayTopology();
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
-                    correlationItem);
+                    correlationItem, schemaHolder);
             UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
                     underlayTopologyId, pathIdentifier);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
@@ -144,7 +149,7 @@ public class TopologyRequestHandler {
         for (Mapping mapping : mappings) {
             String underlayTopologyId = mapping.getUnderlayTopology();
             YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
-                    correlationItem);
+                    correlationItem, schemaHolder);
             UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
                     underlayTopologyId, pathIdentifier);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
@@ -167,7 +172,7 @@ public class TopologyRequestHandler {
                 .node(NetworkTopology.QNAME)
                 .node(Topology.QNAME)
                 .nodeWithKey(Topology.QNAME,
-                        QName.create("(urn:TBD:params:xml:ns:yang:network-topology?revision=2013-10-21)topology-id"),
+                        TopologyQNames.topologyIdQName,
                         underlayTopologyId);
         return nodeIdentifierBuilder;
     }

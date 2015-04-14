@@ -41,6 +41,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private SchemaService schemaService;
     private ListenerRegistration<SchemaContextListener> schemaContextListenerRegistration;
     private BindingNormalizedNodeSerializer nodeSerializer;
+    private GlobalSchemaContextHolder schemaHolder;
 
     /**
      * @param schemaService 
@@ -56,7 +57,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         this.schemaService = schemaService;
         this.dataBroker = dataBroker;
         this.nodeSerializer = nodeSerializer;
-        GlobalSchemaContextHolder.setSchemaContext(schemaService.getGlobalContext());
+        schemaHolder = new GlobalSchemaContextHolder(schemaService.getGlobalContext());
         startup();
     }
 
@@ -64,7 +65,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     public void startup() {
         LOGGER.debug("TopoProcessingProvider - startup()");
         schemaContextListenerRegistration =
-                schemaService.registerSchemaContextListener(new GlobalSchemaContextListener());
+                schemaService.registerSchemaContextListener(new GlobalSchemaContextListener(schemaHolder));
         registerTopologyRequestListener();
     }
 
@@ -83,7 +84,8 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
         topologyRequestListenerRegistration =
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                        identifier, new TopologyRequestListener(dataBroker, nodeSerializer), DataChangeScope.ONE);
+                        identifier, new TopologyRequestListener(dataBroker, nodeSerializer, schemaHolder),
+                        DataChangeScope.ONE);
         LOGGER.debug("Topology Request Listener has been successfully registered");
     }
 }

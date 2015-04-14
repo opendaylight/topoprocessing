@@ -8,6 +8,7 @@
 
 package org.opendaylight.topoprocessing.impl.util;
 
+import org.opendaylight.yangtools.yang.data.util.DataSchemaContextTree;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 
 /**
@@ -16,20 +17,35 @@ import org.opendaylight.yangtools.yang.model.api.SchemaContext;
  */
 public class GlobalSchemaContextHolder {
 
-    private static SchemaContext globalSchemaContext;
+    private SchemaContext globalSchemaContext;
+    private DataSchemaContextTree contextTree;
+
+    /**
+     * Default constructor
+     * @param globalSchemaContext
+     */
+    public GlobalSchemaContextHolder(SchemaContext globalSchemaContext) {
+        this.globalSchemaContext = globalSchemaContext;
+        this.contextTree = DataSchemaContextTree.from(globalSchemaContext);
+    }
+
+    public void updateSchemaContext(SchemaContext globalSchemaContext) {
+        this.globalSchemaContext = globalSchemaContext;
+        this.contextTree = DataSchemaContextTree.from(globalSchemaContext);
+    }
+
+    /**
+     * @return DataSchemaContextTree
+     */
+    public DataSchemaContextTree getContextTree() {
+        return contextTree;
+    }
 
     /**
      * @return global schema context
      */
-    public static SchemaContext getSchemaContext() {
+    public SchemaContext getSchemaContext() {
         return globalSchemaContext;
     }
 
-    /**
-     * Sets global schema context
-     * @param context global schema context
-     */
-    public static void setSchemaContext(SchemaContext context) {
-        globalSchemaContext = context;
-    }
 }

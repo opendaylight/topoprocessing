@@ -11,20 +11,18 @@ package org.opendaylight.topoprocessing.impl.translator;
 import java.util.Iterator;
 
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
-import org.opendaylight.yangtools.yang.model.api.ChoiceCaseNode;
-import org.opendaylight.yangtools.yang.model.api.ChoiceSchemaNode;
-import org.opendaylight.yangtools.yang.model.api.ContainerSchemaNode;
-import org.opendaylight.yangtools.yang.model.api.DataSchemaNode;
-import org.opendaylight.yangtools.yang.model.api.LeafSchemaNode;
-import org.opendaylight.yangtools.yang.model.api.ListSchemaNode;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
+import org.opendaylight.yangtools.yang.data.util.DataSchemaContextNode;
+import org.opendaylight.yangtools.yang.data.util.DataSchemaContextTree;
 import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
-import org.opendaylight.yangtools.yang.model.api.SchemaNode;
-import org.opendaylight.yangtools.yang.model.api.SchemaPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,66 +37,54 @@ public class PathTranslator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PathTranslator.class);
 
-    private SchemaContext globalSchemaContext;
-
     /**
      * Translates yang path into {@link YangInstanceIdentifier}
      *
      * @param yangPath path to target node
      * @param correlationItem 
+     * @param schemaHolder 
      * @return {@link YangInstanceIdentifier} leading to target node
      * @throws IllegalArgumentException if yangPath is in incorrect format
      */
-    public YangInstanceIdentifier translate(String yangPath, CorrelationItemEnum correlationItem)
-            throws IllegalArgumentException {
+    public YangInstanceIdentifier translate(String yangPath, CorrelationItemEnum correlationItem,
+            GlobalSchemaContextHolder schemaHolder) throws IllegalArgumentException {
         LOGGER.debug("Translating target-field path: " + yangPath);
-        globalSchemaContext = GlobalSchemaContextHolder.getSchemaContext();
-        ListSchemaNode parent = null;
-        SchemaPath path = null;
-        if (CorrelationItemEnum.Node.equals(correlationItem)) {
-            Module module = globalSchemaContext.findModuleByName("opendaylight-inventory", null);
-            ContainerSchemaNode nodes = (ContainerSchemaNode) module.getDataChildByName("nodes");
-            parent = (ListSchemaNode) nodes.getDataChildByName("node");
-        }
+        SchemaContext globalSchemaContext = schemaHolder.getSchemaContext();
+        DataSchemaContextTree contextTree = new GlobalSchemaContextHolder(globalSchemaContext).getContextTree();
+        YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder()
+                .node(NetworkTopology.QNAME)
+                .node(Topology.QNAME)
+                .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, "")
+                .node(Node.QNAME)
+                .nodeWithKey(Node.QNAME, TopologyQNames.networkNodeIdQName, "")
+                .build();
+        DataSchemaContextNode<?> context = contextTree.getChild(nodeIdentifier);
         Iterable<String> pathArguments = splitYangPath(yangPath);
         Iterator<String> iterator = pathArguments.iterator();
-        if (iterator.hasNext()) {
-            path = parsePath(parent, iterator);
-        } else {
-            throw new IllegalArgumentException("Target-field can't be empty : " + pathArguments);
+        YangInstanceIdentifier targetIdentifier = YangInstanceIdentifier.builder().build();
+        while (iterator.hasNext()) {
+            String currentId = iterator.next();
+            QName currentQname = parseQname(schemaHolder.getSchemaContext(), currentId);
+            context = context.getChild(currentQname);
+            while (context.isMixin()) {
+                PathArgument identifier = context.getIdentifier();
+                targetIdentifier = YangInstanceIdentifier.create(targetIdentifier.getPathArguments())
+                        .node(identifier);
+                context = context.getChild(currentQname);
+            }
+            targetIdentifier = YangInstanceIdentifier.create(targetIdentifier.getPathArguments())
+                    .node(context.getIdentifier());
         }
-        Iterable<QName> pathFromRoot = path.getPathFromRoot();
-        LOGGER.debug("Translated target-field path: " + pathFromRoot);
-        InstanceIdentifierBuilder builder = YangInstanceIdentifier.builder();
-        for (QName qName : pathFromRoot) {
-            builder.node(qName);
-        }
-        return builder.build();
+        LOGGER.debug("Target-field identifier: " + targetIdentifier);
+        return targetIdentifier;
     }
 
-    private SchemaPath parsePath(SchemaNode parent, Iterator<String> iterator) {
-        SchemaPath schemaPath = null;
-        DataSchemaNode child = null;
-        String pathArgument = iterator.next();
+    private QName parseQname(SchemaContext context, String pathArgument) {
         int index = getSeparatorIndex(pathArgument, ':');
+        String moduleName = getModuleName(pathArgument, index);
+        Module module = context.findModuleByName(moduleName, null);
         String childName = getChildName(pathArgument, index + 1);
-        if (parent instanceof ContainerSchemaNode) {
-            child = ((ContainerSchemaNode) parent).getDataChildByName(childName);
-        } else if (parent instanceof ChoiceCaseNode) {
-            child = ((ChoiceCaseNode) parent).getDataChildByName(childName);
-        } else if  (parent instanceof ChoiceSchemaNode) {
-            child = ((ChoiceSchemaNode) parent).getCaseNodeByName(childName);
-        } else if  (parent instanceof ListSchemaNode) {
-            child = ((ListSchemaNode) parent).getDataChildByName(childName);
-        } else if  (parent instanceof LeafSchemaNode) {
-            schemaPath = ((LeafSchemaNode) parent).getPath();
-        }
-        if (iterator.hasNext()) {
-            schemaPath = parsePath(child, iterator);
-        } else {
-            schemaPath = child.getPath();
-        }
-        return schemaPath;
+        return QName.create(module.getNamespace(), module.getRevision(), childName);
     }
 
     private static Iterable<String> splitYangPath(String yangPath) {
@@ -120,6 +106,10 @@ public class PathTranslator {
                     + "format [module name]:[child name] expected in " + s);
         }
         return index;
+    }
+
+    private static String getModuleName(String s, int index) {
+        return s.substring(0, index);
     }
 
     private static String getChildName(String s, int index) {
