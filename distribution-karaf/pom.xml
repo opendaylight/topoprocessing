@@ -169,12 +169,6 @@
                         </goals>
                         <phase>process-resources</phase>
                     </execution>
-                    <execution>
-                        <id>package</id>
-                        <goals>
-                            <goal>instance-create-archive</goal>
-                        </goals>
-                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -263,4 +257,26 @@
             </plugin>
         </plugins>
     </build>
+  <profiles>
+    <profile>
+      <id>create-karaf-archive</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.karaf.tooling</groupId>
+            <artifactId>karaf-maven-plugin</artifactId>
+            <extensions>true</extensions>
+            <executions>
+              <execution>
+                <id>package</id>
+                <goals>
+                  <goal>instance-create-archive</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
