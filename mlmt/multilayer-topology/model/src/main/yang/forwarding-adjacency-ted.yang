@@ -1,0 +1,55 @@
+module forwarding-adjacency-ted {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:forwarding-adjacency:ted";
+    prefix "fa-ted";
+
+    import yang-ext         { prefix "ext";   revision-date 2013-07-09; }
+    import network-topology { prefix "nt";    revision-date 2013-10-21; }
+    import ted              { prefix "ted";   revision-date 2013-10-21; }
+    import multitechnology-topology-ted
+                            { prefix "mted";  revision-date 2015-01-22; }
+    import forwarding-adjacency-topology
+                            { prefix "fa";    revision-date 2015-01-23; }
+
+    organization "Ericsson AB";
+    contact "carlo.perocchio@ericsson.com
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152
+             Italy";
+
+    description
+        "
+        Copyright (c)2015 Ericsson, AB. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        This module introduces multilayer using forwarding adjacency concept 
+        in network-topology for a SDN context.";
+
+    revision "2015-01-23" {
+        description
+            "Initial revision.";
+    }
+
+    augment "/nt:network-topology/nt:topology/fa:forwarding-adjacency/fa:attribute/fa:value" {
+        when "./fa:attribute-type = 'mted:native-l3-igp-metric' or " +
+             "./fa:attribute-type = 'mted:controller-metric' or " +
+             "./fa:attribute-type = 'mted:application-metric'";
+        ext:augment-identifier "fa-ted-link-metric-attr";
+        leaf metric {
+            type uint32;
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/fa:forwarding-adjacency/fa:attribute/fa:value" {
+        when "./fa:attribute-type = 'mted:native-ted' or " +
+             "./fa:attribute-type = 'mted:controller-ted' or " +
+             "./fa:attribute-type = 'mted:application-ted'";
+        ext:augment-identifier "fa-ted-link-attr";
+        uses ted:ted-link-attributes;
+    }
+}

@@ -11,7 +11,7 @@ module multilayer-topology {
                             { prefix "mt";    revision-date 2015-01-22; }
 
     organization "Ericsson AB";
-    contact "TBD
+    contact "carlo.perocchio@ericsson.com
              Ericsson
              Via Melen, 77
              Genoa - 16152
@@ -45,6 +45,37 @@ module multilayer-topology {
         ext:augment-identifier "ml-topology-type";
         uses multilayer-topology-type;
     }
+
+    //
+    // As in: bgpcep/topology/api/src/main/yang/odl-network-topology.yang
+    //
+    identity multilayer-topology-context {
+        description
+            "Identity used to mark the multilayer network topology context.
+             Defined for RPC binding to a particular topology instance.
+             The instance must support Multilayer RPCs.";
+    }
+
+    typedef network-topology-ref {
+        type instance-identifier;
+        ext:context-reference "multilayer-topology-context";
+    }
+
+    grouping network-topology-reference {
+        leaf network-topology-ref {
+            type network-topology-ref;
+            mandatory true;
+            ext:context-reference "multilayer-topology-context";
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology" {
+        ext:context-instance "multilayer-topology-context";
+    }
+
+    //
+    // .
+    //
 
     typedef fa-id {
         type inet:uri;
@@ -160,6 +191,11 @@ module multilayer-topology {
 
     rpc forwarding-adj-announce {
         input {
+            uses network-topology-reference {
+                description 
+                    "The context of the announcement: 
+                     the network topology where forwarding adjacency is announced.";
+            }
             uses forwarding-adjacency-attributes;
         }
         output {
@@ -180,6 +216,11 @@ module multilayer-topology {
 
     rpc forwarding-adj-withdraw {
         input {
+            uses network-topology-reference {
+                description 
+                    "The network topology where to apply the withdrawal, the 
+                     same to which forwarding adjacency has been announced.";
+            }
             leaf fa-id {
                 type fa-id;
             }
@@ -201,6 +242,11 @@ module multilayer-topology {
 
     rpc forwarding-adj-update {
         input {
+            uses network-topology-reference {
+                description 
+                    "The network topology to which forwarding adjacency has 
+                     been announced.";
+            }
             leaf fa-id {
                 type fa-id;
             }

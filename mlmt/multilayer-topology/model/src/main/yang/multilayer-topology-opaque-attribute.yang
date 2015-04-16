@@ -1,0 +1,83 @@
+module multilayer-topology-opaque-attribute {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:multilayer:opaque-attribute";
+    prefix "mloa";
+
+    import yang-ext         { prefix "ext";   revision-date 2013-07-09; }
+    import multitechnology-topology-opaque-attribute
+                            { prefix "mtoa";  revision-date 2015-01-22; }
+    import multilayer-topology
+                            { prefix "ml";    revision-date 2015-01-23; }
+
+    organization "Ericsson AB";
+    contact "carlo.perocchio@ericsson.com
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152
+             Italy";
+
+    description
+        "
+        Copyright (c)2015 Ericsson, AB. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        This module introduces multilayer using forwarding adjacency concept 
+        in network-topology for a SDN context.";
+
+    revision "2015-01-23" {
+        description
+            "Initial revision.";
+    }
+
+    augment "/ml:forwarding-adj-announce/ml:input/ml:head-end/ml:attribute/ml:value" {
+        when "./ml:attribute-type = 'mtoa:native' or " +
+             "./ml:attribute-type = 'mtoa:controller' or " +
+             "./ml:attribute-type = 'mtoa:application'";
+        ext:augment-identifier "mloa-fa-announce-head-end-attr";
+        uses mtoa:opaque-attribute-value;
+    }
+
+    augment "/ml:forwarding-adj-update/ml:input/ml:head-end/ml:attribute/ml:value" {
+        when "./ml:attribute-type = 'mtoa:native' or " +
+             "./ml:attribute-type = 'mtoa:controller' or " +
+             "./ml:attribute-type = 'mtoa:application'";
+        ext:augment-identifier "mloa-fa-update-head-end-attr";
+        uses mtoa:opaque-attribute-value;
+    }
+
+    augment "/ml:forwarding-adj-announce/ml:input/ml:tail-end/ml:attribute/ml:value" {
+        when "./ml:attribute-type = 'mtoa:native' or " +
+             "./ml:attribute-type = 'mtoa:controller' or " +
+             "./ml:attribute-type = 'mtoa:application'";
+        ext:augment-identifier "mloa-fa-announce-tail-end-attr";
+        uses mtoa:opaque-attribute-value;
+    }
+
+    augment "/ml:forwarding-adj-update/ml:input/ml:tail-end/ml:attribute/ml:value" {
+        when "./ml:attribute-type = 'mtoa:native' or " +
+             "./ml:attribute-type = 'mtoa:controller' or " +
+             "./ml:attribute-type = 'mtoa:application'";
+        ext:augment-identifier "mloa-fa-update-tail-end-attr";
+        uses mtoa:opaque-attribute-value;
+    }
+
+    augment "/ml:forwarding-adj-announce/ml:input/ml:attribute/ml:value" {
+        when "./ml:attribute-type = 'mtoa:native' or " +
+             "./ml:attribute-type = 'mtoa:controller' or " +
+             "./ml:attribute-type = 'mtoa:application'";
+        ext:augment-identifier "mloa-fa-announce-link-attr";
+        uses mtoa:opaque-attribute-value;
+    }
+
+    augment "/ml:forwarding-adj-update/ml:input/ml:attribute/ml:value" {
+        when "./ml:attribute-type = 'mtoa:native' or " +
+             "./ml:attribute-type = 'mtoa:controller' or " +
+             "./ml:attribute-type = 'mtoa:application'";
+        ext:augment-identifier "mloa-fa-update-link-attr";
+        uses mtoa:opaque-attribute-value;
+    }
+}

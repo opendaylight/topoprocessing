@@ -9,7 +9,7 @@ module multitechnology-topology {
     import network-topology { prefix "nt";    revision-date 2013-10-21; }
 
     organization "Ericsson AB";
-    contact "TBD
+    contact "carlo.perocchio@ericsson.com
              Ericsson
              Via Melen, 77
              Genoa - 16152 
@@ -44,7 +44,7 @@ module multitechnology-topology {
     }
 
     augment "/nt:network-topology/nt:topology/nt:underlay-topology" {
-        when "../../nt:topology-types/mt:multitechnology-topology-type";
+        when "../nt:topology-types/mt:multitechnology-topology";
         ext:augment-identifier "mt-underlay-topology";
         description 
            "Saved original definition add: 
@@ -55,7 +55,7 @@ module multitechnology-topology {
     }
 
     augment "/nt:network-topology/nt:topology/nt:node/nt:supporting-node" {
-        when "../../nt:topology-types/mt:multitechnology-topology-type";
+        when "../../nt:topology-types/mt:multitechnology-topology";
         ext:augment-identifier "mt-supporting-node";
         description 
            "Saved original definition add: 
@@ -96,19 +96,19 @@ module multitechnology-topology {
     }
 
     augment "/nt:network-topology/nt:topology/nt:node" {
-        when "../../nt:topology-types/mt:multitechnology-topology-type";
+        when "../nt:topology-types/mt:multitechnology-topology";
         ext:augment-identifier "mt-info-node";
         uses mt-info;
     }
 
     augment "/nt:network-topology/nt:topology/nt:node/nt:termination-point" {
-        when "../../nt:topology-types/mt:multitechnology-topology-type";
+        when "../../nt:topology-types/mt:multitechnology-topology";
         ext:augment-identifier "mt-info-termination-point";
         uses mt-info;
     }
 
     augment "/nt:network-topology/nt:topology/nt:link" {
-        when "../../nt:topology-types/mt:multitechnology-topology-type";
+        when "../nt:topology-types/mt:multitechnology-topology";
         ext:augment-identifier "mt-info-link";
         uses mt-info;
     }

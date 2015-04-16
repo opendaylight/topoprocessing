@@ -10,7 +10,7 @@ module multitechnology-topology-ted {
     import ted                      { prefix "ted";   revision-date 2013-10-21; }
 
     organization "Ericsson AB";
-    contact "TBD
+    contact "carlo.perocchio@ericsson.com
              Ericsson
              Via Melen, 77
              Genoa - 16152 

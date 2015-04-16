@@ -1,7 +1,7 @@
-module multitechnology-topology-general-purpose {
+module multitechnology-topology-opaque-attribute {
     yang-version 1;
-    namespace "urn:opendaylight:topology:multitechnology:general";
-    prefix "mt-gp";
+    namespace "urn:opendaylight:topology:multitechnology:opaque-attribute";
+    prefix "mtoa";
 
     import yang-ext                 { prefix "ext";   revision-date 2013-07-09; }
 
@@ -9,7 +9,7 @@ module multitechnology-topology-general-purpose {
     import multitechnology-topology { prefix "mt";    revision-date 2015-01-22; }
 
     organization "Ericsson AB";
-    contact "TBD
+    contact "carlo.perocchio@ericsson.com
              Ericsson
              Via Melen, 77
              Genoa - 16152 
@@ -34,15 +34,15 @@ module multitechnology-topology-general-purpose {
             "Initial revision.";
     }
 
-    grouping multitechnology-topology-general-purpose-type {
-        container multitechnology-general-purpose-topology {
-            presence "indicates normalized Multi-Technology Topology containing general purpose info";
+    grouping multitechnology-topology-opaque-attribute-type {
+        container multitechnology-opaque-attribute-topology {
+            presence "indicates normalized Multi-Technology Topology supporting opaque attributes.";
         }
     }
 
     augment "/nt:network-topology/nt:topology/nt:topology-types/mt:multitechnology-topology" {
-        ext:augment-identifier "mt-topology-general-purpose-type";
-        uses multitechnology-topology-general-purpose-type;
+        ext:augment-identifier "mt-topology-opaque-attribute-type";
+        uses multitechnology-topology-opaque-attribute-type;
     }
 
     //
@@ -61,33 +61,14 @@ module multitechnology-topology-general-purpose {
         base mt:base-attribute-type;
     }
 
-    grouping basic-attribute-types {
+    grouping opaque-attribute-value {
         choice basic-attribute-types {
-            case binary-value    {leaf      binary-value    {type binary; }}
             case boolean-value   {leaf      boolean-value   {type boolean;}}
-            case decimal64-value {leaf      decimal64-value {
-                    type decimal64{fraction-digits 2;}}}
-            case decimal64-list  {leaf-list decimal64-list  {
-                    type decimal64{fraction-digits 2;}}}
             case empty-value     {leaf      empty-value     {type empty;  }}
-            case int8-value      {leaf      int8-value      {type int8;   }}
-            case int8-list       {leaf-list int8-list       {type int8;   }}
-            case int16-value     {leaf      int16-value     {type int16;  }}
-            case int16-list      {leaf-list int16-list      {type int16;  }}
-            case int32-value     {leaf      int32-value     {type int32;  }}
-            case int32-list      {leaf-list int32-list      {type int32;  }}
-            case int64-value     {leaf      int64-value     {type int64;  }}
-            case int64-list      {leaf-list int64-list      {type int64;  }}
+            case int32-value     {leaf      int64-value     {type int32;  }}
             case string-value    {leaf      string-value    {type string; }}
             case string-list     {leaf-list string-list     {type string; }}
-            case uint8-value     {leaf      uint8-value     {type uint8;  }}
-            case uint8-list      {leaf-list uint8-list      {type uint8;  }}
-            case uint16-value    {leaf      uint16-value    {type uint16; }}
-            case uint16-list     {leaf-list uint16-list     {type uint16; }}
             case uint32-value    {leaf      uint32-value    {type uint32; }}
-            case uint32-list     {leaf-list uint32-list     {type uint32; }}
-            case uint64-value    {leaf      uint64-value    {type uint64; }}
-            case uint64-list     {leaf-list uint64-list     {type uint64; }}
         }
     }
 
@@ -95,22 +76,22 @@ module multitechnology-topology-general-purpose {
         when "./mt:attribute-type = 'native' or " +
              "./mt:attribute-type = 'controller' or " +
              "./mt:attribute-type = 'application'";
-        ext:augment-identifier "mt-basic-node-attribute-value";
-        uses basic-attribute-types;
+        ext:augment-identifier "mt-opaque-node-attribute-value";
+        uses opaque-attribute-value;
     }
     augment "/nt:network-topology/nt:topology/nt:link/mt:attribute/mt:value" {
         when "./mt:attribute-type = 'native' or " +
              "./mt:attribute-type = 'controller' or " +
              "./mt:attribute-type = 'application'";
-        ext:augment-identifier "mt-basic-link-attribute-value";
-        uses basic-attribute-types;
+        ext:augment-identifier "mt-opaque-link-attribute-value";
+        uses opaque-attribute-value;
     }
 
     augment "/nt:network-topology/nt:topology/nt:node/nt:termination-point/mt:attribute/mt:value" {
         when "./mt:attribute-type = 'native' or " +
              "./mt:attribute-type = 'controller' or " +
              "./mt:attribute-type = 'application'";
-        ext:augment-identifier "basic-tp-attr-value";
-        uses basic-attribute-types;
+        ext:augment-identifier "mt-opaque-tp-attr-value";
+        uses opaque-attribute-value;
     }
 }

@@ -12,7 +12,7 @@ module forwarding-adjacency-topology {
                             { prefix "ml";    revision-date 2015-01-23; }
 
     organization "Ericsson AB";
-    contact "TBD
+    contact "carlo.perocchio@ericsson.com
              Ericsson
              Via Melen, 77
              Genoa - 16152
@@ -57,7 +57,7 @@ module forwarding-adjacency-topology {
     }
 
     augment "/nt:network-topology/nt:topology" {
-        when "../../ml:topology-types/mt:multitechnology-topology/ml:multilayer-topology/forwarding-adjacency-topology";
+        when "nt:topology-types/mt:multitechnology-topology/ml:multilayer-topology/forwarding-adjacency-topology";
         ext:augment-identifier "fa-topology";
 
         list forwarding-adjacency {
@@ -82,7 +82,7 @@ module forwarding-adjacency-topology {
     }
 
     augment "/nt:network-topology/nt:topology/nt:node/nt:termination-point" {
-        when "../../nt:topology-types/ml:multilayer-topology-type";
+        when "../../nt:topology-types/mt:multitechnology-topology/ml:multilayer-topology/forwarding-adjacency-topology";
         description 
             "If forwarding-adjacency end-point is not stitched,
              a termination-point may be created
@@ -104,7 +104,7 @@ module forwarding-adjacency-topology {
     }
 
     augment "/nt:network-topology/nt:topology/nt:link" {
-        when "../../nt:topology-types/ml:multilayer-topology-type";
+        when "../nt:topology-types/mt:multitechnology-topology/ml:multilayer-topology/forwarding-adjacency-topology";
         description 
             "If forwarding-adjacency end-point is not stitched,
              a termination-point and related link may be created
