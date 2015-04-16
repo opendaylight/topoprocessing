@@ -86,10 +86,12 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                 }
             }
         }
-        if (requestAction == RequestAction.CREATE) {
-            topologyManager.processCreatedChanges(resultEntries, underlayTopologyId);
-        } else if (requestAction == RequestAction.UPDATE) {
-            topologyManager.processUpdatedChanges(resultEntries, underlayTopologyId);
+        if (! resultEntries.isEmpty()) {
+            if (requestAction == RequestAction.CREATE) {
+                topologyManager.processCreatedChanges(resultEntries, underlayTopologyId);
+            } else if (requestAction == RequestAction.UPDATE) {
+                topologyManager.processUpdatedChanges(resultEntries, underlayTopologyId);
+            }
         }
     }
 
