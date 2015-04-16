@@ -18,6 +18,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.handler.TopologyRequestHandler;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
@@ -73,9 +74,11 @@ public class TopologyRequestListener implements DOMDataChangeListener {
                     Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode =
                             nodeSerializer.fromNormalizedNode(identifier, normalizedNode);
                     Topology topology = (Topology) fromNormalizedNode.getValue();
-                    TopologyRequestHandler requestHandler = new TopologyRequestHandler(dataBroker);
-                    topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
-                    requestHandler.processNewRequest(topology);
+                    if (topology.getAugmentation(CorrelationAugment.class) != null) {
+                        TopologyRequestHandler requestHandler = new TopologyRequestHandler(dataBroker);
+                        topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
+                        requestHandler.processNewRequest(topology);
+                    }
                 }
             }
         }
