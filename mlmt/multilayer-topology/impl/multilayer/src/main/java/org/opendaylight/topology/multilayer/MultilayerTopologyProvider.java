@@ -13,6 +13,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ExecutionException;
 
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
@@ -26,6 +27,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -66,6 +68,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MultilayerTopologyContext;
 
 import com.google.common.util.concurrent.Futures;
 
@@ -93,9 +96,10 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         this.transactionChain = dataProvider.createTransactionChain(this);
     }
 
-    public void registerRpcImpl(final RpcProviderRegistry rpcProviderRegistry) {
-        log.info("MultilayerTopologyProvider.registerRpcImpl");
-        rpcProviderRegistry.addRpcImplementation(MultilayerTopologyService.class, this);
+    public void registerRpcImpl(final RpcProviderRegistry rpcProviderRegistry, InstanceIdentifier<Topology> mlmtTopologyId) {
+        log.info("MultilayerTopologyProvider.registerRpcImpl " + mlmtTopologyId.toString());
+        RoutedRpcRegistration reg = rpcProviderRegistry.addRoutedRpcImplementation(MultilayerTopologyService.class, this);
+        reg.registerPath(MultilayerTopologyContext.class, mlmtTopologyId);
     }
 
     @Override
@@ -233,7 +237,11 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
             bidirFlag = true;
         }
 
-        String faId = parser.parseFaId(bidirFlag, false);
+        InstanceIdentifier<?> iid = input.getNetworkTopologyRef().getValue();
+        TopologyKey topologyKey = iid.firstKeyOf(Topology.class, TopologyKey.class);
+        String topologyName = topologyKey.getTopologyId().getValue();
+
+        String faId = parser.parseFaId(bidirFlag, false, topologyName);
         final FaId outFaId = new FaId(faId);
         LinkBuilder linkBuilder = parser.parseLinkBuilder(input, faId);
         InstanceIdentifier<Link> linkInstanceId = destTopologyId.child(Link.class, linkBuilder.getKey());
@@ -378,11 +386,57 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
     public Future<RpcResult<ForwardingAdjWithdrawOutput>> forwardingAdjWithdraw(ForwardingAdjWithdrawInput input)  {
         log.info("MultilayerTopologyProvider.forwardingAdjWithdraw RPC");
 
+        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.OkBuilder
+               okBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.OkBuilder();
+        ForwardingAdjWithdrawOutputBuilder faAdjWithdrawOutputBuilder = new ForwardingAdjWithdrawOutputBuilder();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.error.ErrorBuilder
+                iErrorBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.error.ErrorBuilder();
+        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.ErrorBuilder
+                errorBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.ErrorBuilder();
+        errorBuilder.setError(iErrorBuilder.build());
+
         FaId faId = input.getFaId();
         DirectionalityInfo directionalityInfo = parser.parseDirection(faId);
         LinkId linkId = new LinkId(faId.getValue());
         LinkKey linkKey = new LinkKey(linkId);
         InstanceIdentifier<Link> instanceId = destTopologyId.child(Link.class, linkKey);
+        Link faLink = null;
+
+        try {
+            Optional<Link> linkObject = null;
+            final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
+            linkObject = rx.read(LogicalDatastoreType.OPERATIONAL, instanceId).get();
+            if (linkObject == null) {
+                log.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: source linkObject null\n");
+                faAdjWithdrawOutputBuilder.setResult(errorBuilder.build());
+                return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> failed()
+                        .withResult(faAdjWithdrawOutputBuilder.build()).build());
+            }
+            if (linkObject.isPresent() == false) {
+                log.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: linkObject not present\n");
+                faAdjWithdrawOutputBuilder.setResult(errorBuilder.build());
+                return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> failed()
+                        .withResult(faAdjWithdrawOutputBuilder.build()).build());
+            }
+            faLink = linkObject.get();
+            if (faLink == null){
+                log.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: dest faLink with faId " +
+                        faId + " not found");
+                faAdjWithdrawOutputBuilder.setResult(errorBuilder.build());
+                return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> failed()
+                        .withResult(faAdjWithdrawOutputBuilder.build()).build());
+            }
+        } catch (InterruptedException e) {
+            log.error("MultilayerTopologyProvider.forwardingAdjUpdate RPC: interrupted exception", e);
+            faAdjWithdrawOutputBuilder.setResult(errorBuilder.build());
+            return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> failed()
+                    .withResult(faAdjWithdrawOutputBuilder.build()).build());
+        } catch (ExecutionException e) {
+            log.error("MultilayerTopologyProvider.forwardingAdjUpdate RPC: execution exception", e);
+            faAdjWithdrawOutputBuilder.setResult(errorBuilder.build());
+            return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> failed()
+                    .withResult(faAdjWithdrawOutputBuilder.build()).build());
+        }
 
         log.info("MultilayerTopologyProvider.forwardingAdjWithdraw RPC: linkid " + linkId.getValue().toString());
 
@@ -399,27 +453,28 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
             }
         }
 
+        TerminationPointKey tpKey = new TerminationPointKey(faLink.getSource().getSourceTp());
+        NodeKey nodeKey = new NodeKey(faLink.getSource().getSourceNode());
+        InstanceIdentifier<TerminationPoint> tpInstanceId = destTopologyId.child(Node.class, nodeKey)
+                .child(TerminationPoint.class, tpKey);
+        transaction.delete(LogicalDatastoreType.OPERATIONAL, tpInstanceId);
+
+        tpKey = new TerminationPointKey(faLink.getDestination().getDestTp());
+        nodeKey = new NodeKey(faLink.getDestination().getDestNode());
+        tpInstanceId = destTopologyId.child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
+        transaction.delete(LogicalDatastoreType.OPERATIONAL, tpInstanceId);
+
         try {
             transaction.submit().checkedGet();
         } catch (final TransactionCommitFailedException e) {
             log.warn("MultilayerTopologyProvider.forwardingAdjWithdraw RPC: TransactionCommitFailedException ", e);
             transactionChain.close();
             transactionChain = dataProvider.createTransactionChain(this);
-
-            org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.error.ErrorBuilder
-                    iErrorBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.error.ErrorBuilder();
-            org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.ErrorBuilder
-                    errorBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.ErrorBuilder();
-            errorBuilder.setError(iErrorBuilder.build());
-            ForwardingAdjWithdrawOutputBuilder faAdjWithdrawOutputBuilder = new ForwardingAdjWithdrawOutputBuilder();
             faAdjWithdrawOutputBuilder.setResult(errorBuilder.build());
                     return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> failed()
                             .withResult(faAdjWithdrawOutputBuilder.build()).build());
         }
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.OkBuilder
-               okBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.OkBuilder();
-        ForwardingAdjWithdrawOutputBuilder faAdjWithdrawOutputBuilder = new ForwardingAdjWithdrawOutputBuilder();
         faAdjWithdrawOutputBuilder.setResult(okBuilder.build());
                 return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> success()
                         .withResult(faAdjWithdrawOutputBuilder.build()).build());

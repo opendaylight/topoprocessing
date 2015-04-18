@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.re
 
 public interface MultilayerAttributesParser {
 
-    String parseFaId(boolean bidirFlag, boolean secondLeg);
+    String parseFaId(boolean bidirFlag, boolean secondLeg, String networkTopologyRef);
 
     String parseFaId(String faId, boolean bidirFlag, boolean secondLeg);
 

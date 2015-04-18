@@ -70,7 +70,7 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
         MultilayerTopologyProvider multilayerTopologyProvider = new MultilayerTopologyProvider();
         multilayerTopologyProvider.init(logger, processor, mlmtTopologyId, multilayerAttributesParser);
         multilayerTopologyProvider.setDataProvider(dataBroker);
-        multilayerTopologyProvider.registerRpcImpl(rpcProviderRegistry);
+        multilayerTopologyProvider.registerRpcImpl(rpcProviderRegistry, mlmtTopologyId);
         lProvider.add(multilayerTopologyProvider);
         /*
          * topologyname and related providers mapping configuration

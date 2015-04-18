@@ -118,7 +118,7 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         return FA_SUBID_FIRSTLEG;
     }
 
-    private String buildFaId(String strFaId, boolean bidirFlag, boolean secondLeg) {
+    private String buildFaId(String strFaId, boolean bidirFlag, boolean secondLeg, String networkTopologyRef) {
         String faId = FA_ID_PREFIX;
         if (bidirFlag) {
            faId = faId + FA_ID_BIDIR;
@@ -126,23 +126,26 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         else {
            faId = faId + FA_ID_UNIDIR;
         }
-        faId = faId + strFaId + FA_ID_ITEM_SEP + getFaSubId(secondLeg);
+        if (networkTopologyRef != null) {
+            faId = faId + networkTopologyRef + FA_ID_ITEM_SEP ;
+	}
+	faId = faId + strFaId + FA_ID_ITEM_SEP + getFaSubId(secondLeg);
 
         return faId;
     }
 
-    private String buildFaId(int faIdValue, boolean bidirFlag, boolean secondLeg) {
-        return buildFaId(Integer.toString(faIdValue), bidirFlag, secondLeg);
+    private String buildFaId(int faIdValue, boolean bidirFlag, boolean secondLeg, String networkTopologyRef) {
+        return buildFaId(Integer.toString(faIdValue), bidirFlag, secondLeg, networkTopologyRef);
     }
 
     @Override
-    public String parseFaId(boolean bidirFlag, boolean secondLeg) {
-        return buildFaId(allocFaId(), bidirFlag, secondLeg);
+    public String parseFaId(boolean bidirFlag, boolean secondLeg, String networkTopologyRef) {
+        return buildFaId(allocFaId(), bidirFlag, secondLeg, networkTopologyRef);
     }
 
     @Override
     public String parseFaId(String faId, boolean bidirFlag, boolean secondLeg) {
-        return buildFaId(faId, bidirFlag, secondLeg);
+        return buildFaId(faId, bidirFlag, secondLeg, null);
     }
 
     @Override
