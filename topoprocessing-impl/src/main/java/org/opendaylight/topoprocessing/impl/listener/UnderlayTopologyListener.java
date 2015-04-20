@@ -36,6 +36,7 @@ import com.google.common.base.Optional;
 public class UnderlayTopologyListener implements DOMDataChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UnderlayTopologyListener.class);
+    private final YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder().node(Node.QNAME).build();
 
     public enum RequestAction {
         CREATE, UPDATE, DELETE
@@ -81,7 +82,6 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
 
     private void proceedChangeRequest(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map,
             RequestAction requestAction) {
-        YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder().node(Node.QNAME).build();
         Map<YangInstanceIdentifier, PhysicalNode> resultEntries = new HashMap<>();
         Iterator<Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator = map.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -120,10 +120,15 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         Iterator<YangInstanceIdentifier> iterator = set.iterator();
         while (iterator.hasNext()) {
             YangInstanceIdentifier identifierOperational = iterator.next();
-            if (identifierOperational.getLastPathArgument().getNodeType().equals(
-                    pathIdentifier.getLastPathArgument().getNodeType()))
-            {
-                identifiers.add(identifierOperational);
+            YangInstanceIdentifier.PathArgument lastPathArgument = identifierOperational.getLastPathArgument();
+            if (! (lastPathArgument instanceof YangInstanceIdentifier.AugmentationIdentifier)) {
+                if (lastPathArgument.getNodeType().equals(
+                        nodeIdentifier.getLastPathArgument().getNodeType()))
+                {
+                    if (! lastPathArgument.equals(nodeIdentifier.getLastPathArgument())) {
+                        identifiers.add(identifierOperational);
+                    }
+                }
             }
         }
         topologyManager.processRemovedChanges(identifiers, underlayTopologyId);
