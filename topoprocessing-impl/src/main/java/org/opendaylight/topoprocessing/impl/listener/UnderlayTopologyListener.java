@@ -116,14 +116,19 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
     }
 
     private void proceedDeletionRequest(Set<YangInstanceIdentifier> set) {
+        YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder().node(Node.QNAME).build();
         ArrayList<YangInstanceIdentifier> identifiers = new ArrayList<>();
         Iterator<YangInstanceIdentifier> iterator = set.iterator();
         while (iterator.hasNext()) {
             YangInstanceIdentifier identifierOperational = iterator.next();
-            if (identifierOperational.getLastPathArgument().getNodeType().equals(
-                    pathIdentifier.getLastPathArgument().getNodeType()))
-            {
-                identifiers.add(identifierOperational);
+            if (! (identifierOperational.getLastPathArgument() instanceof YangInstanceIdentifier.AugmentationIdentifier)) {
+                if (identifierOperational.getLastPathArgument().getNodeType().equals(
+                        nodeIdentifier.getLastPathArgument().getNodeType()))
+                {
+                    if (! identifierOperational.getLastPathArgument().equals(nodeIdentifier.getLastPathArgument())) {
+                        identifiers.add(identifierOperational);
+                    }
+                }
             }
         }
         topologyManager.processRemovedChanges(identifiers, underlayTopologyId);
