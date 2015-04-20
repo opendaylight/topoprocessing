@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_83250ead",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-04-20T14:11:54Z",
+      "side": 1,
+      "message": "change this local variable to a field",
+      "range": {
+        "startLine": 119,
+        "startChar": 31,
+        "endLine": 119,
+        "endChar": 45
+      },
+      "revId": "f4a9ee5624d99e2c23aeb77109c752a69b083ada",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_23419a39",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-04-20T14:11:54Z",
+      "side": 1,
+      "message": "would be a good idea to extract this part into a local variable (as we use it three times in a row + will improve code readability)",
+      "range": {
+        "startLine": 124,
+        "startChar": 19,
+        "endLine": 124,
+        "endChar": 62
+      },
+      "revId": "f4a9ee5624d99e2c23aeb77109c752a69b083ada",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
