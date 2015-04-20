@@ -21,5 +21,5 @@ public abstract class MlmtTopologyOperation {
      */
     abstract public void applyOperation(ReadWriteTransaction transaction);
 
-    public boolean isCommitNow() { return false; };
+    public boolean isCommitNow() { return false; }
 }
