@@ -13,12 +13,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.base.Preconditions;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,23 +150,27 @@ public class TopologyAggregator implements TopologyOperator {
             for (TopologyStore ts : topologyStores) {
                 if (ts.getId().equals(topologyId)) {
                     LOG.debug("Updating logical node");
-                    PhysicalNode oldPhysicalNode = ts.getPhysicalNodes().get(updatedEntry.getKey());
-                    if (oldPhysicalNode == null) {
-                        throw new IllegalStateException("Updated physical node not found in Topology Store");
+                    PhysicalNode physicalNode = ts.getPhysicalNodes().get(updatedEntry.getKey());
+                    Preconditions.checkNotNull(physicalNode, "Updated physical node not found in Topology Store");
+                    PhysicalNode updatedEntryValue = updatedEntry.getValue();
+                    physicalNode.setNode(updatedEntryValue.getNode());
+                    NormalizedNode<?, ?> leafNode = physicalNode.getLeafNode();
+                    YangInstanceIdentifier logicalIdentifier = physicalNode.getLogicalIdentifier();
+                    // if Leaf Node was changed
+                    if (! leafNode.equals(updatedEntryValue.getLeafNode())) {
+                        physicalNode.setLeafNode(updatedEntryValue.getLeafNode());
+                        physicalNode.setLogicalIdentifier(null);
+                        removePhysicalNodeFromLogicalNode(physicalNode, logicalIdentifier);
+                        createAggregatedNodes(physicalNode, topologyId);
+                    } else if (null != logicalIdentifier) {
+                        // in case that only Node value was changed
+                        aggregationMap.markUpdated(logicalIdentifier, aggregationMap.get(logicalIdentifier));
                     }
-                    YangInstanceIdentifier logicalIdentifier = oldPhysicalNode.getLogicalIdentifier();
-                    if(oldPhysicalNode.getLeafNode().equals(updatedEntry.getValue().getLeafNode())) {
-                        oldPhysicalNode.setNode(updatedEntry.getValue().getNode());
-                        if (null != logicalIdentifier) {
-                            aggregationMap.markUpdated(logicalIdentifier, aggregationMap.get(logicalIdentifier));
-                        }
-                    } else {
-                        removePhysicalNodeFromLogicalNode(oldPhysicalNode, logicalIdentifier);
-                        createAggregatedNodes(updatedEntry.getValue(), topologyId);
-                    }
+                    return aggregationMap;
                 }
             }
+            LOG.error("Node was not found in topologyStore." + updatedEntry);
         }
-        return aggregationMap;
+        return null;
     }
 }
