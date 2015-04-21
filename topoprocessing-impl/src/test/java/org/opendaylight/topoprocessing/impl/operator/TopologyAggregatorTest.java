@@ -1,5 +1,10 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,17 +15,15 @@ import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLeafNodeBuilder;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author matus.marko
@@ -44,6 +47,9 @@ public class TopologyAggregatorTest {
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
     private YangInstanceIdentifier leafYiid11, leafYiid12, leafYiid21, leafYiid22, leafYiid23;
     private LeafNode<Object> leafNode11;
+    private YangInstanceIdentifier testTopologyRef = YangInstanceIdentifier.builder()
+            .node(NetworkTopology.QNAME).node(Topology.QNAME)
+            .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, "test").build();
 
     @Mock
     private NormalizedNode mockNormalizedNode1, mockNormalizedNode2;
@@ -87,8 +93,8 @@ public class TopologyAggregatorTest {
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
                 .withValue("192.168.1.2")
                 .build();
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode11);
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode12);
+        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode11, testTopologyRef);
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode12, testTopologyRef);
         topo1.getPhysicalNodes().put(leafYiid11, physicalNode1);
         topo2.getPhysicalNodes().put(leafYiid12, physicalNode2);
 
@@ -138,8 +144,8 @@ public class TopologyAggregatorTest {
         LeafNode<Object> leafNode22 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
                 .withValue("192.168.1.3").build();
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode21);
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode22);
+        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode21, testTopologyRef);
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode22, testTopologyRef);
         Map<YangInstanceIdentifier, PhysicalNode> physicalNodes1 = new HashMap<>();
         physicalNodes1.put(leafYiid21, physicalNode1);
         physicalNodes1.put(leafYiid22, physicalNode2);
@@ -158,7 +164,7 @@ public class TopologyAggregatorTest {
         LeafNode<Object> leafNode23 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
                 .withValue("192.168.1.1").build();
-        PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode1, leafNode23);
+        PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode1, leafNode23, testTopologyRef);
         Map<YangInstanceIdentifier, PhysicalNode> physicalNodes2 = new HashMap<>();
         physicalNodes2.put(leafYiid23, physicalNode3);
 
@@ -254,7 +260,7 @@ public class TopologyAggregatorTest {
         LeafNode<Object> leafNode31 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
                 .withValue("192.168.1.2").build();
-        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, leafNode31);
+        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, leafNode31, testTopologyRef);
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();
         update.put(leafYiid11, physicalNode);
         AggregationMap resultMap1 = aggregator.processUpdatedChanges(update, TOPO1);
@@ -293,7 +299,7 @@ public class TopologyAggregatorTest {
         LeafNode<Object> leafNode32 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
                 .withValue("192.168.1.2").build();
-        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, leafNode32);
+        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, leafNode32, testTopologyRef);
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();
         update.put(leafYiid23, physicalNode);
         AggregationMap resultMap1 = aggregator.processUpdatedChanges(update, TOPO3);
@@ -306,7 +312,7 @@ public class TopologyAggregatorTest {
     public void testProcessUpdatedChanges3() throws Exception {
         testProcessCreatedChanges();
 
-        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode2, leafNode11);
+        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode2, leafNode11, testTopologyRef);
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();
         update.put(leafYiid11, physicalNode);
         AggregationMap resultMap1 = aggregator.processUpdatedChanges(update, TOPO1);
