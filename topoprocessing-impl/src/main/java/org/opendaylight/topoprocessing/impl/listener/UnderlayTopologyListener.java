@@ -18,6 +18,9 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
@@ -45,6 +48,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
     private TopologyManager topologyManager;
     private YangInstanceIdentifier pathIdentifier;
     private String underlayTopologyId;
+    private YangInstanceIdentifier topologyRef;
 
     /**
      * Default constructor
@@ -57,6 +61,8 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         this.topologyManager = topologyManager;
         this.underlayTopologyId = underlayTopologyId;
         this.pathIdentifier = pathIdentifier;
+        topologyRef = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME).node(Topology.QNAME)
+                .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, underlayTopologyId).build();
     }
 
 
@@ -94,11 +100,9 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                         LOGGER.debug("Finding node: " + pathIdentifier);
                         Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
                         LOGGER.debug("Found node: " + node.get());
-                        String value = "";
                         if (node.isPresent()) {
                             LeafNode<?> leafnode = (LeafNode<?>) node.get();
-                            value = (String) leafnode.getValue();
-                            PhysicalNode physicalNode = new PhysicalNode(entry.getValue(), leafnode);
+                            PhysicalNode physicalNode = new PhysicalNode(entry.getValue(), leafnode, topologyRef);
                             resultEntries.put(entry.getKey(), physicalNode);
                             LOGGER.debug("Created PhysicalNode: " + physicalNode);
                         }
