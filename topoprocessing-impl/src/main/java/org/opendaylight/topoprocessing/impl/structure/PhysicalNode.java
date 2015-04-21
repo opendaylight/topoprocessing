@@ -42,6 +42,10 @@ public class PhysicalNode {
         return leafNode;
     }
 
+    public void setLeafNode(NormalizedNode<?, ?> leafNode) {
+        this.leafNode = leafNode;
+    }
+
     public YangInstanceIdentifier getLogicalIdentifier() {
         return logicalIdentifier;
     }
