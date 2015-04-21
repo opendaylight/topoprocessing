@@ -119,7 +119,7 @@ public class MlmtTopologyBuilder {
               }
 
               @Override
-              public boolean isCommitNow() { return true; };
+              public boolean isCommitNow() { return true; }
          });
     }
 
@@ -153,7 +153,7 @@ public class MlmtTopologyBuilder {
                 }
 
                 @Override
-                public boolean isCommitNow() { return true; };
+                public boolean isCommitNow() { return true; }
             });
         } catch (final InterruptedException e) {
             log.error("MlmtTopologyBuilder.copyTopology interrupted exception", e);
@@ -204,7 +204,7 @@ public class MlmtTopologyBuilder {
             }
 
             @Override
-            public boolean isCommitNow() { return true; };
+            public boolean isCommitNow() { return true; }
         });
     }
 
@@ -249,7 +249,7 @@ public class MlmtTopologyBuilder {
              }
 
              @Override
-             public boolean isCommitNow() { return true; };
+             public boolean isCommitNow() { return true; }
         });
     }
 
@@ -296,7 +296,7 @@ public class MlmtTopologyBuilder {
              }
 
              @Override
-             public boolean isCommitNow() { return true; };
+             public boolean isCommitNow() { return true; }
         });
     }
 }

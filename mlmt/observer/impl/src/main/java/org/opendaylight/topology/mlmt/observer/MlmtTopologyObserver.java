@@ -44,15 +44,15 @@ public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implement
         thread.setName("MlmtOperationProcessor");
         thread.start();
 
-        mlmtTopologyId = buildTopologyIid(mlmt);
+        mlmtTopologyId = buildTopologyIid(MLMT);
         mlmtTopologyBuilder = new MlmtTopologyBuilder();
         mlmtTopologyBuilder.init(dataBroker, LOG, processor);
         underlayTopologies = new ArrayList<String>();
 
         mlmtProviderFactory = new MlmtProviderFactoryImpl();
         Map<String, List<MlmtTopologyProvider>> providersMap =
-                mlmtProviderFactory.createProvidersMap(rpcRegistry, dataBroker, LOG, processor, mlmt);
-        mlmtProviders = providersMap.get(mlmt);
+                mlmtProviderFactory.createProvidersMap(rpcRegistry, dataBroker, LOG, processor, MLMT);
+        mlmtProviders = providersMap.get(MLMT);
 
         listenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                 mlmtTopologyId, this, DataBroker.DataChangeScope.SUBTREE);

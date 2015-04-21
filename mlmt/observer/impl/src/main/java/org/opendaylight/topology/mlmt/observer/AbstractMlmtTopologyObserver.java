@@ -62,7 +62,7 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
     protected List<MlmtTopologyProvider> mlmtProviders;
 
     protected List<String> underlayTopologies;
-    protected static final String mlmt = "mlmt:1";
+    protected static final String MLMT = "mlmt:1";
 
     public enum MlmtDataChangeEventType {
         CREATED,
@@ -82,7 +82,7 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
         }
     }
 
-    abstract public void init(DataBroker dataBroker, RpcProviderRegistry rpcRegistry);
+    public abstract void init(DataBroker dataBroker, RpcProviderRegistry rpcRegistry);
 
     protected InstanceIdentifier<Topology> buildTopologyIid(final String topologyName) {
         TopologyId tid = new TopologyId(topologyName);
@@ -96,7 +96,6 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
         List<Link> lLink = topology.getLink();
         if (lNode != null && !lNode.isEmpty()) {
             for (Node node : lNode) {
-                TopologyKey topologyKey = buildTopologyId.firstKeyOf(Topology.class, TopologyKey.class);
                 mlmtTopologyBuilder.createNode(LogicalDatastoreType.OPERATIONAL, buildTopologyId,
                         topology.getTopologyId(), node);
                 for (MlmtTopologyProvider provider : mlmtProviders) {
@@ -144,7 +143,7 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
                 String pattern = "(?<=topology-id=\')(.*)(?=\'])";
                 Pattern r = Pattern.compile(pattern);
                 Matcher m = r.matcher(underlayTopologyId.getValue().toString());
-                if (m.find() == false) {
+                if (!m.find()) {
                     continue;
                 }
                 String topologyName = new String(m.group(1));
@@ -350,11 +349,11 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
                 InstanceIdentifier<Topology> topologyInstanceId =
                         InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
                 if (underlayTopologies.contains(topologyName)) {
-                    LOG.info("MlmtTopologyObserver.handleData " + changeType + " Topology Id " + mlmt);
+                    LOG.info("MlmtTopologyObserver.handleData " + changeType + " Topology Id " + MLMT);
                     onTopologyCreated(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, topology);
                 }
-                if (topologyName.equals(mlmt)) {
-                    LOG.info("MlmtTopologyObserver.handleData " + changeType + " Topology Id " + mlmt);
+                if (topologyName.equals(MLMT)) {
+                    LOG.info("MlmtTopologyObserver.handleData " + changeType + " Topology Id " + MLMT);
                     onTopologyCreated(LogicalDatastoreType.CONFIGURATION, mlmtTopologyId, topology);
                 }
             }

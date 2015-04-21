@@ -138,7 +138,9 @@ public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyPro
     private void handleNodeAttributes(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Node node) {
-        log.info("InventoryTopologyProvider.handleNodeAttributes");
+        log.info("InventoryTopologyProvider.handleNodeAttributes type: " + type +
+                " topologyInstanceId: " + topologyInstanceId.toString() +
+                " nodeKey: " + node.getKey());
         NodeRef nodeRefAttributes = parser.parseInventoryNodeAttributes(node);
         if (nodeRefAttributes == null) {
             return;
@@ -185,7 +187,9 @@ public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyPro
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey,
             final TerminationPoint tp) {
-        log.info("InventoryTopologyProvider.handleTpAttributes");
+        log.info("InventoryTopologyProvider.handleTpAttributes type: " + type +
+		        " topologyInstanceId: " + topologyInstanceId.toString() +
+                " nodeKey: " + nodeKey.toString() + " terminationPointKey: " + tp.getKey().toString());
         NodeConnectorRef nodeConnectorRefAttributes = parser.parseInventoryNodeConnectorAttributes(tp);
         if (nodeConnectorRefAttributes == null) {
             log.info("InventoryTopologyProvider.handleTpAttributes: nodeConnectorRefAttributes is null");
