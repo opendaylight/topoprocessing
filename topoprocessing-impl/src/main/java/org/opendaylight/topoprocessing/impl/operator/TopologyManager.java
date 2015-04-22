@@ -14,8 +14,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
+import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NodeIpFiltration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
@@ -25,7 +27,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.NodeIpFiltrationCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.UnificationCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.node.ip.filtration._case.node.ip.filtration.Filter;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNode;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
+import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.impl.schema.Builders;
+import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
+import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.CollectionNodeBuilder;
+import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableMapNodeBuilder;
+import org.opendaylight.yangtools.yang.model.util.Leafref;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,5 +144,32 @@ public class TopologyManager {
      */
     public List<TopologyStore> getTopologyStores() {
         return topologyStores;
+    }
+
+    private NormalizedNode<?, ?> toNormalizedNode(
+            LogicalNode logicalNode, YangInstanceIdentifier logicalIdentifier) {
+
+        CollectionNodeBuilder<MapEntryNode, MapNode> supportingNodes = ImmutableNodes.mapNodeBuilder(SupportingNode.QNAME);
+        CollectionNodeBuilder<MapEntryNode, MapNode> terminationPoints = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME);
+        // prepare supporting nodes
+        for (PhysicalNode physicalNode : logicalNode.getPhysicalNodes()) {
+            NormalizedNode<?, ?> physicalWholeNode = physicalNode.getNode();
+            supportingNodes
+                    .withChild(ImmutableNodes.mapEntry(SupportingNode.QNAME, TopologyQNames.topologyRef, physicalNode.getTopologyRef()))
+                    .addChild(ImmutableNodes.mapEntry(SupportingNode.QNAME, TopologyQNames.nodeRef, physicalWholeNode)); //TODO Node to Leafref convert!!!
+            // prepare termination points
+            for (TerminationPoint terminationPoint : ((Node) physicalWholeNode).getTerminationPoint()) {
+                terminationPoints
+                        .withChild(ImmutableNodes.mapEntry(TerminationPoint.QNAME, TopologyQNames.tpId, terminationPoint.getTpId()))
+                        .addChild(ImmutableNodes.mapEntry(TerminationPoint.QNAME, TopologyQNames.tpRef, terminationPoint.getTpRef()));
+            }
+        }
+
+        MapEntryNode normalizedNode = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.networkNodeIdQName, logicalIdentifier)
+                .withChild(supportingNodes.build())
+                .withChild(terminationPoints.build())
+                .build();
+
+        return normalizedNode;
     }
 }
