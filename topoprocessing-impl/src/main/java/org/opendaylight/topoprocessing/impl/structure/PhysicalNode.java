@@ -8,6 +8,7 @@
 
 package org.opendaylight.topoprocessing.impl.structure;
 
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -20,7 +21,7 @@ public class PhysicalNode {
     private NormalizedNode<?, ?> node;
     private NormalizedNode<?, ?> leafNode;
     private YangInstanceIdentifier logicalIdentifier = null;
-    private YangInstanceIdentifier topologyRef;
+    private TopologyId topologyRef;
 
     /**
      * Constructor
@@ -28,7 +29,7 @@ public class PhysicalNode {
      * @param leafNode
      */
     public PhysicalNode(NormalizedNode<?, ?> node, NormalizedNode<?, ?> leafNode,
-            YangInstanceIdentifier topologyRef) {
+            TopologyId topologyRef) {
         this.node = node;
         this.leafNode = leafNode;
         this.topologyRef = topologyRef;
@@ -62,7 +63,7 @@ public class PhysicalNode {
      * @return {@link YangInstanceIdentifier} representing {@link Topology}
      * which the node is stored in
      */
-    public YangInstanceIdentifier getTopologyRef() {
+    public TopologyId getTopologyRef() {
         return topologyRef;
     }
 }
