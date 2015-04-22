@@ -19,7 +19,7 @@ public abstract class MlmtTopologyOperation {
      *
      * @param transaction Datastore transaction
      */
-    abstract public void applyOperation(ReadWriteTransaction transaction);
+    public abstract void applyOperation(ReadWriteTransaction transaction);
 
     public boolean isCommitNow() { return false; }
 }

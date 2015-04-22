@@ -11,22 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 
-import com.google.common.base.Preconditions;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.AbstractBindingAwareProvider;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyBuilder;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.topology.mlmt.factory.MlmtProviderFactoryImpl;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.mlmt.topology.observer.impl.rev150122.MlmtTopologyObserverRuntimeMXBean;
 
 public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implements AutoCloseable, MlmtTopologyObserverRuntimeMXBean {

@@ -127,7 +127,7 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
            faId = faId + FA_ID_UNIDIR;
         }
         if (networkTopologyRef != null) {
-            faId = faId + networkTopologyRef + FA_ID_ITEM_SEP ;
+            faId = faId + networkTopologyRef + FA_ID_ITEM_SEP;
 	}
 	faId = faId + strFaId + FA_ID_ITEM_SEP + getFaSubId(secondLeg);
 
@@ -187,6 +187,10 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         return null;
     }
 
+    private LinkId buildLinkId(String faId) {
+        return new LinkId(faId);
+    }
+
     @Override
     public LinkBuilder parseLinkBuilder(ForwardingAdjacencyAttributes input, String faId) {
         final HeadEnd headEnd = input.getHeadEnd();
@@ -200,7 +204,7 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         final DestinationBuilder destinationBuilder = new DestinationBuilder();
         destinationBuilder.setDestNode(tailNodeId).setDestTp(tailTpId);
         final LinkBuilder linkBuilder = new LinkBuilder();
-        final LinkId linkId = new LinkId(faId);
+        final LinkId linkId = buildLinkId(faId);
         final LinkKey linkKey = new LinkKey(linkId);
         final MtInfoLinkBuilder mtInfoLinkBuilder = new MtInfoLinkBuilder();
         mtInfoLinkBuilder.setAttribute(parseMtInfoAttribute(input));
@@ -240,7 +244,7 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         linkBuilder.setSource(sourceBuilder.build());
         String strFaId = extractFaId(linkBuilder.getLinkId().getValue().toString());
         String faId = parseFaId(strFaId, true, true);
-        LinkId linkId = new LinkId(faId);
+        LinkId linkId = buildLinkId(faId);
         LinkKey linkKey = new LinkKey(linkId);
         linkBuilder.setKey(linkKey);
 
