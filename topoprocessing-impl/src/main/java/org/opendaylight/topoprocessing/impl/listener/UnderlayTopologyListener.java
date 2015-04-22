@@ -8,19 +8,12 @@
 
 package org.opendaylight.topoprocessing.impl.listener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.base.Optional;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
-import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
@@ -30,7 +23,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
+import java.util.*;
 
 /**
  * Listens on underlay topology changes
@@ -48,7 +41,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
     private TopologyManager topologyManager;
     private YangInstanceIdentifier pathIdentifier;
     private String underlayTopologyId;
-    private YangInstanceIdentifier topologyRef;
+    private TopologyId topologyRef;
 
     /**
      * Default constructor
@@ -61,8 +54,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         this.topologyManager = topologyManager;
         this.underlayTopologyId = underlayTopologyId;
         this.pathIdentifier = pathIdentifier;
-        topologyRef = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME).node(Topology.QNAME)
-                .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, underlayTopologyId).build();
+        topologyRef = new TopologyId(underlayTopologyId);
     }
 
 
