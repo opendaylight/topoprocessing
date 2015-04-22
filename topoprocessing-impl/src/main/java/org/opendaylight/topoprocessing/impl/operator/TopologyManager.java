@@ -16,6 +16,7 @@ import java.util.Map;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
+import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NodeIpFiltration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
@@ -42,6 +43,7 @@ public class TopologyManager {
     private TopologyFiltrator filtrator = null;
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
     private List<TopologyStore> topologyStores = new ArrayList<>();
+    private TopologyWriter topologyWriter;
 
     /**
      * Process created changes
@@ -130,5 +132,12 @@ public class TopologyManager {
      */
     public List<TopologyStore> getTopologyStores() {
         return topologyStores;
+    }
+
+    /**
+     * @param topologyWriter writes data into operational datastore
+     */
+    public void set(TopologyWriter topologyWriter) {
+        this.topologyWriter = topologyWriter;
     }
 }
