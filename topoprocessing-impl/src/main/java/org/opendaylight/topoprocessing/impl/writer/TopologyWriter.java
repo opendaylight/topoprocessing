@@ -17,8 +17,13 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
+import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,6 +120,31 @@ public class TopologyWriter {
             @Override
             public void onFailure(Throwable throwable) {
                 LOGGER.debug("Failed to remove transaction data");
+            }
+        });
+    }
+
+    /**
+     * Writes empty topology with provided topologyId
+     * @param topologyId topologyId of overlay topology
+     */
+    public void writeEmptyTopology(String topologyId) {
+        MapEntryNode mapEntryNode = ImmutableNodes.mapEntry(Topology.QNAME, TopologyQNames.topologyIdQName, topologyId);
+        YangInstanceIdentifier identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+                .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, topologyId).build();
+
+        DOMDataWriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
+        transaction.put(LogicalDatastoreType.OPERATIONAL, identifier, mapEntryNode);
+        CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
+        Futures.addCallback(submit, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                LOGGER.debug("Empty topology successfully written");
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                LOGGER.debug("Failed to write empty topology");
             }
         });
     }
