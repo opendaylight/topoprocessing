@@ -8,8 +8,10 @@
 
 package org.opendaylight.topoprocessing.impl.util;
 
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev130712.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNode;
 import org.opendaylight.yangtools.yang.common.QName;
 
 /**
@@ -22,6 +24,14 @@ public class TopologyQNames {
     public static final QName topologyIdQName = QName.create(Topology.QNAME, "topology-id");
     /** Network-topology node-id QName */
     public static final QName networkNodeIdQName = QName.create(Node.QNAME, "node-id");
+    /** Network-topology supporting-node topology-ref */
+    public static final QName topologyRef = QName.create(SupportingNode.QNAME, "topology-ref");
+    /** Network-topology supporting-node node-ref */
+    public static final QName nodeRef = QName.create(SupportingNode.QNAME, "node-ref");
+    /** Network-topology termination-point tp-id */
+    public static final QName tpId = QName.create(TerminationPoint.QNAME, "tp-id");
+    /** Network-topology termination-point tp-ref */
+    public static final QName tpRef = QName.create(TerminationPoint.QNAME, "tp-ref");
 
     private TopologyQNames() {
         throw new UnsupportedOperationException("TopologyQNames can't be instantiated.");

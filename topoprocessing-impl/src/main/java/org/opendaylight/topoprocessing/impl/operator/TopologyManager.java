@@ -119,7 +119,7 @@ public class TopologyManager {
 
     private void initializeStore(String underlayTopologyId) {
         for (TopologyStore topologyStore : topologyStores) {
-            if (underlayTopologyId == topologyStore.getId()) {
+            if (underlayTopologyId.equals(topologyStore.getId())) {
                 return;
             }
         }
