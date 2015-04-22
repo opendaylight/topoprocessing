@@ -39,13 +39,16 @@ public class TopologyWriter {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(TopologyWriter.class);
     private DOMDataBroker dataBroker;
+    private String topologyId;
 
     /**
      * Default constructor
      * @param dataBroker broker used for transaction operations
+     * @param topologyId topologyId of overlay topology
      */
-    public TopologyWriter(DOMDataBroker dataBroker) {
+    public TopologyWriter(DOMDataBroker dataBroker, String topologyId) {
         this.dataBroker = dataBroker;
+        this.topologyId = topologyId;
     }
 
     /**
@@ -126,9 +129,8 @@ public class TopologyWriter {
 
     /**
      * Writes empty topology with provided topologyId
-     * @param topologyId topologyId of overlay topology
      */
-    public void writeEmptyTopology(String topologyId) {
+    public void initTopology() {
         MapEntryNode mapEntryNode = ImmutableNodes.mapEntry(Topology.QNAME, TopologyQNames.topologyIdQName, topologyId);
         YangInstanceIdentifier identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
                 .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, topologyId).build();

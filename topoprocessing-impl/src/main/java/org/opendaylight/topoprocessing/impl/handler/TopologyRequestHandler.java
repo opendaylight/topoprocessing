@@ -21,6 +21,7 @@ import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
@@ -119,6 +120,8 @@ public class TopologyRequestHandler {
                 }
             }
             LOG.debug("Correlation configuration successfully read");
+            TopologyWriter writer = new TopologyWriter(domDataBroker, topology.getTopologyId().getValue());
+            manager.set(writer);
         } catch (Exception e) {
             LOG.warn("Processing new request for topology change failed.", e);
         }
