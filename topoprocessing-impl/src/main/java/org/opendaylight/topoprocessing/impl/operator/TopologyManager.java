@@ -8,14 +8,9 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
-import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
+import com.google.common.base.Preconditions;
+import org.opendaylight.topoprocessing.impl.structure.*;
+import org.opendaylight.topoprocessing.impl.translator.LogicalNodeToNodeTranslator;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NodeIpFiltration;
@@ -27,10 +22,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.UnificationCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.node.ip.filtration._case.node.ip.filtration.Filter;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author matus.marko
@@ -44,6 +43,7 @@ public class TopologyManager {
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
     private List<TopologyStore> topologyStores = new ArrayList<>();
     private TopologyWriter topologyWriter;
+    private LogicalNodeToNodeTranslator converter = new LogicalNodeToNodeTranslator();
 
     /**
      * Process created changes
@@ -53,7 +53,15 @@ public class TopologyManager {
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, final String topologyId) {
         Preconditions.checkNotNull(aggregator, "Operator needs to be initialized.");
         LOG.debug("Processing createdChanges");
-        aggregator.processCreatedChanges(createdEntries, topologyId);
+        AggregationMap map = aggregator.processCreatedChanges(createdEntries, topologyId);
+        Map<YangInstanceIdentifier, LogicalNode> createdData = map.getCreatedData();
+        if (0 < createdData.size()) {
+            Map.Entry<YangInstanceIdentifier, LogicalNode> entry = createdData.entrySet().iterator().next();
+            LogicalNodeWrapper wrapper = new LogicalNodeWrapper("node1", entry.getValue());
+            Map<YangInstanceIdentifier, NormalizedNode<?, ?>> dataToCreate = new HashMap<>();
+            dataToCreate.put(entry.getKey(), converter.convert(wrapper));
+            topologyWriter.writeCreatedData(dataToCreate);
+        }
         LOG.debug("CreatedChanges processed");
     }
 
@@ -65,7 +73,10 @@ public class TopologyManager {
     public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId) {
         Preconditions.checkNotNull(aggregator, "Operator needs to be initialized.");
         LOG.debug("Processing removedChanges");
-        aggregator.processRemovedChanges(identifiers, topologyId);
+//        AggregationMap map = aggregator.processRemovedChanges(identifiers, topologyId);
+//        topologyWriter.writeCreatedData(converter.convert(map.getCreatedData()));
+//        topologyWriter.updateData(converter.convert(map.getUpdatedData()));
+//        topologyWriter.deleteData(map.getRemovedData());
         LOG.debug("RemovedChanges processed");
     }
 
@@ -78,7 +89,10 @@ public class TopologyManager {
             String topologyId) {
         Preconditions.checkNotNull(aggregator, "Operator needs to be initialized.");
         LOG.debug("Processing updatedChanges");
-        aggregator.processUpdatedChanges(updatedEntries, topologyId);
+//        AggregationMap map = aggregator.processUpdatedChanges(updatedEntries, topologyId);
+//        topologyWriter.writeCreatedData(converter.convert(map.getCreatedData()));
+//        topologyWriter.updateData(converter.convert(map.getUpdatedData()));
+//        topologyWriter.deleteData(map.getRemovedData());
         LOG.debug("UpdatedChanges processed");
     }
 
@@ -119,7 +133,7 @@ public class TopologyManager {
 
     private void initializeStore(String underlayTopologyId) {
         for (TopologyStore topologyStore : topologyStores) {
-            if (underlayTopologyId == topologyStore.getId()) {
+            if (underlayTopologyId.equals(topologyStore.getId())) {
                 return;
             }
         }
