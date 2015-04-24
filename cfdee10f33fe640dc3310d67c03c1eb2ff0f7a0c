@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_bdd614c4",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-04-24T07:38:02Z",
+      "side": 1,
+      "message": "we can use String instead of TopologyId - it will save a little memory, and we don\u0027t need TopologyId object in our scenario",
+      "range": {
+        "startLine": 44,
+        "startChar": 12,
+        "endLine": 44,
+        "endChar": 22
+      },
+      "revId": "cfdee10f33fe640dc3310d67c03c1eb2ff0f7a0c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_5ddb50ed",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/structure/PhysicalNode.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-04-24T07:38:02Z",
+      "side": 1,
+      "message": "change to String",
+      "range": {
+        "startLine": 24,
+        "startChar": 12,
+        "endLine": 24,
+        "endChar": 22
+      },
+      "revId": "cfdee10f33fe640dc3310d67c03c1eb2ff0f7a0c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_3d7444fc",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/util/TopologyQNames.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-04-24T07:38:02Z",
+      "side": 1,
+      "message": "wrong import, we need rev131021",
+      "range": {
+        "startLine": 11,
+        "startChar": 7,
+        "endLine": 11,
+        "endChar": 138
+      },
+      "revId": "cfdee10f33fe640dc3310d67c03c1eb2ff0f7a0c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
