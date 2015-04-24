@@ -96,9 +96,9 @@ public class AggregationMap extends HashMap<YangInstanceIdentifier, LogicalNode>
      * Return list with removed data
      * @return list
      */
-    public List<YangInstanceIdentifier> getRemovedData() {
-        List<YangInstanceIdentifier> list = new ArrayList<>(removedData);
+    public Set<YangInstanceIdentifier> getRemovedData() {
+        Set<YangInstanceIdentifier> set = new HashSet<>(removedData);
         removedData.clear();
-        return list;
+        return set;
     }
 }
