@@ -33,7 +33,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyManagerTest {
 
-    TopologyManager topologyManager = new TopologyManager();
+    TopologyAggregator topologyManager = new TopologyAggregator();
     @Mock Map<YangInstanceIdentifier, PhysicalNode> entriesMap;
     @Mock List<YangInstanceIdentifier> entriesList;
     String topologyId;

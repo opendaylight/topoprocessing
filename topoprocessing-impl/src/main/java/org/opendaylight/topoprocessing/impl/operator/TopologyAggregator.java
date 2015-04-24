@@ -9,20 +9,27 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.google.common.base.Preconditions;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
+import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
 
 /**
  * Class handling aggregation correlation
@@ -34,9 +41,10 @@ public class TopologyAggregator implements TopologyOperator {
     private static final Logger LOG = LoggerFactory.getLogger(TopologyAggregator.class);
 
     private AggregationMap aggregationMap = new AggregationMap();
-    private IdentifierGenerator idGenerator;
     private CorrelationItemEnum correlationItem;
-    private List<TopologyStore> topologyStores;
+    private TopologyWriter topologyWriter;
+    private IdentifierGenerator idGenerator = new IdentifierGenerator();
+    private List<TopologyStore> topologyStores = new ArrayList<>();
 
     /**
      * Constructor
@@ -44,12 +52,64 @@ public class TopologyAggregator implements TopologyOperator {
      * @param topologyStores Topology Stores
      * @param idGenerator Identifier Generator
      */
-    public TopologyAggregator(CorrelationItemEnum correlationItem, List<TopologyStore> topologyStores,
-                              IdentifierGenerator idGenerator) {
+    public TopologyAggregator() {
         LOG.debug("Initializing aggregator");
-        this.correlationItem = correlationItem;
+    }
+
+    /** for testing purpose only */
+    public void setTopologyStores(List<TopologyStore> topologyStores) {
         this.topologyStores = topologyStores;
-        this.idGenerator = idGenerator;
+    }
+
+    /**
+     * @param correlationItem
+     */
+    public void setCorrelationItem(CorrelationItemEnum correlationItem) {
+        this.correlationItem = correlationItem;
+    }
+
+    /**
+     * Set correlation and initialize stores
+     * @param correlation Correlation
+     */
+    public void initializeStructures(Correlation correlation) {
+        if (correlation.getName().equals(Equality.class)) {
+            EqualityCase typeCase = (EqualityCase) correlation.getCorrelationType();
+            List<Mapping> mappings = typeCase.getEquality().getMapping();
+            iterateMappings(mappings);
+        }
+    }
+
+    private void iterateMappings(List<Mapping> mappings) {
+        if (mappings != null) {
+            for (Mapping mapping : mappings) {
+                initializeStore(mapping.getUnderlayTopology());
+            }
+        }
+    }
+
+    private void initializeStore(String underlayTopologyId) {
+        for (TopologyStore topologyStore : topologyStores) {
+            if (underlayTopologyId == topologyStore.getId()) {
+                return;
+            }
+        }
+        topologyStores.add(new TopologyStore(underlayTopologyId,
+                new HashMap<YangInstanceIdentifier, PhysicalNode>()));
+    }
+
+    /**
+     * @param topologyWriter writes data into operational datastore
+     */
+    public void set(TopologyWriter topologyWriter) {
+        this.topologyWriter = topologyWriter;
+    }
+
+    /**
+     * @return the topologyStores
+     */
+    public List<TopologyStore> getTopologyStores() {
+        return topologyStores;
     }
 
     @Override
