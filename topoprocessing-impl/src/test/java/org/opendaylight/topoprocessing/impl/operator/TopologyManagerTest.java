@@ -33,7 +33,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyManagerTest {
 
-    TopologyManager topologyManager = new TopologyManager();
+    TopologyAggregator topologyManager = new TopologyAggregator();
     @Mock Map<YangInstanceIdentifier, PhysicalNode> entriesMap;
     @Mock List<YangInstanceIdentifier> entriesList;
     String topologyId;
@@ -126,29 +126,5 @@ private static CorrelationBuilder createCorrelationBuilder(EqualityCaseBuilder e
         EqualityCaseBuilder equalityCaseBuilder = createEqualityBuilder(mappings);
         CorrelationBuilder correlationBuilder = createCorrelationBuilder(equalityCaseBuilder);
         topologyManager.initializeStructures(correlationBuilder.build());
-    }
-
-    /**
-     * Checks that processCreatedChanges method on uninitialized throws exception  
-     */
-    @Test(expected=NullPointerException.class)
-    public void testProcessCreatedChangesOnNullOperator() {
-        topologyManager.processCreatedChanges(entriesMap, topologyId);
-    }
-
-    /**
-     * Checks that processUpdatedChanges method on uninitialized throws exception  
-     */
-    @Test(expected=NullPointerException.class)
-    public void testProcessUpdatedChangesOnNullOperator() {
-        topologyManager.processUpdatedChanges(entriesMap, topologyId);
-    }
-
-    /**
-     * Checks that processRemovedChanges method on uninitialized throws exception  
-     */
-    @Test(expected=NullPointerException.class)
-    public void testProcessRemovedChangesOnNullOperator() {
-        topologyManager.processRemovedChanges(entriesList, topologyId);
     }
 }

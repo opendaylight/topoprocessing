@@ -44,7 +44,6 @@ public class TopologyAggregatorTest {
 
     private TopologyAggregator aggregator;
     private List<TopologyStore> topologyStores;
-    private IdentifierGenerator idGenerator = new IdentifierGenerator();
     private YangInstanceIdentifier leafYiid11, leafYiid12, leafYiid21, leafYiid22, leafYiid23;
     private LeafNode<Object> leafNode11;
     private YangInstanceIdentifier testTopologyRef = YangInstanceIdentifier.builder()
@@ -99,7 +98,9 @@ public class TopologyAggregatorTest {
         topo2.getPhysicalNodes().put(leafYiid12, physicalNode2);
 
         CorrelationItemEnum correlationItem = CorrelationItemEnum.Node;
-        aggregator = new TopologyAggregator(correlationItem, topologyStores, idGenerator);
+        aggregator = new TopologyAggregator();
+        aggregator.setCorrelationItem(correlationItem);
+        aggregator.setTopologyStores(topologyStores);
     }
 
     /**
