@@ -16,7 +16,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
-import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
+import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
@@ -55,7 +55,7 @@ public class TopologyRequestHandler {
 
     private DOMDataBroker domDataBroker;
     private Topology topology;
-    private TopologyManager manager = new TopologyManager();
+    private TopologyAggregator aggregator = new TopologyAggregator();
     private PathTranslator translator = new PathTranslator();
     private List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
 
@@ -73,8 +73,8 @@ public class TopologyRequestHandler {
     }
 
     /** Only for testing purposes */
-    public void setManager(TopologyManager manager) {
-        this.manager = manager;
+    public void setAggregator(TopologyAggregator aggregator) {
+        this.aggregator = aggregator;
     }
 
     /** Only for testing purposes */
@@ -100,7 +100,8 @@ public class TopologyRequestHandler {
             CorrelationAugment augmentation = topology.getAugmentation(CorrelationAugment.class);
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
-                manager.initializeStructures(correlation);
+                aggregator.initializeStructures(correlation);
+                aggregator.setCorrelationItem(correlation.getCorrelationItem());
                 if (correlation.getName().equals(Equality.class)) {
                     EqualityCase equalityCase = (EqualityCase) correlation.getCorrelationType();
                     List<Mapping> mappings = equalityCase.getEquality().getMapping();
@@ -121,7 +122,7 @@ public class TopologyRequestHandler {
             }
             LOG.debug("Correlation configuration successfully read");
             TopologyWriter writer = new TopologyWriter(domDataBroker, topology.getTopologyId().getValue());
-            manager.set(writer);
+            aggregator.set(writer);
             writer.initOverlayTopology();
         } catch (Exception e) {
             LOG.warn("Processing new request for topology change failed.", e);
@@ -133,7 +134,7 @@ public class TopologyRequestHandler {
             String underlayTopologyId = filter.getUnderlayTopology();
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
                     correlationItem, schemaHolder);
-            UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(aggregator,
                     underlayTopologyId, pathIdentifier);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
@@ -154,7 +155,7 @@ public class TopologyRequestHandler {
             String underlayTopologyId = mapping.getUnderlayTopology();
             YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
                     correlationItem, schemaHolder);
-            UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(aggregator,
                     underlayTopologyId, pathIdentifier);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
