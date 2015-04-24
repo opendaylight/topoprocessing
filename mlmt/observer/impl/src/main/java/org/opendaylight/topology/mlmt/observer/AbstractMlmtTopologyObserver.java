@@ -124,14 +124,14 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
         if (isBuildingTopologyType) {
             buildTopology(type, mlmtTopologyId, topology);
         }
-        for (MlmtTopologyProvider provider : mlmtProviders) {
-            provider.onTopologyCreated(type, topologyInstanceId, topology);
-        }
     }
 
     protected void onMlmtTopologyCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId, final Topology topology) {
         LOG.info("MlmtTopologyObserver::onMlmtTopologyCreated topologyInstanceId " + topologyInstanceId.toString());
+
+        mlmtTopologyBuilder.copyTopology(LogicalDatastoreType.CONFIGURATION, topologyInstanceId, LogicalDatastoreType.OPERATIONAL);
+
         List<UnderlayTopology> lUnderlay = topology.getUnderlayTopology();
         if (lUnderlay != null) {
             for (UnderlayTopology underlayTopology : lUnderlay) {
@@ -152,12 +152,7 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
                         topologyIid, this, DataBroker.DataChangeScope.SUBTREE);
                 listenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
                         topologyIid, this, DataBroker.DataChangeScope.SUBTREE);
-                mlmtTopologyBuilder.createUnderlayTopology(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, underlayTopologyId);
             }
-        }
-
-        for (MlmtTopologyProvider provider : mlmtProviders) {
-            provider.onTopologyCreated(type, topologyInstanceId, topology);
         }
     }
 
