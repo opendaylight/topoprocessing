@@ -13,10 +13,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author matus.marko
@@ -81,9 +78,9 @@ public class AggregationMapTest {
         aggregationMap.remove(yiids.get(1));
         aggregationMap.remove(yiids.get(0));
 
-        List data1 = aggregationMap.getRemovedData();
+        Set data1 = aggregationMap.getRemovedData();
         Assert.assertEquals(3, data1.size());
-        List data2 = aggregationMap.getRemovedData();
+        Set data2 = aggregationMap.getRemovedData();
         Assert.assertEquals(0, data2.size());
     }
 }
