@@ -1,5 +1,7 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
+import static org.mockito.Matchers.any;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,15 +12,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
-import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
@@ -46,12 +44,14 @@ public class TopologyAggregatorTest {
     private List<TopologyStore> topologyStores;
     private YangInstanceIdentifier leafYiid11, leafYiid12, leafYiid21, leafYiid22, leafYiid23;
     private LeafNode<Object> leafNode11;
-    private YangInstanceIdentifier testTopologyRef = YangInstanceIdentifier.builder()
-            .node(NetworkTopology.QNAME).node(Topology.QNAME)
-            .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, "test").build();
+//    private YangInstanceIdentifier testTopologyRef = YangInstanceIdentifier.builder()
+//            .node(NetworkTopology.QNAME).node(Topology.QNAME)
+//            .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, "test").build();
 
     @Mock
     private NormalizedNode mockNormalizedNode1, mockNormalizedNode2;
+    @Mock
+    private TopologyManager mockManager;
 
     /**
      * Setup schema
@@ -92,15 +92,14 @@ public class TopologyAggregatorTest {
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
                 .withValue("192.168.1.2")
                 .build();
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode11, testTopologyRef);
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode12, testTopologyRef);
+        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode11, leafYiid11);
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode12, leafYiid12);
         topo1.getPhysicalNodes().put(leafYiid11, physicalNode1);
         topo2.getPhysicalNodes().put(leafYiid12, physicalNode2);
 
-        CorrelationItemEnum correlationItem = CorrelationItemEnum.Node;
         aggregator = new TopologyAggregator();
-        aggregator.setCorrelationItem(correlationItem);
         aggregator.setTopologyStores(topologyStores);
+        aggregator.setTopologyManager(mockManager);
     }
 
     /**
@@ -145,19 +144,17 @@ public class TopologyAggregatorTest {
         LeafNode<Object> leafNode22 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
                 .withValue("192.168.1.3").build();
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode21, testTopologyRef);
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode22, testTopologyRef);
+        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode21, leafYiid21);
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode22, leafYiid22);
         Map<YangInstanceIdentifier, PhysicalNode> physicalNodes1 = new HashMap<>();
         physicalNodes1.put(leafYiid21, physicalNode1);
         physicalNodes1.put(leafYiid22, physicalNode2);
 
-        AggregationMap created1 = aggregator.processCreatedChanges(physicalNodes1, TOPO2);
-        Assert.assertEquals(1, created1.getCreatedData().size());
-        Assert.assertEquals(0, created1.getUpdatedData().size());
-        Assert.assertEquals(0, created1.getRemovedData().size());
+        aggregator.processCreatedChanges(physicalNodes1, TOPO2);
 
-        List<PhysicalNode> createdPhysicalNodes1 = created1.entrySet().iterator().next().getValue().getPhysicalNodes();
-        Assert.assertEquals("Count of physical nodes in aggregation should be 2", 2, createdPhysicalNodes1.size());
+        Mockito.verify(mockManager, Mockito.times(1)).addLogicalNode((LogicalNode) any());
+        Mockito.verify(mockManager, Mockito.times(0)).removeLogicalNode((LogicalNode) any());
+        Mockito.verify(mockManager, Mockito.times(0)).updateLogicalNode((LogicalNode) any());
 
         // change 2
         leafYiid23 = YangInstanceIdentifier.builder()
@@ -165,24 +162,25 @@ public class TopologyAggregatorTest {
         LeafNode<Object> leafNode23 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
                 .withValue("192.168.1.1").build();
-        PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode1, leafNode23, testTopologyRef);
+        PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode1, leafNode23, leafYiid23);
         Map<YangInstanceIdentifier, PhysicalNode> physicalNodes2 = new HashMap<>();
         physicalNodes2.put(leafYiid23, physicalNode3);
 
-        AggregationMap created2 = aggregator.processCreatedChanges(physicalNodes2, TOPO3);
-        Assert.assertEquals(0, created2.getCreatedData().size());
-        Map<YangInstanceIdentifier, LogicalNode> updatedData = created2.getUpdatedData();
-        Assert.assertEquals(1, updatedData.size());
-        Assert.assertEquals(0, created2.getRemovedData().size());
+        aggregator.processCreatedChanges(physicalNodes2, TOPO3);
+        
+        // one physical node in topology store TOPO1 (=get(0))
+        Assert.assertEquals(1, aggregator.getTopologyStores().get(0).getPhysicalNodes().size());
+        // three physical nodes in topology store TOPO2 (=get(1))
+        Assert.assertEquals(3, aggregator.getTopologyStores().get(1).getPhysicalNodes().size());
+        // one physical node in topology store TOPO3 (=get(2))
+        Assert.assertEquals(1, aggregator.getTopologyStores().get(2).getPhysicalNodes().size());
+        // one physical node in topology store TOPO4 (=get(3))
+        Assert.assertEquals(0, aggregator.getTopologyStores().get(3).getPhysicalNodes().size());
 
-        List<PhysicalNode> createdPhysicalNodes2 = updatedData.entrySet().iterator().next().getValue().getPhysicalNodes();
-        Assert.assertEquals("Count of physical nodes in aggregation should be 3", 3, createdPhysicalNodes2.size());
-        Assert.assertEquals("1. physical node in the aggregated point doesn't equals to the original one",
-                createdPhysicalNodes2.get(0), physicalNode1);
-        Assert.assertEquals("2. physical node in the aggregated point doesn't equals to the original one",
-                createdPhysicalNodes2.get(1), topologyStores.get(0).getPhysicalNodes().get(leafYiid11));
-        Assert.assertEquals("3. physical node in ths aggregated point doesn't equals to the original one",
-                createdPhysicalNodes2.get(2), physicalNode3);
+        Mockito.verify(mockManager, Mockito.times(1)).addLogicalNode((LogicalNode) any());
+        Mockito.verify(mockManager, Mockito.times(0)).removeLogicalNode((LogicalNode) any());
+        Mockito.verify(mockManager, Mockito.times(1)).updateLogicalNode((LogicalNode) any());
+
     }
 
     /**
@@ -211,22 +209,31 @@ public class TopologyAggregatorTest {
     public void testProcessRemovedChanges() throws Exception {
         testProcessCreatedChanges();
 
+        // case 1
         ArrayList<YangInstanceIdentifier> remove1 = new ArrayList<>();
         remove1.add(leafYiid11);
-        AggregationMap resultMap1 = aggregator.processRemovedChanges(remove1, TOPO1);
-        Assert.assertEquals(0, resultMap1.getCreatedData().size());
-        Map<YangInstanceIdentifier, LogicalNode> updatedData = resultMap1.getUpdatedData();
-        Assert.assertEquals(1, updatedData.size());
-        Assert.assertEquals(0, resultMap1.getRemovedData().size());
-        List<PhysicalNode> updatedPhysicalNodes = updatedData.entrySet().iterator().next().getValue().getPhysicalNodes();
-        Assert.assertEquals("Count of physical nodes in aggregation should be 2", 2, updatedPhysicalNodes.size());
+        aggregator.processRemovedChanges(remove1, TOPO1);
 
+        // no physical nodes in topology store TOPO1 (=get(0))
+        Assert.assertEquals(0, aggregator.getTopologyStores().get(0).getPhysicalNodes().size());
+
+        Mockito.verify(mockManager, Mockito.times(1)).addLogicalNode((LogicalNode) any());
+        Mockito.verify(mockManager, Mockito.times(0)).removeLogicalNode((LogicalNode) any());
+        // one logical node was updated
+        Mockito.verify(mockManager, Mockito.times(2)).updateLogicalNode((LogicalNode) any());
+
+        // case 2
         ArrayList<YangInstanceIdentifier> remove2 = new ArrayList<>();
         remove2.add(leafYiid21);
-        AggregationMap resultMap2 = aggregator.processRemovedChanges(remove2, TOPO2);
-        Assert.assertEquals(0, resultMap2.getCreatedData().size());
-        Assert.assertEquals(0, resultMap2.getUpdatedData().size());
-        Assert.assertEquals(1, resultMap2.getRemovedData().size());
+        aggregator.processRemovedChanges(remove2, TOPO2);
+
+        // two physical nodes in topology store TOPO2 (=get(1))
+        Assert.assertEquals(2, aggregator.getTopologyStores().get(1).getPhysicalNodes().size());
+
+        Mockito.verify(mockManager, Mockito.times(1)).addLogicalNode((LogicalNode) any());
+        // one logical node has been removed
+        Mockito.verify(mockManager, Mockito.times(1)).removeLogicalNode((LogicalNode) any());
+        Mockito.verify(mockManager, Mockito.times(2)).updateLogicalNode((LogicalNode) any());
     }
 
     /**
@@ -257,17 +264,19 @@ public class TopologyAggregatorTest {
     @Test
     public void testProcessUpdatedChanges1() throws Exception {
         testProcessCreatedChanges();
-
         LeafNode<Object> leafNode31 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
                 .withValue("192.168.1.2").build();
-        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, leafNode31, testTopologyRef);
+        PhysicalNode physicalNode31 = new PhysicalNode(mockNormalizedNode1, leafNode31, leafYiid11);
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();
-        update.put(leafYiid11, physicalNode);
-        AggregationMap resultMap1 = aggregator.processUpdatedChanges(update, TOPO1);
-        Assert.assertEquals(1, resultMap1.getCreatedData().size());
-        Assert.assertEquals(1, resultMap1.getUpdatedData().size());
-        Assert.assertEquals(0, resultMap1.getRemovedData().size());
+        update.put(leafYiid11, physicalNode31);
+        aggregator.processUpdatedChanges(update, TOPO1);
+        
+        // one new logical node has been created
+        Mockito.verify(mockManager, Mockito.times(2)).addLogicalNode((LogicalNode) any());
+        Mockito.verify(mockManager, Mockito.times(0)).removeLogicalNode((LogicalNode) any());
+        // one new logical node has been updated
+        Mockito.verify(mockManager, Mockito.times(2)).updateLogicalNode((LogicalNode) any());
     }
 
     /**
@@ -300,35 +309,60 @@ public class TopologyAggregatorTest {
         LeafNode<Object> leafNode32 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
                 .withValue("192.168.1.2").build();
-        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, leafNode32, testTopologyRef);
+        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, leafNode32, leafYiid23);
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();
         update.put(leafYiid23, physicalNode);
-        AggregationMap resultMap1 = aggregator.processUpdatedChanges(update, TOPO3);
-        Assert.assertEquals(0, resultMap1.getCreatedData().size());
-        Assert.assertEquals(1, resultMap1.getUpdatedData().size());
-        Assert.assertEquals(1, resultMap1.getRemovedData().size());
+        aggregator.processUpdatedChanges(update, TOPO3);
+        
+        Mockito.verify(mockManager, Mockito.times(2)).addLogicalNode((LogicalNode) any());
+        // one logical node has been removed
+        Mockito.verify(mockManager, Mockito.times(1)).removeLogicalNode((LogicalNode) any());
+        // one new logical node has been updated
+        Mockito.verify(mockManager, Mockito.times(3)).updateLogicalNode((LogicalNode) any());
     }
 
+    /**
+     * Update changes 3 schema
+     * input data form createChanges
+     *
+     * Change 1 - update:
+     * - modifying physical node not belonging to any logical node
+     * <pre>
+     *     TOPO2 {
+     *         node22: 192.168.1.3 -> 192.168.1.2;
+     *     }
+     * </pre>
+     *
+     * Result:
+     * <pre>
+     *     LOGICAL1 {
+     *          node11 (192.168.1.2, TOPO1);
+     *          node21 (192.168.1.1, TOPO2);
+     *          node23 (192.168.1.1, TOPO3);
+     *     }
+     *     physical not pertaining to any logical node
+     *          node12 (192.168.1.2, TOPO2);
+     *          node22 (192.168.1.2, TOPO2);
+     * </pre>
+     *
+     * @throws Exception
+     */
     @Test
     public void testProcessUpdatedChanges3() throws Exception {
         testProcessCreatedChanges();
 
-        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode2, leafNode11, testTopologyRef);
+        LeafNode<Object> leafNode31 = ImmutableLeafNodeBuilder.create()
+                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
+                .withValue("192.168.1.2").build();
+        PhysicalNode physicalNode31 = new PhysicalNode(mockNormalizedNode1, leafNode31, leafYiid22);
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();
-        update.put(leafYiid11, physicalNode);
-        AggregationMap resultMap1 = aggregator.processUpdatedChanges(update, TOPO1);
-        Assert.assertEquals(0, resultMap1.getCreatedData().size());
-        Map<YangInstanceIdentifier, LogicalNode> updatedData = resultMap1.getUpdatedData();
-        Assert.assertEquals(1, updatedData.size());
-        Assert.assertEquals(0, resultMap1.getRemovedData().size());
-
-        boolean equals = false;
-        List<PhysicalNode> physicalNodes = updatedData.entrySet().iterator().next().getValue().getPhysicalNodes();
-        for (PhysicalNode node : physicalNodes) {
-            if (node.getNode().equals(mockNormalizedNode2)) {
-                equals = true;
-            }
-        }
-        Assert.assertTrue("Set nodes doesn't equals", equals);
+        update.put(leafYiid22, physicalNode31);
+        aggregator.processUpdatedChanges(update, TOPO2);
+        
+        Mockito.verify(mockManager, Mockito.times(1)).addLogicalNode((LogicalNode) any());
+        // one logical node has been removed
+        Mockito.verify(mockManager, Mockito.times(0)).removeLogicalNode((LogicalNode) any());
+        // one new logical node has been updated
+        Mockito.verify(mockManager, Mockito.times(1)).updateLogicalNode((LogicalNode) any());
     }
 }
