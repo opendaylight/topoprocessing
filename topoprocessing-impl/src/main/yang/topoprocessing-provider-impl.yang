@@ -49,6 +49,14 @@
                     }
                 }
             }
+            container broker {
+                uses config:service-ref {
+                    refine type {
+                        mandatory true;
+                        config:required-identity dom:dom-broker-osgi-registry;
+                    }
+                }
+            }
             container binding-normalized-node-serializer {
                 uses config:service-ref {
                     refine type {

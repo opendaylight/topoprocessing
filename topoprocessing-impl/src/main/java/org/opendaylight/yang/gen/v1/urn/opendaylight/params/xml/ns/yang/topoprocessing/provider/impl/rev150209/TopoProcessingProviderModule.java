@@ -1,6 +1,11 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209;
 
+import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
+import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
+import org.opendaylight.controller.sal.core.api.Broker;
+import org.opendaylight.controller.sal.core.api.Broker.ProviderSession;
 import org.opendaylight.topoprocessing.impl.provider.TopoProcessingProviderImpl;
+import org.opendaylight.topoprocessing.impl.util.RpcServices;
 
 public class TopoProcessingProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.AbstractTopoProcessingProviderModule {
 
@@ -19,8 +24,13 @@ public class TopoProcessingProviderModule extends org.opendaylight.yang.gen.v1.u
 
     @Override
     public java.lang.AutoCloseable createInstance() {
-        return new TopoProcessingProviderImpl(getSchemaServiceDependency(), getDomDataBrokerDependency(),
-                getBindingNormalizedNodeSerializerDependency());
+        Broker broker = getBrokerDependency();
+        ProviderSession session = broker.registerProvider(new NoOpTopoprocessingProvider());
+        DOMRpcService rpcService = session.getService(DOMRpcService.class);
+        DOMRpcProviderService rpcProviderService = session.getService(DOMRpcProviderService.class);
+        RpcServices rpcServices = new RpcServices(rpcService, rpcProviderService);
+        return new TopoProcessingProviderImpl(getSchemaServiceDependency(),
+                getDomDataBrokerDependency(), getBindingNormalizedNodeSerializerDependency(), rpcServices);
     }
 
 }
