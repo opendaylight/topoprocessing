@@ -48,7 +48,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
     private TopologyManager topologyManager;
     private YangInstanceIdentifier pathIdentifier;
     private String underlayTopologyId;
-    private YangInstanceIdentifier topologyRef;
+    private String topologyRef;
 
     /**
      * Default constructor
@@ -62,7 +62,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         this.underlayTopologyId = underlayTopologyId;
         this.pathIdentifier = pathIdentifier;
         topologyRef = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME).node(Topology.QNAME)
-                .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, underlayTopologyId).build();
+                .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, underlayTopologyId).build().toString();
     }
 
 

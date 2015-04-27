@@ -61,11 +61,7 @@ public class PhysicalNode {
         this.logicalNodeIdentifier = logicalNodeIdentifier;
     }
 
-    /**
-     * @return {@link YangInstanceIdentifier} representing {@link Topology}
-     * which the node is stored in
-     */
-    public YangInstanceIdentifier getTopologyRef() {
+    public String getTopologyRef() {
         return topologyRef;
     }
 

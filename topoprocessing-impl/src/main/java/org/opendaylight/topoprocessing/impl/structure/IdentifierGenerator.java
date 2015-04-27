@@ -68,4 +68,11 @@ public class IdentifierGenerator {
     public YangInstanceIdentifier getNextIdentifier(String topologyId, CorrelationItemEnum correlationItem) {
         return createIdentifier(topologyId, correlationItem, getNextId());
     }
+
+    /**
+     * @return
+     */
+    public String getNextIdentifier() {
+        return Integer.toString(getNextId());
+    }
 }

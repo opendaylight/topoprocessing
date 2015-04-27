@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.google.common.base.Preconditions;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
@@ -24,6 +23,8 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+
 /**
  * Class handling aggregation correlation
  * @author matus.marko
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TopologyAggregator implements TopologyOperator {
 
+    TopologyManagerNew topologyManagerNew;
     private static final Logger LOG = LoggerFactory.getLogger(TopologyAggregator.class);
 
 //    private AggregationMap aggregationMap = new AggregationMap();
@@ -76,10 +78,10 @@ public class TopologyAggregator implements TopologyOperator {
                         // no previous aggregation on this node
                         if (topoStoreNode.getLogicalNodeIdentifier() == null) {
                             LOG.debug("Creating new Logical Node");
-                            YangInstanceIdentifier logicalNodeIdentifier =
-                                    idGenerator.getNextIdentifier(topologyId, correlationItem);
-                            topoStoreNode.setLogicalIdentifier(logicalNodeIdentifier);
-                            newNode.setLogicalIdentifier(logicalNodeIdentifier);
+//                            YangInstanceIdentifier logicalNodeIdentifier =
+//                                    idGenerator.getNextIdentifier(topologyId, correlationItem);
+//                            topoStoreNode.setLogicalIdentifier(logicalNodeIdentifier);
+//                            newNode.setLogicalIdentifier(logicalNodeIdentifier);
                             // create new logical node
                             List<PhysicalNode> nodesToAggregate = new ArrayList<>();
                             nodesToAggregate.add(newNode);
@@ -92,7 +94,7 @@ public class TopologyAggregator implements TopologyOperator {
                         } else {
                             LOG.debug("Adding physical node to existing Logical Node");
                             // add new physical node into existing logical node
-                            YangInstanceIdentifier logicalIdentifier = topoStoreNode.getLogicalIdentifier();
+//                            YangInstanceIdentifier logicalIdentifier = topoStoreNode.getLogicalIdentifier();
                             LogicalNode logicalNodeIdentifier = topoStoreNode.getLogicalNodeIdentifier();
                             newNode.setLogicalNodeIdentifier(logicalNodeIdentifier);
 //                            LogicalNode logicalNode = aggregationMap.get(logicalIdentifier);
@@ -117,7 +119,7 @@ public class TopologyAggregator implements TopologyOperator {
                     PhysicalNode physicalNode = physicalNodes.remove(identifier);
                     // if identifier exists in topology store
                     if (physicalNode != null) {
-                        YangInstanceIdentifier logicalIdentifier = physicalNode.getLogicalIdentifier();
+//                        YangInstanceIdentifier logicalIdentifier = physicalNode.getLogicalIdentifier();
 //                        LogicalNode logicalIdentifier = physicalNode.getLogicalNodeIdentifier();
                         // if physical node is part of some logical node
                         removePhysicalNodeFromLogicalNode(physicalNode);
