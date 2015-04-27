@@ -8,7 +8,7 @@
 
 package org.opendaylight.topoprocessing.impl.structure;
 
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 
@@ -20,32 +20,45 @@ public class PhysicalNode {
     private NormalizedNode<?, ?> node;
     private NormalizedNode<?, ?> leafNode;
     private YangInstanceIdentifier logicalIdentifier = null;
-    private YangInstanceIdentifier topologyRef;
+    private YangInstanceIdentifier nodeIdentifier;
 
     /**
      * Constructor
-     * @param node
-     * @param leafNode
+     * @param node underlay topology {@link Node}
+     * @param leafNode specified in target-field (in mapping)
+     * @param nodeIdentifier path to the {@link Node}
      */
     public PhysicalNode(NormalizedNode<?, ?> node, NormalizedNode<?, ?> leafNode,
-            YangInstanceIdentifier topologyRef) {
+            YangInstanceIdentifier nodeIdentifier) {
         this.node = node;
         this.leafNode = leafNode;
-        this.topologyRef = topologyRef;
+        this.nodeIdentifier = nodeIdentifier;
     }
 
+    /**
+     * @return underlay topology {@link Node}
+     */
     public NormalizedNode<?, ?> getNode() {
         return node;
     }
 
+    /**
+     * @param node underlay topology {@link Node}
+     */
     public void setNode(NormalizedNode<?, ?> node) {
         this.node = node;
     }
 
+    /**
+     * @return node specified in target-field (in mapping)
+     */
     public NormalizedNode<?, ?> getLeafNode() {
         return leafNode;
     }
 
+    /**
+     * @param leafNode node specified in target-field (in mapping)
+     */
     public void setLeafNode(NormalizedNode<?, ?> leafNode) {
         this.leafNode = leafNode;
     }
@@ -59,10 +72,10 @@ public class PhysicalNode {
     }
 
     /**
-     * @return {@link YangInstanceIdentifier} representing {@link Topology}
+     * @return {@link YangInstanceIdentifier} representing concrete {@link Node}
      * which the node is stored in
      */
-    public YangInstanceIdentifier getTopologyRef() {
-        return topologyRef;
+    public YangInstanceIdentifier getNodeIdentifier() {
+        return nodeIdentifier;
     }
 }
