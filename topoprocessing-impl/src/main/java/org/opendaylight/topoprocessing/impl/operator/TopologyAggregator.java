@@ -153,7 +153,7 @@ public class TopologyAggregator implements TopologyOperator {
                     PhysicalNode physicalNode = ts.getPhysicalNodes().get(updatedEntry.getKey());
                     Preconditions.checkNotNull(physicalNode, "Updated physical node not found in Topology Store");
                     PhysicalNode updatedEntryValue = updatedEntry.getValue();
-                    physicalNode.setNode(updatedEntryValue.getNode());
+                    physicalNode.setNodeIdentifier(updatedEntryValue.getNode());
                     NormalizedNode<?, ?> leafNode = physicalNode.getLeafNode();
                     YangInstanceIdentifier logicalIdentifier = physicalNode.getLogicalIdentifier();
                     // if Leaf Node was changed
