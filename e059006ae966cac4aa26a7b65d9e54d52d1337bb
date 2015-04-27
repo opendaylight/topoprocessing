@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_9876bf3d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-04-27T12:30:11Z",
+      "side": 1,
+      "message": "Translator",
+      "range": {
+        "startLine": 7,
+        "startChar": 25,
+        "endLine": 7,
+        "endChar": 34
+      },
+      "revId": "e059006ae966cac4aa26a7b65d9e54d52d1337bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_58903743",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 7
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-04-27T12:30:11Z",
+      "side": 1,
+      "message": "probably no need to mention this in commit header - as there are no changes such changes in between this and any other change",
+      "range": {
+        "startLine": 11,
+        "startChar": 2,
+        "endLine": 12,
+        "endChar": 33
+      },
+      "revId": "e059006ae966cac4aa26a7b65d9e54d52d1337bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_581357b8",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/LogicalNodeToNodeTranslator.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-04-27T12:30:11Z",
+      "side": 1,
+      "message": ".get()",
+      "revId": "e059006ae966cac4aa26a7b65d9e54d52d1337bb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
