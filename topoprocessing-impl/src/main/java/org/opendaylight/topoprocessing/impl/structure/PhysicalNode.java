@@ -20,7 +20,7 @@ public class PhysicalNode {
     private NormalizedNode<?, ?> node;
     private NormalizedNode<?, ?> leafNode;
     private YangInstanceIdentifier logicalIdentifier = null;
-    private YangInstanceIdentifier topologyRef;
+    private YangInstanceIdentifier nodeIdentifier;
 
     /**
      * Constructor
@@ -31,14 +31,14 @@ public class PhysicalNode {
             YangInstanceIdentifier topologyRef) {
         this.node = node;
         this.leafNode = leafNode;
-        this.topologyRef = topologyRef;
+        this.nodeIdentifier = topologyRef;
     }
 
     public NormalizedNode<?, ?> getNode() {
         return node;
     }
 
-    public void setNode(NormalizedNode<?, ?> node) {
+    public void setNodeIdentifier(NormalizedNode<?, ?> node) {
         this.node = node;
     }
 
@@ -62,7 +62,7 @@ public class PhysicalNode {
      * @return {@link YangInstanceIdentifier} representing {@link Topology}
      * which the node is stored in
      */
-    public YangInstanceIdentifier getTopologyRef() {
-        return topologyRef;
+    public YangInstanceIdentifier getNodeIdentifier() {
+        return nodeIdentifier;
     }
 }
