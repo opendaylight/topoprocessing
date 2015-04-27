@@ -17,6 +17,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
@@ -101,7 +102,6 @@ public class TopologyRequestHandler {
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
                 aggregator.initializeStructures(correlation);
-                aggregator.setCorrelationItem(correlation.getCorrelationItem());
                 if (correlation.getName().equals(Equality.class)) {
                     EqualityCase equalityCase = (EqualityCase) correlation.getCorrelationType();
                     List<Mapping> mappings = equalityCase.getEquality().getMapping();
@@ -121,8 +121,11 @@ public class TopologyRequestHandler {
                 }
             }
             LOG.debug("Correlation configuration successfully read");
-            TopologyWriter writer = new TopologyWriter(domDataBroker, topology.getTopologyId().getValue());
-            aggregator.set(writer);
+            String overlayTopologyId = topology.getTopologyId().getValue();
+            TopologyWriter writer = new TopologyWriter(domDataBroker, overlayTopologyId);
+            TopologyManager topologyManager = new TopologyManager(overlayTopologyId);
+            topologyManager.setWriter(writer);
+            aggregator.setTopologyManager(topologyManager);
             writer.initOverlayTopology();
         } catch (Exception e) {
             LOG.warn("Processing new request for topology change failed.", e);
