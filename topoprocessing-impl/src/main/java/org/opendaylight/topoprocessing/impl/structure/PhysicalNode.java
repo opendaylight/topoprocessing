@@ -19,14 +19,14 @@ public class PhysicalNode {
 
     private NormalizedNode<?, ?> node;
     private NormalizedNode<?, ?> leafNode;
-    private YangInstanceIdentifier logicalIdentifier = null;
+    private LogicalNode logicalNodeIdentifier = null;
     private YangInstanceIdentifier nodeIdentifier;
 
     /**
      * Constructor
      * @param node underlay topology {@link Node}
      * @param leafNode specified in target-field (in mapping)
-     * @param nodeIdentifier path to the {@link Node}
+     * @param nodeIdentifier path to the {@link Node} 
      */
     public PhysicalNode(NormalizedNode<?, ?> node, NormalizedNode<?, ?> leafNode,
             YangInstanceIdentifier nodeIdentifier) {
@@ -63,12 +63,12 @@ public class PhysicalNode {
         this.leafNode = leafNode;
     }
 
-    public YangInstanceIdentifier getLogicalIdentifier() {
-        return logicalIdentifier;
+    public LogicalNode getLogicalIdentifier() {
+        return logicalNodeIdentifier;
     }
 
-    public void setLogicalIdentifier(YangInstanceIdentifier logicalIdentifier) {
-        this.logicalIdentifier = logicalIdentifier;
+    public void setLogicalIdentifier(LogicalNode logicalNodeIdentifier) {
+        this.logicalNodeIdentifier = logicalNodeIdentifier;
     }
 
     /**
