@@ -26,46 +26,17 @@ public class IdentifierGenerator {
      * Value for internal counter
      */
     private int id = 0;
+    private String WRAPPER = "wrapper-id:";
 
     private int getNextId() {
         id += 1;
         return id;
     }
 
-    private static YangInstanceIdentifier createIdentifier(String topologyId,
-            CorrelationItemEnum correlationItem, int uniqueId) {
-        YangInstanceIdentifier.InstanceIdentifierBuilder yiid = YangInstanceIdentifier.builder()
-                .node(NetworkTopology.QNAME)
-                .node(Topology.QNAME)
-                .nodeWithKey(Topology.QNAME, QName.create("topology-id"), topologyId);
-
-        switch (correlationItem) {
-            case Node:
-                yiid.node(Node.QNAME);
-                yiid.nodeWithKey(Node.QNAME, QName.create("node-id"), uniqueId);
-                break;
-            case Link:
-                yiid.node(Link.QNAME);
-                yiid.nodeWithKey(Link.QNAME, QName.create("link-id"), uniqueId);
-                break;
-            case TerminationPoint:
-                yiid.node(Node.QNAME);
-                yiid.node(TerminationPoint.QNAME);
-                yiid.nodeWithKey(TerminationPoint.QNAME, QName.create("terminationPoint-id"), uniqueId);
-                break;
-            default:
-                throw new IllegalStateException("Unknown Correlation item used: " + correlationItem);
-        }
-        return yiid.build();
-    }
-
     /**
-     * Create unique YangInstanceIdentifier
-     * @param topologyId 
-     * @param correlationItem 
-     * @return unique 
+     * @return
      */
-    public YangInstanceIdentifier getNextIdentifier(String topologyId, CorrelationItemEnum correlationItem) {
-        return createIdentifier(topologyId, correlationItem, getNextId());
+    public String getNextIdentifier() {
+        return WRAPPER  + Integer.toString(getNextId());
     }
 }

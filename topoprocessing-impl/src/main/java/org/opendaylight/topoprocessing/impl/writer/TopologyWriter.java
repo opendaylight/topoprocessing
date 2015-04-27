@@ -18,6 +18,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
+import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -49,6 +50,13 @@ public class TopologyWriter {
     public TopologyWriter(DOMDataBroker dataBroker, String topologyId) {
         this.dataBroker = dataBroker;
         this.topologyId = topologyId;
+    }
+
+    /**
+     *
+     */
+    public TopologyWriter() {
+        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -149,5 +157,12 @@ public class TopologyWriter {
                 LOGGER.warn("Failed to write empty topology");
             }
         });
+    }
+
+    /**
+     * @param wrapper
+     */
+    public void writeNode(LogicalNodeWrapper wrapper) {
+        // TODO Auto-generated method stub
     }
 }
