@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_db7c4123",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/structure/PhysicalNode.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 3312
+      },
+      "writtenOn": "2015-04-27T14:33:29Z",
+      "side": 1,
+      "message": "nodeIdentifier",
+      "range": {
+        "startLine": 31,
+        "startChar": 35,
+        "endLine": 31,
+        "endChar": 46
+      },
+      "revId": "53532d726ad75d001f5a4db1914006611f2c4a6a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_7b8e4d30",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/structure/PhysicalNode.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 3312
+      },
+      "writtenOn": "2015-04-27T14:33:29Z",
+      "side": 1,
+      "message": "nodeIdentifier",
+      "range": {
+        "startLine": 34,
+        "startChar": 30,
+        "endLine": 34,
+        "endChar": 41
+      },
+      "revId": "53532d726ad75d001f5a4db1914006611f2c4a6a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_3b88c51e",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/structure/PhysicalNode.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 3312
+      },
+      "writtenOn": "2015-04-27T14:33:29Z",
+      "side": 1,
+      "message": "shouldn\u0027t be kept as setNode(...) when the parameter is of type NormalizedNode?",
+      "range": {
+        "startLine": 41,
+        "startChar": 16,
+        "endLine": 41,
+        "endChar": 33
+      },
+      "revId": "53532d726ad75d001f5a4db1914006611f2c4a6a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
