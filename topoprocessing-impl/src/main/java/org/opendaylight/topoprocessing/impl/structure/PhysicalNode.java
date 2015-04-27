@@ -10,6 +10,7 @@ package org.opendaylight.topoprocessing.impl.structure;
 
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 
 /**
@@ -19,16 +20,18 @@ public class PhysicalNode {
 
     private NormalizedNode<?, ?> node;
     private NormalizedNode<?, ?> leafNode;
-    private YangInstanceIdentifier logicalIdentifier = null;
-    private YangInstanceIdentifier topologyRef;
+    private String topologyRef;
+    private LogicalNode logicalNodeIdentifier = null;
+    private String nodeId;
 
     /**
      * Constructor
      * @param node
      * @param leafNode
+     * @param topologyRef 
      */
     public PhysicalNode(NormalizedNode<?, ?> node, NormalizedNode<?, ?> leafNode,
-            YangInstanceIdentifier topologyRef) {
+            String topologyRef) {
         this.node = node;
         this.leafNode = leafNode;
         this.topologyRef = topologyRef;
@@ -50,12 +53,12 @@ public class PhysicalNode {
         this.leafNode = leafNode;
     }
 
-    public YangInstanceIdentifier getLogicalIdentifier() {
-        return logicalIdentifier;
+    public LogicalNode getLogicalNodeIdentifier() {
+        return logicalNodeIdentifier;
     }
 
-    public void setLogicalIdentifier(YangInstanceIdentifier logicalIdentifier) {
-        this.logicalIdentifier = logicalIdentifier;
+    public void setLogicalNodeIdentifier(LogicalNode logicalNodeIdentifier) {
+        this.logicalNodeIdentifier = logicalNodeIdentifier;
     }
 
     /**
@@ -64,5 +67,13 @@ public class PhysicalNode {
      */
     public YangInstanceIdentifier getTopologyRef() {
         return topologyRef;
+    }
+
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 }

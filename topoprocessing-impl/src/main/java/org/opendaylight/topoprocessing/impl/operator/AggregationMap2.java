@@ -16,16 +16,16 @@ import java.util.*;
 /**
  * @author matus.marko
  */
-public class AggregationMap extends HashMap<YangInstanceIdentifier, LogicalNode> {
+public class AggregationMap2 extends HashMap<YangInstanceIdentifier, LogicalNode> {
 
     private Map<YangInstanceIdentifier, LogicalNode> createdData = new HashMap<>();
     private Map<YangInstanceIdentifier, LogicalNode> updatedData = new HashMap<>();
     private List<YangInstanceIdentifier> removedData = new ArrayList<>();
 
-    public AggregationMap() {
+    public AggregationMap2() {
     }
 
-    public AggregationMap(Map<? extends YangInstanceIdentifier, ? extends LogicalNode> m) {
+    public AggregationMap2(Map<? extends YangInstanceIdentifier, ? extends LogicalNode> m) {
         super(m);
     }
 
