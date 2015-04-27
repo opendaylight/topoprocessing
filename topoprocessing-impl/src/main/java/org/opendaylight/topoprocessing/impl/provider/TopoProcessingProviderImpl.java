@@ -16,6 +16,7 @@ import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.topoprocessing.impl.listener.GlobalSchemaContextListener;
 import org.opendaylight.topoprocessing.impl.listener.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.topoprocessing.impl.util.RpcServices;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -42,21 +43,26 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private ListenerRegistration<SchemaContextListener> schemaContextListenerRegistration;
     private BindingNormalizedNodeSerializer nodeSerializer;
     private GlobalSchemaContextHolder schemaHolder;
+    private RpcServices rpcServices;
 
     /**
      * @param schemaService 
      * @param dataBroker
      * @param nodeSerializer 
+     * @param rpcServices 
      */
     public TopoProcessingProviderImpl(SchemaService schemaService, DOMDataBroker dataBroker,
-            BindingNormalizedNodeSerializer nodeSerializer) {
+            BindingNormalizedNodeSerializer nodeSerializer, RpcServices rpcServices) {
         LOGGER.debug("Creating TopoProcessingProvider");
         Preconditions.checkNotNull(schemaService, "SchemaService can't be null");
         Preconditions.checkNotNull(dataBroker, "DOMDataBroker can't be null");
         Preconditions.checkNotNull(nodeSerializer, "BindingNormalizedNodeSerializer can't be null");
+        Preconditions.checkNotNull(rpcServices.getRpcService(), "RpcService can't be null");
+        Preconditions.checkNotNull(rpcServices.getRpcProviderService(), "RpcProviderService can't be null");
         this.schemaService = schemaService;
         this.dataBroker = dataBroker;
         this.nodeSerializer = nodeSerializer;
+        this.rpcServices = rpcServices;
         schemaHolder = new GlobalSchemaContextHolder(schemaService.getGlobalContext());
         startup();
     }
@@ -88,4 +94,5 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
                         DataChangeScope.ONE);
         LOGGER.debug("Topology Request Listener has been successfully registered");
     }
+
 }
