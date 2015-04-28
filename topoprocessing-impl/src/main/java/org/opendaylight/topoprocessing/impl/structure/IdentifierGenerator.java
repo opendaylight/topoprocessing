@@ -8,19 +8,21 @@
 
 package org.opendaylight.topoprocessing.impl.structure;
 
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
  * @author matus.marko
  */
 public class IdentifierGenerator {
+
+    private String topologyId = "mytopo:1";
 
     /**
      * Value for internal counter
@@ -32,26 +34,26 @@ public class IdentifierGenerator {
         return id;
     }
 
-    private static YangInstanceIdentifier createIdentifier(String topologyId,
+    private YangInstanceIdentifier createIdentifier(String topologyId,
             CorrelationItemEnum correlationItem, int uniqueId) {
         YangInstanceIdentifier.InstanceIdentifierBuilder yiid = YangInstanceIdentifier.builder()
                 .node(NetworkTopology.QNAME)
                 .node(Topology.QNAME)
-                .nodeWithKey(Topology.QNAME, QName.create("topology-id"), topologyId);
+                .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, this.topologyId);
 
         switch (correlationItem) {
             case Node:
                 yiid.node(Node.QNAME);
-                yiid.nodeWithKey(Node.QNAME, QName.create("node-id"), uniqueId);
+                yiid.nodeWithKey(Node.QNAME, TopologyQNames.networkNodeIdQName, uniqueId);
                 break;
             case Link:
                 yiid.node(Link.QNAME);
-                yiid.nodeWithKey(Link.QNAME, QName.create("link-id"), uniqueId);
+                yiid.nodeWithKey(Link.QNAME, TopologyQNames.networkLinkIdQName, uniqueId);
                 break;
             case TerminationPoint:
                 yiid.node(Node.QNAME);
                 yiid.node(TerminationPoint.QNAME);
-                yiid.nodeWithKey(TerminationPoint.QNAME, QName.create("terminationPoint-id"), uniqueId);
+                yiid.nodeWithKey(TerminationPoint.QNAME, TopologyQNames.networkTerminationPointIdQName, uniqueId);
                 break;
             default:
                 throw new IllegalStateException("Unknown Correlation item used: " + correlationItem);
