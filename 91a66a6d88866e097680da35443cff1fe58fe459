@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_2c0f2d32",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyAggregator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-04-28T11:38:37Z",
+      "side": 1,
+      "message": "else if (correlation.getName().equals(Unification.class)) {\n            UnificationCase typeCase \u003d (UnificationCase) correlation.getCorrelationType();\n            List\u003cMapping\u003e mappings \u003d typeCase.getUnification().getMapping();\n            iterateMappings(mappings);\n            //TODO Unification Operator\n        }",
+      "revId": "91a66a6d88866e097680da35443cff1fe58fe459",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
