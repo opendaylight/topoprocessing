@@ -20,8 +20,11 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
+import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.slf4j.Logger;
@@ -131,12 +134,19 @@ public class TopologyWriter {
      * Writes empty overlay topology with provided topologyId
      */
     public void initOverlayTopology() {
-        MapEntryNode mapEntryNode = ImmutableNodes.mapEntry(Topology.QNAME, TopologyQNames.topologyIdQName, topologyId);
-        YangInstanceIdentifier identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+        MapEntryNode topologyMapEntryNode = ImmutableNodes
+                .mapEntry(Topology.QNAME, TopologyQNames.topologyIdQName, topologyId);
+        YangInstanceIdentifier topologyIdentifier =
+                YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
                 .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, topologyId).build();
+        MapNode nodeMapNode = ImmutableNodes.mapNodeBuilder(Node.QNAME).build();
+        MapNode linkMapNode = ImmutableNodes.mapNodeBuilder(Link.QNAME).build();
+        
 
         DOMDataWriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
-        transaction.put(LogicalDatastoreType.OPERATIONAL, identifier, mapEntryNode);
+        transaction.put(LogicalDatastoreType.OPERATIONAL, topologyIdentifier, topologyMapEntryNode);
+        transaction.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifiers.NODE_IDENTIFIER, nodeMapNode);
+        transaction.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifiers.LINK_IDENTIFIER, linkMapNode);
         CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
         Futures.addCallback(submit, new FutureCallback<Void>() {
             @Override
