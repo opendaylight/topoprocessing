@@ -8,6 +8,7 @@
 
 package org.opendaylight.topoprocessing.impl.util;
 
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -22,12 +23,16 @@ public class TopologyQNames {
 
     /** Network-topology topology-id QName */
     public static final QName topologyIdQName = QName.create(Topology.QNAME, "topology-id");
-    /** Network-topology node-id QName */
-    public static final QName networkNodeIdQName = QName.create(Node.QNAME, "node-id");
     /** Network-topology supporting-node topology-ref */
     public static final QName topologyRef = QName.create(SupportingNode.QNAME, "topology-ref");
+    /** Network-topology node-id QName */
+    public static final QName networkNodeIdQName = QName.create(Node.QNAME, "node-id");
     /** Network-topology supporting-node node-ref */
     public static final QName nodeRef = QName.create(SupportingNode.QNAME, "node-ref");
+    /** Network-topology link-id QName */
+    public static final QName linkId = QName.create(Link.QNAME, "link-id");
+    /** Network-topology link-ref QName */
+    public static final QName linkRef = QName.create(Link.QNAME, "link-ref");
     /** Network-topology termination-point tp-id */
     public static final QName tpId = QName.create(TerminationPoint.QNAME, "tp-id");
     /** Network-topology termination-point tp-ref */
