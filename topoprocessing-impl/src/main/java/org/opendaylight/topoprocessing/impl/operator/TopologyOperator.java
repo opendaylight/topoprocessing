@@ -9,6 +9,7 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.impl.structure.PipelineProcessor;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 import java.util.List;
@@ -24,19 +25,19 @@ public interface TopologyOperator {
      * @param createdEntries
      * @param topologyId
      */
-    AggregationMap processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, final String topologyId);
+    void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, final String topologyId);
 
     /**
      * Process newly updated changes
      * @param updatedEntries
      * @param topologyId
      */
-    AggregationMap processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId);
+    void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId);
 
     /**
      * Process newly deleted changes
      * @param identifiers Yang instance identifier
      * @param topologyId Topology Identification
      */
-    AggregationMap processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId);
+    void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId);
 }

@@ -20,6 +20,12 @@ public class LogicalNode {
     private List<PhysicalNode> physicalNodes = new ArrayList<>();
 
     /**
+     * Creates empty logical node
+     */
+    public LogicalNode() {
+    }
+
+    /**
      * Creates logical node
      * @param physicalNodes
      */
