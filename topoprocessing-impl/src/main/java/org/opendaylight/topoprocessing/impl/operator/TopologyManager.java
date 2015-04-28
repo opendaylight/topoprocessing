@@ -53,15 +53,15 @@ public class TopologyManager {
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, final String topologyId) {
         Preconditions.checkNotNull(aggregator, "Operator needs to be initialized.");
         LOG.debug("Processing createdChanges");
-        AggregationMap map = aggregator.processCreatedChanges(createdEntries, topologyId);
-        Map<YangInstanceIdentifier, LogicalNode> createdData = map.getCreatedData();
-        if (0 < createdData.size()) {
-            Map.Entry<YangInstanceIdentifier, LogicalNode> entry = createdData.entrySet().iterator().next();
-            LogicalNodeWrapper wrapper = new LogicalNodeWrapper("node1", entry.getValue());
-            Map<YangInstanceIdentifier, NormalizedNode<?, ?>> dataToCreate = new HashMap<>();
-            dataToCreate.put(entry.getKey(), converter.convert(wrapper));
-            topologyWriter.writeCreatedData(dataToCreate);
-        }
+//        AggregationMap map = aggregator.processCreatedChanges(createdEntries, topologyId);
+//        Map<YangInstanceIdentifier, LogicalNode> createdData = map.getCreatedData();
+//        if (0 < createdData.size()) {
+//            Map.Entry<YangInstanceIdentifier, LogicalNode> entry = createdData.entrySet().iterator().next();
+//            LogicalNodeWrapper wrapper = new LogicalNodeWrapper("node1", entry.getValue());
+//            Map<YangInstanceIdentifier, NormalizedNode<?, ?>> dataToCreate = new HashMap<>();
+//            dataToCreate.put(entry.getKey(), converter.convert(wrapper));
+//            topologyWriter.writeCreatedData(dataToCreate);
+//        }
         LOG.debug("CreatedChanges processed");
     }
 
@@ -119,7 +119,7 @@ public class TopologyManager {
             List<Filter> filters = typeCase.getNodeIpFiltration().getFilter();
             for (Filter filter : filters) {
             }
-            filtrator = new TopologyFiltrator(correlation);
+//            filtrator = new TopologyFiltrator(correlation);
         }
     }
 

@@ -37,6 +37,7 @@ public class TopologyAggregator implements TopologyOperator {
     private IdentifierGenerator idGenerator;
     private CorrelationItemEnum correlationItem;
     private List<TopologyStore> topologyStores;
+    private TopologyManager next;
 
     /**
      * Constructor
@@ -53,7 +54,7 @@ public class TopologyAggregator implements TopologyOperator {
     }
 
     @Override
-    public AggregationMap processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries,
+    public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries,
                                                 final String topologyId) {
         LOG.debug("Processing createdChanges");
         for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
@@ -65,7 +66,6 @@ public class TopologyAggregator implements TopologyOperator {
             createAggregatedNodes(createdEntry.getValue(), topologyId);
         }
         LOG.debug("CreatedChanges processed");
-        return aggregationMap;
     }
 
     private void createAggregatedNodes(PhysicalNode newNode,String topologyId) {
@@ -104,7 +104,7 @@ public class TopologyAggregator implements TopologyOperator {
     }
 
     @Override
-    public AggregationMap processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId) {
+    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId) {
         LOG.debug("Processing removedChanges");
         for (TopologyStore ts : topologyStores) {
             if (ts.getId().equals(topologyId)) {
@@ -120,7 +120,6 @@ public class TopologyAggregator implements TopologyOperator {
                 }
             }
         }
-        return aggregationMap;
     }
 
     private void removePhysicalNodeFromLogicalNode(PhysicalNode physicalNode,
@@ -143,7 +142,7 @@ public class TopologyAggregator implements TopologyOperator {
     }
 
     @Override
-    public AggregationMap processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
+    public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
                                                 String topologyId) {
         LOG.debug("Processing updatedChanges");
         for (Entry<YangInstanceIdentifier, PhysicalNode> updatedEntry : updatedEntries.entrySet()) {
@@ -171,6 +170,9 @@ public class TopologyAggregator implements TopologyOperator {
             }
             LOG.error("Unable to update node because it was not found in topologyStore." + updatedEntry);
         }
-        return aggregationMap;
+    }
+
+    public void setNext(TopologyManager next) {
+        this.next = next;
     }
 }

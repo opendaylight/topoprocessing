@@ -8,25 +8,22 @@
 
 package org.opendaylight.topoprocessing.impl.handler;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
+import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
+import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NodeIpFiltration;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
@@ -43,7 +40,8 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceI
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -58,6 +56,7 @@ public class TopologyRequestHandler {
     private TopologyManager manager = new TopologyManager();
     private PathTranslator translator = new PathTranslator();
     private List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+    private List<TopologyStore> topologyStores = new ArrayList<>();
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
     private GlobalSchemaContextHolder schemaHolder;
@@ -100,7 +99,7 @@ public class TopologyRequestHandler {
             CorrelationAugment augmentation = topology.getAugmentation(CorrelationAugment.class);
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
-                manager.initializeStructures(correlation);
+//                manager.initializeStructures(correlation);
                 if (correlation.getName().equals(Equality.class)) {
                     EqualityCase equalityCase = (EqualityCase) correlation.getCorrelationType();
                     List<Mapping> mappings = equalityCase.getEquality().getMapping();
@@ -129,11 +128,14 @@ public class TopologyRequestHandler {
     }
 
     private void iterateFilters(List<Filter> filters, CorrelationItemEnum correlationItem) {
+
         for (Filter filter : filters) {
             String underlayTopologyId = filter.getUnderlayTopology();
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
                     correlationItem, schemaHolder);
-            UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
+            TopologyFiltrator filtrator = new TopologyFiltrator(filter);
+            filtrator.setNext(manager);
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(filtrator,
                     underlayTopologyId, pathIdentifier);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
@@ -154,7 +156,9 @@ public class TopologyRequestHandler {
             String underlayTopologyId = mapping.getUnderlayTopology();
             YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
                     correlationItem, schemaHolder);
-            UnderlayTopologyListener listener = new UnderlayTopologyListener(manager,
+            TopologyAggregator aggregator = new TopologyAggregator(correlationItem, topologyStores, null);
+            aggregator.setNext(manager);
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(aggregator,
                     underlayTopologyId, pathIdentifier);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
