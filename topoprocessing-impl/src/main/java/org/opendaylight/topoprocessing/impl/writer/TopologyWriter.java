@@ -18,10 +18,9 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.topoprocessing.impl.translator.LogicalNodeToNodeTranslator;
-import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
+import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -178,7 +177,7 @@ public class TopologyWriter {
         NormalizedNode<?, ?> node = translator.convert(wrapper);
 
         DOMDataWriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
-        transaction.put(LogicalDatastoreType.OPERATIONAL, wrapper.getNodeId(), node);
+        transaction.put(LogicalDatastoreType.OPERATIONAL, createNodeIdentifier(wrapper.getNodeId()), node);
 
         CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
         Futures.addCallback(submit, new FutureCallback<Void>() {
@@ -199,7 +198,7 @@ public class TopologyWriter {
      */
     public void deleteNode(final LogicalNodeWrapper wrapper) {
         DOMDataWriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
-        transaction.delete(LogicalDatastoreType.OPERATIONAL, wrapper.getNodeId());
+        transaction.delete(LogicalDatastoreType.OPERATIONAL,  createNodeIdentifier(wrapper.getNodeId()));
 
         CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
         Futures.addCallback(submit, new FutureCallback<Void>() {
@@ -213,5 +212,10 @@ public class TopologyWriter {
                 LOGGER.warn("Failed to remove node {}", wrapper.getNodeId());
             }
         });
+    }
+
+    private YangInstanceIdentifier createNodeIdentifier(String nodeId) {
+        return YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER).node(Node.QNAME)
+                .nodeWithKey(Node.QNAME, TopologyQNames.networkNodeIdQName, nodeId).build();
     }
 }

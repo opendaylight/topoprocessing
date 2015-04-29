@@ -123,7 +123,7 @@ public class TopologyRequestHandler {
             LOG.debug("Correlation configuration successfully read");
             String overlayTopologyId = topology.getTopologyId().getValue();
             TopologyWriter writer = new TopologyWriter(domDataBroker, overlayTopologyId);
-            TopologyManager topologyManager = new TopologyManager(overlayTopologyId);
+            TopologyManager topologyManager = new TopologyManager();
             topologyManager.setWriter(writer);
             aggregator.setTopologyManager(topologyManager);
             writer.initOverlayTopology();

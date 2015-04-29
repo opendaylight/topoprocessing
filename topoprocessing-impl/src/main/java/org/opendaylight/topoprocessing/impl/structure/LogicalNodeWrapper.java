@@ -10,22 +10,20 @@ package org.opendaylight.topoprocessing.impl.structure;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-
 /**
  * @author martin.uhlir
  *
  */
 public class LogicalNodeWrapper {
     private List<LogicalNode> logicalNodes = new ArrayList<>();
-    private YangInstanceIdentifier nodeId;
+    private String nodeId;
     
     /**
      * Constructor
      * @param nodeId
      * @param logicalNode 
      */
-    public LogicalNodeWrapper(YangInstanceIdentifier nodeId, LogicalNode logicalNode) {
+    public LogicalNodeWrapper(String nodeId, LogicalNode logicalNode) {
         this.nodeId = nodeId;
         addLogicalNode(logicalNode);
     }
@@ -54,14 +52,14 @@ public class LogicalNodeWrapper {
     /**
      * @return the nodeId
      */
-    public YangInstanceIdentifier getNodeId() {
+    public String getNodeId() {
         return nodeId;
     }
 
     /**
      * @param nodeId the nodeId to set
      */
-    public void setNodeId(YangInstanceIdentifier nodeId) {
+    public void setNodeId(String nodeId) {
         this.nodeId = nodeId;
     }
 }

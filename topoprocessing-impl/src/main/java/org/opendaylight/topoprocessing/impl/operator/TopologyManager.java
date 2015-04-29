@@ -16,7 +16,6 @@ import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
  * @author martin.uhlir
@@ -27,14 +26,6 @@ public class TopologyManager {
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
     private List<LogicalNodeWrapper> wrappers = new ArrayList<>();
     private TopologyWriter writer;
-    private String overlayTopologyId;
-
-    /**
-     * @param overlayTopologyId
-     */
-    public TopologyManager(String overlayTopologyId) {
-        this.overlayTopologyId = overlayTopologyId;
-    }
 
     /** for testing purpose only */
     public List<LogicalNodeWrapper> getWrappers() {
@@ -63,8 +54,7 @@ public class TopologyManager {
                 }
             }
             //generate wrapper id
-            YangInstanceIdentifier wrapperId =
-                    idGenerator.getNextIdentifier(overlayTopologyId, CorrelationItemEnum.Node);
+            String wrapperId = idGenerator.getNextIdentifier(CorrelationItemEnum.Node);
             //create new Logical node wrapper and add the logical node into it
             LogicalNodeWrapper newWrapper = new LogicalNodeWrapper(wrapperId, newLogicalNode);
             wrappers.add(newWrapper);
