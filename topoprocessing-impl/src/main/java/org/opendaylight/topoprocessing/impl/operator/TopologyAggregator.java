@@ -176,19 +176,21 @@ public class TopologyAggregator implements TopologyOperator {
 
     private void removePhysicalNodeFromLogicalNode(PhysicalNode nodeToRemove) {
         LogicalNode logicalIdentifier = nodeToRemove.getLogicalIdentifier();
-        List<PhysicalNode> physicalNodes = logicalIdentifier.getPhysicalNodes();
-        if (physicalNodes.size() == 2) {
-            LOG.debug("Removing logical node");
-            for (PhysicalNode physicalNode : physicalNodes) {
-                physicalNode.getLogicalIdentifier().removePhysicalNode(physicalNode);
-                physicalNode.setLogicalIdentifier(null);
+        if (null != logicalIdentifier) {
+            List<PhysicalNode> physicalNodes = logicalIdentifier.getPhysicalNodes();
+            if (physicalNodes.size() == 2) {
+                LOG.debug("Removing logical node");
+                for (PhysicalNode physicalNode : physicalNodes) {
+                    physicalNode.getLogicalIdentifier().removePhysicalNode(physicalNode);
+                    physicalNode.setLogicalIdentifier(null);
+                }
+                topologyManager.removeLogicalNode(logicalIdentifier);
+            } else {
+                LOG.debug("Removing physical node from logical node");
+                nodeToRemove.getLogicalIdentifier().removePhysicalNode(nodeToRemove);
+                nodeToRemove.setLogicalIdentifier(null);
+                topologyManager.updateLogicalNode(logicalIdentifier);
             }
-            topologyManager.removeLogicalNode(logicalIdentifier);
-        } else {
-            LOG.debug("Removing physical node from logical node");
-            nodeToRemove.getLogicalIdentifier().removePhysicalNode(nodeToRemove);
-            nodeToRemove.setLogicalIdentifier(null);
-            topologyManager.updateLogicalNode(logicalIdentifier);
         }
     }
 

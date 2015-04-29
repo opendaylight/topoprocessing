@@ -42,7 +42,7 @@ public class IdentifierGenerator {
         switch (correlationItem) {
             case Node:
                 yiid.node(Node.QNAME);
-                yiid.nodeWithKey(Node.QNAME, TopologyQNames.networkNodeIdQName, uniqueId);
+                yiid.nodeWithKey(Node.QNAME, TopologyQNames.networkNodeIdQName, "node:" + uniqueId);
                 break;
             case Link:
                 yiid.node(Link.QNAME);

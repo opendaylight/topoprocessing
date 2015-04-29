@@ -17,6 +17,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
+import org.opendaylight.topoprocessing.impl.translator.LogicalNodeToNodeTranslator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
@@ -45,6 +46,7 @@ public class TopologyWriter {
     protected static final Logger LOGGER = LoggerFactory.getLogger(TopologyWriter.class);
     private DOMDataBroker dataBroker;
     private String topologyId;
+    private LogicalNodeToNodeTranslator translator;
 
     /**
      * Default constructor
@@ -54,6 +56,7 @@ public class TopologyWriter {
     public TopologyWriter(DOMDataBroker dataBroker, String topologyId) {
         this.dataBroker = dataBroker;
         this.topologyId = topologyId;
+        translator = new LogicalNodeToNodeTranslator();
     }
 
     /**
@@ -171,14 +174,44 @@ public class TopologyWriter {
     /**
      * @param wrapper
      */
-    public void writeNode(LogicalNodeWrapper wrapper) {
-        // TODO Auto-generated method stub
+    public void writeNode(final LogicalNodeWrapper wrapper) {
+        NormalizedNode<?, ?> node = translator.convert(wrapper);
+
+        DOMDataWriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
+        transaction.put(LogicalDatastoreType.OPERATIONAL, wrapper.getNodeId(), node);
+
+        CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
+        Futures.addCallback(submit, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                LOGGER.debug("Node {} successfully written", wrapper.getNodeId());
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                LOGGER.warn("Failed to write node {}", wrapper.getNodeId());
+            }
+        });
     }
 
     /**
      * @param wrapper
      */
-    public void deleteNode(LogicalNodeWrapper wrapper) {
-        // TODO Auto-generated method stub
+    public void deleteNode(final LogicalNodeWrapper wrapper) {
+        DOMDataWriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
+        transaction.delete(LogicalDatastoreType.OPERATIONAL, wrapper.getNodeId());
+
+        CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
+        Futures.addCallback(submit, new FutureCallback<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                LOGGER.debug("Node {} successfully removed", wrapper.getNodeId());
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                LOGGER.warn("Failed to remove node {}", wrapper.getNodeId());
+            }
+        });
     }
 }
