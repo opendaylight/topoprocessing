@@ -46,6 +46,7 @@ public class TopologyWriter {
     private DOMDataBroker dataBroker;
     private String topologyId;
     private LogicalNodeToNodeTranslator translator;
+    private YangInstanceIdentifier nodeIdentifier;
 
     /**
      * Default constructor
@@ -56,6 +57,8 @@ public class TopologyWriter {
         this.dataBroker = dataBroker;
         this.topologyId = topologyId;
         translator = new LogicalNodeToNodeTranslator();
+        nodeIdentifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+                .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, topologyId).node(Node.QNAME).build();
     }
 
     /**
@@ -215,7 +218,7 @@ public class TopologyWriter {
     }
 
     private YangInstanceIdentifier createNodeIdentifier(String nodeId) {
-        return YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER).node(Node.QNAME)
+        return YangInstanceIdentifier.builder(nodeIdentifier)
                 .nodeWithKey(Node.QNAME, TopologyQNames.networkNodeIdQName, nodeId).build();
     }
 }
