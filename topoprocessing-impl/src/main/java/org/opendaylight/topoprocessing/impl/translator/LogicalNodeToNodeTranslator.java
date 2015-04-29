@@ -14,7 +14,6 @@ import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNode;
@@ -25,7 +24,9 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.CollectionNo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author matus.marko
@@ -55,13 +56,11 @@ public class LogicalNodeToNodeTranslator {
                     writtenNodes.add(physicalNode);
                     NormalizedNode<?, ?> physicalWholeNode = physicalNode.getNode();
                     // prepare supporting nodes
-                    supportingNodes
-                            .withChild(ImmutableNodes.mapEntry(
-                                    SupportingNode.QNAME, TopologyQNames.topologyRef,
-                                    YangInstanceIdentifier.create(Iterables.limit(
-                                            physicalNode.getNodeIdentifier().getPathArguments(), 3)).toString()))
-                                    .addChild(ImmutableNodes.mapEntry(SupportingNode.QNAME, TopologyQNames.nodeRef,
-                                            physicalNode.getNodeIdentifier().toString()));
+                    supportingNodes.withChild(ImmutableNodes.mapEntryBuilder(SupportingNode.QNAME,
+                            TopologyQNames.topologyRef, YangInstanceIdentifier.create(Iterables.limit(
+                                    physicalNode.getNodeIdentifier().getPathArguments(), 3)).toString())
+                            .addChild(ImmutableNodes.leafNode(TopologyQNames.nodeRef,
+                                    physicalNode.getNodeIdentifier().toString())).build());
                     // prepare termination points
                     Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
                             physicalWholeNode, YangInstanceIdentifier.of(TerminationPoint.QNAME));
@@ -69,25 +68,11 @@ public class LogicalNodeToNodeTranslator {
                         Collection<MapEntryNode> terminationPointMapEntries =
                                 ((MapNode) terminationPointMapNode.get()).getValue();
                         for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
-                            Optional<DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?>> tpId =
-                                    terminationPointMapEntry.getChild(
-                                            new YangInstanceIdentifier.NodeIdentifier(TopologyQNames.tpId));
-                            if (tpId.isPresent()) {
-                                terminationPoints.withChild(ImmutableNodes
-                                        .mapEntry(TerminationPoint.QNAME, TopologyQNames.tpId, tpId));
-                            }
-                            Optional<DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?>> tpRef =
-                                    terminationPointMapEntry.getChild(
-                                            new YangInstanceIdentifier.NodeIdentifier(TopologyQNames.tpRef));
-                            if (tpRef.isPresent()) {
-                                terminationPoints.addChild(ImmutableNodes
-                                        .mapEntry(TerminationPoint.QNAME, TopologyQNames.tpRef, tpRef));
-                            }
+                            terminationPoints.addChild(terminationPointMapEntry);
                         }
                     }
                 }
             }
-
         }
 
         return ImmutableNodes

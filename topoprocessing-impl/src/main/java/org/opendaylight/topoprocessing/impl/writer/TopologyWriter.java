@@ -19,6 +19,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -139,14 +140,19 @@ public class TopologyWriter {
         YangInstanceIdentifier topologyIdentifier =
                 YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
                 .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, topologyId).build();
+
         MapNode nodeMapNode = ImmutableNodes.mapNodeBuilder(Node.QNAME).build();
+        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder(topologyIdentifier)
+                .node(Node.QNAME).build();
         MapNode linkMapNode = ImmutableNodes.mapNodeBuilder(Link.QNAME).build();
-        
+        YangInstanceIdentifier linkYiid = YangInstanceIdentifier.builder(topologyIdentifier)
+                .node(Link.QNAME).build();
 
         DOMDataWriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
         transaction.put(LogicalDatastoreType.OPERATIONAL, topologyIdentifier, topologyMapEntryNode);
-        transaction.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifiers.NODE_IDENTIFIER, nodeMapNode);
-        transaction.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifiers.LINK_IDENTIFIER, linkMapNode);
+        transaction.put(LogicalDatastoreType.OPERATIONAL, nodeYiid, nodeMapNode);
+        transaction.put(LogicalDatastoreType.OPERATIONAL, linkYiid, linkMapNode);
+
         CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
         Futures.addCallback(submit, new FutureCallback<Void>() {
             @Override
