@@ -18,12 +18,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.MappingBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.CorrelationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.equality._case.EqualityBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
@@ -33,13 +29,13 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyManagerTest {
 
-    TopologyAggregator topologyManager = new TopologyAggregator();
+    TopologyAggregator aggregator = new EqualityAggregator();
     @Mock Map<YangInstanceIdentifier, PhysicalNode> entriesMap;
     @Mock List<YangInstanceIdentifier> entriesList;
     String topologyId;
-    public static final String TOPOLOGY1 = "openflow:1";
-    public static final String TOPOLOGY1_DUPLICATE = "openflow:1";
-    public static final String TOPOLOGY2 = "bgp:1";
+    private static final String TOPOLOGY1 = "openflow:1";
+    private static final String TOPOLOGY1_DUPLICATE = "openflow:1";
+    private static final String TOPOLOGY2 = "bgp:1";
 
     /**
      * Checks that two topology stores are initialized for two different underlay topologies in one call
@@ -47,10 +43,8 @@ public class TopologyManagerTest {
     @Test
     public void testInitStructuresWithTwoDifferentTopologies() {
         List<Mapping> mappings = createMappings(TOPOLOGY1, TOPOLOGY2);
-        EqualityCaseBuilder equalityCaseBuilder = createEqualityBuilder(mappings);
-        CorrelationBuilder correlationBuilder = createCorrelationBuilder(equalityCaseBuilder);
-        topologyManager.initializeStructures(correlationBuilder.build());
-        assertEquals(topologyManager.getTopologyStores().size(), 2);
+        aggregator.initializeStructures(mappings);
+        assertEquals(aggregator.getTopologyStores().size(), 2);
     }
 
     /**
@@ -60,16 +54,12 @@ public class TopologyManagerTest {
     @Test
     public void testInitStructuresWithTwoDifferentTopologiesInTwoCalls() {
         List<Mapping> mappings = createMappings(TOPOLOGY1);
-        EqualityCaseBuilder equalityCaseBuilder = createEqualityBuilder(mappings);
-        CorrelationBuilder correlationBuilder = createCorrelationBuilder(equalityCaseBuilder);
-        topologyManager.initializeStructures(correlationBuilder.build());
+        aggregator.initializeStructures(mappings);
 
         List<Mapping> mappings2 = createMappings(TOPOLOGY2);
-        EqualityCaseBuilder equalityCaseBuilder2 = createEqualityBuilder(mappings2);
-        CorrelationBuilder correlationBuilder2 = createCorrelationBuilder(equalityCaseBuilder2);
-        topologyManager.initializeStructures(correlationBuilder2.build());
+        aggregator.initializeStructures(mappings2);
 
-        assertEquals(topologyManager.getTopologyStores().size(), 2);
+        assertEquals(aggregator.getTopologyStores().size(), 2);
     }
 
     /**
@@ -79,16 +69,12 @@ public class TopologyManagerTest {
     @Test
     public void testInitStructuresWithTwoSameTopologiesInTwoCalls() {
         List<Mapping> mappings = createMappings(TOPOLOGY1);
-        EqualityCaseBuilder equalityCaseBuilder = createEqualityBuilder(mappings);
-        CorrelationBuilder correlationBuilder = createCorrelationBuilder(equalityCaseBuilder);
-        topologyManager.initializeStructures(correlationBuilder.build());
+        aggregator.initializeStructures(mappings);
 
         List<Mapping> mappings2 = createMappings(TOPOLOGY1_DUPLICATE);
-        EqualityCaseBuilder equalityCaseBuilder2 = createEqualityBuilder(mappings2);
-        CorrelationBuilder correlationBuilder2 = createCorrelationBuilder(equalityCaseBuilder2);
-        topologyManager.initializeStructures(correlationBuilder2.build());
+        aggregator.initializeStructures(mappings2);
 
-        assertEquals(topologyManager.getTopologyStores().size(), 1);
+        assertEquals(aggregator.getTopologyStores().size(), 1);
     }
 
     private static List<Mapping> createMappings(String... topologyIds) {
@@ -101,21 +87,6 @@ public class TopologyManagerTest {
         return mappings;
     }
 
-private static EqualityCaseBuilder createEqualityBuilder(List<Mapping> mappings) {
-    EqualityBuilder equalityBuilder = new EqualityBuilder();
-    equalityBuilder.setMapping(mappings);
-    EqualityCaseBuilder equalityCaseBuilder = new EqualityCaseBuilder();
-    equalityCaseBuilder.setEquality(equalityBuilder.build());
-    return equalityCaseBuilder;
-}
-
-private static CorrelationBuilder createCorrelationBuilder(EqualityCaseBuilder equalityCaseBuilder) {
-    CorrelationBuilder correlationBuilder = new CorrelationBuilder();
-    correlationBuilder.setName(Equality.class);
-    correlationBuilder.setCorrelationType(equalityCaseBuilder.build());
-    return correlationBuilder;
-}
-
     /**
      * Checks that correlation with mappings set to null is handled correctly 
      * (no topology store is created, no NullPointerException)
@@ -123,8 +94,6 @@ private static CorrelationBuilder createCorrelationBuilder(EqualityCaseBuilder e
     @Test
     public void testMappingNull() {
         List<Mapping> mappings = null;
-        EqualityCaseBuilder equalityCaseBuilder = createEqualityBuilder(mappings);
-        CorrelationBuilder correlationBuilder = createCorrelationBuilder(equalityCaseBuilder);
-        topologyManager.initializeStructures(correlationBuilder.build());
+        aggregator.initializeStructures(mappings);
     }
 }

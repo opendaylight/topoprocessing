@@ -97,7 +97,7 @@ public class TopologyAggregatorTest {
         topo1.getPhysicalNodes().put(leafYiid11, physicalNode1);
         topo2.getPhysicalNodes().put(leafYiid12, physicalNode2);
 
-        aggregator = new TopologyAggregator();
+        aggregator = new EqualityAggregator();
         aggregator.setTopologyStores(topologyStores);
         aggregator.setTopologyManager(mockManager);
     }

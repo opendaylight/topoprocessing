@@ -17,12 +17,7 @@ import java.util.Map.Entry;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.UnificationCase;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
@@ -35,7 +30,7 @@ import com.google.common.base.Preconditions;
  * @author matus.marko
  * @author martin.uhlir
  */
-public class TopologyAggregator implements TopologyOperator {
+public abstract class TopologyAggregator implements TopologyOperator {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyAggregator.class);
 
@@ -52,36 +47,17 @@ public class TopologyAggregator implements TopologyOperator {
         return topologyStores;
     }
 
-    /**
-     * Constructor
-     * @param correlationItem Correlation Item Enumerator
-     * @param topologyStores Topology Stores
-     * @param idGenerator Identifier Generator
-     */
-    public TopologyAggregator() {
-        LOG.debug("Initializing aggregator");
-    }
-
     /** for testing purpose only */
     public void setTopologyStores(List<TopologyStore> topologyStores) {
         this.topologyStores = topologyStores;
     }
 
     /**
-     * Set correlation and initialize stores
-     * @param correlation Correlation
+     * Initialize stores
+     * @param mappings Correlation
      */
-    public void initializeStructures(Correlation correlation) {
-        if (correlation.getName().equals(Equality.class)) {
-            EqualityCase typeCase = (EqualityCase) correlation.getCorrelationType();
-            List<Mapping> mappings = typeCase.getEquality().getMapping();
-            iterateMappings(mappings);
-        } else if (correlation.getName().equals(Unification.class)) {
-            UnificationCase typeCase = (UnificationCase) correlation.getCorrelationType();
-            List<Mapping> mappings = typeCase.getUnification().getMapping();
-            iterateMappings(mappings);
-            //TODO Unification Operator
-        }
+    public void initializeStructures(List<Mapping> mappings) {
+        iterateMappings(mappings);
     }
 
     private void iterateMappings(List<Mapping> mappings) {
@@ -154,6 +130,13 @@ public class TopologyAggregator implements TopologyOperator {
                 }
             }
         }
+        if (wrapSingleNode()) {
+            List<PhysicalNode> nodesToAggregate = new ArrayList<>();
+            nodesToAggregate.add(newNode);
+            LogicalNode logicalNode = new LogicalNode(nodesToAggregate);
+            newNode.setLogicalIdentifier(logicalNode);
+            topologyManager.addLogicalNode(logicalNode);
+        }
     }
 
     @Override
@@ -180,7 +163,7 @@ public class TopologyAggregator implements TopologyOperator {
             List<PhysicalNode> physicalNodes = logicalIdentifier.getPhysicalNodes();
             physicalNodes.remove(nodeToRemove);
             nodeToRemove.setLogicalIdentifier(null);
-            if (physicalNodes.size() < 2) {
+            if (physicalNodes.size() < getMinPhysicalNodes()) {
                 LOG.debug("Removing logical node");
                 topologyManager.removeLogicalNode(logicalIdentifier);
             } else {
@@ -219,4 +202,14 @@ public class TopologyAggregator implements TopologyOperator {
             }
         }
     }
+
+    /**
+     * @return minimal number of {@link PhysicalNode}s that must be present in {@link LogicalNode}
+     */
+    protected abstract int getMinPhysicalNodes();
+
+    /**
+     * @return true if a single {@link PhysicalNode} should be wrapped into {@link LogicalNode}
+     */
+    protected abstract boolean wrapSingleNode();
 }

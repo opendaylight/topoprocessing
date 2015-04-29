@@ -16,8 +16,10 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
+import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
+import org.opendaylight.topoprocessing.impl.operator.UnificationAggregator;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
@@ -56,7 +58,7 @@ public class TopologyRequestHandler {
 
     private DOMDataBroker domDataBroker;
     private Topology topology;
-    private TopologyAggregator aggregator = new TopologyAggregator();
+    private TopologyAggregator aggregator;
     private PathTranslator translator = new PathTranslator();
     private List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
 
@@ -101,15 +103,16 @@ public class TopologyRequestHandler {
             CorrelationAugment augmentation = topology.getAugmentation(CorrelationAugment.class);
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
-                aggregator.initializeStructures(correlation);
                 if (correlation.getName().equals(Equality.class)) {
                     EqualityCase equalityCase = (EqualityCase) correlation.getCorrelationType();
                     List<Mapping> mappings = equalityCase.getEquality().getMapping();
+                    aggregator = new EqualityAggregator();
                     iterateMappings(mappings, correlation.getCorrelationItem());
                 }
                 else if (correlation.getName().equals(Unification.class)) {
                     UnificationCase unificationCase = (UnificationCase) correlation.getCorrelationType();
                     List<Mapping> mappings = unificationCase.getUnification().getMapping();
+                    aggregator = new UnificationAggregator();
                     iterateMappings(mappings, correlation.getCorrelationItem());
                 }
                 else if (correlation.getName().equals(NodeIpFiltration.class)) {
@@ -154,6 +157,7 @@ public class TopologyRequestHandler {
     }
 
     private void iterateMappings(List<Mapping> mappings, CorrelationItemEnum correlationItem) {
+        aggregator.initializeStructures(mappings);
         for (Mapping mapping : mappings) {
             String underlayTopologyId = mapping.getUnderlayTopology();
             YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
