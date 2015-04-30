@@ -33,6 +33,10 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
+            <artifactId>sal-core-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller</groupId>
             <artifactId>sal-binding-config</artifactId>
         </dependency>
         <dependency>

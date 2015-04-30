@@ -20,6 +20,7 @@ import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.operator.UnificationAggregator;
+import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
@@ -64,15 +65,19 @@ public class TopologyRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
     private GlobalSchemaContextHolder schemaHolder;
+    private RpcServices rpcServices;
 
     /**
      * Default constructor
      * @param domDataBroker broker used for transaction operations
      * @param schemaHolder
+     * @param rpcServices 
      */
-    public TopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder) {
+    public TopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder,
+            RpcServices rpcServices) {
         this.domDataBroker = domDataBroker;
         this.schemaHolder = schemaHolder;
+        this.rpcServices = rpcServices;
     }
 
     /** Only for testing purposes */
@@ -126,7 +131,8 @@ public class TopologyRequestHandler {
             LOG.debug("Correlation configuration successfully read");
             String overlayTopologyId = topology.getTopologyId().getValue();
             TopologyWriter writer = new TopologyWriter(domDataBroker, overlayTopologyId);
-            TopologyManager topologyManager = new TopologyManager();
+            TopologyManager topologyManager = new TopologyManager(rpcServices,
+                    createTopologyIdentifier(overlayTopologyId).node(Node.QNAME).build());
             topologyManager.setWriter(writer);
             aggregator.setTopologyManager(topologyManager);
             writer.initOverlayTopology();

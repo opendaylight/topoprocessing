@@ -8,24 +8,53 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
+import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
+import org.opendaylight.topoprocessing.impl.rpc.OverlayRpcImplementation;
+import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
+import org.opendaylight.topoprocessing.impl.rpc.UnderlayRpcImplementation;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author martin.uhlir
  *
  */
-public class TopologyManager {
+public class TopologyManager implements DOMRpcAvailabilityListener {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TopologyManager.class);
 
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
     private List<LogicalNodeWrapper> wrappers = new ArrayList<>();
     private TopologyWriter writer;
+    private RpcServices rpcServices;
+    private Collection<DOMRpcIdentifier> availableRpcs;
+    private YangInstanceIdentifier nodeIdentifier;
+
+    /**
+     * @param rpcServices
+     * @param nodeIdentifier 
+     */
+    public TopologyManager(RpcServices rpcServices, YangInstanceIdentifier nodeIdentifier) {
+        this.rpcServices = rpcServices;
+        this.nodeIdentifier = nodeIdentifier;
+        availableRpcs = new HashSet<>();
+        rpcServices.getRpcService().registerRpcListener(this);
+    }
 
     /** for testing purpose only */
     public List<LogicalNodeWrapper> getWrappers() {
@@ -47,6 +76,7 @@ public class TopologyManager {
                             if (physicalNode.getNodeIdentifier().equals(newPhysicalNode.getNodeIdentifier())) {
                                 wrapper.addLogicalNode(newLogicalNode);
                                 writer.writeNode(wrapper);
+                                registerOverlayRpcs(wrapper, newLogicalNode);
                                 return;
                             }
                         }
@@ -59,6 +89,7 @@ public class TopologyManager {
             LogicalNodeWrapper newWrapper = new LogicalNodeWrapper(wrapperId, newLogicalNode);
             wrappers.add(newWrapper);
             writer.writeNode(newWrapper);
+            registerOverlayRpcs(newWrapper, newLogicalNode);
         }
     }
 
@@ -70,6 +101,7 @@ public class TopologyManager {
             for (LogicalNode logicalNode : wrapper.getLogicalNodes()) {
                 if (logicalNode.equals(logicalIdentifier)) {
                     writer.writeNode(wrapper);
+                    registerOverlayRpcs(wrapper, logicalNode);
                 }
             }
         }
@@ -104,4 +136,45 @@ public class TopologyManager {
     public void setWriter(TopologyWriter writer) {
         this.writer = writer;
     }
+
+    @Override
+    public void onRpcAvailable(Collection<DOMRpcIdentifier> rpcs) {
+        LOGGER.debug("onRpcAvailable" + rpcs);
+        availableRpcs.addAll(rpcs);
+    }
+
+    @Override
+    public void onRpcUnavailable(Collection<DOMRpcIdentifier> rpcs) {
+        LOGGER.debug("onRpcUnavailable" + rpcs);
+        availableRpcs.removeAll(rpcs);
+    }
+
+    /**
+     * @param wrapper
+     * @param logicalNode
+     */
+    private void registerOverlayRpcs(LogicalNodeWrapper wrapper, LogicalNode logicalNode) {
+        YangInstanceIdentifier contextIdentifier = YangInstanceIdentifier.builder(nodeIdentifier)
+                .nodeWithKey(Node.QNAME, TopologyQNames.networkNodeIdQName, wrapper.getNodeId()).build();
+        for (PhysicalNode node : logicalNode.getPhysicalNodes()) {
+            List<DOMRpcIdentifier> underlayRpcs = new ArrayList<>();
+            for (Iterator<DOMRpcIdentifier> iterator = availableRpcs.iterator(); iterator.hasNext();) {
+                DOMRpcIdentifier rpcIdentifier = iterator.next();
+                if (rpcIdentifier.getContextReference().equals(node.getNodeIdentifier())) {
+                    underlayRpcs.add(rpcIdentifier);
+                }
+            }
+            for (DOMRpcIdentifier underlayRpcIdentifier : underlayRpcs) {
+                DOMRpcIdentifier overlayRpcIdentifier =
+                        DOMRpcIdentifier.create(underlayRpcIdentifier.getType(), contextIdentifier);
+                UnderlayRpcImplementation underlayImplementation =
+                        new UnderlayRpcImplementation(rpcServices.getRpcService());
+                OverlayRpcImplementation overlayImplementation =
+                        new OverlayRpcImplementation(underlayImplementation);
+                rpcServices.getRpcProviderService().registerRpcImplementation(overlayImplementation,
+                        overlayRpcIdentifier);
+            }
+        }
+    }
+
 }
