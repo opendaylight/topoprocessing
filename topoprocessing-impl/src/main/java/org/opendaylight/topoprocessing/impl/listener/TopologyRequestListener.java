@@ -18,6 +18,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.handler.TopologyRequestHandler;
+import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -44,18 +45,21 @@ public class TopologyRequestListener implements DOMDataChangeListener {
     private BindingNormalizedNodeSerializer nodeSerializer;
     private HashMap<YangInstanceIdentifier, TopologyRequestHandler> topoRequestHandlers = new HashMap<>();
     private GlobalSchemaContextHolder schemaHolder;
+    private RpcServices rpcServices;
 
     /**
      * Default contructor
      * @param dataBroker
-     * @param nodeSerializer 
-     * @param schemaHolder 
+     * @param nodeSerializer
+     * @param schemaHolder
+     * @param rpcServices
      */
     public TopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
-            GlobalSchemaContextHolder schemaHolder) {
+            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices) {
         this.dataBroker = dataBroker;
         this.nodeSerializer = nodeSerializer;
         this.schemaHolder = schemaHolder;
+        this.rpcServices = rpcServices;
         identifier = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME).node(Topology.QNAME).build();
         LOGGER.debug("Topology Request Listener created");
     }
@@ -80,7 +84,8 @@ public class TopologyRequestListener implements DOMDataChangeListener {
                             nodeSerializer.fromNormalizedNode(identifier, normalizedNode);
                     Topology topology = (Topology) fromNormalizedNode.getValue();
                     if (topology.getAugmentation(CorrelationAugment.class) != null) {
-                        TopologyRequestHandler requestHandler = new TopologyRequestHandler(dataBroker, schemaHolder);
+                        TopologyRequestHandler requestHandler =
+                                new TopologyRequestHandler(dataBroker, schemaHolder, rpcServices);
                         topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
                         requestHandler.processNewRequest(topology);
                     }
