@@ -15,8 +15,8 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.topoprocessing.impl.listener.GlobalSchemaContextListener;
 import org.opendaylight.topoprocessing.impl.listener.TopologyRequestListener;
+import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
-import org.opendaylight.topoprocessing.impl.util.RpcServices;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -46,10 +46,10 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private RpcServices rpcServices;
 
     /**
-     * @param schemaService 
+     * @param schemaService
      * @param dataBroker
-     * @param nodeSerializer 
-     * @param rpcServices 
+     * @param nodeSerializer
+     * @param rpcServices
      */
     public TopoProcessingProviderImpl(SchemaService schemaService, DOMDataBroker dataBroker,
             BindingNormalizedNodeSerializer nodeSerializer, RpcServices rpcServices) {
@@ -90,8 +90,8 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
         topologyRequestListenerRegistration =
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                        identifier, new TopologyRequestListener(dataBroker, nodeSerializer, schemaHolder),
-                        DataChangeScope.ONE);
+                        identifier, new TopologyRequestListener(dataBroker, nodeSerializer,
+                        schemaHolder, rpcServices), DataChangeScope.ONE);
         LOGGER.debug("Topology Request Listener has been successfully registered");
     }
 

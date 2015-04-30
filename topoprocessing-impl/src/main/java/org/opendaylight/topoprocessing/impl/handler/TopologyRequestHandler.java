@@ -18,6 +18,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.*;
+import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
@@ -61,16 +62,20 @@ public class TopologyRequestHandler {
     private List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
 
     private GlobalSchemaContextHolder schemaHolder;
+    private RpcServices rpcServices;
     private DOMTransactionChain transactionChain;
 
     /**
      * Default constructor
      * @param domDataBroker broker used for transaction operations
      * @param schemaHolder
+     * @param rpcServices 
      */
-    public TopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder) {
+    public TopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder,
+            RpcServices rpcServices) {
         this.domDataBroker = domDataBroker;
         this.schemaHolder = schemaHolder;
+        this.rpcServices = rpcServices;
     }
 
     /** Only for testing purposes */
@@ -95,7 +100,8 @@ public class TopologyRequestHandler {
         TopologyWriter writer = new TopologyWriter(overlayTopologyId);
         transactionChain = domDataBroker.createTransactionChain(writer);
         writer.setTransactionChain(transactionChain);
-        TopologyManager topologyManager = new TopologyManager();
+        TopologyManager topologyManager = new TopologyManager(rpcServices, schemaHolder,
+                createTopologyIdentifier(overlayTopologyId).build());
         topologyManager.setWriter(writer);
         writer.initOverlayTopology();
         try {
