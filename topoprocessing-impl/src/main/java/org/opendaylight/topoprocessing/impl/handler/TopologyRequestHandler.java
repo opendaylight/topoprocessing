@@ -56,13 +56,13 @@ import com.google.common.base.Preconditions;
  */
 public class TopologyRequestHandler {
 
+    private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
     private DOMDataBroker domDataBroker;
     private Topology topology;
     private TopologyAggregator aggregator;
     private PathTranslator translator = new PathTranslator();
     private List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
 
-    private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
     private GlobalSchemaContextHolder schemaHolder;
 
     /**
@@ -181,7 +181,7 @@ public class TopologyRequestHandler {
     private static YangInstanceIdentifier.InstanceIdentifierBuilder createTopologyIdentifier(
             String underlayTopologyId) {
         InstanceIdentifierBuilder identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-                .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, underlayTopologyId);
+                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, underlayTopologyId);
         return identifier;
     }
 

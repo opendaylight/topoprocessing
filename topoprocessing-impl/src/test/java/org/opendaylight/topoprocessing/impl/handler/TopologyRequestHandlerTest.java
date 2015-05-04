@@ -44,18 +44,17 @@ import java.util.ArrayList;
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyRequestHandlerTest {
 
+    private static final String TOPOLOGY_1 = "openflow:1";
+    private static final String TOPOLOGY_2 = "bgp-node:4";
+
     @Mock
     DOMDataBroker mockDataBroker;
-
     @Mock
     PathTranslator mockTranslator;
-
     @Mock
     SchemaContext mockContext;
 
     private Topology topology;
-    private static final String TOPOLOGY_1 = "openflow:1";
-    private static final String TOPOLOGY_2 = "bgp-node:4";
 
     @Before
     public void setUp() {
