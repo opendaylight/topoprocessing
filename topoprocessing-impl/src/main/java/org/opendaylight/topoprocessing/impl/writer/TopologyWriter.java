@@ -58,7 +58,7 @@ public class TopologyWriter {
         this.topologyId = topologyId;
         translator = new LogicalNodeToNodeTranslator();
         nodeIdentifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-                .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, topologyId).node(Node.QNAME).build();
+                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, topologyId).node(Node.QNAME).build();
     }
 
     /**
@@ -142,10 +142,10 @@ public class TopologyWriter {
      */
     public void initOverlayTopology() {
         MapEntryNode topologyMapEntryNode = ImmutableNodes
-                .mapEntry(Topology.QNAME, TopologyQNames.topologyIdQName, topologyId);
+                .mapEntry(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, topologyId);
         YangInstanceIdentifier topologyIdentifier =
                 YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-                .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, topologyId).build();
+                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, topologyId).build();
 
         MapNode nodeMapNode = ImmutableNodes.mapNodeBuilder(Node.QNAME).build();
         YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder(topologyIdentifier)
@@ -219,6 +219,6 @@ public class TopologyWriter {
 
     private YangInstanceIdentifier createNodeIdentifier(String nodeId) {
         return YangInstanceIdentifier.builder(nodeIdentifier)
-                .nodeWithKey(Node.QNAME, TopologyQNames.networkNodeIdQName, nodeId).build();
+                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeId).build();
     }
 }

@@ -54,9 +54,9 @@ public class PathTranslator {
         YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder()
                 .node(NetworkTopology.QNAME)
                 .node(Topology.QNAME)
-                .nodeWithKey(Topology.QNAME, TopologyQNames.topologyIdQName, "")
+                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, "")
                 .node(Node.QNAME)
-                .nodeWithKey(Node.QNAME, TopologyQNames.networkNodeIdQName, "")
+                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, "")
                 .build();
         DataSchemaContextNode<?> context = contextTree.getChild(nodeIdentifier);
         Iterable<String> pathArguments = splitYangPath(yangPath);

@@ -32,8 +32,8 @@ public class TopologyAggregatorTest {
     private static final QName ROOT_QNAME = QName.create("foo", "2014-03-13", "bar");
     private static final QName LIST_IP_QNAME = QName.create(ROOT_QNAME, "ip");
     private static final QName LEAF_IP_QNAME = QName.create(ROOT_QNAME, "ip-id");
-    private static final QName qnameLeafIp = QName.create(ROOT_QNAME, "ip");
-//    private static final QName qnameLeafMac = QName.create(ROOT_QNAME, "mac");
+    private static final QName QNAME_LEAF_IP = QName.create(ROOT_QNAME, "ip");
+//    private static final QName QNAME_LEAF_MAC = QName.create(ROOT_QNAME, "mac");
 
     private static final String TOPO1 = "topo1";
     private static final String TOPO2 = "topo2";
@@ -85,11 +85,11 @@ public class TopologyAggregatorTest {
         // fill topology stores
         leafYiid11 = YangInstanceIdentifier.builder().nodeWithKey(LIST_IP_QNAME, LEAF_IP_QNAME, "11").build();
         leafNode11 = ImmutableLeafNodeBuilder.create()
-                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
+                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.1").build();
         leafYiid12 = YangInstanceIdentifier.builder().nodeWithKey(LIST_IP_QNAME, LEAF_IP_QNAME, "12").build();
         LeafNode<Object> leafNode12 = ImmutableLeafNodeBuilder.create()
-                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
+                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.2")
                 .build();
         PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode11, leafYiid11);
@@ -137,12 +137,12 @@ public class TopologyAggregatorTest {
         leafYiid21 = YangInstanceIdentifier.builder()
                 .nodeWithKey(LIST_IP_QNAME, LEAF_IP_QNAME, "21").build();
         LeafNode<Object> leafNode21 = ImmutableLeafNodeBuilder.create()
-                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
+                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.1").build();
         leafYiid22 = YangInstanceIdentifier.builder()
                 .nodeWithKey(LIST_IP_QNAME, LEAF_IP_QNAME, "22").build();
         LeafNode<Object> leafNode22 = ImmutableLeafNodeBuilder.create()
-                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
+                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.3").build();
         PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode21, leafYiid21);
         PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode22, leafYiid22);
@@ -160,7 +160,7 @@ public class TopologyAggregatorTest {
         leafYiid23 = YangInstanceIdentifier.builder()
                 .nodeWithKey(LIST_IP_QNAME, LEAF_IP_QNAME, "23").build();
         LeafNode<Object> leafNode23 = ImmutableLeafNodeBuilder.create()
-                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
+                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.1").build();
         PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode1, leafNode23, leafYiid23);
         Map<YangInstanceIdentifier, PhysicalNode> physicalNodes2 = new HashMap<>();
@@ -265,7 +265,7 @@ public class TopologyAggregatorTest {
     public void testProcessUpdatedChanges1() throws Exception {
         testProcessCreatedChanges();
         LeafNode<Object> leafNode31 = ImmutableLeafNodeBuilder.create()
-                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
+                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.2").build();
         PhysicalNode physicalNode31 = new PhysicalNode(mockNormalizedNode1, leafNode31, leafYiid11);
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();
@@ -307,7 +307,7 @@ public class TopologyAggregatorTest {
         testProcessUpdatedChanges1();
 
         LeafNode<Object> leafNode32 = ImmutableLeafNodeBuilder.create()
-                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
+                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.2").build();
         PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, leafNode32, leafYiid23);
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();
@@ -352,7 +352,7 @@ public class TopologyAggregatorTest {
         testProcessCreatedChanges();
 
         LeafNode<Object> leafNode31 = ImmutableLeafNodeBuilder.create()
-                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(qnameLeafIp))
+                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.2").build();
         PhysicalNode physicalNode31 = new PhysicalNode(mockNormalizedNode1, leafNode31, leafYiid22);
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();

@@ -22,21 +22,21 @@ import org.opendaylight.yangtools.yang.common.QName;
 public class TopologyQNames {
 
     /** Network-topology topology-id QName */
-    public static final QName topologyIdQName = QName.create(Topology.QNAME, "topology-id");
+    public static final QName TOPOLOGY_ID_QNAME = QName.create(Topology.QNAME, "topology-id");
     /** Network-topology supporting-node topology-ref */
-    public static final QName topologyRef = QName.create(SupportingNode.QNAME, "topology-ref");
+    public static final QName TOPOLOGY_REF = QName.create(SupportingNode.QNAME, "topology-ref");
     /** Network-topology node-id QName */
-    public static final QName networkNodeIdQName = QName.create(Node.QNAME, "node-id");
+    public static final QName NETWORK_NODE_ID_QNAME = QName.create(Node.QNAME, "node-id");
     /** Network-topology supporting-node node-ref */
-    public static final QName nodeRef = QName.create(SupportingNode.QNAME, "node-ref");
+    public static final QName NODE_REF = QName.create(SupportingNode.QNAME, "node-ref");
     /** Network-topology link-id QName */
-    public static final QName linkId = QName.create(Link.QNAME, "link-id");
+    public static final QName LINK_ID = QName.create(Link.QNAME, "link-id");
     /** Network-topology link-ref QName */
-    public static final QName linkRef = QName.create(Link.QNAME, "link-ref");
+    public static final QName LINK_REF = QName.create(Link.QNAME, "link-ref");
     /** Network-topology termination-point tp-id */
-    public static final QName tpId = QName.create(TerminationPoint.QNAME, "tp-id");
+    public static final QName TP_ID = QName.create(TerminationPoint.QNAME, "tp-id");
     /** Network-topology termination-point tp-ref */
-    public static final QName tpRef = QName.create(TerminationPoint.QNAME, "tp-ref");
+    public static final QName TP_REF = QName.create(TerminationPoint.QNAME, "tp-ref");
 
     private TopologyQNames() {
         throw new UnsupportedOperationException("TopologyQNames can't be instantiated.");

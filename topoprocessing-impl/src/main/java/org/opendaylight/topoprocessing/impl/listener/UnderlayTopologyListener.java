@@ -36,7 +36,7 @@ import com.google.common.base.Optional;
 public class UnderlayTopologyListener implements DOMDataChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UnderlayTopologyListener.class);
-    private final YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder().node(Node.QNAME).build();
+    private static final YangInstanceIdentifier NODE_IDENTIFIER = YangInstanceIdentifier.builder().node(Node.QNAME).build();
 
     public enum RequestAction {
         CREATE, UPDATE, DELETE
@@ -89,7 +89,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
             LOGGER.debug("Entry received: " + entry);
             if (! (entry.getValue() instanceof AugmentationNode)) {
                 if (entry.getValue().getNodeType().equals(Node.QNAME)) {
-                    if (! entry.getKey().getLastPathArgument().equals(nodeIdentifier.getLastPathArgument())) {
+                    if (! entry.getKey().getLastPathArgument().equals(NODE_IDENTIFIER.getLastPathArgument())) {
                         LOGGER.debug("Processing entry: " + entry.getValue());
                         LOGGER.debug("Finding node: " + pathIdentifier);
                         Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
@@ -121,9 +121,9 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
             YangInstanceIdentifier.PathArgument lastPathArgument = identifierOperational.getLastPathArgument();
             if (! (lastPathArgument instanceof YangInstanceIdentifier.AugmentationIdentifier)) {
                 if (lastPathArgument.getNodeType().equals(
-                        nodeIdentifier.getLastPathArgument().getNodeType()))
+                        NODE_IDENTIFIER.getLastPathArgument().getNodeType()))
                 {
-                    if (! lastPathArgument.equals(nodeIdentifier.getLastPathArgument())) {
+                    if (! lastPathArgument.equals(NODE_IDENTIFIER.getLastPathArgument())) {
                         identifiers.add(identifierOperational);
                     }
                 }

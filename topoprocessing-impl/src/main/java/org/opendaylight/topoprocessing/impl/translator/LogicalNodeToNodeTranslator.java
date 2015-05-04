@@ -57,9 +57,9 @@ public class LogicalNodeToNodeTranslator {
                     NormalizedNode<?, ?> physicalWholeNode = physicalNode.getNode();
                     // prepare supporting nodes
                     supportingNodes.withChild(ImmutableNodes.mapEntryBuilder(SupportingNode.QNAME,
-                            TopologyQNames.topologyRef, YangInstanceIdentifier.create(Iterables.limit(
+                            TopologyQNames.TOPOLOGY_REF, YangInstanceIdentifier.create(Iterables.limit(
                                     physicalNode.getNodeIdentifier().getPathArguments(), 3)).toString())
-                            .addChild(ImmutableNodes.leafNode(TopologyQNames.nodeRef,
+                            .addChild(ImmutableNodes.leafNode(TopologyQNames.NODE_REF,
                                     physicalNode.getNodeIdentifier().toString())).build());
                     // prepare termination points
                     Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
@@ -76,7 +76,7 @@ public class LogicalNodeToNodeTranslator {
         }
 
         return ImmutableNodes
-                .mapEntryBuilder(Node.QNAME, TopologyQNames.networkNodeIdQName, wrapper.getNodeId())
+                .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, wrapper.getNodeId())
                 .withChild(supportingNodes.build())
                 .withChild(terminationPoints.build())
                 .build();

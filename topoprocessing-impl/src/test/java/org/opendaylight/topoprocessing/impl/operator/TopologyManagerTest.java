@@ -29,13 +29,13 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyManagerTest {
 
+    private static final String TOPOLOGY1 = "openflow:1";
+    private static final String TOPOLOGY2 = "bgp:1";
+
     TopologyAggregator aggregator = new EqualityAggregator();
     @Mock Map<YangInstanceIdentifier, PhysicalNode> entriesMap;
     @Mock List<YangInstanceIdentifier> entriesList;
     String topologyId;
-    private static final String TOPOLOGY1 = "openflow:1";
-    private static final String TOPOLOGY1_DUPLICATE = "openflow:1";
-    private static final String TOPOLOGY2 = "bgp:1";
 
     /**
      * Checks that two topology stores are initialized for two different underlay topologies in one call
@@ -71,7 +71,7 @@ public class TopologyManagerTest {
         List<Mapping> mappings = createMappings(TOPOLOGY1);
         aggregator.initializeStructures(mappings);
 
-        List<Mapping> mappings2 = createMappings(TOPOLOGY1_DUPLICATE);
+        List<Mapping> mappings2 = createMappings(TOPOLOGY1);
         aggregator.initializeStructures(mappings2);
 
         assertEquals(aggregator.getTopologyStores().size(), 1);
