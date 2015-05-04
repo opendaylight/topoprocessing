@@ -123,6 +123,16 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    
+    <dependencies>
+        <!-- Sonar -->
+        <dependency>
+            <groupId>org.codehaus.sonar-plugins.java</groupId>
+            <artifactId>sonar-jacoco-listeners</artifactId>
+            <version>${sonar-jacoco-listeners.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
@@ -162,6 +172,7 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
+                    <destFile>${sonar.jacoco.reportPath}</destFile>
                     <includes>
                         <include>org.opendaylight.topoprocessing.*</include>
                     </includes>
@@ -178,7 +189,9 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
-                        <phase>test</phase>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
