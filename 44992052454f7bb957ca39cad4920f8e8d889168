@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_5bcd7c5c",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-05-04T14:59:22Z",
+      "side": 1,
+      "message": "Why are we here appending Node.QName?",
+      "range": {
+        "startLine": 135,
+        "startChar": 63,
+        "endLine": 135,
+        "endChar": 80
+      },
+      "revId": "44992052454f7bb957ca39cad4920f8e8d889168",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_5bf49c86",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/rpc/UnderlayRpcImplementation.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-05-04T14:59:22Z",
+      "side": 1,
+      "message": "Do we really need this class?\nCould not be merged with OverlayRpcImplementation?",
+      "range": {
+        "startLine": 24,
+        "startChar": 0,
+        "endLine": 24,
+        "endChar": 72
+      },
+      "revId": "44992052454f7bb957ca39cad4920f8e8d889168",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_fbf24899",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/rpc/UnderlayRpcImplementation.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 21
+      },
+      "writtenOn": "2015-05-04T14:59:22Z",
+      "side": 1,
+      "message": "Input is not processed and still contains our instance identifier, which mean the RPC invocation will return back to us.\n\nHere we should create copy of input and modify routing leaf and replace it with underlay instance identifier of node / rpc.",
+      "range": {
+        "startLine": 39,
+        "startChar": 8,
+        "endLine": 39,
+        "endChar": 58
+      },
+      "revId": "44992052454f7bb957ca39cad4920f8e8d889168",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
