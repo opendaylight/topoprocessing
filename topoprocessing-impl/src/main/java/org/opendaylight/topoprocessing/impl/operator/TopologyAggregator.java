@@ -68,7 +68,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
         }
     }
 
-    private void initializeStore(String underlayTopologyId) {
+    public void initializeStore(String underlayTopologyId) {
         for (TopologyStore topologyStore : topologyStores) {
             if (underlayTopologyId == topologyStore.getId()) {
                 return;
