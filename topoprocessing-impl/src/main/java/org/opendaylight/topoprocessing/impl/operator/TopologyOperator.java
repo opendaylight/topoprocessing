@@ -39,4 +39,15 @@ public interface TopologyOperator {
      * @param topologyId Topology Identification
      */
     void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId);
+
+    /**
+     * @param topologyManager handles aggregated nodes from all correlations
+     */
+    void setTopologyManager(TopologyManager topologyManager);
+
+    /**
+     * Initialize Topology store with given Topology Id
+     * @param underlayTopologyId Topology Id
+     */
+    void initializeStore(String underlayTopologyId);
 }
