@@ -26,6 +26,7 @@ import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSe
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,8 +75,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
             YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
             NormalizedNode<?, ?> normalizedNode = entry.getValue();
             if(normalizedNode.getNodeType().equals(Topology.QNAME)) {
-                boolean wildcardedIdentifier = yangInstanceIdentifier.getLastPathArgument().equals(identifier.getLastPathArgument());
-                if (! wildcardedIdentifier) {
+                if (normalizedNode instanceof MapEntryNode) {
                     Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode =
                             nodeSerializer.fromNormalizedNode(identifier, normalizedNode);
                     Topology topology = (Topology) fromNormalizedNode.getValue();

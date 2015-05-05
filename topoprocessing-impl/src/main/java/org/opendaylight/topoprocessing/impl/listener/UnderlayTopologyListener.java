@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
+import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.slf4j.Logger;
@@ -87,19 +88,17 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         while (iterator.hasNext()) {
             Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry = iterator.next();
             LOGGER.debug("Entry received: " + entry);
-            if (! (entry.getValue() instanceof AugmentationNode)) {
+            if (entry.getValue() instanceof MapEntryNode) {
                 if (entry.getValue().getNodeType().equals(Node.QNAME)) {
-                    if (! entry.getKey().getLastPathArgument().equals(NODE_IDENTIFIER.getLastPathArgument())) {
-                        LOGGER.debug("Processing entry: " + entry.getValue());
-                        LOGGER.debug("Finding node: " + pathIdentifier);
-                        Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
-                        LOGGER.debug("Found node: " + node.get());
-                        if (node.isPresent()) {
-                            LeafNode<?> leafnode = (LeafNode<?>) node.get();
-                            PhysicalNode physicalNode = new PhysicalNode(entry.getValue(), leafnode, entry.getKey());
-                            resultEntries.put(entry.getKey(), physicalNode);
-                            LOGGER.debug("Created PhysicalNode: " + physicalNode);
-                        }
+                    LOGGER.debug("Processing entry: " + entry.getValue());
+                    LOGGER.debug("Finding node: " + pathIdentifier);
+                    Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
+                    LOGGER.debug("Found node: " + node.get());
+                    if (node.isPresent()) {
+                        LeafNode<?> leafnode = (LeafNode<?>) node.get();
+                        PhysicalNode physicalNode = new PhysicalNode(entry.getValue(), leafnode, entry.getKey());
+                        resultEntries.put(entry.getKey(), physicalNode);
+                        LOGGER.debug("Created PhysicalNode: " + physicalNode);
                     }
                 }
             }
