@@ -8,12 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.NodeIpFiltrationCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.node.ip.filtration._case.node.ip.filtration.Filter;
+import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,49 +23,98 @@ import java.util.Map;
 /**
  * @author matus.marko
  */
-public class TopologyFiltrator {
+public class TopologyFiltrator extends TopoStoreProvider implements TopologyOperator {
 
-    private Correlation correlation;
-    private Filter filter;
+    private static final Logger LOG = LoggerFactory.getLogger(TopologyFiltrator.class);
+
+    private List<NodeIpFiltrator> filters = new ArrayList<>();
+
+    private TopologyManager manager;
+
+    @Override
+    public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, String topologyId) {
+        LOG.debug("Processing createdChanges");
+        for (Map.Entry<YangInstanceIdentifier, PhysicalNode> nodeEntry : createdEntries.entrySet()) {
+            PhysicalNode newNodeValue = nodeEntry.getValue();
+            if (filter(newNodeValue)) {
+                getTopologyStore(topologyId).getPhysicalNodes().put(nodeEntry.getKey(), newNodeValue);
+                LogicalNode logicalNode = createLogicalNode(newNodeValue);
+                manager.addLogicalNode(logicalNode);
+            }
+        }
+        LOG.debug("CreatedChanges processed");
+    }
+
+    @Override
+    public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId) {
+        LOG.debug("Processing updatedChanges");
+        for (Map.Entry<YangInstanceIdentifier, PhysicalNode> nodeEntry : updatedEntries.entrySet()) {
+            PhysicalNode nodeValue = nodeEntry.getValue();
+            if (filter(nodeEntry.getValue())) {
+                getTopologyStore(topologyId).getPhysicalNodes().put(nodeEntry.getKey(), nodeValue);
+                LogicalNode logicalNode = createLogicalNode(nodeValue);
+                manager.addLogicalNode(logicalNode);
+            } else  {
+                PhysicalNode physicalNode = getTopologyStore(topologyId).getPhysicalNodes().remove(nodeValue);
+                if (null != physicalNode) {
+                    LogicalNode logicalNode = createLogicalNode(physicalNode);
+                    manager.removeLogicalNode(logicalNode);
+                }
+            }
+        }
+        LOG.debug("UpdatedChanges processed");
+    }
+
+    @Override
+    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
+        LOG.debug("Processing removedChanges");
+        for (YangInstanceIdentifier nodeIdentifier : identifiers) {
+            PhysicalNode physicalNode = getTopologyStore(topologyId).getPhysicalNodes().remove(nodeIdentifier);
+            if (null != physicalNode) {
+                LogicalNode logicalNode = createLogicalNode(physicalNode);
+                manager.removeLogicalNode(logicalNode);
+            }
+        }
+        LOG.debug("RemovedChanges processed");
+    }
+
+    @Override
+    public void setTopologyManager(TopologyManager topologyManager) {
+        this.manager = manager;
+    }
 
     /**
-     * Constructor
-     * @param correlation
+     * Add new filter
+     * @param filter
      */
-    public TopologyFiltrator(Correlation correlation) {
-        this.correlation = correlation;
-
-        NodeIpFiltrationCase typeCase = (NodeIpFiltrationCase) correlation.getCorrelationType();
-        List<Filter> filters = typeCase.getNodeIpFiltration().getFilter();
-        filter = filters.get(0);
+    public void addFilter(NodeIpFiltrator filter) {
+        filters.add(filter);
     }
 
-    public Map<YangInstanceIdentifier, PhysicalNode> processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, String topologyId) {
-        Map<YangInstanceIdentifier, PhysicalNode> createdData = new HashMap<>();
-        for (Map.Entry<YangInstanceIdentifier, PhysicalNode> changeEntry : createdEntries.entrySet()) {
-            //TODO check leaf expected node value (Ipv4Address)
-            if (filter.getValue().getValue().equals(changeEntry.getValue().getLeafNode().getValue())) {
-                createdData.put(changeEntry.getKey(), changeEntry.getValue());
+    private boolean filter(PhysicalNode physicalNode) {
+        for (NodeIpFiltrator filtrator : filters) {
+            if (false == filtrator.filter(physicalNode)) {
+                return false;
             }
         }
-        // TODO handle result
-        return createdData;
+        return true;
     }
 
-    public Map<YangInstanceIdentifier, PhysicalNode> processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId) {
-        Map<YangInstanceIdentifier, PhysicalNode> updatedData = new HashMap<>();
-        for (Map.Entry<YangInstanceIdentifier, PhysicalNode> changeEntry : updatedEntries.entrySet()) {
-            //TODO check leaf expected node value (Ipv4Address)
-            if (filter.getValue().getValue().equals(changeEntry.getValue().getLeafNode().getValue())) {
-                updatedData.put(changeEntry.getKey(), changeEntry.getValue());
+    private LogicalNode createLogicalNode(PhysicalNode physicalNode) {
+        List<PhysicalNode> physicalNodes = new ArrayList<>();
+        physicalNodes.add(physicalNode);
+        LogicalNode logicalNode = new LogicalNode(physicalNodes);
+        physicalNode.setLogicalIdentifier(logicalNode);
+        return logicalNode;
+    }
+
+    public void initializeStore(String underlayTopologyId) {
+        for (TopologyStore topologyStore : topologyStores) {
+            if (underlayTopologyId == topologyStore.getId()) {
+                return;
             }
         }
-        // TODO handle result
-        return updatedData;
-    }
-
-    public List<YangInstanceIdentifier> processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
-        //TODO handle result
-        return identifiers;
+        topologyStores.add(new TopologyStore(underlayTopologyId,
+                new HashMap<YangInstanceIdentifier, PhysicalNode>()));
     }
 }

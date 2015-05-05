@@ -16,7 +16,7 @@ import java.util.Set;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
-import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -42,19 +42,19 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         CREATE, UPDATE, DELETE
     }
 
-    private TopologyAggregator topologyAggregator;
+    private TopologyOperator operator;
     private YangInstanceIdentifier pathIdentifier;
     private String underlayTopologyId;
 
     /**
      * Default constructor
-     * @param topologyAggregator processes received notifications (aggregates them)
+     * @param operator processes received notifications (aggregates them)
      * @param underlayTopologyId underlay topology identifier
      * @param pathIdentifier identifies leaf (node), which aggregation / filtering will be based on
      */
-    public UnderlayTopologyListener(TopologyAggregator topologyAggregator, String underlayTopologyId,
+    public UnderlayTopologyListener(TopologyOperator operator, String underlayTopologyId,
             YangInstanceIdentifier pathIdentifier) {
-        this.topologyAggregator = topologyAggregator;
+        this.operator = operator;
         this.underlayTopologyId = underlayTopologyId;
         this.pathIdentifier = pathIdentifier;
     }
@@ -106,9 +106,9 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         }
         if (! resultEntries.isEmpty()) {
             if (requestAction == RequestAction.CREATE) {
-                topologyAggregator.processCreatedChanges(resultEntries, underlayTopologyId);
+                operator.processCreatedChanges(resultEntries, underlayTopologyId);
             } else if (requestAction == RequestAction.UPDATE) {
-                topologyAggregator.processUpdatedChanges(resultEntries, underlayTopologyId);
+                operator.processUpdatedChanges(resultEntries, underlayTopologyId);
             }
         }
     }
@@ -129,7 +129,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                 }
             }
         }
-        topologyAggregator.processRemovedChanges(identifiers, underlayTopologyId);
+        operator.processRemovedChanges(identifiers, underlayTopologyId);
     }
 
 }
