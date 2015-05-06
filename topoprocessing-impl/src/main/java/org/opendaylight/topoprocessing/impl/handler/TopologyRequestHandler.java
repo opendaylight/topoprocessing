@@ -41,6 +41,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
+import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +64,7 @@ public class TopologyRequestHandler {
 
     private GlobalSchemaContextHolder schemaHolder;
     private DOMTransactionChain transactionChain;
+    private TopologyWriter writer;
 
     /**
      * Default constructor
@@ -92,7 +95,7 @@ public class TopologyRequestHandler {
         Preconditions.checkNotNull(topology, "Received topology can't be null");
         this.topology = topology;
         String overlayTopologyId = topology.getTopologyId().getValue();
-        TopologyWriter writer = new TopologyWriter(overlayTopologyId);
+        writer = new TopologyWriter(overlayTopologyId);
         transactionChain = domDataBroker.createTransactionChain(writer);
         writer.setTransactionChain(transactionChain);
         TopologyManager topologyManager = new TopologyManager();
@@ -223,5 +226,14 @@ public class TopologyRequestHandler {
         for (ListenerRegistration<DOMDataChangeListener> listener : listeners) {
             listener.close();
         }
+    }
+
+    /**
+     * Delegate topology types to writer
+     * @param topologyTypes - taken from overlay topology request
+     */
+    public void delegateTopologyTypes(
+            DataContainerChild<? extends PathArgument, ?> topologyTypes) {
+        writer.writeTopologyTypes(topologyTypes);
     }
 }
