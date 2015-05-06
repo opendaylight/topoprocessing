@@ -22,14 +22,20 @@ import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
+import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Optional;
 
 /**
  * Listens on new overlay topology requests
@@ -78,11 +84,17 @@ public class TopologyRequestListener implements DOMDataChangeListener {
                 if (normalizedNode instanceof MapEntryNode) {
                     Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode =
                             nodeSerializer.fromNormalizedNode(identifier, normalizedNode);
+                    Optional<DataContainerChild<? extends PathArgument, ?>> topologyTypes =
+                            ((MapEntryNode) normalizedNode).getChild(new NodeIdentifier(TopologyTypes.QNAME));
                     Topology topology = (Topology) fromNormalizedNode.getValue();
+
                     if (topology.getAugmentation(CorrelationAugment.class) != null) {
                         TopologyRequestHandler requestHandler = new TopologyRequestHandler(dataBroker, schemaHolder);
                         topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
                         requestHandler.processNewRequest(topology);
+                        if (topologyTypes.isPresent()) {
+                            requestHandler.delegateTopologyTypes(topologyTypes.get());
+                        }
                     }
                 }
             }
