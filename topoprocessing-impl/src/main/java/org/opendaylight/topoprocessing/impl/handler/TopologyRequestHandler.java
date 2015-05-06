@@ -133,29 +133,25 @@ public class TopologyRequestHandler {
     }
 
     private void iterateFilters(TopologyFiltrator operator, List<Filter> filters, CorrelationItemEnum correlationItem) {
-        List<String> topologies = new ArrayList<>();
         for (Filter filter : filters) {
             String underlayTopologyId = filter.getUnderlayTopology();
             operator.initializeStore(underlayTopologyId);
-            operator.addFilter(new NodeIpFiltrator(filter));
-            if (! topologies.contains(underlayTopologyId)) {
-                topologies.add(underlayTopologyId);
-                YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
-                        correlationItem, schemaHolder);
-                UnderlayTopologyListener listener = new UnderlayTopologyListener(operator,
-                        underlayTopologyId, pathIdentifier);
-                YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
-                        createTopologyIdentifier(underlayTopologyId);
-                YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
-                LOG.debug("Registering filtering underlay topology listener for topology: "
-                        + underlayTopologyId);
-                ListenerRegistration<DOMDataChangeListener> listenerRegistration =
-                        domDataBroker.registerDataChangeListener(
-                                LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
-                LOG.debug("Filtering Underlay topology listener for topology: " + underlayTopologyId
-                        + " has been successfully registered");
-                listeners.add(listenerRegistration);
-            }
+            YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
+                    correlationItem, schemaHolder);
+            operator.addFilter(new NodeIpFiltrator(filter.getValue(), pathIdentifier));
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(operator,
+                    underlayTopologyId, null);
+            YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
+                    createTopologyIdentifier(underlayTopologyId);
+            YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
+            LOG.debug("Registering filtering underlay topology listener for topology: "
+                    + underlayTopologyId);
+            ListenerRegistration<DOMDataChangeListener> listenerRegistration =
+                    domDataBroker.registerDataChangeListener(
+                            LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+            LOG.debug("Filtering Underlay topology listener for topology: " + underlayTopologyId
+                    + " has been successfully registered");
+            listeners.add(listenerRegistration);
         }
     }
 
