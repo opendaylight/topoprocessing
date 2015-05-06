@@ -13,12 +13,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
-import org.opendaylight.topoprocessing.impl.translator.LogicalNodeToNodeTranslator;
+import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
+import org.opendaylight.topoprocessing.impl.translator.LogicalNodeToNodeTranslator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -40,21 +43,19 @@ import com.google.common.util.concurrent.Futures;
  * @author michal.polkorab
  *
  */
-public class TopologyWriter {
+public class TopologyWriter implements TransactionChainListener {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(TopologyWriter.class);
-    private DOMDataBroker dataBroker;
     private String topologyId;
     private LogicalNodeToNodeTranslator translator;
     private YangInstanceIdentifier nodeIdentifier;
+    private DOMTransactionChain transactionChain;
 
     /**
      * Default constructor
-     * @param dataBroker broker used for transaction operations
      * @param topologyId topologyId of overlay topology
      */
-    public TopologyWriter(DOMDataBroker dataBroker, String topologyId) {
-        this.dataBroker = dataBroker;
+    public TopologyWriter(String topologyId) {
         this.topologyId = topologyId;
         translator = new LogicalNodeToNodeTranslator();
         nodeIdentifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
@@ -66,7 +67,7 @@ public class TopologyWriter {
      * @param dataToUpdate data to be updated
      */
     public void updateData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> dataToUpdate) {
-        DOMDataWriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
+        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
         Iterator<Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator =
                 dataToUpdate.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -92,7 +93,7 @@ public class TopologyWriter {
      * @param dataToCreate data to be created
      */
     public void writeCreatedData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> dataToCreate) {
-        DOMDataWriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
+        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
         Iterator<Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator =
                 dataToCreate.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -118,7 +119,7 @@ public class TopologyWriter {
      * @param dataToRemove data to be removed
      */
     public void deleteData(Set<YangInstanceIdentifier> dataToRemove) {
-        DOMDataWriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
+        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
         Iterator<YangInstanceIdentifier> iterator = dataToRemove.iterator();
         while (iterator.hasNext()) {
             transaction.delete(LogicalDatastoreType.OPERATIONAL, iterator.next());
@@ -154,7 +155,7 @@ public class TopologyWriter {
         YangInstanceIdentifier linkYiid = YangInstanceIdentifier.builder(topologyIdentifier)
                 .node(Link.QNAME).build();
 
-        DOMDataWriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
+        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
         transaction.put(LogicalDatastoreType.OPERATIONAL, topologyIdentifier, topologyMapEntryNode);
         transaction.put(LogicalDatastoreType.OPERATIONAL, nodeYiid, nodeMapNode);
         transaction.put(LogicalDatastoreType.OPERATIONAL, linkYiid, linkMapNode);
@@ -179,7 +180,7 @@ public class TopologyWriter {
     public void writeNode(final LogicalNodeWrapper wrapper) {
         NormalizedNode<?, ?> node = translator.convert(wrapper);
 
-        DOMDataWriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
+        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
         transaction.put(LogicalDatastoreType.OPERATIONAL, createNodeIdentifier(wrapper.getNodeId()), node);
 
         CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
@@ -200,7 +201,7 @@ public class TopologyWriter {
      * @param wrapper
      */
     public void deleteNode(final LogicalNodeWrapper wrapper) {
-        DOMDataWriteTransaction transaction = dataBroker.newWriteOnlyTransaction();
+        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
         transaction.delete(LogicalDatastoreType.OPERATIONAL,  createNodeIdentifier(wrapper.getNodeId()));
 
         CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
@@ -220,5 +221,25 @@ public class TopologyWriter {
     private YangInstanceIdentifier createNodeIdentifier(String nodeId) {
         return YangInstanceIdentifier.builder(nodeIdentifier)
                 .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeId).build();
+    }
+
+    @Override
+    public void onTransactionChainFailed(TransactionChain<?, ?> chain, AsyncTransaction<?, ?> transaction,
+            Throwable cause) {
+        LOGGER.warn("Unexpected transaction failure in transaction {}", transaction.getIdentifier(), cause);
+    }
+
+    @Override
+    public void onTransactionChainSuccessful(TransactionChain<?, ?> chain) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Transaction successfully finished", chain);
+        }
+    }
+
+    /**
+     * @param transactionChain
+     */
+    public void setTransactionChain(DOMTransactionChain transactionChain) {
+        this.transactionChain = transactionChain;
     }
 }

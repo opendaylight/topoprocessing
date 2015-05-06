@@ -15,6 +15,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataCh
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
@@ -64,6 +65,7 @@ public class TopologyRequestHandler {
     private List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
 
     private GlobalSchemaContextHolder schemaHolder;
+    private DOMTransactionChain transactionChain;
 
     /**
      * Default constructor
@@ -125,7 +127,9 @@ public class TopologyRequestHandler {
             }
             LOG.debug("Correlation configuration successfully read");
             String overlayTopologyId = topology.getTopologyId().getValue();
-            TopologyWriter writer = new TopologyWriter(domDataBroker, overlayTopologyId);
+            TopologyWriter writer = new TopologyWriter(overlayTopologyId);
+            transactionChain = domDataBroker.createTransactionChain(writer);
+            writer.setTransactionChain(transactionChain);
             TopologyManager topologyManager = new TopologyManager();
             topologyManager.setWriter(writer);
             aggregator.setTopologyManager(topologyManager);
