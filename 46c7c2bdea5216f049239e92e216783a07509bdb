@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_893bb79b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-06T15:24:36Z",
+      "side": 1,
+      "message": "resulting overlay",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 17
+      },
+      "revId": "46c7c2bdea5216f049239e92e216783a07509bdb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_6938aba0",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-06T15:24:36Z",
+      "side": 1,
+      "message": "is this import needed ?",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 70
+      },
+      "revId": "46c7c2bdea5216f049239e92e216783a07509bdb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_2942a310",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/TopologyRequestListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-06T15:24:36Z",
+      "side": 1,
+      "message": "we should check for TopologyTypes only when we are sure that it is overlay topology request",
+      "range": {
+        "startLine": 87,
+        "startChar": 20,
+        "endLine": 88,
+        "endChar": 110
+      },
+      "revId": "46c7c2bdea5216f049239e92e216783a07509bdb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
