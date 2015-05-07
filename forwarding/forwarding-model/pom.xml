@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opendaylight.topoprocessing</groupId>
     <artifactId>forwarding</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   
@@ -21,7 +21,7 @@
     <dependency>
         <groupId>org.opendaylight.openflowplugin.model</groupId>
         <artifactId>model-flow-base</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>${openflowplugin.version}</version>
 <!-- Hardcoded above - how to get the variable definition which is in openflowplugin/pom.xml?
         <version>${openflowplugin.model.version}</version>
 -->
