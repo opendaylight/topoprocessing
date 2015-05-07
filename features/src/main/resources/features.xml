@@ -7,7 +7,6 @@
     <repository>mvn:org.opendaylight.controller/features-config/${config.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
-    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/${openflowplugin.version}/xml/features</repository>
     <feature name='odl-topoprocessing-framework' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Framework">
         <feature version='${yangtools.version}'>odl-yangtools-common</feature>
         <feature version='${yangtools.version}'>odl-yangtools-binding</feature>
@@ -18,11 +17,12 @@
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-api/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-spi/${project.version}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/80-topoprocessing-config.xml">mvn:org.opendaylight.topoprocessing/topoprocessing-config/0.0.1-SNAPSHOT/xml/config</configfile>
+        <configfile finalname="etc/opendaylight/karaf/80-topoprocessing-config.xml">mvn:org.opendaylight.topoprocessing/topoprocessing-config/${project.version}/xml/config</configfile>
     </feature>
     <feature name='odl-topoprocessing-mlmt' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Mlmt">
         <feature version='${project.version}'>odl-topoprocessing-framework</feature>
-        <feature version='${openflowplugin.version}'>odl-openflowplugin-nsf-model</feature>
+        <bundle>mvn:org.opendaylight.controller.model/model-inventory/${mdsal.version}</bundle>
+        <bundle>mvn:org.opendaylight.controller.model/model-topology/${mdsal.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-common-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-common-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/multitechnology-topology-model/${project.version}</bundle>
@@ -37,6 +37,6 @@
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-factory-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-impl/${project.version}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/60-mlmt-observer-provider-config.xml" override="true">mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-impl/0.0.1-SNAPSHOT/xml/config</configfile>
+        <configfile finalname="etc/opendaylight/karaf/60-mlmt-observer-provider-config.xml" override="true">mvn:org.opendaylight.topoprocessing/mlmt-topology-observer-impl/${project.version}/xml/config</configfile>
     </feature>
 </features>
