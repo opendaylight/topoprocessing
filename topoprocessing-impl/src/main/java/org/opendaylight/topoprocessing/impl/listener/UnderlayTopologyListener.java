@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -91,15 +92,24 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
             if (entry.getValue() instanceof MapEntryNode) {
                 if (entry.getValue().getNodeType().equals(Node.QNAME)) {
                     LOGGER.debug("Processing entry: " + entry.getValue());
-                    LOGGER.debug("Finding node: " + pathIdentifier);
-                    Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
-                    LOGGER.debug("Found node: " + node.get());
-                    if (node.isPresent()) {
-                        LeafNode<?> leafnode = (LeafNode<?>) node.get();
-                        PhysicalNode physicalNode = new PhysicalNode(entry.getValue(), leafnode, entry.getKey());
-                        resultEntries.put(entry.getKey(), physicalNode);
-                        LOGGER.debug("Created PhysicalNode: " + physicalNode);
+                    PhysicalNode physicalNode;
+                    if (operator instanceof TopologyAggregator) {
+                        // AGGREGATION
+                        LOGGER.debug("Finding node: " + pathIdentifier);
+                        Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
+                        LOGGER.debug("Found node: " + node.get());
+                        if (node.isPresent()) {
+                            LeafNode<?> leafnode = (LeafNode<?>) node.get();
+                            physicalNode = new PhysicalNode(entry.getValue(), leafnode, entry.getKey());
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        // FILTRATION
+                        physicalNode = new PhysicalNode(entry.getValue(), null, entry.getKey());
                     }
+                    resultEntries.put(entry.getKey(), physicalNode);
+                    LOGGER.debug("Created PhysicalNode: " + physicalNode);
                 }
             }
         }

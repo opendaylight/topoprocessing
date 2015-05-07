@@ -33,7 +33,7 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
         LOG.debug("Processing createdChanges");
         for (Map.Entry<YangInstanceIdentifier, PhysicalNode> nodeEntry : createdEntries.entrySet()) {
             PhysicalNode newNodeValue = nodeEntry.getValue();
-            if (! passedFiltration(newNodeValue)) {
+            if (passedFiltration(newNodeValue)) {
                 getTopologyStore(topologyId).getPhysicalNodes().put(nodeEntry.getKey(), newNodeValue);
                 LogicalNode logicalNode = wrapPhysicalNode(newNodeValue);
                 manager.addLogicalNode(logicalNode);
@@ -68,7 +68,7 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
                 } else {
                     // filtered out
                     LogicalNode oldLogicalNode = oldNode.getLogicalIdentifier();
-                    getTopologyStore(topologyId).getPhysicalNodes().remove(oldNode);
+                    getTopologyStore(topologyId).getPhysicalNodes().remove(mapEntry.getKey());
                     manager.removeLogicalNode(oldLogicalNode);
                 }
             }
