@@ -232,6 +232,14 @@ public class TopologyRequestHandler {
         for (ListenerRegistration<DOMDataChangeListener> listener : listeners) {
             listener.close();
         }
+        listeners.clear();
+        if (transactionChain != null) {
+            try {
+                transactionChain.close();
+            } catch (Exception e) {
+                LOG.error("An error occurred while closing transaction chain: " + transactionChain, e);
+            }
+        }
     }
 
     /**
