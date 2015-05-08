@@ -80,7 +80,7 @@
           <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>yang-jmx-generator-plugin</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
+            <version>${yang.jmx.generator.plugin}</version>
           </dependency>
           <dependency>
             <groupId>org.opendaylight.yangtools</groupId>
