@@ -14,6 +14,7 @@
     <dependency>
       <groupId>org.opendaylight.yangtools.model</groupId>
       <artifactId>ietf-topology</artifactId>
+      <version>${ietf.model.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.yangtools</groupId>
