@@ -60,9 +60,4 @@ public class MultilayerTopologyProviderModule extends org.opendaylight.yang.gen.
        LOG.info("Multilayer provider (instance {}) initialized.", ret);
        return ret;
     }
-
-    @Override
-    public boolean canReuse (org.opendaylight.controller.config.spi.Module module) {
-        return true;
-    }
 }
