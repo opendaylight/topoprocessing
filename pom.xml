@@ -23,6 +23,7 @@
         <module>features</module>
         <module>distribution-karaf</module>
     <module>topoprocessing-config</module>
+    <module>topoprocessing-artifacts</module>
   </modules>
     <scm>
         <connection>scm:git:ssh://git.opendaylight.org:29418/topoprocessing.git</connection>
