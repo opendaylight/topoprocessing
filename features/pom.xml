@@ -27,6 +27,13 @@
     </properties>
 
     <dependencies>
+        <!-- This project -->
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>topoprocessing-artifacts</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- feature dependencies -->
         <dependency>
             <groupId>org.opendaylight.yangtools</groupId>
@@ -61,28 +68,6 @@
             <type>xml</type>
         </dependency>
         <!-- bundle dependencies -->
-        <dependency>
-            <groupId>org.opendaylight.topoprocessing</groupId>
-            <artifactId>topoprocessing-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.topoprocessing</groupId>
-            <artifactId>topoprocessing-spi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.topoprocessing</groupId>
-            <artifactId>topoprocessing-impl</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.topoprocessing</groupId>
-            <artifactId>topoprocessing-config</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-common-model</artifactId>
