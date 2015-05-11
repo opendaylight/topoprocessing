@@ -27,6 +27,13 @@
     </properties>
 
     <dependencies>
+        <!-- This project -->
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>topoprocessing-artifacts</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- feature dependencies -->
         <dependency>
             <groupId>org.opendaylight.yangtools</groupId>
