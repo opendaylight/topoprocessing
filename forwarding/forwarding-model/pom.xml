@@ -15,16 +15,13 @@
     <dependency>
       <groupId>org.opendaylight.controller.model</groupId>
       <artifactId>model-topology</artifactId>
-      <version>${model.topology.version}</version>
+      <version>${mdsal.version}</version>
     </dependency>
 
     <dependency>
         <groupId>org.opendaylight.openflowplugin.model</groupId>
         <artifactId>model-flow-base</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
-<!-- Hardcoded above - how to get the variable definition which is in openflowplugin/pom.xml?
-        <version>${openflowplugin.model.version}</version>
--->
+        <version>${openflowplugin.version}</version>
     </dependency>
 
     <dependency>
@@ -35,12 +32,10 @@
     <dependency>
       <groupId>org.opendaylight.yangtools.model</groupId>
       <artifactId>ietf-topology</artifactId>
-      <version>${ietf.model.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.yangtools.model</groupId>
       <artifactId>yang-ext</artifactId>
-      <version>${yang.ext.version}</version>
     </dependency>
   </dependencies>
 

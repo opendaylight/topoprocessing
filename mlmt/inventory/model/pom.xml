@@ -8,14 +8,13 @@
     <relativePath>../</relativePath>
   </parent>
   <artifactId>mlmt-topology-inventory-model</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <dependencies>
     <dependency>
       <groupId>org.opendaylight.controller.model</groupId>
       <artifactId>model-topology</artifactId>
-      <version>${model.topology.version}</version>
+      <version>${mdsal.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.yangtools</groupId>
