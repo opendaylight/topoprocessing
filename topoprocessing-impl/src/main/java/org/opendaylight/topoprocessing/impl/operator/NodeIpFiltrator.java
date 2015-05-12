@@ -21,6 +21,10 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 /**
  * @author matus.marko
  */
@@ -28,7 +32,8 @@ public class NodeIpFiltrator {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeIpFiltrator.class);
 
-    private IpPrefix value;
+    private int address;
+    private int mask;
     private YangInstanceIdentifier pathIdentifier;
 
     /**
@@ -39,8 +44,8 @@ public class NodeIpFiltrator {
     public NodeIpFiltrator(IpPrefix value, YangInstanceIdentifier pathIdentifier) {
         Preconditions.checkNotNull(value, "Filtering value can't be null");
         Preconditions.checkNotNull(pathIdentifier, "PathIdentifier can't be null");
-        this.value = value;
         this.pathIdentifier = pathIdentifier;
+        initialize(value);
     }
 
     /**
@@ -49,15 +54,40 @@ public class NodeIpFiltrator {
      * @return true if node was filtered out false otherwise
      */
     public boolean isFiltered(PhysicalNode node) {
-        Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node.getNode(), pathIdentifier);
-        if (leafNode.isPresent()) {
-            if (value.getValue().equals(((LeafNode) leafNode.get()).getValue())) {
-                return false;
+        try {
+            Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node.getNode(), pathIdentifier);
+            if (leafNode.isPresent()) {
+                int value = ipToInt((String) ((LeafNode) leafNode.get()).getValue());
+                if ((address & mask) == (value & mask)) {
+                    return false;
+                }
             }
-        }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Node with value " + node.getNode() + " was filtered out");
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Node with value " + node.getNode() + " was filtered out");
+            }
+        } catch (UnknownHostException e) {
+            LOG.error("Wrong format of IP address");
         }
         return true;
+    }
+
+    private void initialize(IpPrefix prefix) {
+        try {
+            String strValue = prefix.getIpv4Prefix().getValue();
+            String[] matches = strValue.split("/");
+            address = ipToInt(matches[0]);
+            mask = -1 << (32 - Integer.parseInt(matches[1]));
+        } catch (UnknownHostException e) {
+            LOG.error("Couldn't initialize filtrator");
+        }
+    }
+
+    private int ipToInt(String strAddress) throws UnknownHostException {
+        Inet4Address inetAddr = (Inet4Address) InetAddress.getByName(strAddress);
+        byte[] bytes = inetAddr.getAddress();
+        return  ((bytes[0] & 0xFF) << 24) |
+                ((bytes[1] & 0xFF) << 16) |
+                ((bytes[2] & 0xFF) << 8)  |
+                ((bytes[3] & 0xFF) << 0);
     }
 }
