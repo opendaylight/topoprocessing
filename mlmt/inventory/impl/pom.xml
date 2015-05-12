@@ -8,13 +8,12 @@
     <relativePath>../</relativePath>
   </parent>
   <artifactId>mlmt-topology-inventory-impl</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>sal-binding-api</artifactId>
-      <version>${sal.binding.api.version}</version>
+      <version>${mdsal.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
@@ -23,7 +22,7 @@
     <dependency>
       <groupId>org.opendaylight.controller.model</groupId>
       <artifactId>model-topology</artifactId>
-      <version>${model.topology.version}</version>
+      <version>${mdsal.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.topoprocessing</groupId>

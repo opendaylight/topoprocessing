@@ -8,7 +8,6 @@
      <relativePath>../../</relativePath>
   </parent>
   <artifactId>mlmt-topology-factory</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>

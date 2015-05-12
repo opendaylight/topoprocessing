@@ -13,4 +13,9 @@
   <modules>
     <module>forwarding-model</module>
   </modules>
+
+  <properties>
+      <openflowplugin.version>0.2.0-SNAPSHOT</openflowplugin.version>
+  </properties>
+
 </project>
