@@ -18,6 +18,7 @@ import org.opendaylight.topoprocessing.impl.listener.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
@@ -44,26 +45,32 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private BindingNormalizedNodeSerializer nodeSerializer;
     private GlobalSchemaContextHolder schemaHolder;
     private RpcServices rpcServices;
+    private TopologyRequestListener topologyRequestListener;
 
     /**
      * @param schemaService
      * @param dataBroker
      * @param nodeSerializer
      * @param rpcServices
+     * @param datastoreType 
      */
     public TopoProcessingProviderImpl(SchemaService schemaService, DOMDataBroker dataBroker,
-            BindingNormalizedNodeSerializer nodeSerializer, RpcServices rpcServices) {
+            BindingNormalizedNodeSerializer nodeSerializer, RpcServices rpcServices,
+            DatastoreType datastoreType) {
         LOGGER.debug("Creating TopoProcessingProvider");
         Preconditions.checkNotNull(schemaService, "SchemaService can't be null");
         Preconditions.checkNotNull(dataBroker, "DOMDataBroker can't be null");
         Preconditions.checkNotNull(nodeSerializer, "BindingNormalizedNodeSerializer can't be null");
         Preconditions.checkNotNull(rpcServices.getRpcService(), "RpcService can't be null");
         Preconditions.checkNotNull(rpcServices.getRpcProviderService(), "RpcProviderService can't be null");
+        Preconditions.checkNotNull(datastoreType, "DatastoreType can't be null");
         this.schemaService = schemaService;
         this.dataBroker = dataBroker;
         this.nodeSerializer = nodeSerializer;
         this.rpcServices = rpcServices;
         schemaHolder = new GlobalSchemaContextHolder(schemaService.getGlobalContext());
+        topologyRequestListener = new TopologyRequestListener(dataBroker, nodeSerializer, schemaHolder, rpcServices);
+        topologyRequestListener.setDatastoreType(datastoreType);
         startup();
     }
 
@@ -90,8 +97,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
         topologyRequestListenerRegistration =
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                        identifier, new TopologyRequestListener(dataBroker, nodeSerializer,
-                        schemaHolder, rpcServices), DataChangeScope.ONE);
+                        identifier, topologyRequestListener, DataChangeScope.ONE);
         LOGGER.debug("Topology Request Listener has been successfully registered");
     }
 

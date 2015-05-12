@@ -20,6 +20,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.handler.TopologyRequestHandler;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -53,6 +54,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
     private HashMap<YangInstanceIdentifier, TopologyRequestHandler> topoRequestHandlers = new HashMap<>();
     private GlobalSchemaContextHolder schemaHolder;
     private RpcServices rpcServices;
+    private DatastoreType datastoreType;
 
     /**
      * Default contructor
@@ -93,6 +95,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
                         TopologyRequestHandler requestHandler =
                                 new TopologyRequestHandler(dataBroker, schemaHolder, rpcServices);
                         topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
+                        requestHandler.setDatastoreType(datastoreType);
                         requestHandler.processNewRequest(topology);
 
                         Optional<DataContainerChild<? extends PathArgument, ?>> topologyTypes =
@@ -120,5 +123,12 @@ public class TopologyRequestListener implements DOMDataChangeListener {
             }
         }
         LOGGER.debug("Removed data processed");
+    }
+
+    /**
+     * @param datastoreType
+     */
+    public void setDatastoreType(DatastoreType datastoreType) {
+        this.datastoreType = datastoreType;
     }
 }
