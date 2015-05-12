@@ -24,6 +24,7 @@ import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
@@ -67,6 +68,7 @@ public class TopologyRequestHandler {
     private RpcServices rpcServices;
     private DOMTransactionChain transactionChain;
     private TopologyWriter writer;
+    private DatastoreType datastoreType;
 
     /**
      * Default constructor
@@ -156,9 +158,14 @@ public class TopologyRequestHandler {
             YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering filtering underlay topology listener for topology: "
                     + underlayTopologyId);
-            ListenerRegistration<DOMDataChangeListener> listenerRegistration =
-                    domDataBroker.registerDataChangeListener(
-                            LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+            ListenerRegistration<DOMDataChangeListener> listenerRegistration;
+            if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
+                listenerRegistration = domDataBroker.registerDataChangeListener(
+                        LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+            } else {
+                listenerRegistration = domDataBroker.registerDataChangeListener(
+                        LogicalDatastoreType.CONFIGURATION, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+            }
             LOG.debug("Filtering Underlay topology listener for topology: " + underlayTopologyId
                     + " has been successfully registered");
             listeners.add(listenerRegistration);
@@ -178,9 +185,14 @@ public class TopologyRequestHandler {
             YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering underlay topology listener for topology: "
                     + underlayTopologyId);
-            ListenerRegistration<DOMDataChangeListener> listenerRegistration =
-                    domDataBroker.registerDataChangeListener(
-                            LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+            ListenerRegistration<DOMDataChangeListener> listenerRegistration;
+            if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
+                listenerRegistration = domDataBroker.registerDataChangeListener(
+                        LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+            } else {
+                listenerRegistration = domDataBroker.registerDataChangeListener(
+                        LogicalDatastoreType.CONFIGURATION, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+            }
             LOG.debug("Underlay topology listener for topology: " + underlayTopologyId
                     + " has been successfully registered");
             listeners.add(listenerRegistration);
@@ -250,5 +262,12 @@ public class TopologyRequestHandler {
     public void delegateTopologyTypes(
             DataContainerChild<? extends PathArgument, ?> topologyTypes) {
         writer.writeTopologyTypes(topologyTypes);
+    }
+
+    /**
+     * @param datastoreType
+     */
+    public void setDatastoreType(DatastoreType datastoreType) {
+        this.datastoreType = datastoreType;
     }
 }
