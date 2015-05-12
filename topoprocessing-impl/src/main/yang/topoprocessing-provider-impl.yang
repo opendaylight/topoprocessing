@@ -30,6 +30,20 @@
         config:java-name-prefix TopoProcessingProvider;
     }
 
+    typedef datastore-type {
+        description "DataStore type";
+        type enumeration {
+            enum CONFIGURATION {
+                description "LogicalDatastoreType.CONFIGURATION";
+                value 0;
+            }
+            enum OPERATIONAL {
+                description "LogicalDatastoreType.OPERATIONAL";
+                value 1;
+            }
+        }
+    }
+
     augment "/config:modules/config:module/config:configuration" {
         case topoprocessing-provider-impl {
             when "/config:modules/config:module/config:type = 'topoprocessing-provider-impl'";
@@ -64,6 +78,12 @@
                         config:required-identity binding:binding-normalized-node-serializer;
                     }
                 }
+            }
+            leaf datastore-type {
+                description "Specifies which logical datastore should be used for listening
+                             on node, link, termination point, ... changes";
+                type datastore-type;
+                mandatory true;
             }
         }
     }
