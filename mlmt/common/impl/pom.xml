@@ -8,7 +8,6 @@
     <relativePath>../</relativePath>
   </parent>
   <artifactId>mlmt-topology-common-impl</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>
@@ -19,7 +18,6 @@
     <dependency>
       <groupId>org.opendaylight.yangtools.model</groupId>
       <artifactId>ietf-topology</artifactId>
-      <version>${ietf.model.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.yangtools</groupId>
@@ -44,7 +42,7 @@
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>sal-binding-broker-impl</artifactId>
-      <version>${sal.binding.config.version}</version>
+      <version>${mdsal.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -63,7 +61,6 @@
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>sal-core-api</artifactId>
-      <version>${sal.core.api.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
