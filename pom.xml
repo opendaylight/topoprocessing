@@ -10,7 +10,6 @@
 
     <groupId>org.opendaylight.topoprocessing</groupId>
     <artifactId>topoprocessing-parent</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <name>topoprocessing</name> <!-- Used by Sonar to set project name -->
     <packaging>pom</packaging>
 
@@ -40,17 +39,9 @@
         <yang.jmx.generator.plugin>0.3.0-SNAPSHOT</yang.jmx.generator.plugin>
         <yang.ext.version>2013.09.07.7-SNAPSHOT</yang.ext.version>
         <ietf.model.version>2013.10.21.7-SNAPSHOT</ietf.model.version>
-        <ietf.ted.version>2013.10.21.7-SNAPSHOT</ietf.ted.version>
-        <ietf.l3.unicast.igp.version>2013.10.21.7-SNAPSHOT</ietf.l3.unicast.igp.version>
-        <ietf.isis.version>2013.10.21.7-SNAPSHOT</ietf.isis.version>
         <config.version>0.3.0-SNAPSHOT</config.version>
         <mdsal.version>1.2.0-SNAPSHOT</mdsal.version>
-        <sal.binding.api.version>1.2.0-SNAPSHOT</sal.binding.api.version>
-        <sal.binding.config.version>1.2.0-SNAPSHOT</sal.binding.config.version>
-        <sal.core.api.version>1.2.0-SNAPSHOT</sal.core.api.version>
         <features.test.version>1.5.0-SNAPSHOT</features.test.version>
-        <model.topology.version>1.2.0-SNAPSHOT</model.topology.version>
-        <openflowplugin.version>0.1.0-SNAPSHOT</openflowplugin.version>
     </properties>
 
     <dependencyManagement>
