@@ -8,28 +8,27 @@
     <relativePath>../</relativePath>
   </parent>
   <artifactId>mlmt-topology-observer-impl</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>
       <groupId>org.opendaylight.topoprocessing</groupId>
       <artifactId>mlmt-topology-common-impl</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.topoprocessing</groupId>
       <artifactId>mlmt-topology-factory-impl</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.topoprocessing</groupId>
       <artifactId>mlmt-topology-observer-model</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.topoprocessing</groupId>
       <artifactId>multitechnology-topology-impl</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
