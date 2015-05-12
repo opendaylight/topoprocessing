@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_cd8a15bf",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeIpFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-12T15:03:08Z",
+      "side": 1,
+      "message": "we should throw an exception here",
+      "range": {
+        "startLine": 81,
+        "startChar": 12,
+        "endLine": 81,
+        "endChar": 55
+      },
+      "revId": "8837ec1f855c665cf484a0760ce5b8eb2bc31466",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
