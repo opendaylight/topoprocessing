@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_4d336514",
+        "filename": "mlmt/common/impl/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-12T15:15:10Z",
+      "side": 1,
+      "message": "we can remove this version specification also (dependency inherited from topoprocessing-parent)",
+      "range": {
+        "startLine": 21,
+        "startChar": 6,
+        "endLine": 21,
+        "endChar": 46
+      },
+      "revId": "6335dfdb6893c432114fb27a6ebe65579b1d975d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_6d366105",
+        "filename": "mlmt/common/impl/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-12T15:15:10Z",
+      "side": 1,
+      "message": "we can remove this version specification also (dependency inherited from topoprocessing-parent)",
+      "range": {
+        "startLine": 65,
+        "startChar": 6,
+        "endLine": 65,
+        "endChar": 48
+      },
+      "revId": "6335dfdb6893c432114fb27a6ebe65579b1d975d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
