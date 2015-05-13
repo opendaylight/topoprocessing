@@ -37,6 +37,12 @@ import com.google.common.base.Optional;
  */
 public class UnderlayTopologyListener implements DOMDataChangeListener {
 
+    /**
+     * 
+     */
+    private static final String END_BRACKETS_TOKEN = "}]";
+    private static final String NODE_ID_TOKEN = "node-id=";
+    private static final String TOPOLOGY_ID_TOKEN = "topology-id=";
     private static final Logger LOGGER = LoggerFactory.getLogger(UnderlayTopologyListener.class);
     private static final YangInstanceIdentifier NODE_IDENTIFIER = YangInstanceIdentifier.builder().node(Node.QNAME).build();
 
@@ -92,7 +98,9 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
             if (entry.getValue() instanceof MapEntryNode) {
                 if (entry.getValue().getNodeType().equals(Node.QNAME)) {
                     LOGGER.debug("Processing entry: " + entry.getValue());
-                    PhysicalNode physicalNode;
+                    PhysicalNode physicalNode = null;
+                    String topologyId = extractIdentifier(entry.getKey().toString(), TOPOLOGY_ID_TOKEN, END_BRACKETS_TOKEN);
+                    String nodeId = extractIdentifier(entry.getKey().toString(), NODE_ID_TOKEN, END_BRACKETS_TOKEN);
                     if (operator instanceof TopologyAggregator) {
                         // AGGREGATION
                         LOGGER.debug("Finding node: " + pathIdentifier);
@@ -100,13 +108,11 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                         LOGGER.debug("Found node: " + node.get());
                         if (node.isPresent()) {
                             LeafNode<?> leafnode = (LeafNode<?>) node.get();
-                            physicalNode = new PhysicalNode(entry.getValue(), leafnode, entry.getKey());
-                        } else {
-                            continue;
+                            physicalNode = new PhysicalNode(entry.getValue(), leafnode, topologyId, nodeId);
                         }
                     } else {
                         // FILTRATION
-                        physicalNode = new PhysicalNode(entry.getValue(), null, entry.getKey());
+                        physicalNode = new PhysicalNode(entry.getValue(), null, topologyId, nodeId);
                     }
                     resultEntries.put(entry.getKey(), physicalNode);
                     LOGGER.debug("Created PhysicalNode: " + physicalNode);
@@ -120,6 +126,12 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                 operator.processUpdatedChanges(resultEntries, underlayTopologyId);
             }
         }
+    }
+
+    private static String extractIdentifier(String identifierString, String beginToken, String endToken) {
+        int beginIndex = identifierString.indexOf(beginToken) + beginToken.length();
+        int endIndex = identifierString.indexOf(endToken, beginIndex);
+        return identifierString.substring(beginIndex, endIndex);
     }
 
     private void proceedDeletionRequest(Set<YangInstanceIdentifier> set) {
