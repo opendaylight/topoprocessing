@@ -49,13 +49,13 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     /**
      * @param rpcServices
      * @param schemaHolder 
-     * @param nodeIdentifier 
+     * @param topologyIdentifier 
      */
     public TopologyManager(RpcServices rpcServices, GlobalSchemaContextHolder schemaHolder,
-            YangInstanceIdentifier nodeIdentifier) {
+            YangInstanceIdentifier topologyIdentifier) {
         this.rpcServices = rpcServices;
         this.schemaHolder = schemaHolder;
-        this.nodeIdentifier = nodeIdentifier;
+        this.nodeIdentifier = topologyIdentifier.node(Node.QNAME);
         availableRpcs = new HashSet<>();
         rpcServices.getRpcService().registerRpcListener(this);
     }
@@ -77,7 +77,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
                 for (LogicalNodeWrapper wrapper : wrappers) {
                     for (LogicalNode logicalNodeFromWrapper : wrapper.getLogicalNodes()) {
                         for (PhysicalNode physicalNode : logicalNodeFromWrapper.getPhysicalNodes()) {
-                            if (physicalNode.getNodeIdentifier().equals(newPhysicalNode.getNodeIdentifier())) {
+                            if (physicalNode.getNodeId().equals(newPhysicalNode.getNodeId())) {
                                 wrapper.addLogicalNode(newLogicalNode);
                                 writer.writeNode(wrapper);
                                 registerOverlayRpcs(wrapper, newLogicalNode);
@@ -159,13 +159,13 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
      */
     private void registerOverlayRpcs(LogicalNodeWrapper wrapper, LogicalNode logicalNode) {
         LOGGER.trace("Registering overlay RPCs");
-        YangInstanceIdentifier contextIdentifier = YangInstanceIdentifier.builder(nodeIdentifier).node(Node.QNAME)
+        YangInstanceIdentifier contextIdentifier = YangInstanceIdentifier.builder(nodeIdentifier)
                 .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, wrapper.getNodeId()).build();
         for (PhysicalNode node : logicalNode.getPhysicalNodes()) {
             List<DOMRpcIdentifier> underlayRpcs = new ArrayList<>();
             for (Iterator<DOMRpcIdentifier> iterator = availableRpcs.iterator(); iterator.hasNext();) {
                 DOMRpcIdentifier rpcIdentifier = iterator.next();
-                if (rpcIdentifier.getContextReference().equals(node.getNodeIdentifier())) {
+                if (rpcIdentifier.getContextReference().equals(node.getNodeId())) {
                     underlayRpcs.add(rpcIdentifier);
                 }
             }
@@ -174,7 +174,8 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
                         DOMRpcIdentifier.create(underlayRpcIdentifier.getType(), contextIdentifier);
                 OverlayRpcImplementation overlayImplementation =
                         new OverlayRpcImplementation(rpcServices.getRpcService(), schemaHolder.getSchemaContext(),
-                                node.getNodeIdentifier());
+                                YangInstanceIdentifier.builder(nodeIdentifier).
+                                nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, node.getNodeId()).build());
                 rpcServices.getRpcProviderService().registerRpcImplementation(overlayImplementation,
                         overlayRpcIdentifier);
             }
