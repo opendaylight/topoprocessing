@@ -20,19 +20,22 @@ public class PhysicalNode {
     private NormalizedNode<?, ?> node;
     private NormalizedNode<?, ?> leafNode;
     private LogicalNode logicalNodeIdentifier = null;
-    private YangInstanceIdentifier nodeIdentifier;
+    private String topologyId;
+    private String nodeId;
 
     /**
      * Constructor
      * @param node underlay topology {@link Node}
      * @param leafNode specified in target-field (in mapping)
-     * @param nodeIdentifier path to the {@link Node}
+     * @param topologyId identifier of {@link Topology}
+     * @param nodeId identifier of {@link Node}
      */
     public PhysicalNode(NormalizedNode<?, ?> node, NormalizedNode<?, ?> leafNode,
-            YangInstanceIdentifier nodeIdentifier) {
+            String topologyId, String nodeId) {
         this.node = node;
         this.leafNode = leafNode;
-        this.nodeIdentifier = nodeIdentifier;
+        this.topologyId = topologyId;
+        this.nodeId = nodeId;
     }
 
     /**
@@ -72,10 +75,16 @@ public class PhysicalNode {
     }
 
     /**
-     * @return {@link YangInstanceIdentifier} representing concrete {@link Node}
-     * which the node is stored in
+     * @return node's Id
      */
-    public YangInstanceIdentifier getNodeIdentifier() {
-        return nodeIdentifier;
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    /**
+     * @return topology's Id
+     */
+    public String getTopologyId() {
+        return topologyId;
     }
 }

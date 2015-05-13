@@ -22,11 +22,14 @@ import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,13 +52,13 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     /**
      * @param rpcServices
      * @param schemaHolder 
-     * @param nodeIdentifier 
+     * @param topologyIdentifier 
      */
     public TopologyManager(RpcServices rpcServices, GlobalSchemaContextHolder schemaHolder,
-            YangInstanceIdentifier nodeIdentifier) {
+            YangInstanceIdentifier topologyIdentifier) {
         this.rpcServices = rpcServices;
         this.schemaHolder = schemaHolder;
-        this.nodeIdentifier = nodeIdentifier;
+        this.nodeIdentifier = topologyIdentifier.node(Node.QNAME);
         availableRpcs = new HashSet<>();
         rpcServices.getRpcService().registerRpcListener(this);
     }
@@ -77,7 +80,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
                 for (LogicalNodeWrapper wrapper : wrappers) {
                     for (LogicalNode logicalNodeFromWrapper : wrapper.getLogicalNodes()) {
                         for (PhysicalNode physicalNode : logicalNodeFromWrapper.getPhysicalNodes()) {
-                            if (physicalNode.getNodeIdentifier().equals(newPhysicalNode.getNodeIdentifier())) {
+                            if (physicalNode.getNodeId().equals(newPhysicalNode.getNodeId())) {
                                 wrapper.addLogicalNode(newLogicalNode);
                                 writer.writeNode(wrapper);
                                 registerOverlayRpcs(wrapper, newLogicalNode);
@@ -159,13 +162,16 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
      */
     private void registerOverlayRpcs(LogicalNodeWrapper wrapper, LogicalNode logicalNode) {
         LOGGER.trace("Registering overlay RPCs");
-        YangInstanceIdentifier contextIdentifier = YangInstanceIdentifier.builder(nodeIdentifier).node(Node.QNAME)
+        YangInstanceIdentifier contextIdentifier = YangInstanceIdentifier.builder(nodeIdentifier)
                 .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, wrapper.getNodeId()).build();
+        YangInstanceIdentifier nodeEntryIdentifier;
         for (PhysicalNode node : logicalNode.getPhysicalNodes()) {
             List<DOMRpcIdentifier> underlayRpcs = new ArrayList<>();
+            nodeEntryIdentifier = YangInstanceIdentifier.builder(nodeIdentifier)
+                    .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, node.getNodeId()).build();
             for (Iterator<DOMRpcIdentifier> iterator = availableRpcs.iterator(); iterator.hasNext();) {
                 DOMRpcIdentifier rpcIdentifier = iterator.next();
-                if (rpcIdentifier.getContextReference().equals(node.getNodeIdentifier())) {
+                if (rpcIdentifier.getContextReference().equals(nodeEntryIdentifier)) {
                     underlayRpcs.add(rpcIdentifier);
                 }
             }
@@ -174,7 +180,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
                         DOMRpcIdentifier.create(underlayRpcIdentifier.getType(), contextIdentifier);
                 OverlayRpcImplementation overlayImplementation =
                         new OverlayRpcImplementation(rpcServices.getRpcService(), schemaHolder.getSchemaContext(),
-                                node.getNodeIdentifier());
+                                nodeEntryIdentifier);
                 rpcServices.getRpcProviderService().registerRpcImplementation(overlayImplementation,
                         overlayRpcIdentifier);
             }
