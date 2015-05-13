@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_c4f42789",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T15:20:09Z",
+      "side": 1,
+      "message": "please use YangInstanceIdentifier.of(Qname)",
+      "range": {
+        "startLine": 44,
+        "startChar": 69,
+        "endLine": 44,
+        "endChar": 101
+      },
+      "revId": "8cac801375d6d9cbc4691ac03eba3847c11345c5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_44301756",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T15:20:09Z",
+      "side": 1,
+      "message": "throw an exception when node-id is not found (as it is node\u0027s key )",
+      "revId": "8cac801375d6d9cbc4691ac03eba3847c11345c5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_4417b7a3",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T15:20:09Z",
+      "side": 1,
+      "message": "this must be node yangInstanceIdentifier",
+      "range": {
+        "startLine": 168,
+        "startChar": 63,
+        "endLine": 168,
+        "endChar": 79
+      },
+      "revId": "8cac801375d6d9cbc4691ac03eba3847c11345c5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_e4360352",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyManager.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 178,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T15:20:09Z",
+      "side": 1,
+      "message": "please extract to local variable - just to improve code readability",
+      "range": {
+        "startLine": 177,
+        "startChar": 32,
+        "endLine": 178,
+        "endChar": 119
+      },
+      "revId": "8cac801375d6d9cbc4691ac03eba3847c11345c5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_c422e700",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/LogicalNodeToNodeTranslator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T15:20:09Z",
+      "side": 1,
+      "message": "remove unused imports",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 43
+      },
+      "revId": "8cac801375d6d9cbc4691ac03eba3847c11345c5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
