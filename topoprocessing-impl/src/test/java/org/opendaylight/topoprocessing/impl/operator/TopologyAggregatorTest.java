@@ -92,8 +92,8 @@ public class TopologyAggregatorTest {
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.2")
                 .build();
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode11, leafYiid11);
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode12, leafYiid12);
+        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode11, TOPO1, "11");
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode12, TOPO2, "12");
         topo1.getPhysicalNodes().put(leafYiid11, physicalNode1);
         topo2.getPhysicalNodes().put(leafYiid12, physicalNode2);
 
@@ -144,8 +144,8 @@ public class TopologyAggregatorTest {
         LeafNode<Object> leafNode22 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.3").build();
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode21, leafYiid21);
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode22, leafYiid22);
+        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode21, TOPO2, "21");
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode22, TOPO2, "22");
         Map<YangInstanceIdentifier, PhysicalNode> physicalNodes1 = new HashMap<>();
         physicalNodes1.put(leafYiid21, physicalNode1);
         physicalNodes1.put(leafYiid22, physicalNode2);
@@ -162,7 +162,7 @@ public class TopologyAggregatorTest {
         LeafNode<Object> leafNode23 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.1").build();
-        PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode1, leafNode23, leafYiid23);
+        PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode1, leafNode23, TOPO3, "23");
         Map<YangInstanceIdentifier, PhysicalNode> physicalNodes2 = new HashMap<>();
         physicalNodes2.put(leafYiid23, physicalNode3);
 
@@ -267,7 +267,7 @@ public class TopologyAggregatorTest {
         LeafNode<Object> leafNode31 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.2").build();
-        PhysicalNode physicalNode31 = new PhysicalNode(mockNormalizedNode1, leafNode31, leafYiid11);
+        PhysicalNode physicalNode31 = new PhysicalNode(mockNormalizedNode1, leafNode31, TOPO1, "11");
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();
         update.put(leafYiid11, physicalNode31);
         aggregator.processUpdatedChanges(update, TOPO1);
@@ -309,7 +309,7 @@ public class TopologyAggregatorTest {
         LeafNode<Object> leafNode32 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.2").build();
-        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, leafNode32, leafYiid23);
+        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, leafNode32, TOPO3, "23");
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();
         update.put(leafYiid23, physicalNode);
         aggregator.processUpdatedChanges(update, TOPO3);
@@ -354,7 +354,7 @@ public class TopologyAggregatorTest {
         LeafNode<Object> leafNode31 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.2").build();
-        PhysicalNode physicalNode31 = new PhysicalNode(mockNormalizedNode1, leafNode31, leafYiid22);
+        PhysicalNode physicalNode31 = new PhysicalNode(mockNormalizedNode1, leafNode31, TOPO2, "22");
         Map<YangInstanceIdentifier, PhysicalNode> update = new HashMap<>();
         update.put(leafYiid22, physicalNode31);
         aggregator.processUpdatedChanges(update, TOPO2);
