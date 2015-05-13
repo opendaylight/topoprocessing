@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_4ec118e3",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T10:42:39Z",
+      "side": 1,
+      "message": "change to something more appropriate, as it closes also transactionChain - something like closeOperatingResources(), closeAllocatedResources()",
+      "range": {
+        "startLine": 232,
+        "startChar": 17,
+        "endLine": 232,
+        "endChar": 31
+      },
+      "revId": "80d3e1a89df98be0fb1769ee4cb7a27f7658c15d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
