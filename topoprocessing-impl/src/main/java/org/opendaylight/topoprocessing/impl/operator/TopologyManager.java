@@ -49,13 +49,13 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     /**
      * @param rpcServices
      * @param schemaHolder 
-     * @param nodeIdentifier 
+     * @param topologyIdentifier 
      */
     public TopologyManager(RpcServices rpcServices, GlobalSchemaContextHolder schemaHolder,
-            YangInstanceIdentifier nodeIdentifier) {
+            YangInstanceIdentifier topologyIdentifier) {
         this.rpcServices = rpcServices;
         this.schemaHolder = schemaHolder;
-        this.nodeIdentifier = nodeIdentifier;
+        this.nodeIdentifier = topologyIdentifier.node(Node.QNAME);
         availableRpcs = new HashSet<>();
         rpcServices.getRpcService().registerRpcListener(this);
     }
@@ -159,7 +159,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
      */
     private void registerOverlayRpcs(LogicalNodeWrapper wrapper, LogicalNode logicalNode) {
         LOGGER.trace("Registering overlay RPCs");
-        YangInstanceIdentifier contextIdentifier = YangInstanceIdentifier.builder(nodeIdentifier).node(Node.QNAME)
+        YangInstanceIdentifier contextIdentifier = YangInstanceIdentifier.builder(nodeIdentifier)
                 .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, wrapper.getNodeId()).build();
         for (PhysicalNode node : logicalNode.getPhysicalNodes()) {
             List<DOMRpcIdentifier> underlayRpcs = new ArrayList<>();
@@ -174,7 +174,8 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
                         DOMRpcIdentifier.create(underlayRpcIdentifier.getType(), contextIdentifier);
                 OverlayRpcImplementation overlayImplementation =
                         new OverlayRpcImplementation(rpcServices.getRpcService(), schemaHolder.getSchemaContext(),
-                                node.getNodeIdentifier());
+                                YangInstanceIdentifier.builder(nodeIdentifier).
+                                nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, node.getNodeIdentifier()).build());
                 rpcServices.getRpcProviderService().registerRpcImplementation(overlayImplementation,
                         overlayRpcIdentifier);
             }

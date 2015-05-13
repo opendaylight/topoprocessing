@@ -100,9 +100,9 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                         LOGGER.debug("Found node: " + node.get());
                         if (node.isPresent()) {
                             LeafNode<?> leafnode = (LeafNode<?>) node.get();
-                            physicalNode = new PhysicalNode(entry.getValue(), leafnode, entry.getKey());
-                        } else {
-                            continue;
+                            String topologyId = extractIdentifier(entry.getKey().toString(), "topology-id=", "}]");
+                            String nodeId = extractIdentifier(entry.getKey().toString(), "node-id=", "}]");
+                            PhysicalNode physicalNode = new PhysicalNode(entry.getValue(), leafnode, topologyId, nodeId);
                         }
                     } else {
                         // FILTRATION
@@ -120,6 +120,12 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                 operator.processUpdatedChanges(resultEntries, underlayTopologyId);
             }
         }
+    }
+
+    private String extractIdentifier(String identifierString, String beginToken, String endToken) {
+        int beginIndex = identifierString.indexOf(beginToken) + beginToken.length();
+        int endIndex = identifierString.indexOf(endToken, beginIndex);
+        return identifierString.substring(beginIndex, endIndex);
     }
 
     private void proceedDeletionRequest(Set<YangInstanceIdentifier> set) {
