@@ -359,7 +359,7 @@ public class TopologyAggregatorTest {
         update.put(leafYiid22, physicalNode31);
         aggregator.processUpdatedChanges(update, TOPO2);
         
-        Mockito.verify(mockManager, Mockito.times(1)).addLogicalNode((LogicalNode) any());
+        Mockito.verify(mockManager, Mockito.times(2)).addLogicalNode((LogicalNode) any());
         // one logical node has been removed
         Mockito.verify(mockManager, Mockito.times(0)).removeLogicalNode((LogicalNode) any());
         // one new logical node has been updated
