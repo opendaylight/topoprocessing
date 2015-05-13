@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_cd0d3540",
+        "filename": "topoprocessing-artifacts/pom.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T07:57:13Z",
+      "side": 1,
+      "message": "remove version",
+      "range": {
+        "startLine": 12,
+        "startChar": 2,
+        "endLine": 12,
+        "endChar": 35
+      },
+      "revId": "eef6eda89b4bea8d7226885ab0311c4893d1de55",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
