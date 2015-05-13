@@ -138,6 +138,7 @@ public class TopologyRequestHandler {
             LOG.debug("Correlation configuration successfully read");
         } catch (Exception e) {
             LOG.warn("Processing new request for topology change failed.", e);
+            closeListeners();
         }
     }
 
@@ -225,6 +226,10 @@ public class TopologyRequestHandler {
      */
     public void processDeletionRequest() {
         LOG.debug("Processing overlay topology deletion request");
+        closeListeners();
+    }
+
+    private void closeListeners() {
         for (ListenerRegistration<DOMDataChangeListener> listener : listeners) {
             listener.close();
         }
