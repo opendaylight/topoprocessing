@@ -1,0 +1,176 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3aa0d159_ce8528ae",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T10:35:53Z",
+      "side": 1,
+      "message": "supporting-node \u003ctopology-ref\u003e and \u003cnode-ref\u003e tags ...",
+      "range": {
+        "startLine": 7,
+        "startChar": 35,
+        "endLine": 7,
+        "endChar": 40
+      },
+      "revId": "1b08c0ef22f0fe9ac7f6fa4da5ce7570c956a8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_2e97eced",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T10:35:53Z",
+      "side": 1,
+      "message": "not needed - already present in UnderlayTopologyListener",
+      "range": {
+        "startLine": 102,
+        "startChar": 20,
+        "endLine": 102,
+        "endChar": 124
+      },
+      "revId": "1b08c0ef22f0fe9ac7f6fa4da5ce7570c956a8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_4e9a7815",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T10:35:53Z",
+      "side": 1,
+      "message": "we should get this value from corresponding LeafNode",
+      "range": {
+        "startLine": 103,
+        "startChar": 36,
+        "endLine": 103,
+        "endChar": 116
+      },
+      "revId": "1b08c0ef22f0fe9ac7f6fa4da5ce7570c956a8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_eea02445",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T10:35:53Z",
+      "side": 1,
+      "message": "not needed",
+      "range": {
+        "startLine": 131,
+        "startChar": 4,
+        "endLine": 135,
+        "endChar": 5
+      },
+      "revId": "1b08c0ef22f0fe9ac7f6fa4da5ce7570c956a8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_cefe8838",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/structure/PhysicalNode.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T10:35:53Z",
+      "side": 1,
+      "message": "missing javadoc",
+      "revId": "1b08c0ef22f0fe9ac7f6fa4da5ce7570c956a8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_eee90481",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/structure/PhysicalNode.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T10:35:53Z",
+      "side": 1,
+      "message": "getNodeId()",
+      "range": {
+        "startLine": 79,
+        "startChar": 18,
+        "endLine": 79,
+        "endChar": 35
+      },
+      "revId": "1b08c0ef22f0fe9ac7f6fa4da5ce7570c956a8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_ae03fc40",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/structure/PhysicalNode.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T10:35:53Z",
+      "side": 1,
+      "message": "missing javadoc",
+      "revId": "1b08c0ef22f0fe9ac7f6fa4da5ce7570c956a8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3aa0d159_0eed508b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/structure/PhysicalNode.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-13T10:35:53Z",
+      "side": 1,
+      "message": "getTopologyId()",
+      "range": {
+        "startLine": 83,
+        "startChar": 18,
+        "endLine": 83,
+        "endChar": 39
+      },
+      "revId": "1b08c0ef22f0fe9ac7f6fa4da5ce7570c956a8bf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
