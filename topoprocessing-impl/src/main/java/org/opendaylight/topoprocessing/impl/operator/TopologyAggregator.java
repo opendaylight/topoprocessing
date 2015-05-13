@@ -102,9 +102,9 @@ public abstract class TopologyAggregator implements TopologyOperator {
 
     private void createAggregatedNodes(PhysicalNode newNode, String topologyId) {
         for (TopologyStore ts : topologyStores) {
-            if (!ts.getId().equals(topologyId)) {
-                for (Entry<YangInstanceIdentifier, PhysicalNode> topoStoreEntry : ts.getPhysicalNodes().entrySet()) {
-                    PhysicalNode topoStoreNode = topoStoreEntry.getValue();
+            for (Entry<YangInstanceIdentifier, PhysicalNode> topoStoreEntry : ts.getPhysicalNodes().entrySet()) {
+                PhysicalNode topoStoreNode = topoStoreEntry.getValue();
+                if (! newNode.equals(topoStoreNode)) {
                     if (topoStoreNode.getLeafNode().getValue().equals(newNode.getLeafNode().getValue())) {
                         // no previous aggregation on this node
                         if (topoStoreNode.getLogicalIdentifier() == null) {
