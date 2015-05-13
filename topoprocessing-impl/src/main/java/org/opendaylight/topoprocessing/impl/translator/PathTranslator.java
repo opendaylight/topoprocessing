@@ -45,9 +45,10 @@ public class PathTranslator {
      * @param schemaHolder 
      * @return {@link YangInstanceIdentifier} leading to target node
      * @throws IllegalArgumentException if yangPath is in incorrect format
+     * @throws IllegalStateException if required module is not loaded
      */
     public YangInstanceIdentifier translate(String yangPath, CorrelationItemEnum correlationItem,
-            GlobalSchemaContextHolder schemaHolder) throws IllegalArgumentException {
+            GlobalSchemaContextHolder schemaHolder) throws IllegalArgumentException, IllegalStateException {
         LOGGER.debug("Translating target-field path: " + yangPath);
         SchemaContext globalSchemaContext = schemaHolder.getSchemaContext();
         DataSchemaContextTree contextTree = new GlobalSchemaContextHolder(globalSchemaContext).getContextTree();
@@ -83,6 +84,10 @@ public class PathTranslator {
         int index = getSeparatorIndex(pathArgument, ':');
         String moduleName = getModuleName(pathArgument, index);
         Module module = context.findModuleByName(moduleName, null);
+        if (null == module) {
+            throw new IllegalStateException("Couldn't find specified module: " + moduleName +
+                    ". Check if all necessary modules are loaded");
+        }
         String childName = getChildName(pathArgument, index + 1);
         return QName.create(module.getNamespace(), module.getRevision(), childName);
     }
