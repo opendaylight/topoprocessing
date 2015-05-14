@@ -7,20 +7,34 @@
  */
 package org.opendaylight.topoprocessing.impl.operator;
 
-import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
+import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
+import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
+import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.MappingBuilder;
+import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLeafNodeBuilder;
 
 /**
  * @author martin.uhlir
@@ -29,71 +43,139 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyManagerTest {
 
-    private static final String TOPOLOGY1 = "openflow:1";
-    private static final String TOPOLOGY2 = "bgp:1";
+    private static final QName ROOT_QNAME = QName.create("foo", "2014-03-13", "bar");
+    private static final QName QNAME_LEAF_IP = QName.create(ROOT_QNAME, "ip");
 
-    TopologyAggregator aggregator = new EqualityAggregator();
-    @Mock Map<YangInstanceIdentifier, PhysicalNode> entriesMap;
-    @Mock List<YangInstanceIdentifier> entriesList;
-    String topologyId;
+    private static final String TOPOLOGY1 = "pcep-topology:1";
+    private static final String NODE_ID1 = "pcep:1";
+    private static final String NODE_ID2 = "pcep:2";
+
+//    @Mock Map<YangInstanceIdentifier, PhysicalNode> entriesMap;
+//    @Mock List<YangInstanceIdentifier> entriesList;
+//    String topologyId;
+
+    @Mock private RpcServices mockRpcServices;
+    @Mock private GlobalSchemaContextHolder mockSchemaHolder;
+    @Mock private NormalizedNode<?,?> mockNormalizedNode1;
+    @Mock private DOMRpcService mockDOMRpcService;
+    @Mock private ListenerRegistration<DOMRpcAvailabilityListener> mockListenerRegistration;
+    @Mock private TopologyWriter writer;
+    private YangInstanceIdentifier identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+            .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY1).build();
 
     /**
-     * Checks that two topology stores are initialized for two different underlay topologies in one call
+     * If logical node is null or empty, no wrapper should be created and therefore writer's addNode function
+     * should not be called 
      */
     @Test
-    public void testInitStructuresWithTwoDifferentTopologies() {
-        List<Mapping> mappings = createMappings(TOPOLOGY1, TOPOLOGY2);
-        aggregator.initializeStructures(mappings);
-        assertEquals(aggregator.getTopologyStores().size(), 2);
+    public void addLogicalNodeNullOrEmpty() {
+        initializeMockitoRpcServiceCall();
+
+        TopologyManager manager = new TopologyManager(mockRpcServices, mockSchemaHolder, identifier);
+        manager.setWriter(writer);
+        manager.addLogicalNode(null);
+        Mockito.verify(writer, Mockito.times(0)).writeNode((LogicalNodeWrapper) Mockito.any());
+
+        List<PhysicalNode> physicalNodes = null;
+        LogicalNode newLogicalNode = new LogicalNode(physicalNodes);
+        manager.addLogicalNode(newLogicalNode);
+        Mockito.verify(writer, Mockito.times(0)).writeNode((LogicalNodeWrapper) Mockito.any());
+    }
+
+    private void initializeMockitoRpcServiceCall() {
+        Mockito.when(mockRpcServices.getRpcService()).thenReturn(mockDOMRpcService);
+        Mockito.when(mockRpcServices.getRpcService().registerRpcListener((DOMRpcAvailabilityListener)any()))
+            .thenReturn(mockListenerRegistration);
     }
 
     /**
-     * Checks that two topology stores are initialized for two different underly topologies in
-     * two different calls of initializeStructures method
+     * For one logical node, new wrapper shall be created and then sent to writer's class
      */
     @Test
-    public void testInitStructuresWithTwoDifferentTopologiesInTwoCalls() {
-        List<Mapping> mappings = createMappings(TOPOLOGY1);
-        aggregator.initializeStructures(mappings);
+    public void addLogicalNode() {
+        List<PhysicalNode> physicalNodes = new ArrayList<>();
+        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1);
+        physicalNodes.add(physicalNode);
+        LogicalNode newLogicalNode = new LogicalNode(physicalNodes);
 
-        List<Mapping> mappings2 = createMappings(TOPOLOGY2);
-        aggregator.initializeStructures(mappings2);
+        initializeMockitoRpcServiceCall();
+        TopologyManager manager = new TopologyManager(mockRpcServices, mockSchemaHolder, identifier);
+        manager.setWriter(writer);
 
-        assertEquals(aggregator.getTopologyStores().size(), 2);
+        manager.addLogicalNode(newLogicalNode);
+        Mockito.verify(writer, Mockito.times(1)).writeNode((LogicalNodeWrapper) Mockito.any());
     }
 
     /**
-     * Checks that in two different calls of initializeStructures method
-     * only one topology store is initialized for two underly topologies with the same id 
+     * For two logical nodes, one wrapper shall be created and writer's writeNode() method shall be called once
      */
     @Test
-    public void testInitStructuresWithTwoSameTopologiesInTwoCalls() {
-        List<Mapping> mappings = createMappings(TOPOLOGY1);
-        aggregator.initializeStructures(mappings);
+    public void addTwoLogicalNodes() {
+        List<PhysicalNode> physicalNodes = new ArrayList<>();
+        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1);
+        physicalNodes.add(physicalNode1);
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2);
+        physicalNodes.add(physicalNode2);
+        LogicalNode newLogicalNode = new LogicalNode(physicalNodes);
 
-        List<Mapping> mappings2 = createMappings(TOPOLOGY1);
-        aggregator.initializeStructures(mappings2);
+        initializeMockitoRpcServiceCall();
+        TopologyManager manager = new TopologyManager(mockRpcServices, mockSchemaHolder, identifier);
+        manager.setWriter(writer);
 
-        assertEquals(aggregator.getTopologyStores().size(), 1);
-    }
-
-    private static List<Mapping> createMappings(String... topologyIds) {
-        List<Mapping> mappings = new ArrayList<>();
-        for (String topologyId : topologyIds) {
-            MappingBuilder mappingBuilder1 = new MappingBuilder();
-            mappingBuilder1.setUnderlayTopology(topologyId);
-            mappings.add(mappingBuilder1.build());
-        }
-        return mappings;
+        manager.addLogicalNode(newLogicalNode);
+        Assert.assertEquals(1, manager.getWrappers().size());
+        Mockito.verify(writer, Mockito.times(1)).writeNode((LogicalNodeWrapper) Mockito.any());
     }
 
     /**
-     * Checks that correlation with mappings set to null is handled correctly 
-     * (no topology store is created, no NullPointerException)
+     * For two calls of addLogicalNode method with one logical node in each call,
+     * two wrappers shall be created and writer's writeNode() method shall be called twice as well
      */
     @Test
-    public void testMappingNull() {
-        List<Mapping> mappings = null;
-        aggregator.initializeStructures(mappings);
+    public void addTwoLogicalNodesInTwoCalls() {
+        initializeMockitoRpcServiceCall();
+        TopologyManager manager = new TopologyManager(mockRpcServices, mockSchemaHolder, identifier);
+        manager.setWriter(writer);
+
+        List<PhysicalNode> physicalNodes = new ArrayList<>();
+        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1);
+        physicalNodes.add(physicalNode1);
+        LogicalNode newLogicalNode = new LogicalNode(physicalNodes);
+        manager.addLogicalNode(newLogicalNode);
+
+        physicalNodes = new ArrayList<>();
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2);
+        physicalNodes.add(physicalNode2);
+        newLogicalNode = new LogicalNode(physicalNodes);
+
+        manager.addLogicalNode(newLogicalNode);
+        Assert.assertEquals(2, manager.getWrappers().size());
+        Mockito.verify(writer, Mockito.times(2)).writeNode((LogicalNodeWrapper) Mockito.any());
+    }
+
+    /**
+     * For two calls of addLogicalNode method with the same logical node,
+     * one wrappers shall be created and writer's writeNode() method shall be called twice
+     */
+    @Test
+    public void addTwoSameLogicalNodesInTwoCalls() {
+        initializeMockitoRpcServiceCall();
+        TopologyManager manager = new TopologyManager(mockRpcServices, mockSchemaHolder, identifier);
+        manager.setWriter(writer);
+
+        List<PhysicalNode> physicalNodes = new ArrayList<>();
+        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1);
+        physicalNodes.add(physicalNode1);
+        LogicalNode newLogicalNode = new LogicalNode(physicalNodes);
+        manager.addLogicalNode(newLogicalNode);
+
+        physicalNodes = new ArrayList<>();
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1);
+        physicalNodes.add(physicalNode2);
+        newLogicalNode = new LogicalNode(physicalNodes);
+
+        manager.addLogicalNode(newLogicalNode);
+        Assert.assertEquals(1, manager.getWrappers().size());
+        Mockito.verify(writer, Mockito.times(2)).writeNode((LogicalNodeWrapper) Mockito.any());
     }
 }
