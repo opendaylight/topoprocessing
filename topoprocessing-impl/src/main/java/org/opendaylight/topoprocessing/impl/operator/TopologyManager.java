@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
@@ -22,14 +23,11 @@ import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
-import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +58,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
         this.schemaHolder = schemaHolder;
         this.nodeIdentifier = topologyIdentifier.node(Node.QNAME);
         availableRpcs = new HashSet<>();
-        rpcServices.getRpcService().registerRpcListener(this);
+        this.rpcServices.getRpcService().registerRpcListener(this);
     }
 
     /** for testing purpose only */
@@ -75,12 +73,14 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
      * @param newLogicalNode - logical node which shall be put into wrapper
      */
     public void addLogicalNode(LogicalNode newLogicalNode) {
-        if (newLogicalNode != null && newLogicalNode.getPhysicalNodes() != null) {
+        if (newLogicalNode != null && newLogicalNode.getPhysicalNodes() != null &&
+                !newLogicalNode.getPhysicalNodes().isEmpty()) {
             for (PhysicalNode newPhysicalNode : newLogicalNode.getPhysicalNodes()) {
                 for (LogicalNodeWrapper wrapper : wrappers) {
                     for (LogicalNode logicalNodeFromWrapper : wrapper.getLogicalNodes()) {
-                        for (PhysicalNode physicalNode : logicalNodeFromWrapper.getPhysicalNodes()) {
-                            if (physicalNode.getNodeId().equals(newPhysicalNode.getNodeId())) {
+                        for (PhysicalNode physicalNodeFromWrapper : logicalNodeFromWrapper.getPhysicalNodes()) {
+                            if (physicalNodeFromWrapper.getNodeId().equals(newPhysicalNode.getNodeId())) {
+                                // update existing wrapper
                                 wrapper.addLogicalNode(newLogicalNode);
                                 writer.writeNode(wrapper);
                                 registerOverlayRpcs(wrapper, newLogicalNode);
@@ -90,9 +90,8 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
                     }
                 }
             }
-            //generate wrapper id
+            // create new Logical node wrapper with unique id and add the logical node into it
             String wrapperId = idGenerator.getNextIdentifier(CorrelationItemEnum.Node);
-            //create new Logical node wrapper and add the logical node into it
             LogicalNodeWrapper newWrapper = new LogicalNodeWrapper(wrapperId, newLogicalNode);
             wrappers.add(newWrapper);
             writer.writeNode(newWrapper);
@@ -138,7 +137,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     }
 
     /**
-     * @param writer writes into operational datastore
+     * @param writer writes into the operational datastore
      */
     public void setWriter(TopologyWriter writer) {
         this.writer = writer;
@@ -157,6 +156,8 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     }
 
     /**
+     * Gathers RPCs for all {@link PhysicalNode}s present in the {@link LogicalNode} and registers them under
+     * {@link LogicalNodeWrapper} Id
      * @param wrapper
      * @param logicalNode
      */
@@ -175,17 +176,18 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
                     underlayRpcs.add(rpcIdentifier);
                 }
             }
+            OverlayRpcImplementation overlayImplementation =
+                    new OverlayRpcImplementation(rpcServices.getRpcService(), schemaHolder.getSchemaContext(),
+                            nodeEntryIdentifier);
+            Set<DOMRpcIdentifier> overlayRpcIdentifiers = new HashSet<>();
             for (DOMRpcIdentifier underlayRpcIdentifier : underlayRpcs) {
-                DOMRpcIdentifier overlayRpcIdentifier =
-                        DOMRpcIdentifier.create(underlayRpcIdentifier.getType(), contextIdentifier);
-                OverlayRpcImplementation overlayImplementation =
-                        new OverlayRpcImplementation(rpcServices.getRpcService(), schemaHolder.getSchemaContext(),
-                                nodeEntryIdentifier);
-                rpcServices.getRpcProviderService().registerRpcImplementation(overlayImplementation,
-                        overlayRpcIdentifier);
+                overlayRpcIdentifiers.add(DOMRpcIdentifier.create(underlayRpcIdentifier.getType(), contextIdentifier));
+            }
+            if (!overlayRpcIdentifiers.isEmpty()) {
+                rpcServices.getRpcProviderService()
+                    .registerRpcImplementation(overlayImplementation, overlayRpcIdentifiers);
             }
         }
         LOGGER.trace("Overlay RPCs registered");
     }
-
 }
