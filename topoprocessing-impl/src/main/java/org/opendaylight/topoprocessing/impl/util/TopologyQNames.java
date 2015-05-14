@@ -23,10 +23,10 @@ public class TopologyQNames {
 
     /** Network-topology topology-id QName */
     public static final QName TOPOLOGY_ID_QNAME = QName.create(Topology.QNAME, "topology-id");
-    /** Network-topology supporting-node topology-ref */
-    public static final QName TOPOLOGY_REF = QName.create(SupportingNode.QNAME, "topology-ref");
     /** Network-topology node-id QName */
     public static final QName NETWORK_NODE_ID_QNAME = QName.create(Node.QNAME, "node-id");
+    /** Network-topology supporting-node topology-ref */
+    public static final QName TOPOLOGY_REF = QName.create(SupportingNode.QNAME, "topology-ref");
     /** Network-topology supporting-node node-ref */
     public static final QName NODE_REF = QName.create(SupportingNode.QNAME, "node-ref");
     /** Network-topology link-id QName */

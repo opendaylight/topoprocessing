@@ -20,9 +20,9 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.handler.TopologyRequestHandler;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
@@ -49,7 +49,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyRequestListener.class);
 
     private DOMDataBroker dataBroker;
-    private YangInstanceIdentifier identifier;
+    private YangInstanceIdentifier identifier = InstanceIdentifiers.TOPOLOGY_IDENTIFIER;
     private BindingNormalizedNodeSerializer nodeSerializer;
     private HashMap<YangInstanceIdentifier, TopologyRequestHandler> topoRequestHandlers = new HashMap<>();
     private GlobalSchemaContextHolder schemaHolder;
@@ -69,7 +69,6 @@ public class TopologyRequestListener implements DOMDataChangeListener {
         this.nodeSerializer = nodeSerializer;
         this.schemaHolder = schemaHolder;
         this.rpcServices = rpcServices;
-        identifier = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME).node(Topology.QNAME).build();
         LOGGER.debug("Topology Request Listener created");
     }
 

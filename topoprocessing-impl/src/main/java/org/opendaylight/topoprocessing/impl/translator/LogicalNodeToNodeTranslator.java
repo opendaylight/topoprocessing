@@ -39,6 +39,10 @@ import com.google.common.base.Optional;
  */
 public class LogicalNodeToNodeTranslator {
 
+    /**
+     * 
+     */
+    private static final YangInstanceIdentifier TP_IDENTIFIER = YangInstanceIdentifier.of(TerminationPoint.QNAME);
     private static final Logger LOG = LoggerFactory.getLogger(LogicalNodeToNodeTranslator.class);
 
     /**
@@ -70,7 +74,7 @@ public class LogicalNodeToNodeTranslator {
                                     SupportingNode.QNAME, keyValues)).build());
                     // prepare termination points
                     Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
-                            physicalWholeNode, YangInstanceIdentifier.of(TerminationPoint.QNAME));
+                            physicalWholeNode, TP_IDENTIFIER);
                     if (terminationPointMapNode.isPresent()) {
                         Collection<MapEntryNode> terminationPointMapEntries =
                                 ((MapNode) terminationPointMapNode.get()).getValue();

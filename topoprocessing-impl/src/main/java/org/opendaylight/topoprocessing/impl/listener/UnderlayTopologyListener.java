@@ -138,9 +138,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
             YangInstanceIdentifier identifierOperational = iterator.next();
             YangInstanceIdentifier.PathArgument lastPathArgument = identifierOperational.getLastPathArgument();
             if (! (lastPathArgument instanceof YangInstanceIdentifier.AugmentationIdentifier)) {
-                if (lastPathArgument.getNodeType().equals(
-                        NODE_IDENTIFIER.getLastPathArgument().getNodeType()))
-                {
+                if (lastPathArgument.getNodeType().equals(Node.QNAME)) {
                     if (! lastPathArgument.equals(NODE_IDENTIFIER.getLastPathArgument())) {
                         identifiers.add(identifierOperational);
                     }

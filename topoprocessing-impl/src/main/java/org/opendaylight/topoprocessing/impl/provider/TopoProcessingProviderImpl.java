@@ -17,13 +17,11 @@ import org.opendaylight.topoprocessing.impl.listener.GlobalSchemaContextListener
 import org.opendaylight.topoprocessing.impl.listener.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +40,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private ListenerRegistration<DOMDataChangeListener> topologyRequestListenerRegistration;
     private SchemaService schemaService;
     private ListenerRegistration<SchemaContextListener> schemaContextListenerRegistration;
-    private BindingNormalizedNodeSerializer nodeSerializer;
     private GlobalSchemaContextHolder schemaHolder;
-    private RpcServices rpcServices;
     private TopologyRequestListener topologyRequestListener;
 
     /**
@@ -66,8 +62,6 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         Preconditions.checkNotNull(datastoreType, "DatastoreType can't be null");
         this.schemaService = schemaService;
         this.dataBroker = dataBroker;
-        this.nodeSerializer = nodeSerializer;
-        this.rpcServices = rpcServices;
         schemaHolder = new GlobalSchemaContextHolder(schemaService.getGlobalContext());
         topologyRequestListener = new TopologyRequestListener(dataBroker, nodeSerializer, schemaHolder, rpcServices);
         topologyRequestListener.setDatastoreType(datastoreType);
@@ -92,12 +86,9 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
     private void registerTopologyRequestListener() {
         LOGGER.debug("Registering Topology Request Listener");
-        YangInstanceIdentifier identifier =
-                YangInstanceIdentifier.of(NetworkTopology.QNAME).node(Topology.QNAME);
-
         topologyRequestListenerRegistration =
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                        identifier, topologyRequestListener, DataChangeScope.ONE);
+                        InstanceIdentifiers.TOPOLOGY_IDENTIFIER, topologyRequestListener, DataChangeScope.ONE);
         LOGGER.debug("Topology Request Listener has been successfully registered");
     }
 
