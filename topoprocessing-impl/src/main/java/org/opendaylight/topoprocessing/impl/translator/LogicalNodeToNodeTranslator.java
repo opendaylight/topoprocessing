@@ -40,7 +40,7 @@ public class LogicalNodeToNodeTranslator {
      * @param wrapper LogicalNodeWrapper object
      * @return Node
      */
-    public NormalizedNode<?, ?> convert(LogicalNodeWrapper wrapper) {
+    public NormalizedNode<?, ?> translate(LogicalNodeWrapper wrapper) {
 
         LOG.debug("Transforming LogicalNodeWrapper to Node");
         List<PhysicalNode> writtenNodes = new ArrayList<>();
