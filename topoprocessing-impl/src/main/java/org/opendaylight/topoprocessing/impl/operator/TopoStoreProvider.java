@@ -21,7 +21,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public abstract class  TopoStoreProvider {
 
-    protected List<TopologyStore> topologyStores = new ArrayList<>();
+    private List<TopologyStore> topologyStores = new ArrayList<>();
 
     /**
      * @param topologyId
@@ -39,6 +39,8 @@ public abstract class  TopoStoreProvider {
     /**
      * Initialize Topology Store
      * @param underlayTopologyId Underlay Topology ID
+     * @param aggregateInside true if aggregation should happen even inside
+     *        the same topology
      */
     public void initializeStore(String underlayTopologyId, boolean aggregateInside) {
         for (TopologyStore topologyStore : topologyStores) {
@@ -48,5 +50,12 @@ public abstract class  TopoStoreProvider {
         }
         topologyStores.add(new TopologyStore(underlayTopologyId, aggregateInside,
                 new HashMap<YangInstanceIdentifier, PhysicalNode>()));
+    }
+
+    /**
+     * @return topologyStores list
+     */
+    public List<TopologyStore> getTopologyStores() {
+        return topologyStores;
     }
 }
