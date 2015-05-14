@@ -181,7 +181,7 @@ public class TopologyWriter implements TransactionChainListener {
      * @param wrapper
      */
     public void writeNode(final LogicalNodeWrapper wrapper) {
-        NormalizedNode<?, ?> node = translator.convert(wrapper);
+        NormalizedNode<?, ?> node = translator.translate(wrapper);
 
         DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
         transaction.put(LogicalDatastoreType.OPERATIONAL, createNodeIdentifier(wrapper.getNodeId()), node);
