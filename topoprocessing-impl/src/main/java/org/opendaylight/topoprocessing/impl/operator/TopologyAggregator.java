@@ -56,6 +56,11 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
         LOG.debug("CreatedChanges processed");
     }
 
+    /**
+     * Creates new logical node or adds new physical node into existing logical node if the condition
+     * for correlation is satisfied
+     * @param newNode - new physical node on which the correlation is created
+     */
     private void createAggregatedNodes(PhysicalNode newNode, String topologyId) {
         for (TopologyStore ts : topologyStores) {
             if ((! ts.getId().equals(topologyId)) || ts.isAggregateInside()) {
