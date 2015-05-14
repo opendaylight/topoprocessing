@@ -48,7 +48,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
      * @param dataBroker
      * @param nodeSerializer
      * @param rpcServices
-     * @param datastoreType 
+     * @param datastoreType
      */
     public TopoProcessingProviderImpl(SchemaService schemaService, DOMDataBroker dataBroker,
             BindingNormalizedNodeSerializer nodeSerializer, RpcServices rpcServices,
