@@ -51,12 +51,17 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
                     ts.getPhysicalNodes().put(createdEntry.getKey(), createdEntry.getValue());
                 }
             }
-            createAggregatedNodes(createdEntry.getValue(), topologyId);
+            createAggregatedNodes(createdEntry.getValue());
         }
         LOG.debug("CreatedChanges processed");
     }
 
-    private void createAggregatedNodes(PhysicalNode newNode, String topologyId) {
+    /**
+     * Creates new logical node or adds new physical node into existing logical node if the condition
+     * for correlation is satisfied
+     * @param newNode - new physical node on which the correlation is created
+     */
+    private void createAggregatedNodes(PhysicalNode newNode) {
         for (TopologyStore ts : topologyStores) {
             if ((! ts.getId().equals(topologyId)) || ts.isAggregateInside()) {
                 for (Entry<YangInstanceIdentifier, PhysicalNode> topoStoreEntry : ts.getPhysicalNodes().entrySet()) {
@@ -150,7 +155,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
                         if (physicalNode.getLogicalNode() != null) {
                             removePhysicalNodeFromLogicalNode(physicalNode);
                         }
-                        createAggregatedNodes(physicalNode, topologyId);
+                        createAggregatedNodes(physicalNode);
                     } else if (physicalNode.getLogicalNode() != null) {
                         // in case that only Node value was changed
                         topologyManager.updateLogicalNode(physicalNode.getLogicalNode());
