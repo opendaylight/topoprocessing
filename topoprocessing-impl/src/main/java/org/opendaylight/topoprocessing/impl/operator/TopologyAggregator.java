@@ -46,7 +46,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
                                                 final String topologyId) {
         LOG.debug("Processing createdChanges");
         for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
-            for (TopologyStore ts : topologyStores) {
+            for (TopologyStore ts : getTopologyStores()) {
                 if (ts.getId().equals(topologyId)) {
                     ts.getPhysicalNodes().put(createdEntry.getKey(), createdEntry.getValue());
                 }
@@ -56,8 +56,13 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
         LOG.debug("CreatedChanges processed");
     }
 
+    /**
+     * Creates new logical node or adds new physical node into existing logical node if the condition
+     * for correlation is satisfied
+     * @param newNode - new physical node on which the correlation is created
+     */
     private void createAggregatedNodes(PhysicalNode newNode, String topologyId) {
-        for (TopologyStore ts : topologyStores) {
+        for (TopologyStore ts : getTopologyStores()) {
             if ((! ts.getId().equals(topologyId)) || ts.isAggregateInside()) {
                 for (Entry<YangInstanceIdentifier, PhysicalNode> topoStoreEntry : ts.getPhysicalNodes().entrySet()) {
                     PhysicalNode topoStoreNode = topoStoreEntry.getValue();
@@ -100,7 +105,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
     @Override
     public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId) {
         LOG.debug("Processing removedChanges");
-        for (TopologyStore ts : topologyStores) {
+        for (TopologyStore ts : getTopologyStores()) {
             if (ts.getId().equals(topologyId)) {
                 Map<YangInstanceIdentifier, PhysicalNode> physicalNodes = ts.getPhysicalNodes();
                 for (YangInstanceIdentifier identifier : identifiers) {
@@ -136,7 +141,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
                                                 String topologyId) {
         LOG.debug("Processing updatedChanges");
         for (Entry<YangInstanceIdentifier, PhysicalNode> updatedEntry : updatedEntries.entrySet()) {
-            for (TopologyStore ts : topologyStores) {
+            for (TopologyStore ts : getTopologyStores()) {
                 if (ts.getId().equals(topologyId)) {
                     LOG.debug("Updating logical node");
                     PhysicalNode physicalNode = ts.getPhysicalNodes().get(updatedEntry.getKey());

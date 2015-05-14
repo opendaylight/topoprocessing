@@ -11,6 +11,8 @@ package org.opendaylight.topoprocessing.impl.structure;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Preconditions;
+
 /**
  * @author matus.marko
  * @author martin.uhlir
@@ -24,6 +26,7 @@ public class LogicalNode {
      * @param physicalNodes
      */
     public LogicalNode(List<PhysicalNode> physicalNodes) {
+        Preconditions.checkNotNull(physicalNodes, "physicalNodes cannot be null");
         this.physicalNodes.addAll(physicalNodes);
     }
 
@@ -72,6 +75,7 @@ public class LogicalNode {
      * @param physicalNodes underlay nodes
      */
     public void setPhysicalNodes(List<PhysicalNode> physicalNodes) {
+        Preconditions.checkNotNull(physicalNodes, "physicalNodes parameter cannot be null");
         this.physicalNodes = physicalNodes;
     }
 }
