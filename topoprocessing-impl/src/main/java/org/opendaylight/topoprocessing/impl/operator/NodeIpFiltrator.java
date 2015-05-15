@@ -31,8 +31,8 @@ public class NodeIpFiltrator {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeIpFiltrator.class);
 
-    private int address;
     private int mask;
+    private int maskedValue;
     private YangInstanceIdentifier pathIdentifier;
 
     /**
@@ -57,7 +57,7 @@ public class NodeIpFiltrator {
             Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node.getNode(), pathIdentifier);
             if (leafNode.isPresent()) {
                 int value = ipToInt((String) ((LeafNode) leafNode.get()).getValue());
-                if ((address & mask) == (value & mask)) {
+                if (maskedValue == (value & mask)) {
                     return false;
                 }
             }
@@ -70,9 +70,10 @@ public class NodeIpFiltrator {
         return true;
     }
 
-    private void initialize(IpPrefix prefix) {
+    private int initialize(IpPrefix prefix) {
         String strValue = prefix.getIpv4Prefix().getValue();
         String[] matches = strValue.split("/");
+        int address;
         try {
             address = ipToInt(matches[0]);
         } catch (UnknownHostException e) {
@@ -80,6 +81,7 @@ public class NodeIpFiltrator {
                     + "couldn't recognize ip address: " + matches[0]);
         }
         mask = -1 << (32 - Integer.parseInt(matches[1]));
+        return address & mask;
     }
 
     private int ipToInt(String strAddress) throws UnknownHostException {
