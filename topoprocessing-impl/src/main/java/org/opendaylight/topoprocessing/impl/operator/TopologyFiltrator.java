@@ -8,14 +8,16 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
-import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 /**
  * @author matus.marko
@@ -25,7 +27,6 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
     private static final Logger LOG = LoggerFactory.getLogger(TopologyFiltrator.class);
 
     private List<NodeIpFiltrator> filtrators = new ArrayList<>();
-
     private TopologyManager manager;
 
     @Override
@@ -117,13 +118,4 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
         return logicalNode;
     }
 
-    public void initializeStore(String underlayTopologyId) {
-        for (TopologyStore topologyStore : topologyStores) {
-            if (underlayTopologyId.equals(topologyStore.getId())) {
-                return;
-            }
-        }
-        topologyStores.add(new TopologyStore(underlayTopologyId,
-                new HashMap<YangInstanceIdentifier, PhysicalNode>()));
-    }
 }
