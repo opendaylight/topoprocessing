@@ -9,7 +9,6 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,7 +16,6 @@ import java.util.Map.Entry;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
@@ -30,57 +28,15 @@ import com.google.common.base.Preconditions;
  * @author matus.marko
  * @author martin.uhlir
  */
-public abstract class TopologyAggregator implements TopologyOperator {
+public abstract class TopologyAggregator extends TopoStoreProvider implements TopologyOperator {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyAggregator.class);
-
     private TopologyManager topologyManager;
-    private List<TopologyStore> topologyStores = new ArrayList<>();
-
-
-    /** for testing purpose only */
-    public TopologyManager getTopologyManager() {
-        return topologyManager;
-    }
-    /** for testing purpose only */
-    public List<TopologyStore> getTopologyStores() {
-        return topologyStores;
-    }
-
-    /** for testing purpose only */
-    public void setTopologyStores(List<TopologyStore> topologyStores) {
-        this.topologyStores = topologyStores;
-    }
-
-    /**
-     * Initialize stores
-     * @param mappings Correlation
-     */
-    public void initializeStructures(List<Mapping> mappings) {
-        iterateMappings(mappings);
-    }
-
-    private void iterateMappings(List<Mapping> mappings) {
-        if (mappings != null) {
-            for (Mapping mapping : mappings) {
-                initializeStore(mapping.getUnderlayTopology());
-            }
-        }
-    }
-
-    public void initializeStore(String underlayTopologyId) {
-        for (TopologyStore topologyStore : topologyStores) {
-            if (underlayTopologyId == topologyStore.getId()) {
-                return;
-            }
-        }
-        topologyStores.add(new TopologyStore(underlayTopologyId,
-                new HashMap<YangInstanceIdentifier, PhysicalNode>()));
-    }
 
     /**
      * @param topologyManager handles aggregated nodes from all correlations
      */
+    @Override
     public void setTopologyManager(TopologyManager topologyManager) {
         this.topologyManager = topologyManager;
     }
