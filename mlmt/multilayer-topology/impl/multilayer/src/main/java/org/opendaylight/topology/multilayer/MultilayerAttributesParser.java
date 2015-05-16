@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjacencyAttributes;
@@ -22,11 +23,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.re
 
 public interface MultilayerAttributesParser {
 
-    String parseFaId(boolean bidirFlag, boolean secondLeg, String networkTopologyRef);
+    String parseFaId(boolean bidirFlag, String topologyName);
 
-    String parseFaId(String faId, boolean bidirFlag, boolean secondLeg);
+    LinkId parseLinkId(FaId faId, boolean secondLeg);
 
-    String parseFaId(FaId faId, boolean bidirFlag, boolean secondLeg);
+    LinkId parseLinkId(String strFaId, boolean secondLeg);
 
     FaEndPoint parseHeadEnd(ForwardingAdjacencyAttributes input);
 
