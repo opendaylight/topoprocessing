@@ -3,7 +3,6 @@ import org.opendaylight.topology.multilayer.MultilayerTopologyProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MultilayerTopologyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opendaylight.controller.config.spi.Module;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 
@@ -61,5 +60,4 @@ public class MultilayerTopologyProviderModule extends org.opendaylight.yang.gen.
        LOG.info("Multilayer provider (instance {}) initialized.", ret);
        return ret;
     }
-
 }

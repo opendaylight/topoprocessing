@@ -27,6 +27,7 @@ import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.topology.mlmt.utility.MlmtProviderFactory;
 import org.opendaylight.topology.mlmt.inventory.InventoryTopologyProvider;
 import org.opendaylight.topology.multitechnology.MultitechnologyTopologyProvider;
+import org.opendaylight.topology.forwarding.adjacency.ForwardingAdjacencyTopologyProvider;
 import org.opendaylight.topology.multilayer.MultilayerTopologyProvider;
 import org.opendaylight.topology.mlmt.parser.InventoryAttributesParserImpl;
 import org.opendaylight.topology.mlmt.parser.MultilayerAttributesParserImpl;
@@ -63,12 +64,18 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
         multitechnologyTopologyProvider.setDataProvider(dataBroker);
         lProvider.add(multitechnologyTopologyProvider);
         /*
-         * creating and adding multilayer provider
+         * creating and adding forwarding adjacency provider
+         */
+        ForwardingAdjacencyTopologyProvider forwardingAdjacencyTopologyProvider = new ForwardingAdjacencyTopologyProvider();
+        forwardingAdjacencyTopologyProvider.init(logger, processor, mlmtTopologyId);
+        forwardingAdjacencyTopologyProvider.setDataProvider(dataBroker);
+        /*
+	 * creating and adding multilayer provider
          */
         MultilayerAttributesParserImpl multilayerAttributesParser = new MultilayerAttributesParserImpl();
         multilayerAttributesParser.init(logger);
         MultilayerTopologyProvider multilayerTopologyProvider = new MultilayerTopologyProvider();
-        multilayerTopologyProvider.init(logger, processor, mlmtTopologyId, multilayerAttributesParser);
+        multilayerTopologyProvider.init(logger, processor, mlmtTopologyId, multilayerAttributesParser, forwardingAdjacencyTopologyProvider);
         multilayerTopologyProvider.setDataProvider(dataBroker);
         multilayerTopologyProvider.registerRpcImpl(rpcProviderRegistry, mlmtTopologyId);
         lProvider.add(multilayerTopologyProvider);

@@ -45,21 +45,25 @@ import org.opendaylight.topology.multilayer.MultilayerAttributesParser;
 public class MultilayerAttributesParserImpl implements MultilayerAttributesParser {
 
     private static Logger log;
-    private static final String FA_ID_PREFIX = "FA/";
+    private static final String FA_ID_PREFIX = "fa/";
     private static final String FA_ID_UNIDIR = "unidir/";
     private static final String FA_ID_BIDIR = "bidir/";
     private static final String FA_SUBID_FIRSTLEG = "0";
     private static final String FA_SUBID_SECONDLEG = "1";
     private static final String FA_ID_ITEM_SEP = "/";
-    private static final String REG_UNI_MATCH = "^FA\\" + "/unidir\\" + "/(.*)\\" + "/(.*)";
-    private static final String REG_BID_MATCH = "^FA\\" + "/bidir\\" + "/(.*)\\" + "/(.*)";
+    private static final String FA_REG_UNI_MATCH = "^unidir\\" + "/(.*)\\" + "/(.*)";
+    private static final String FA_REG_BID_MATCH = "^bidir\\" + "/(.*)\\" + "/(.*)";
+    private static final String LINK_REG_UNI_MATCH = "(.*)\\" + "/(.*)";
+    private static final String LINK_REG_BID_MATCH = "(.*)\\" + "/(.*)";
     private Bidirectional bidirectional;
     private Unidirectional unidirectional;
 
     public void init(final Logger logger) {
         log = logger;
-        log.debug("REG_UNI_MATCH " + REG_UNI_MATCH);
-        log.debug("REG_BID_MATCH " + REG_BID_MATCH);
+        log.debug("FA_REG_BID_MATCH " + FA_REG_UNI_MATCH);
+        log.debug("FA_REG_BID_MATCH " + FA_REG_BID_MATCH);
+        log.debug("LINK_REG_UNI_MATCH " + LINK_REG_UNI_MATCH);
+        log.debug("LINK_REG_BID_MATCH " + LINK_REG_BID_MATCH);
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.bidirectional.BidirectionalBuilder
             bidirectionalBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.bidirectional.BidirectionalBuilder();
@@ -110,7 +114,7 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         return UUID.randomUUID().toString();
     }
 
-    private String getFaSubId(boolean secondLeg) {
+    private String getLinkSubId(boolean secondLeg) {
         if (secondLeg) {
            return FA_SUBID_SECONDLEG;
         }
@@ -118,52 +122,56 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         return FA_SUBID_FIRSTLEG;
     }
 
-    private String buildFaId(String strFaId, boolean bidirFlag, boolean secondLeg, String networkTopologyRef) {
-        String faId = FA_ID_PREFIX;
+    private String buildFaId(String strFaId, boolean bidirFlag, String networkTopologyRef) {
+        String faId;
         if (bidirFlag) {
-           faId = faId + FA_ID_BIDIR;
+           faId = FA_ID_BIDIR;
         }
         else {
-           faId = faId + FA_ID_UNIDIR;
+           faId = FA_ID_UNIDIR;
         }
         if (networkTopologyRef != null) {
             faId = faId + networkTopologyRef + FA_ID_ITEM_SEP;
-	}
-	faId = faId + strFaId + FA_ID_ITEM_SEP + getFaSubId(secondLeg);
+        }
+        faId = faId + strFaId;
 
         return faId;
     }
 
-    private String buildFaId(int faIdValue, boolean bidirFlag, boolean secondLeg, String networkTopologyRef) {
-        return buildFaId(Integer.toString(faIdValue), bidirFlag, secondLeg, networkTopologyRef);
+    private String buildFaId(int faIdValue, boolean bidirFlag, String networkTopologyRef) {
+        return buildFaId(Integer.toString(faIdValue), bidirFlag, networkTopologyRef);
     }
 
     @Override
-    public String parseFaId(boolean bidirFlag, boolean secondLeg, String networkTopologyRef) {
-        return buildFaId(allocFaId(), bidirFlag, secondLeg, networkTopologyRef);
+    public String parseFaId(boolean bidirFlag, String networkTopologyRef) {
+        return buildFaId(allocFaId(), bidirFlag, networkTopologyRef);
+    }
+
+    private LinkId buildLinkId(String uuId, boolean secondLeg) {
+		String strLinkId = uuId + FA_ID_ITEM_SEP + getLinkSubId(secondLeg);
+        return new LinkId(strLinkId);
     }
 
     @Override
-    public String parseFaId(String faId, boolean bidirFlag, boolean secondLeg) {
-        return buildFaId(faId, bidirFlag, secondLeg, null);
+    public LinkId parseLinkId(String uuId, boolean secondLeg) {
+        return buildLinkId(uuId, secondLeg);
     }
 
     @Override
-    public String parseFaId(FaId faId, boolean bidirFlag, boolean secondLeg) {
-        String strFaId = extractFaId(faId.getValue().toString());
-
-        return parseFaId(strFaId, true, true);
+    public LinkId parseLinkId(FaId faId, boolean secondLeg) {
+		String uuId = extractUuIdFromFaId(faId.getValue().toString());
+        return parseLinkId(uuId, secondLeg);
     }
 
     @Override
     public DirectionalityInfo parseDirection(FaId faId) {
         final String strFaId = faId.getValue();
-        Pattern r = Pattern.compile(REG_UNI_MATCH);
+        Pattern r = Pattern.compile(FA_REG_UNI_MATCH);
         Matcher m = r.matcher(strFaId);
         if (m.find()) {
             return unidirectional;
         }
-        r = Pattern.compile(REG_BID_MATCH);
+        r = Pattern.compile(FA_REG_BID_MATCH);
         m = r.matcher(strFaId);
         if (m.find()) {
             return bidirectional;
@@ -172,23 +180,34 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         return null;
     }
 
-    String extractFaId(String strFaId) {
-        Pattern r = Pattern.compile(REG_UNI_MATCH);
+    String extractUuIdFromFaId(String strFaId) {
+        Pattern r = Pattern.compile(FA_REG_UNI_MATCH);
         Matcher m = r.matcher(strFaId);
         if (m.find()) {
-            return m.group(1);
+            return m.group(2);
         }
-        r = Pattern.compile(REG_BID_MATCH);
+        r = Pattern.compile(FA_REG_BID_MATCH);
         m = r.matcher(strFaId);
         if (m.find()) {
-            return m.group(1);
+            return m.group(2);
         }
 
         return null;
     }
 
-    private LinkId buildLinkId(String faId) {
-        return new LinkId(faId);
+    String extractUuIdFromLink(String strLinkId) {
+        Pattern r = Pattern.compile(LINK_REG_UNI_MATCH);
+        Matcher m = r.matcher(strLinkId);
+        if (m.find()) {
+            return m.group(1);
+        }
+        r = Pattern.compile(LINK_REG_BID_MATCH);
+        m = r.matcher(strLinkId);
+        if (m.find()) {
+            return m.group(1);
+        }
+
+        return null;
     }
 
     @Override
@@ -204,7 +223,8 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         final DestinationBuilder destinationBuilder = new DestinationBuilder();
         destinationBuilder.setDestNode(tailNodeId).setDestTp(tailTpId);
         final LinkBuilder linkBuilder = new LinkBuilder();
-        final LinkId linkId = buildLinkId(faId);
+        String uuId = extractUuIdFromFaId(faId);
+        final LinkId linkId = buildLinkId(uuId, false);
         final LinkKey linkKey = new LinkKey(linkId);
         final MtInfoLinkBuilder mtInfoLinkBuilder = new MtInfoLinkBuilder();
         mtInfoLinkBuilder.setAttribute(parseMtInfoAttribute(input));
@@ -218,7 +238,6 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
 
     @Override
     public TerminationPointBuilder parseTerminationPointBuilder(FaEndPoint faEndPoint) {
-
         final TpId tpId = parseTpId(faEndPoint);
         final List<TpId> lSupportingTp = parseSupportingTp(faEndPoint);
         final TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
@@ -242,9 +261,8 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
         destinationBuilder.setDestNode(source.getSourceNode()).setDestTp(source.getSourceTp());
         linkBuilder.setDestination(destinationBuilder.build());
         linkBuilder.setSource(sourceBuilder.build());
-        String strFaId = extractFaId(linkBuilder.getLinkId().getValue().toString());
-        String faId = parseFaId(strFaId, true, true);
-        LinkId linkId = buildLinkId(faId);
+        String uuId = extractUuIdFromLink(linkBuilder.getLinkId().getValue().toString());
+        LinkId linkId = buildLinkId(uuId, true);
         LinkKey linkKey = new LinkKey(linkId);
         linkBuilder.setKey(linkKey);
 

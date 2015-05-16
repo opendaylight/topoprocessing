@@ -11,6 +11,7 @@
   <packaging>pom</packaging>
   <modules>
     <module>multilayer</module>
+    <module>forwarding-adjacency</module>
   </modules>
 
 </project>
