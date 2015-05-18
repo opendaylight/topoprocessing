@@ -63,22 +63,22 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
                 if (! newNode.equals(topoStoreNode)) {
                     if (topoStoreNode.getLeafNode().getValue().equals(newNode.getLeafNode().getValue())) {
                         // no previous aggregation on this node
-                        if (topoStoreNode.getLogicalIdentifier() == null) {
+                        if (topoStoreNode.getLogicalNode() == null) {
                             LOG.debug("Creating new Logical Node");
                             // create new logical node
                             List<PhysicalNode> nodesToAggregate = new ArrayList<>();
                             nodesToAggregate.add(newNode);
                             nodesToAggregate.add(topoStoreNode);
                             LogicalNode logicalNode = new LogicalNode(nodesToAggregate);
-                            topoStoreNode.setLogicalIdentifier(logicalNode);
-                            newNode.setLogicalIdentifier(logicalNode);
+                            topoStoreNode.setLogicalNode(logicalNode);
+                            newNode.setLogicalNode(logicalNode);
                             topologyManager.addLogicalNode(logicalNode);
                             return;
                         }
                         LOG.debug("Adding physical node to existing Logical Node");
                         // add new physical node into existing logical node
-                        LogicalNode logicalNodeIdentifier = topoStoreNode.getLogicalIdentifier();
-                        newNode.setLogicalIdentifier(logicalNodeIdentifier);
+                        LogicalNode logicalNodeIdentifier = topoStoreNode.getLogicalNode();
+                        newNode.setLogicalNode(logicalNodeIdentifier);
                         logicalNodeIdentifier.addPhysicalNode(newNode);
                         topologyManager.updateLogicalNode(logicalNodeIdentifier);
                         return;
@@ -90,7 +90,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
             List<PhysicalNode> nodesToAggregate = new ArrayList<>();
             nodesToAggregate.add(newNode);
             LogicalNode logicalNode = new LogicalNode(nodesToAggregate);
-            newNode.setLogicalIdentifier(logicalNode);
+            newNode.setLogicalNode(logicalNode);
             topologyManager.addLogicalNode(logicalNode);
         }
     }
@@ -114,11 +114,11 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
     }
 
     private void removePhysicalNodeFromLogicalNode(PhysicalNode nodeToRemove) {
-        LogicalNode logicalIdentifier = nodeToRemove.getLogicalIdentifier();
+        LogicalNode logicalIdentifier = nodeToRemove.getLogicalNode();
         if (null != logicalIdentifier) {
             List<PhysicalNode> physicalNodes = logicalIdentifier.getPhysicalNodes();
             physicalNodes.remove(nodeToRemove);
-            nodeToRemove.setLogicalIdentifier(null);
+            nodeToRemove.setLogicalNode(null);
             if (physicalNodes.size() < getMinPhysicalNodes()) {
                 LOG.debug("Removing logical node");
                 topologyManager.removeLogicalNode(logicalIdentifier);
@@ -145,13 +145,13 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
                     // if Leaf Node was changed
                     if (! leafNode.equals(updatedEntryValue.getLeafNode())) {
                         physicalNode.setLeafNode(updatedEntryValue.getLeafNode());
-                        if (physicalNode.getLogicalIdentifier() != null) {
+                        if (physicalNode.getLogicalNode() != null) {
                             removePhysicalNodeFromLogicalNode(physicalNode);
                         }
                         createAggregatedNodes(physicalNode, topologyId);
-                    } else if (physicalNode.getLogicalIdentifier() != null) {
+                    } else if (physicalNode.getLogicalNode() != null) {
                         // in case that only Node value was changed
-                        topologyManager.updateLogicalNode(physicalNode.getLogicalIdentifier());
+                        topologyManager.updateLogicalNode(physicalNode.getLogicalNode());
                     }
                     break;
                 }

@@ -60,10 +60,17 @@ public class LogicalNode {
         }
     }
 
+    /**
+     * @return {@link PhysicalNode}s (underlay nodes)
+     */
     public List<PhysicalNode> getPhysicalNodes() {
         return physicalNodes;
     }
 
+    /**
+     * Sets {@link PhysicalNode}s
+     * @param physicalNodes underlay nodes
+     */
     public void setPhysicalNodes(List<PhysicalNode> physicalNodes) {
         this.physicalNodes = physicalNodes;
     }

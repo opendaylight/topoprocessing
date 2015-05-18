@@ -62,13 +62,13 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
                 if (passedFiltration(updatedNode)) {
                     // passed through filtrator
                     getTopologyStore(topologyId).getPhysicalNodes().put(mapEntry.getKey(), updatedNode);
-                    LogicalNode logicalNode = oldNode.getLogicalIdentifier();
-                    updatedNode.setLogicalIdentifier(logicalNode);
+                    LogicalNode logicalNode = oldNode.getLogicalNode();
+                    updatedNode.setLogicalNode(logicalNode);
                     logicalNode.setPhysicalNodes(Collections.singletonList(updatedNode));
                     manager.updateLogicalNode(logicalNode);
                 } else {
                     // filtered out
-                    LogicalNode oldLogicalNode = oldNode.getLogicalIdentifier();
+                    LogicalNode oldLogicalNode = oldNode.getLogicalNode();
                     getTopologyStore(topologyId).getPhysicalNodes().remove(mapEntry.getKey());
                     manager.removeLogicalNode(oldLogicalNode);
                 }
@@ -83,7 +83,7 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
         for (YangInstanceIdentifier nodeIdentifier : identifiers) {
             PhysicalNode physicalNode = getTopologyStore(topologyId).getPhysicalNodes().remove(nodeIdentifier);
             if (null != physicalNode) {
-                manager.removeLogicalNode(physicalNode.getLogicalIdentifier());
+                manager.removeLogicalNode(physicalNode.getLogicalNode());
             }
         }
         LOG.debug("RemovedChanges processed");
@@ -114,7 +114,7 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
     private LogicalNode wrapPhysicalNode(PhysicalNode physicalNode) {
         List<PhysicalNode> physicalNodes = Collections.singletonList(physicalNode);
         LogicalNode logicalNode = new LogicalNode(physicalNodes);
-        physicalNode.setLogicalIdentifier(logicalNode);
+        physicalNode.setLogicalNode(logicalNode);
         return logicalNode;
     }
 
