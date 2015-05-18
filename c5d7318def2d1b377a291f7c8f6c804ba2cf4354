@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_7381bb49",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/structure/LogicalNode.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 3585
+      },
+      "writtenOn": "2015-05-18T13:26:57Z",
+      "side": 1,
+      "message": "Should be better to use new constructor without parameters",
+      "range": {
+        "startLine": 27,
+        "startChar": 8,
+        "endLine": 29,
+        "endChar": 9
+      },
+      "revId": "c5d7318def2d1b377a291f7c8f6c804ba2cf4354",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
