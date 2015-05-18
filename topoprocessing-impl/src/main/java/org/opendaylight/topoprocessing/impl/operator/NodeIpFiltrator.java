@@ -80,7 +80,7 @@ public class NodeIpFiltrator {
             throw new IllegalArgumentException("Filtrator initialization failed, "
                     + "couldn't recognize ip address: " + matches[0]);
         }
-        mask = -1 << (32 - Integer.parseInt(matches[1]));
+        mask = (int) ((long) -1 << (32 - Integer.parseInt(matches[1])));
     }
 
     private int ipToInt(String strAddress) throws UnknownHostException {
