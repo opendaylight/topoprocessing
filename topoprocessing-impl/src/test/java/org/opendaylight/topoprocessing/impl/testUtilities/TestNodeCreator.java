@@ -50,14 +50,14 @@ public class TestNodeCreator {
 
     protected Map<YangInstanceIdentifier, PhysicalNode> createEntry(final String topologyName, final String nodeId) {
         return new HashMap<YangInstanceIdentifier, PhysicalNode>() {{
-            put(createYiid(nodeId), new PhysicalNode(createNode(nodeId), null, topologyName, nodeId));
+            put(createYiid(nodeId), createPhysicalNode(topologyName, nodeId));
         }};
     }
 
     protected Map<YangInstanceIdentifier, PhysicalNode> createEntry(
             final String topologyName, final String nodeId, final String ipAddress) {
         return new HashMap<YangInstanceIdentifier, PhysicalNode>() {{
-            put(createYiid(nodeId), new PhysicalNode(createNode(nodeId, ipAddress), null, topologyName, nodeId));
+            put(createYiid(nodeId), createPhysicalNode(topologyName, nodeId, ipAddress));
         }};
     }
 
@@ -66,6 +66,14 @@ public class TestNodeCreator {
                 .nodeWithKey(ROOT_QNAME, NODE_ID_QNAME, nodeId)
                 .node(NODE_ID_QNAME)
                 .build();
+    }
+
+    protected PhysicalNode createPhysicalNode(String topologyName, String nodeId) {
+        return new PhysicalNode(createNode(nodeId), null, topologyName, nodeId);
+    }
+
+    protected PhysicalNode createPhysicalNode(String topologyName, String nodeId, String ipAddress) {
+        return new PhysicalNode(createNode(nodeId, ipAddress), null, topologyName, nodeId);
     }
 
     protected MapEntryNode createNode(String nodeId) {
