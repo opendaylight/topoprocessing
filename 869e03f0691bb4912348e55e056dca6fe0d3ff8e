@@ -1,0 +1,107 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_3379f32f",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/translator/LogicalNodeToNodeTranslatorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-18T15:12:26Z",
+      "side": 1,
+      "message": "\u003c?, ?\u003e",
+      "revId": "869e03f0691bb4912348e55e056dca6fe0d3ff8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_d3752f33",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/translator/LogicalNodeToNodeTranslatorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-18T15:12:26Z",
+      "side": 1,
+      "message": "remove unused method",
+      "range": {
+        "startLine": 39,
+        "startChar": 4,
+        "endLine": 41,
+        "endChar": 5
+      },
+      "revId": "869e03f0691bb4912348e55e056dca6fe0d3ff8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_b3cc2337",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/translator/LogicalNodeToNodeTranslatorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-18T15:12:26Z",
+      "side": 1,
+      "message": "add javadocs",
+      "revId": "869e03f0691bb4912348e55e056dca6fe0d3ff8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_93c7a712",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/translator/LogicalNodeToNodeTranslatorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-18T15:12:26Z",
+      "side": 1,
+      "message": "if the method throws expected exception - then check if it is correct",
+      "range": {
+        "startLine": 44,
+        "startChar": 29,
+        "endLine": 44,
+        "endChar": 45
+      },
+      "revId": "869e03f0691bb4912348e55e056dca6fe0d3ff8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_53d11fcc",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/translator/LogicalNodeToNodeTranslatorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-18T15:12:26Z",
+      "side": 1,
+      "message": "you can use overlapping tp\u0027s",
+      "range": {
+        "startLine": 136,
+        "startChar": 8,
+        "endLine": 141,
+        "endChar": 32
+      },
+      "revId": "869e03f0691bb4912348e55e056dca6fe0d3ff8e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
