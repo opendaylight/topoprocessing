@@ -58,30 +58,32 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
 
     private void createAggregatedNodes(PhysicalNode newNode, String topologyId) {
         for (TopologyStore ts : topologyStores) {
-            for (Entry<YangInstanceIdentifier, PhysicalNode> topoStoreEntry : ts.getPhysicalNodes().entrySet()) {
-                PhysicalNode topoStoreNode = topoStoreEntry.getValue();
-                if (! newNode.equals(topoStoreNode)) {
-                    if (topoStoreNode.getLeafNode().getValue().equals(newNode.getLeafNode().getValue())) {
-                        // no previous aggregation on this node
-                        if (topoStoreNode.getLogicalNode() == null) {
-                            LOG.debug("Creating new Logical Node");
-                            // create new logical node
-                            List<PhysicalNode> nodesToAggregate = new ArrayList<>();
-                            nodesToAggregate.add(newNode);
-                            nodesToAggregate.add(topoStoreNode);
-                            LogicalNode logicalNode = new LogicalNode(nodesToAggregate);
-                            topoStoreNode.setLogicalNode(logicalNode);
-                            newNode.setLogicalNode(logicalNode);
-                            topologyManager.addLogicalNode(logicalNode);
+            if ((! ts.getId().equals(topologyId)) || ts.isAggregateInside()) {
+                for (Entry<YangInstanceIdentifier, PhysicalNode> topoStoreEntry : ts.getPhysicalNodes().entrySet()) {
+                    PhysicalNode topoStoreNode = topoStoreEntry.getValue();
+                    if (! newNode.equals(topoStoreNode)) {
+                        if (topoStoreNode.getLeafNode().getValue().equals(newNode.getLeafNode().getValue())) {
+                            // no previous aggregation on this node
+                            if (topoStoreNode.getLogicalNode() == null) {
+                                LOG.debug("Creating new Logical Node");
+                                // create new logical node
+                                List<PhysicalNode> nodesToAggregate = new ArrayList<>();
+                                nodesToAggregate.add(newNode);
+                                nodesToAggregate.add(topoStoreNode);
+                                LogicalNode logicalNode = new LogicalNode(nodesToAggregate);
+                                topoStoreNode.setLogicalNode(logicalNode);
+                                newNode.setLogicalNode(logicalNode);
+                                topologyManager.addLogicalNode(logicalNode);
+                                return;
+                            }
+                            LOG.debug("Adding physical node to existing Logical Node");
+                            // add new physical node into existing logical node
+                            LogicalNode logicalNodeIdentifier = topoStoreNode.getLogicalNode();
+                            newNode.setLogicalNode(logicalNodeIdentifier);
+                            logicalNodeIdentifier.addPhysicalNode(newNode);
+                            topologyManager.updateLogicalNode(logicalNodeIdentifier);
                             return;
                         }
-                        LOG.debug("Adding physical node to existing Logical Node");
-                        // add new physical node into existing logical node
-                        LogicalNode logicalNodeIdentifier = topoStoreNode.getLogicalNode();
-                        newNode.setLogicalNode(logicalNodeIdentifier);
-                        logicalNodeIdentifier.addPhysicalNode(newNode);
-                        topologyManager.updateLogicalNode(logicalNodeIdentifier);
-                        return;
                     }
                 }
             }

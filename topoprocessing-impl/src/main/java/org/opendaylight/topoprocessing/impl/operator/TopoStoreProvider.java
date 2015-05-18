@@ -40,13 +40,13 @@ public abstract class  TopoStoreProvider {
      * Initialize Topology Store
      * @param underlayTopologyId Underlay Topology ID
      */
-    public void initializeStore(String underlayTopologyId) {
+    public void initializeStore(String underlayTopologyId, boolean aggregateInside) {
         for (TopologyStore topologyStore : topologyStores) {
             if (underlayTopologyId.equals(topologyStore.getId())) {
                 return;
             }
         }
-        topologyStores.add(new TopologyStore(underlayTopologyId,
+        topologyStores.add(new TopologyStore(underlayTopologyId, aggregateInside,
                 new HashMap<YangInstanceIdentifier, PhysicalNode>()));
     }
 }

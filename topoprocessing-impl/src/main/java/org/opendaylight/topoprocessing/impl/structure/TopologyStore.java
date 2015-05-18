@@ -19,15 +19,19 @@ import java.util.Map;
 public class TopologyStore {
 
     private String id;
+    private final boolean aggregateInside;
     private Map<YangInstanceIdentifier, PhysicalNode> physicalNodes;
 
     /**
      * Default constructor
-     * @param id
-     * @param physicalNode
+     * @param id topology-id of stored topology
+     * @param aggregateInside signals if aggregation should happen even inside
+     *        the same topology
+     * @param physicalNode all nodes present in this topology
      */
-    public TopologyStore(String id, Map<YangInstanceIdentifier, PhysicalNode> physicalNode) {
+    public TopologyStore(String id, boolean aggregateInside, Map<YangInstanceIdentifier, PhysicalNode> physicalNode) {
         this.id = id;
+        this.aggregateInside = aggregateInside;
         this.physicalNodes = physicalNode;
     }
 
@@ -36,6 +40,13 @@ public class TopologyStore {
      */
     public String getId() {
         return id;
+    }
+
+    /**
+     * @return aggregateInside
+     */
+    public boolean isAggregateInside() {
+        return aggregateInside;
     }
 
     /**
