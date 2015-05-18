@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_3809d031",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeIpFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 3312
+      },
+      "writtenOn": "2015-05-18T13:00:27Z",
+      "side": 1,
+      "message": "this return value is not assigned to any variable. Possibly you wanted to assign it into \u0027maskedValue\u0027 in the constructor",
+      "range": {
+        "startLine": 73,
+        "startChar": 12,
+        "endLine": 73,
+        "endChar": 15
+      },
+      "revId": "d83167a0845c8fb2a584d39dc6808d6468aba05f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
