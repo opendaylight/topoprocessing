@@ -120,6 +120,10 @@
                 type leaf-path;
                 description "Path to target field";
             }
+            leaf aggregate-inside {
+                type boolean;
+                description "True if aggregation should happen even inside the same topology.";
+            }
         }
     }
 }
