@@ -18,7 +18,7 @@ public class PhysicalNode {
 
     private NormalizedNode<?, ?> node;
     private NormalizedNode<?, ?> leafNode;
-    private LogicalNode logicalNodeIdentifier = null;
+    private LogicalNode logicalNode = null;
     private String topologyId;
     private String nodeId;
 
@@ -65,12 +65,19 @@ public class PhysicalNode {
         this.leafNode = leafNode;
     }
 
-    public LogicalNode getLogicalIdentifier() {
-        return logicalNodeIdentifier;
+    /**
+     * 
+     * @return {@link LogicalNode} that wraps this {@link PhysicalNode}
+     */
+    public LogicalNode getLogicalNode() {
+        return logicalNode;
     }
 
-    public void setLogicalIdentifier(LogicalNode logicalNodeIdentifier) {
-        this.logicalNodeIdentifier = logicalNodeIdentifier;
+    /**
+     * @param logicalNode {@link LogicalNode} that wraps this {@link PhysicalNode}
+     */
+    public void setLogicalNode(LogicalNode logicalNode) {
+        this.logicalNode = logicalNode;
     }
 
     /**
