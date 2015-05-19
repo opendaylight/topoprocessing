@@ -39,10 +39,13 @@ public abstract class  TopoStoreProvider {
     /**
      * Initialize Topology Store
      * @param underlayTopologyId Underlay Topology ID
-     * @param aggregateInside true if aggregation should happen even inside
-     *        the same topology
+     * @param aggregateInside signals if aggregation should happen even inside
+     * the same topology
      */
     public void initializeStore(String underlayTopologyId, boolean aggregateInside) {
+        if (underlayTopologyId == null || underlayTopologyId.length() == 0) {
+            throw new IllegalStateException("Underlay topology cannot be null nor empty.");
+        }
         for (TopologyStore topologyStore : topologyStores) {
             if (underlayTopologyId.equals(topologyStore.getId())) {
                 return;
@@ -53,9 +56,10 @@ public abstract class  TopoStoreProvider {
     }
 
     /**
-     * @return topologyStores list
+     * @return topology stores
      */
     public List<TopologyStore> getTopologyStores() {
         return topologyStores;
     }
 }
+

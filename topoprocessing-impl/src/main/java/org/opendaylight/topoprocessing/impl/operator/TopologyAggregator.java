@@ -45,15 +45,16 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries,
                                                 final String topologyId) {
         LOG.debug("Processing createdChanges");
-        for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
-            for (TopologyStore ts : getTopologyStores()) {
-                if (ts.getId().equals(topologyId)) {
-                    ts.getPhysicalNodes().put(createdEntry.getKey(), createdEntry.getValue());
+        if (createdEntries != null) {
+            for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
+                for (TopologyStore ts : getTopologyStores()) {
+                    if (ts.getId().equals(topologyId)) {
+                        ts.getPhysicalNodes().put(createdEntry.getKey(), createdEntry.getValue());
+                    }
                 }
+                createAggregatedNodes(createdEntry.getValue(), topologyId);
             }
-            createAggregatedNodes(createdEntry.getValue(), topologyId);
         }
-        LOG.debug("CreatedChanges processed");
     }
 
     /**
@@ -108,12 +109,14 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
         for (TopologyStore ts : getTopologyStores()) {
             if (ts.getId().equals(topologyId)) {
                 Map<YangInstanceIdentifier, PhysicalNode> physicalNodes = ts.getPhysicalNodes();
-                for (YangInstanceIdentifier identifier : identifiers) {
-                    PhysicalNode physicalNode = physicalNodes.remove(identifier);
-                    // if identifier exists in topology store
-                    if (physicalNode != null) {
-                        // if physical node is part of some logical node
-                        removePhysicalNodeFromLogicalNode(physicalNode);
+                if (identifiers != null) {
+                    for (YangInstanceIdentifier identifier : identifiers) {
+                        PhysicalNode physicalNode = physicalNodes.remove(identifier);
+                        // if identifier exists in topology store
+                        if (physicalNode != null) {
+                            // if physical node is part of some logical node
+                            removePhysicalNodeFromLogicalNode(physicalNode);
+                        }
                     }
                 }
             }
@@ -140,27 +143,29 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
     public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
                                                 String topologyId) {
         LOG.debug("Processing updatedChanges");
-        for (Entry<YangInstanceIdentifier, PhysicalNode> updatedEntry : updatedEntries.entrySet()) {
-            for (TopologyStore ts : getTopologyStores()) {
-                if (ts.getId().equals(topologyId)) {
-                    LOG.debug("Updating logical node");
-                    PhysicalNode physicalNode = ts.getPhysicalNodes().get(updatedEntry.getKey());
-                    Preconditions.checkNotNull(physicalNode, "Updated physical node not found in Topology Store");
-                    PhysicalNode updatedEntryValue = updatedEntry.getValue();
-                    physicalNode.setNode(updatedEntryValue.getNode());
-                    NormalizedNode<?, ?> leafNode = physicalNode.getLeafNode();
-                    // if Leaf Node was changed
-                    if (! leafNode.equals(updatedEntryValue.getLeafNode())) {
-                        physicalNode.setLeafNode(updatedEntryValue.getLeafNode());
-                        if (physicalNode.getLogicalNode() != null) {
-                            removePhysicalNodeFromLogicalNode(physicalNode);
+        if (updatedEntries != null) {
+            for (Entry<YangInstanceIdentifier, PhysicalNode> updatedEntry : updatedEntries.entrySet()) {
+                for (TopologyStore ts : getTopologyStores()) {
+                    if (ts.getId().equals(topologyId)) {
+                        LOG.debug("Updating logical node");
+                        PhysicalNode physicalNode = ts.getPhysicalNodes().get(updatedEntry.getKey());
+                        Preconditions.checkNotNull(physicalNode, "Updated physical node not found in Topology Store");
+                        PhysicalNode updatedEntryValue = updatedEntry.getValue();
+                        physicalNode.setNode(updatedEntryValue.getNode());
+                        NormalizedNode<?, ?> leafNode = physicalNode.getLeafNode();
+                        // if Leaf Node was changed
+                        if (! leafNode.equals(updatedEntryValue.getLeafNode())) {
+                            physicalNode.setLeafNode(updatedEntryValue.getLeafNode());
+                            if (physicalNode.getLogicalNode() != null) {
+                                removePhysicalNodeFromLogicalNode(physicalNode);
+                            }
+                            createAggregatedNodes(physicalNode, topologyId);
+                        } else if (physicalNode.getLogicalNode() != null) {
+                            // in case that only Node value was changed
+                            topologyManager.updateLogicalNode(physicalNode.getLogicalNode());
                         }
-                        createAggregatedNodes(physicalNode, topologyId);
-                    } else if (physicalNode.getLogicalNode() != null) {
-                        // in case that only Node value was changed
-                        topologyManager.updateLogicalNode(physicalNode.getLogicalNode());
+                        break;
                     }
-                    break;
                 }
             }
         }
