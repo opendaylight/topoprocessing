@@ -39,8 +39,13 @@ public abstract class  TopoStoreProvider {
     /**
      * Initialize Topology Store
      * @param underlayTopologyId Underlay Topology ID
+     * @param aggregateInside signals if aggregation should happen even inside
+     * the same topology
      */
     public void initializeStore(String underlayTopologyId, boolean aggregateInside) {
+        if (underlayTopologyId == null || underlayTopologyId.length() == 0) {
+            return;
+        }
         for (TopologyStore topologyStore : topologyStores) {
             if (underlayTopologyId.equals(topologyStore.getId())) {
                 return;
