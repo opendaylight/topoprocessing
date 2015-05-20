@@ -37,8 +37,8 @@ public class NodeIpFiltrator {
 
     /**
      * Constructor
-     * @param value
-     * @param pathIdentifier
+     * @param value IpAddress to compare with
+     * @param pathIdentifier Path leading to value with ipAddress in examined node
      */
     public NodeIpFiltrator(IpPrefix value, YangInstanceIdentifier pathIdentifier) {
         Preconditions.checkNotNull(value, "Filtering value can't be null");
@@ -80,7 +80,7 @@ public class NodeIpFiltrator {
             throw new IllegalArgumentException("Filtrator initialization failed, "
                     + "couldn't recognize ip address: " + matches[0]);
         }
-        mask = -1 << (32 - Integer.parseInt(matches[1]));
+        mask = (int) ((long) -1 << (32 - Integer.parseInt(matches[1])));
         return address & mask;
     }
 
