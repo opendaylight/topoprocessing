@@ -12,6 +12,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -49,11 +53,26 @@ import com.google.common.util.concurrent.Futures;
 public class TopologyWriter implements TransactionChainListener {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(TopologyWriter.class);
+    private static final int MAXIMUM_OPERATIONS = 50;
+    private static final int EXECUTOR_POOL_THREADS = 1;
     private String topologyId;
     private LogicalNodeToNodeTranslator translator;
     private YangInstanceIdentifier nodeIdentifier;
     private DOMTransactionChain transactionChain;
     private YangInstanceIdentifier topologyIdentifier;
+    private ConcurrentLinkedQueue<TransactionOperation> preparedOperations;
+    private ThreadPoolExecutor pool;
+
+    private static final AtomicIntegerFieldUpdater<TopologyWriter> WRITE_SCHEDULED_UPDATER =
+            AtomicIntegerFieldUpdater.newUpdater(TopologyWriter.class, "writeScheduled");
+    private volatile int writeScheduled = 0;
+    
+    private final Runnable writeTask = new Runnable() {
+        @Override
+        public void run() {
+            TopologyWriter.this.write();
+        }
+    };
 
     /**
      * Default constructor
@@ -66,6 +85,8 @@ public class TopologyWriter implements TransactionChainListener {
                 YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
                 .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, topologyId).build();
         nodeIdentifier = topologyIdentifier.node(Node.QNAME);
+        preparedOperations = new ConcurrentLinkedQueue<>();
+        pool = new ScheduledThreadPoolExecutor(EXECUTOR_POOL_THREADS);
     }
 
     /**
@@ -145,7 +166,8 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * Writes empty overlay topology with provided topologyId
+     * Writes empty overlay topology with provided topologyId. Also writes empty {@link Link}
+     * and {@link Node} mapnode.
      */
     public void initOverlayTopology() {
         MapEntryNode topologyMapEntryNode = ImmutableNodes
@@ -158,23 +180,10 @@ public class TopologyWriter implements TransactionChainListener {
         YangInstanceIdentifier linkYiid = YangInstanceIdentifier.builder(topologyIdentifier)
                 .node(Link.QNAME).build();
 
-        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
-        transaction.put(LogicalDatastoreType.OPERATIONAL, topologyIdentifier, topologyMapEntryNode);
-        transaction.put(LogicalDatastoreType.OPERATIONAL, nodeYiid, nodeMapNode);
-        transaction.put(LogicalDatastoreType.OPERATIONAL, linkYiid, linkMapNode);
-
-        CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
-        Futures.addCallback(submit, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                LOGGER.debug("Empty topology successfully written");
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                LOGGER.warn("Failed to write empty topology");
-            }
-        });
+        preparedOperations.add(new PutOperation(topologyIdentifier, topologyMapEntryNode));
+        preparedOperations.add(new PutOperation(nodeYiid, nodeMapNode));
+        preparedOperations.add(new PutOperation(linkYiid, linkMapNode));
+        scheduleWrite();
     }
 
     /**
@@ -182,43 +191,16 @@ public class TopologyWriter implements TransactionChainListener {
      */
     public void writeNode(final LogicalNodeWrapper wrapper) {
         NormalizedNode<?, ?> node = translator.translate(wrapper);
-
-        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
-        transaction.put(LogicalDatastoreType.OPERATIONAL, createNodeIdentifier(wrapper.getNodeId()), node);
-
-        CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
-        Futures.addCallback(submit, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                LOGGER.debug("Node {} successfully written", wrapper.getNodeId());
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                LOGGER.warn("Failed to write node {}", wrapper.getNodeId());
-            }
-        });
+        preparedOperations.add(new PutOperation(createNodeIdentifier(wrapper.getNodeId()), node));
+        scheduleWrite();
     }
 
     /**
      * @param wrapper
      */
     public void deleteNode(final LogicalNodeWrapper wrapper) {
-        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
-        transaction.delete(LogicalDatastoreType.OPERATIONAL,  createNodeIdentifier(wrapper.getNodeId()));
-
-        CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
-        Futures.addCallback(submit, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                LOGGER.debug("Node {} successfully removed", wrapper.getNodeId());
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                LOGGER.warn("Failed to remove node {}", wrapper.getNodeId());
-            }
-        });
+        preparedOperations.add(new DeleteOperation(createNodeIdentifier(wrapper.getNodeId())));
+        scheduleWrite();
     }
 
     private YangInstanceIdentifier createNodeIdentifier(String nodeId) {
@@ -252,20 +234,48 @@ public class TopologyWriter implements TransactionChainListener {
      */
     public void writeTopologyTypes(DataContainerChild<? extends PathArgument, ?> topologyTypes) {
         YangInstanceIdentifier topologyTypesYiid = topologyIdentifier.node(TopologyTypes.QNAME);
+        preparedOperations.add(new PutOperation(topologyTypesYiid, topologyTypes));
+        scheduleWrite();
+    }
 
+    private void scheduleWrite() {
+        if (preparedOperations.isEmpty()) {
+            LOGGER.trace("No operations prepared - no write needed");
+            return;
+        }
+        if (WRITE_SCHEDULED_UPDATER.compareAndSet(this, 0, 1)) {
+            LOGGER.trace("Scheduling write task");
+            pool.execute(writeTask);
+        } else {
+            LOGGER.trace("Write task is already present");
+        }
+    }
+
+    void write() {
+        LOGGER.debug("Writing prepared operations.");
         DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
-        transaction.put(LogicalDatastoreType.OPERATIONAL, topologyTypesYiid, topologyTypes);
-
+        int operation = 0;
+        while ((operation < MAXIMUM_OPERATIONS) && (preparedOperations.peek() != null)) {
+            preparedOperations.poll().addOperationIntoTransaction(transaction);
+            operation++;
+        }
+        LOGGER.debug("Submitting {} prepared operations.", operation);
         CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
+
         Futures.addCallback(submit, new FutureCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                LOGGER.debug("Topology types successfully written.");
+                LOGGER.debug("Transaction successfully written.");
             }
             @Override
             public void onFailure(Throwable throwable) {
-                LOGGER.warn("Failed to write topology types.");
+                LOGGER.warn("Transaction failed.");
             }
         });
+
+        if (! WRITE_SCHEDULED_UPDATER.compareAndSet(this, 1, 0)) {
+            LOGGER.warn("Writer found unscheduled");
+        }
+        scheduleWrite();
     }
 }
