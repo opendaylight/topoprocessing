@@ -1,10 +1,8 @@
 package org.opendaylight.topoprocessing.impl.writer;
 
-import com.google.common.util.concurrent.CheckedFuture;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -22,10 +20,9 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
-import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 
-import java.util.regex.Matcher;
+import com.google.common.util.concurrent.CheckedFuture;
 
 /**
  * @author matus.marko
@@ -42,13 +39,21 @@ public class TopologyWriterTest {
     @Mock private DOMTransactionChain transactionChain;
     @Mock private DOMDataWriteTransaction transaction;
     @Mock private CheckedFuture<Void,TransactionCommitFailedException> submit;
+    @Mock private DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?> topologyTypes;
 
+    /**
+     * Initializes writer
+     */
     @Before
     public void setUp() {
         topologyWriter = new TopologyWriter(TOPOLOGY_ID);
         topologyWriter.setTransactionChain(transactionChain);
     }
 
+    /**
+     * Tests if overlay topology was correctly initialized - this means Topology with topology-id
+     * + Link and Node mapnodes are written
+     */
     @Test
     public void testInitOverlayTopology() {
         Mockito.when(transactionChain.newWriteOnlyTransaction()).thenReturn(transaction);
@@ -64,21 +69,32 @@ public class TopologyWriterTest {
         YangInstanceIdentifier linkYiid = YangInstanceIdentifier.builder(topologyIdentifier)
                 .node(Link.QNAME).build();
 
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new IllegalStateException("Exception while waiting on thread pool to process transaction");
+        }
         Mockito.verify(transaction).put(LogicalDatastoreType.OPERATIONAL, topologyIdentifier, topologyMapEntryNode);
         Mockito.verify(transaction).put(LogicalDatastoreType.OPERATIONAL, nodeYiid, nodeMapNode);
         Mockito.verify(transaction).put(LogicalDatastoreType.OPERATIONAL, linkYiid, linkMapNode);
         Mockito.verify(transaction).submit();
     }
 
+    /**
+     * Tests if topology-types node was written
+     */
     @Test
     public void testWriteTopologyTypes() {
         Mockito.when(transactionChain.newWriteOnlyTransaction()).thenReturn(transaction);
         Mockito.when(transaction.submit()).thenReturn(submit);
-        DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?> topologyTypes =
-                Mockito.mock(DataContainerChild.class);
         topologyWriter.writeTopologyTypes(topologyTypes);
-
         YangInstanceIdentifier topologyTypesYiid = topologyIdentifier.node(TopologyTypes.QNAME);
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new IllegalStateException("Exception while waiting on thread pool to process transaction");
+        }
         Mockito.verify(transaction).put(LogicalDatastoreType.OPERATIONAL, topologyTypesYiid, topologyTypes);
         Mockito.verify(transaction).submit();
     }
