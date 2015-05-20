@@ -17,7 +17,12 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
-import org.opendaylight.topoprocessing.impl.operator.*;
+import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
+import org.opendaylight.topoprocessing.impl.operator.NodeIpFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
+import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
+import org.opendaylight.topoprocessing.impl.operator.UnificationAggregator;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
@@ -94,6 +99,9 @@ public class TopologyRequestHandler {
     /** Only for testing purposes */
     public List<ListenerRegistration<DOMDataChangeListener>> getListeners() { return listeners; }
 
+    /** Only for testing purposes */
+    public DOMTransactionChain getTransactionChain() { return transactionChain; }
+
     /**
      * @param topology overlay topology request
      */
@@ -141,6 +149,7 @@ public class TopologyRequestHandler {
         } catch (Exception e) {
             LOG.warn("Processing new request for topology change failed.", e);
             closeOperatingResources();
+            throw new IllegalStateException("Processing new request for topology change failed.", e);
         }
     }
 
