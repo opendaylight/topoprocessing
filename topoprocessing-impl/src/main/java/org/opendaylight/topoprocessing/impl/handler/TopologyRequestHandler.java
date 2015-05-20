@@ -112,23 +112,40 @@ public class TopologyRequestHandler {
         try {
             LOG.debug("Processing correlation configuration");
             CorrelationAugment augmentation = topology.getAugmentation(CorrelationAugment.class);
+            if (augmentation == null) {
+                throw new IllegalStateException("Augment missing in the request.");
+            }
+            if (augmentation.getCorrelations() == null || augmentation.getCorrelations().getCorrelation() == null) {
+                throw new IllegalStateException("Correlation missing in the augment.");
+            }
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
                 TopologyOperator operator;
                 if (correlation.getName().equals(Equality.class)) {
                     EqualityCase equalityCase = (EqualityCase) correlation.getCorrelationType();
+                    if (equalityCase == null) {
+                        throw new IllegalStateException("Equality correlation must have equality-case correlation type");
+                    }
                     List<Mapping> mappings = equalityCase.getEquality().getMapping();
                     operator = new EqualityAggregator();
                     iterateMappings(operator, mappings, correlation.getCorrelationItem());
                 }
                 else if (correlation.getName().equals(Unification.class)) {
                     UnificationCase unificationCase = (UnificationCase) correlation.getCorrelationType();
+                    if (unificationCase == null) {
+                        throw new IllegalStateException("Unification correlation must have unification-case"
+                                + "correlation type");
+                    }
                     List<Mapping> mappings = unificationCase.getUnification().getMapping();
                     operator = new UnificationAggregator();
                     iterateMappings(operator, mappings, correlation.getCorrelationItem());
                 }
                 else if (correlation.getName().equals(NodeIpFiltration.class)) {
                     NodeIpFiltrationCase nodeIpFiltrationCase = (NodeIpFiltrationCase) correlation.getCorrelationType();
+                    if (nodeIpFiltrationCase == null) {
+                        throw new IllegalStateException("NodeIpFiltration correlation must have node-ip-filtration-case"
+                                + "correlation type");
+                    }
                     List<Filter> filters = nodeIpFiltrationCase.getNodeIpFiltration().getFilter();
                     operator = new TopologyFiltrator();
                     iterateFilters((TopologyFiltrator) operator, filters, correlation.getCorrelationItem());
@@ -141,6 +158,7 @@ public class TopologyRequestHandler {
         } catch (Exception e) {
             LOG.warn("Processing new request for topology change failed.", e);
             closeOperatingResources();
+            throw e;
         }
     }
 
@@ -173,6 +191,9 @@ public class TopologyRequestHandler {
     }
 
     private void iterateMappings(TopologyOperator operator, List<Mapping> mappings, CorrelationItemEnum correlationItem) {
+        if (mappings == null) {
+            throw new IllegalStateException("Mapping shall be defined.");
+        }
         for (Mapping mapping : mappings) {
             String underlayTopologyId = mapping.getUnderlayTopology();
             operator.initializeStore(underlayTopologyId, mapping.isAggregateInside());
@@ -209,6 +230,7 @@ public class TopologyRequestHandler {
     private static YangInstanceIdentifier buildNodeIdentifier(
             YangInstanceIdentifier.InstanceIdentifierBuilder builder, CorrelationItemEnum correlationItemEnum)
                     throws IllegalStateException {
+        Preconditions.checkNotNull(correlationItemEnum, "Correlation item is null.");
         switch (correlationItemEnum) {
             case Node:
                 builder.node(Node.QNAME);
