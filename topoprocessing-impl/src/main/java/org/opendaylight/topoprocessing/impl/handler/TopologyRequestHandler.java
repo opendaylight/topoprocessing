@@ -17,7 +17,12 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
-import org.opendaylight.topoprocessing.impl.operator.*;
+import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
+import org.opendaylight.topoprocessing.impl.operator.NodeIpFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
+import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
+import org.opendaylight.topoprocessing.impl.operator.UnificationAggregator;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
@@ -94,6 +99,9 @@ public class TopologyRequestHandler {
     /** Only for testing purposes */
     public List<ListenerRegistration<DOMDataChangeListener>> getListeners() { return listeners; }
 
+    /** Only for testing purposes */
+    public DOMTransactionChain getTransactionChain() { return transactionChain; }
+
     /**
      * @param topology overlay topology request
      */
@@ -117,18 +125,29 @@ public class TopologyRequestHandler {
                 TopologyOperator operator;
                 if (correlation.getName().equals(Equality.class)) {
                     EqualityCase equalityCase = (EqualityCase) correlation.getCorrelationType();
+                    if (equalityCase == null) {
+                        throw new IllegalStateException("Equality correlation must have equality-case correlation type");
+                    }
                     List<Mapping> mappings = equalityCase.getEquality().getMapping();
                     operator = new EqualityAggregator();
                     iterateMappings(operator, mappings, correlation.getCorrelationItem());
                 }
                 else if (correlation.getName().equals(Unification.class)) {
                     UnificationCase unificationCase = (UnificationCase) correlation.getCorrelationType();
+                    if (unificationCase == null) {
+                        throw new IllegalStateException("Unification correlation must have unification-case"
+                                + "correlation type");
+                    }
                     List<Mapping> mappings = unificationCase.getUnification().getMapping();
                     operator = new UnificationAggregator();
                     iterateMappings(operator, mappings, correlation.getCorrelationItem());
                 }
                 else if (correlation.getName().equals(NodeIpFiltration.class)) {
                     NodeIpFiltrationCase nodeIpFiltrationCase = (NodeIpFiltrationCase) correlation.getCorrelationType();
+                    if (nodeIpFiltrationCase == null) {
+                        throw new IllegalStateException("NodeIpFiltration correlation must have node-ip-filtration-case"
+                                + "correlation type");
+                    }
                     List<Filter> filters = nodeIpFiltrationCase.getNodeIpFiltration().getFilter();
                     operator = new TopologyFiltrator();
                     iterateFilters((TopologyFiltrator) operator, filters, correlation.getCorrelationItem());
@@ -141,6 +160,7 @@ public class TopologyRequestHandler {
         } catch (Exception e) {
             LOG.warn("Processing new request for topology change failed.", e);
             closeOperatingResources();
+            throw new IllegalStateException("Processing new request for topology change failed.", e);
         }
     }
 
