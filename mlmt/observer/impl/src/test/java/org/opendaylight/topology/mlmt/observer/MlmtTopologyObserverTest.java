@@ -264,7 +264,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         assertCommit(rwTx.submit());
 
         synchronized (waitObject) {
-             waitObject.wait(1000);
+             waitObject.wait(1500);
         }
 
         String nodeName1 = "node:1";
@@ -277,7 +277,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         observer.onNodeCreated(LogicalDatastoreType.OPERATIONAL, exampleIid, wrNode);
 
         synchronized (waitObject) {
-             waitObject.wait(1000);
+             waitObject.wait(1500);
         }
 
         TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
@@ -290,7 +290,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         observer.onTpCreated(LogicalDatastoreType.OPERATIONAL, exampleIid, nodeKey, tp);
 
         synchronized (waitObject) {
-             waitObject.wait(5000);
+             waitObject.wait(1500);
         }
 
         String nodeName2 = "node:2";
@@ -303,7 +303,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         observer.onNodeCreated(LogicalDatastoreType.OPERATIONAL, exampleIid, wrNode);
 
         synchronized (waitObject) {
-             waitObject.wait(1000);
+             waitObject.wait(1500);
         }
 
         tpBuilder = new TerminationPointBuilder();
@@ -316,7 +316,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         observer.onTpCreated(LogicalDatastoreType.OPERATIONAL, exampleIid, nodeKey, tp);
 
         synchronized (waitObject) {
-             waitObject.wait(1000);
+             waitObject.wait(1500);
         }
 
         LinkBuilder linkBuilder = new LinkBuilder();
@@ -344,7 +344,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         observer.onLinkCreated(LogicalDatastoreType.OPERATIONAL, exampleIid, link);
 
         synchronized (waitObject) {
-             waitObject.wait(1000);
+             waitObject.wait(1500);
         }
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
@@ -370,7 +370,6 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         assertNotNull(rxlSuppNode1);
 
         String supportingNodeIdStr1 = rxlSuppNode1.get(0).getNodeRef().getValue().toString();
-
         List<SupportingNode> rxlSuppNode2 = rxNode2.getSupportingNode();
         assertNotNull(rxlSuppNode2);
 
