@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_cf31f60c",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopoStoreProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-21T08:17:22Z",
+      "side": 1,
+      "message": "we should throw an exception in this case",
+      "range": {
+        "startLine": 47,
+        "startChar": 12,
+        "endLine": 47,
+        "endChar": 19
+      },
+      "revId": "13c55d519903ed0a8176b33ab598506179e0b691",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_ef363203",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TopoStoreProviderTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-21T08:17:22Z",
+      "side": 1,
+      "message": "use getter for accessing this field ... the field should be private",
+      "range": {
+        "startLine": 39,
+        "startChar": 39,
+        "endLine": 39,
+        "endChar": 61
+      },
+      "revId": "13c55d519903ed0a8176b33ab598506179e0b691",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_6f2222bb",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TopoStoreProviderTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-21T08:17:22Z",
+      "side": 1,
+      "message": "testInitializeStore1()",
+      "range": {
+        "startLine": 45,
+        "startChar": 8,
+        "endLine": 45,
+        "endChar": 54
+      },
+      "revId": "13c55d519903ed0a8176b33ab598506179e0b691",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_4f25e6c0",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TopoStoreProviderTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-21T08:17:22Z",
+      "side": 1,
+      "message": "why do we need this method ?",
+      "range": {
+        "startLine": 61,
+        "startChar": 7,
+        "endLine": 61,
+        "endChar": 31
+      },
+      "revId": "13c55d519903ed0a8176b33ab598506179e0b691",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_af402a57",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TopoStoreProviderTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-21T08:17:22Z",
+      "side": 1,
+      "message": "why do we need this method ?",
+      "range": {
+        "startLine": 71,
+        "startChar": 7,
+        "endLine": 71,
+        "endChar": 31
+      },
+      "revId": "13c55d519903ed0a8176b33ab598506179e0b691",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_2f03ba10",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TopoStoreProviderTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-21T08:17:22Z",
+      "side": 1,
+      "message": "can be removed in new patch (when topologyStores is made private)",
+      "range": {
+        "startLine": 76,
+        "startChar": 4,
+        "endLine": 90,
+        "endChar": 5
+      },
+      "revId": "13c55d519903ed0a8176b33ab598506179e0b691",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_8a099c2e",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/UnificationAggregatorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-21T08:17:22Z",
+      "side": 1,
+      "message": "you could use TestNodeCreator methods here",
+      "range": {
+        "startLine": 114,
+        "startChar": 8,
+        "endLine": 123,
+        "endChar": 50
+      },
+      "revId": "13c55d519903ed0a8176b33ab598506179e0b691",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
