@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_dfb51fce",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TopoStoreProviderTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-22T11:26:52Z",
+      "side": 1,
+      "message": "no check for aggregate-inside value",
+      "range": {
+        "startLine": 64,
+        "startChar": 8,
+        "endLine": 64,
+        "endChar": 91
+      },
+      "revId": "1cb0aa6913a55c8c7717812eed76b5bedacc7354",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_9fc79745",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TopoStoreProviderTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-22T11:26:52Z",
+      "side": 1,
+      "message": "incorrect test - first call will throw an Exception, we don\u0027t test the second case",
+      "range": {
+        "startLine": 67,
+        "startChar": 4,
+        "endLine": 74,
+        "endChar": 5
+      },
+      "revId": "1cb0aa6913a55c8c7717812eed76b5bedacc7354",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_7fd16bfa",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TopoStoreProviderTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-22T11:26:52Z",
+      "side": 1,
+      "message": "remove usage of StringUtils - basically it can be considered as an unknown package, use local constant or \"\" directly",
+      "range": {
+        "startLine": 78,
+        "startChar": 33,
+        "endLine": 78,
+        "endChar": 50
+      },
+      "revId": "1cb0aa6913a55c8c7717812eed76b5bedacc7354",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_5fd82f1d",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TopoStoreProviderTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-22T11:26:52Z",
+      "side": 1,
+      "message": "switch values - expected, actual",
+      "range": {
+        "startLine": 89,
+        "startChar": 28,
+        "endLine": 89,
+        "endChar": 64
+      },
+      "revId": "1cb0aa6913a55c8c7717812eed76b5bedacc7354",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_3fdbe31c",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TopoStoreProviderTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-22T11:26:52Z",
+      "side": 1,
+      "message": "switch values - expected, actual",
+      "range": {
+        "startLine": 97,
+        "startChar": 28,
+        "endLine": 97,
+        "endChar": 48
+      },
+      "revId": "1cb0aa6913a55c8c7717812eed76b5bedacc7354",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
