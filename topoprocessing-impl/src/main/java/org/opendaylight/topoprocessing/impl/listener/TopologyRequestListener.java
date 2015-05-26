@@ -76,8 +76,14 @@ public class TopologyRequestListener implements DOMDataChangeListener {
     public void onDataChanged(
             AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
         LOGGER.debug("DataChange event notification received");
-        processCreatedData(change.getCreatedData());
-        processRemovedData(change.getRemovedPaths());
+        Map<YangInstanceIdentifier, NormalizedNode<?, ?>> createdData = change.getCreatedData();
+        if (0 < createdData.size()) {
+            processCreatedData(createdData);
+        }
+        Set<YangInstanceIdentifier> removedPaths = change.getRemovedPaths();
+        if (0 < removedPaths.size()) {
+            processRemovedData(removedPaths);
+        }
     }
 
     private void processCreatedData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map) {
@@ -111,14 +117,10 @@ public class TopologyRequestListener implements DOMDataChangeListener {
 
     private void processRemovedData(Set<YangInstanceIdentifier> removedPaths) {
         LOGGER.debug("Processing removed data changes");
-        Iterator<YangInstanceIdentifier> iterator = removedPaths.iterator();
-        while (iterator.hasNext()) {
-            YangInstanceIdentifier yangInstanceIdentifier = iterator.next();
-            if (topoRequestHandlers.containsKey(yangInstanceIdentifier)) {
-                TopologyRequestHandler topologyRequestHandler = topoRequestHandlers.get(yangInstanceIdentifier);
+        for (YangInstanceIdentifier yangInstanceIdentifier : removedPaths) {
+            TopologyRequestHandler topologyRequestHandler = topoRequestHandlers.remove(yangInstanceIdentifier);
+            if (null != topologyRequestHandler) {
                 topologyRequestHandler.processDeletionRequest();
-                topoRequestHandlers.remove(yangInstanceIdentifier);
-                break;
             }
         }
         LOGGER.debug("Removed data processed");
@@ -129,5 +131,9 @@ public class TopologyRequestListener implements DOMDataChangeListener {
      */
     public void setDatastoreType(DatastoreType datastoreType) {
         this.datastoreType = datastoreType;
+    }
+
+    public HashMap<YangInstanceIdentifier, TopologyRequestHandler> getTopoRequestHandlers() {
+        return topoRequestHandlers;
     }
 }
