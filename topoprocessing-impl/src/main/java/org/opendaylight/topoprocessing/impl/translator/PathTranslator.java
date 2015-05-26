@@ -50,8 +50,7 @@ public class PathTranslator {
     public YangInstanceIdentifier translate(String yangPath, CorrelationItemEnum correlationItem,
             GlobalSchemaContextHolder schemaHolder) throws IllegalArgumentException, IllegalStateException {
         LOGGER.debug("Translating target-field path: " + yangPath);
-        SchemaContext globalSchemaContext = schemaHolder.getSchemaContext();
-        DataSchemaContextTree contextTree = new GlobalSchemaContextHolder(globalSchemaContext).getContextTree();
+        DataSchemaContextTree contextTree = schemaHolder.getContextTree();
         YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder()
                 .node(NetworkTopology.QNAME)
                 .node(Topology.QNAME)
@@ -59,28 +58,27 @@ public class PathTranslator {
                 .node(Node.QNAME)
                 .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, "")
                 .build();
-        DataSchemaContextNode<?> context = contextTree.getChild(nodeIdentifier);
+        DataSchemaContextNode<?> contextNode = contextTree.getChild(nodeIdentifier);
         Iterable<String> pathArguments = splitYangPath(yangPath);
         Iterator<String> iterator = pathArguments.iterator();
         YangInstanceIdentifier targetIdentifier = YangInstanceIdentifier.builder().build();
         while (iterator.hasNext()) {
             String currentId = iterator.next();
             QName currentQname = parseQname(schemaHolder.getSchemaContext(), currentId);
-            context = context.getChild(currentQname);
-            while (context.isMixin()) {
-                PathArgument identifier = context.getIdentifier();
+            contextNode = contextNode.getChild(currentQname);
+            while (contextNode.isMixin()) {
                 targetIdentifier = YangInstanceIdentifier.create(targetIdentifier.getPathArguments())
-                        .node(identifier);
-                context = context.getChild(currentQname);
+                        .node(contextNode.getIdentifier());
+                contextNode = contextNode.getChild(currentQname);
             }
             targetIdentifier = YangInstanceIdentifier.create(targetIdentifier.getPathArguments())
-                    .node(context.getIdentifier());
+                    .node(contextNode.getIdentifier());
         }
         LOGGER.debug("Target-field identifier: " + targetIdentifier);
         return targetIdentifier;
     }
 
-    private QName parseQname(SchemaContext context, String pathArgument) {
+    private static QName parseQname(SchemaContext context, String pathArgument) {
         int index = getSeparatorIndex(pathArgument, ':');
         String moduleName = getModuleName(pathArgument, index);
         Module module = context.findModuleByName(moduleName, null);
@@ -102,7 +100,7 @@ public class PathTranslator {
     private static int getSeparatorIndex(String s, char separator) {
         int index = s.indexOf(separator);
          if (index == -1) {
-            throw new IllegalArgumentException("Invalid format of yang path, ':' not found in " + s);
+            throw new IllegalArgumentException("Invalid format of yang path, ':' not found in '" + s + "'");
         } else if (s.lastIndexOf(separator) != index) {
             throw new IllegalArgumentException("Invalid format of yang path, only one occurence of ':'"
                     + " is valid in " + s);
