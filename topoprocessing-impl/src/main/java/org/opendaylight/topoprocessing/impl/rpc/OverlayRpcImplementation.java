@@ -92,8 +92,7 @@ public class OverlayRpcImplementation implements DOMRpcImplementation {
         }
         ContainerNode underlayRpcInput = containerBuilder.build();
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Reinvoking RPC at: " + underlayNodeIdentifier + " with");
-            LOGGER.debug("With input: " + underlayRpcInput);
+            LOGGER.debug("Reinvoking RPC at: {} with input: {}", underlayNodeIdentifier, underlayRpcInput);
         }
         return rpcService.invokeRpc(rpc.getType(), underlayRpcInput);
     }

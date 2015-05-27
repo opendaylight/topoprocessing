@@ -67,7 +67,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
         this.nodeSerializer = nodeSerializer;
         this.schemaHolder = schemaHolder;
         this.rpcServices = rpcServices;
-        LOGGER.debug("Topology Request Listener created");
+        LOGGER.trace("Topology Request Listener created");
     }
 
     @Override
@@ -108,7 +108,6 @@ public class TopologyRequestListener implements DOMDataChangeListener {
                 }
             }
         }
-        LOGGER.debug("Created data processed");
     }
 
     private void processRemovedData(Set<YangInstanceIdentifier> removedPaths) {
@@ -119,7 +118,6 @@ public class TopologyRequestListener implements DOMDataChangeListener {
                 topologyRequestHandler.processDeletionRequest();
             }
         }
-        LOGGER.debug("Removed data processed");
     }
 
     /**
