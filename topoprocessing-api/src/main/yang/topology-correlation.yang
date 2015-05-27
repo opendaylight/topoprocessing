@@ -122,6 +122,7 @@
             }
             leaf aggregate-inside {
                 type boolean;
+                mandatory true;
                 description "True if aggregation should happen even inside the same topology.";
             }
         }
