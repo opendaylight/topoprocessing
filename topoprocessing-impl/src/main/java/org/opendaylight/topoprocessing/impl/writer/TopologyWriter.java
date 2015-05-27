@@ -278,4 +278,12 @@ public class TopologyWriter implements TransactionChainListener {
         }
         scheduleWrite();
     }
+
+    /**
+     * Deletes whole overlay {@link Topology}
+     */
+    public void deleteOverlayTopology() {
+        preparedOperations.add(new DeleteOperation(topologyIdentifier));
+        scheduleWrite();
+    }
 }

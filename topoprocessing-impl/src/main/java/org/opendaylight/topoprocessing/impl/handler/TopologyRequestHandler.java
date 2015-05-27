@@ -246,6 +246,7 @@ public class TopologyRequestHandler {
             listener.close();
         }
         listeners.clear();
+        writer.deleteOverlayTopology();
         if (transactionChain != null) {
             try {
                 transactionChain.close();
