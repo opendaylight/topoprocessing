@@ -252,7 +252,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     void write() {
-        LOGGER.debug("Writing prepared operations.");
+        LOGGER.trace("Writing prepared operations.");
         DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
         int operation = 0;
         while ((operation < MAXIMUM_OPERATIONS) && (preparedOperations.peek() != null)) {

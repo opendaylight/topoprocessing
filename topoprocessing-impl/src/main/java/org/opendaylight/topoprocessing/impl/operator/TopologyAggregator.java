@@ -44,7 +44,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
     @Override
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries,
                                                 final String topologyId) {
-        LOG.debug("Processing createdChanges");
+        LOG.trace("Processing createdChanges");
         if (createdEntries != null) {
             for (Entry<YangInstanceIdentifier, PhysicalNode> createdEntry : createdEntries.entrySet()) {
                 for (TopologyStore ts : getTopologyStores()) {
@@ -105,7 +105,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
 
     @Override
     public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId) {
-        LOG.debug("Processing removedChanges");
+        LOG.trace("Processing removedChanges");
         for (TopologyStore ts : getTopologyStores()) {
             if (ts.getId().equals(topologyId)) {
                 Map<YangInstanceIdentifier, PhysicalNode> physicalNodes = ts.getPhysicalNodes();
@@ -142,7 +142,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
     @Override
     public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries,
                                                 String topologyId) {
-        LOG.debug("Processing updatedChanges");
+        LOG.trace("Processing updatedChanges");
         if (updatedEntries != null) {
             for (Entry<YangInstanceIdentifier, PhysicalNode> updatedEntry : updatedEntries.entrySet()) {
                 for (TopologyStore ts : getTopologyStores()) {

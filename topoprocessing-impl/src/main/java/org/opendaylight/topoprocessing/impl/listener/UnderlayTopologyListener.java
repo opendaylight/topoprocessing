@@ -64,22 +64,21 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         this.pathIdentifier = pathIdentifier;
     }
 
-
     @Override
     public void onDataChanged(AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("DataChangeEvent received: " + change);
+            LOGGER.debug("DataChangeEvent received: {}", change);
         }
         if (! change.getCreatedData().isEmpty()) {
-            LOGGER.debug("Received createdData");
+            LOGGER.debug("Processing createdData");
             this.proceedChangeRequest(change.getCreatedData(), RequestAction.CREATE);
         }
         if (! change.getUpdatedData().isEmpty()) {
-            LOGGER.debug("Received updatedData");
+            LOGGER.debug("Processing updatedData");
             this.proceedChangeRequest(change.getUpdatedData(), RequestAction.UPDATE);
         }
         if (! change.getRemovedPaths().isEmpty()) {
-            LOGGER.debug("Received removedData");
+            LOGGER.debug("Processing removedData");
             this.proceedDeletionRequest(change.getRemovedPaths());
         }
         LOGGER.debug("DataChangeEvent processed");
@@ -91,10 +90,11 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         Iterator<Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator = map.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry = iterator.next();
-            LOGGER.debug("Entry received: " + entry);
             if (entry.getValue() instanceof MapEntryNode) {
                 if (entry.getValue().getNodeType().equals(Node.QNAME)) {
-                    LOGGER.debug("Processing entry: " + entry.getValue());
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Processing entry: {}", entry.getValue());
+                    }
                     Optional<NormalizedNode<?,?>> nodeWithNodeId = NormalizedNodes.findNode(entry.getValue(), NODE_ID_IDENTIFIER);
                     String nodeId;
                     if (nodeWithNodeId.isPresent()) {
@@ -106,10 +106,12 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                     PhysicalNode physicalNode = null;
                     if (operator instanceof TopologyAggregator) {
                         // AGGREGATION
-                        LOGGER.debug("Finding node: " + pathIdentifier);
+                        LOGGER.debug("Finding node: {}", pathIdentifier);
                         Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
                         if (node.isPresent()) {
-                            LOGGER.debug("Found node: " + node.get());
+                            if (LOGGER.isDebugEnabled()) {
+                                LOGGER.debug("Found node: {}", node.get());
+                            }
                             LeafNode<?> leafnode = (LeafNode<?>) node.get();
                             physicalNode = new PhysicalNode(entry.getValue(), leafnode, underlayTopologyId, nodeId);
                         } else {
@@ -120,7 +122,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                         physicalNode = new PhysicalNode(entry.getValue(), null, underlayTopologyId, nodeId);
                     }
                     resultEntries.put(entry.getKey(), physicalNode);
-                    LOGGER.debug("Created PhysicalNode: " + physicalNode);
+                    LOGGER.debug("PhysicalNode created");
                 }
             }
         }
