@@ -1,0 +1,182 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_dc7200e5",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-27T12:52:40Z",
+      "side": 1,
+      "message": "no need to check almost each argument for null, please remove these checks, as they will still be covered / wrapped in catch block - which states that Processing new request for topology change failed - and includes the exception stacktrace",
+      "range": {
+        "startLine": 115,
+        "startChar": 12,
+        "endLine": 120,
+        "endChar": 13
+      },
+      "revId": "efbac4db647b32336e14153932dcd26b069cfe8f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_7c772cd5",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-27T12:52:40Z",
+      "side": 1,
+      "message": "please use exception chaining mechanism",
+      "range": {
+        "startLine": 159,
+        "startChar": 12,
+        "endLine": 161,
+        "endChar": 20
+      },
+      "revId": "efbac4db647b32336e14153932dcd26b069cfe8f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_9c7478d0",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-27T12:52:40Z",
+      "side": 1,
+      "message": "please remove even this check",
+      "range": {
+        "startLine": 194,
+        "startChar": 7,
+        "endLine": 196,
+        "endChar": 9
+      },
+      "revId": "efbac4db647b32336e14153932dcd26b069cfe8f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_3c81a48f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-27T12:52:40Z",
+      "side": 1,
+      "message": "please remove even this check",
+      "revId": "efbac4db647b32336e14153932dcd26b069cfe8f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_1c506831",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandlerTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-27T12:52:40Z",
+      "side": 1,
+      "message": "remove commented code",
+      "range": {
+        "startLine": 99,
+        "startChar": 0,
+        "endLine": 125,
+        "endChar": 41
+      },
+      "revId": "efbac4db647b32336e14153932dcd26b069cfe8f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_3c58c455",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandlerTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 151,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-27T12:52:40Z",
+      "side": 1,
+      "message": "can be extracted into new method",
+      "range": {
+        "startLine": 149,
+        "startChar": 8,
+        "endLine": 151,
+        "endChar": 46
+      },
+      "revId": "efbac4db647b32336e14153932dcd26b069cfe8f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_9c2238b8",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandlerTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-27T12:52:40Z",
+      "side": 1,
+      "message": "you can import methods like when, any, eq statically - so that you don\u0027t have to write Mockito. each time",
+      "range": {
+        "startLine": 274,
+        "startChar": 55,
+        "endLine": 274,
+        "endChar": 68
+      },
+      "revId": "efbac4db647b32336e14153932dcd26b069cfe8f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_d70e5b34",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandlerTest.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-27T12:52:40Z",
+      "side": 1,
+      "message": "this part is the same as in next method, so it would be nice if this method tested both cases",
+      "range": {
+        "startLine": 282,
+        "startChar": 8,
+        "endLine": 299,
+        "endChar": 51
+      },
+      "revId": "efbac4db647b32336e14153932dcd26b069cfe8f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
