@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_9c3eb8b7",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/TopologyRequestListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-27T10:40:53Z",
+      "side": 1,
+      "message": "please use change.getCreatedData().isEmpty()",
+      "range": {
+        "startLine": 78,
+        "startChar": 12,
+        "endLine": 78,
+        "endChar": 34
+      },
+      "revId": "06cdac41fce411bc642b333bd434fba7996dc37f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_3c4be45a",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/TopologyRequestListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-27T10:40:53Z",
+      "side": 1,
+      "message": "please use change.getRemovedPaths().isEmpty",
+      "range": {
+        "startLine": 82,
+        "startChar": 12,
+        "endLine": 82,
+        "endChar": 35
+      },
+      "revId": "06cdac41fce411bc642b333bd434fba7996dc37f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_dc73e0af",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/TopologyRequestListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-27T10:40:53Z",
+      "side": 1,
+      "message": "add javadoc - for testing purposes only",
+      "revId": "06cdac41fce411bc642b333bd434fba7996dc37f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_5c9cb069",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/listener/TopologyRequestListenerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-27T10:40:53Z",
+      "side": 1,
+      "message": "duplicity",
+      "range": {
+        "startLine": 78,
+        "startChar": 16,
+        "endLine": 78,
+        "endChar": 95
+      },
+      "revId": "06cdac41fce411bc642b333bd434fba7996dc37f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_bc8294fe",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/listener/TopologyRequestListenerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-27T10:40:53Z",
+      "side": 1,
+      "message": "duplicity",
+      "range": {
+        "startLine": 113,
+        "startChar": 17,
+        "endLine": 113,
+        "endChar": 95
+      },
+      "revId": "06cdac41fce411bc642b333bd434fba7996dc37f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
