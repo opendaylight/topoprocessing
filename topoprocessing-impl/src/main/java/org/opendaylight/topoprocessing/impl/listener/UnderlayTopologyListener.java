@@ -22,6 +22,8 @@ import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -94,7 +96,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                 if (entry.getValue().getNodeType().equals(Node.QNAME)) {
                     LOGGER.debug("Processing entry: " + entry.getValue());
                     Optional<NormalizedNode<?,?>> nodeWithNodeId = NormalizedNodes.findNode(entry.getValue(), NODE_ID_IDENTIFIER);
-                    String nodeId = null;
+                    String nodeId;
                     if (nodeWithNodeId.isPresent()) {
                         LeafNode<?> nodeIdLeafNode = (LeafNode<?>) nodeWithNodeId.get();
                         nodeId = nodeIdLeafNode.getValue().toString();
@@ -106,8 +108,8 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                         // AGGREGATION
                         LOGGER.debug("Finding node: " + pathIdentifier);
                         Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
-                        LOGGER.debug("Found node: " + node.get());
                         if (node.isPresent()) {
+                            LOGGER.debug("Found node: " + node.get());
                             LeafNode<?> leafnode = (LeafNode<?>) node.get();
                             physicalNode = new PhysicalNode(entry.getValue(), leafnode, underlayTopologyId, nodeId);
                         } else {
@@ -136,8 +138,8 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         Iterator<YangInstanceIdentifier> iterator = set.iterator();
         while (iterator.hasNext()) {
             YangInstanceIdentifier identifierOperational = iterator.next();
-            YangInstanceIdentifier.PathArgument lastPathArgument = identifierOperational.getLastPathArgument();
-            if (! (lastPathArgument instanceof YangInstanceIdentifier.AugmentationIdentifier)) {
+            PathArgument lastPathArgument = identifierOperational.getLastPathArgument();
+            if (! (lastPathArgument instanceof AugmentationIdentifier)) {
                 if (lastPathArgument.getNodeType().equals(Node.QNAME)) {
                     if (! lastPathArgument.equals(NODE_IDENTIFIER.getLastPathArgument())) {
                         identifiers.add(identifierOperational);
