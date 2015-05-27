@@ -31,7 +31,7 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
 
     @Override
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, String topologyId) {
-        LOG.debug("Processing createdChanges");
+        LOG.trace("Processing createdChanges");
         for (Map.Entry<YangInstanceIdentifier, PhysicalNode> nodeEntry : createdEntries.entrySet()) {
             PhysicalNode newNodeValue = nodeEntry.getValue();
             if (passedFiltration(newNodeValue)) {
@@ -40,12 +40,11 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
                 manager.addLogicalNode(logicalNode);
             }
         }
-        LOG.debug("CreatedChanges processed");
     }
 
     @Override
     public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId) {
-        LOG.debug("Processing updatedChanges");
+        LOG.trace("Processing updatedChanges");
         for (Map.Entry<YangInstanceIdentifier, PhysicalNode> mapEntry : updatedEntries.entrySet()) {
             PhysicalNode updatedNode = mapEntry.getValue();
             PhysicalNode oldNode = getTopologyStore(topologyId).getPhysicalNodes().get(mapEntry.getKey());
@@ -74,19 +73,17 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
                 }
             }
         }
-        LOG.debug("UpdatedChanges processed");
     }
 
     @Override
     public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
-        LOG.debug("Processing removedChanges");
+        LOG.trace("Processing removedChanges");
         for (YangInstanceIdentifier nodeIdentifier : identifiers) {
             PhysicalNode physicalNode = getTopologyStore(topologyId).getPhysicalNodes().remove(nodeIdentifier);
             if (null != physicalNode) {
                 manager.removeLogicalNode(physicalNode.getLogicalNode());
             }
         }
-        LOG.debug("RemovedChanges processed");
     }
 
     @Override

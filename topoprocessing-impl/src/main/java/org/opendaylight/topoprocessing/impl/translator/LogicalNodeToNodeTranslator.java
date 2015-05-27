@@ -39,9 +39,6 @@ import com.google.common.base.Optional;
  */
 public class LogicalNodeToNodeTranslator {
 
-    /**
-     * 
-     */
     private static final YangInstanceIdentifier TP_IDENTIFIER = YangInstanceIdentifier.of(TerminationPoint.QNAME);
     private static final Logger LOG = LoggerFactory.getLogger(LogicalNodeToNodeTranslator.class);
 
@@ -51,7 +48,6 @@ public class LogicalNodeToNodeTranslator {
      * @return Node
      */
     public NormalizedNode<?, ?> translate(LogicalNodeWrapper wrapper) {
-
         LOG.debug("Transforming LogicalNodeWrapper to Node");
         List<PhysicalNode> writtenNodes = new ArrayList<>();
         CollectionNodeBuilder<MapEntryNode, MapNode> supportingNodes = ImmutableNodes.mapNodeBuilder(

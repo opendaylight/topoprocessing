@@ -62,7 +62,7 @@ public class NodeIpFiltrator {
                 }
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Node with value " + node.getNode() + " was filtered out");
+                LOG.debug("Node with value {} was filtered out", node.getNode());
             }
         } catch (UnknownHostException e) {
             LOG.error("Wrong format of IP address");

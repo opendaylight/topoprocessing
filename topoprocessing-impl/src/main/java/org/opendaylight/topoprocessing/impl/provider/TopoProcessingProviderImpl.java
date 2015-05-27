@@ -53,7 +53,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     public TopoProcessingProviderImpl(SchemaService schemaService, DOMDataBroker dataBroker,
             BindingNormalizedNodeSerializer nodeSerializer, RpcServices rpcServices,
             DatastoreType datastoreType) {
-        LOGGER.debug("Creating TopoProcessingProvider");
+        LOGGER.trace("Creating TopoProcessingProvider");
         Preconditions.checkNotNull(schemaService, "SchemaService can't be null");
         Preconditions.checkNotNull(dataBroker, "DOMDataBroker can't be null");
         Preconditions.checkNotNull(nodeSerializer, "BindingNormalizedNodeSerializer can't be null");
@@ -70,7 +70,6 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
     @Override
     public void startup() {
-        LOGGER.debug("TopoProcessingProvider - startup()");
         schemaContextListenerRegistration =
                 schemaService.registerSchemaContextListener(new GlobalSchemaContextListener(schemaHolder));
         registerTopologyRequestListener();
@@ -78,10 +77,9 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
     @Override
     public void close() throws Exception {
-        LOGGER.debug("TopoProcessingProvider - close()");
+        LOGGER.trace("TopoProcessingProvider - close()");
         schemaContextListenerRegistration.close();
         topologyRequestListenerRegistration.close();
-        LOGGER.debug("TopoProcessingProvider - successfully closed");
     }
 
     private void registerTopologyRequestListener() {
@@ -89,7 +87,6 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         topologyRequestListenerRegistration =
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                         InstanceIdentifiers.TOPOLOGY_IDENTIFIER, topologyRequestListener, DataChangeScope.ONE);
-        LOGGER.debug("Topology Request Listener has been successfully registered");
     }
 
 }

@@ -156,8 +156,7 @@ public class TopologyRequestHandler {
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
-            LOG.debug("Registering filtering underlay topology listener for topology: "
-                    + underlayTopologyId);
+            LOG.debug("Registering filtering underlay topology listener for topology: {}", underlayTopologyId);
             ListenerRegistration<DOMDataChangeListener> listenerRegistration;
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
                 listenerRegistration = domDataBroker.registerDataChangeListener(
@@ -166,8 +165,6 @@ public class TopologyRequestHandler {
                 listenerRegistration = domDataBroker.registerDataChangeListener(
                         LogicalDatastoreType.CONFIGURATION, nodeIdentifier, listener, DataChangeScope.SUBTREE);
             }
-            LOG.debug("Filtering Underlay topology listener for topology: " + underlayTopologyId
-                    + " has been successfully registered");
             listeners.add(listenerRegistration);
         }
     }
@@ -183,8 +180,7 @@ public class TopologyRequestHandler {
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
-            LOG.debug("Registering underlay topology listener for topology: "
-                    + underlayTopologyId);
+            LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
             ListenerRegistration<DOMDataChangeListener> listenerRegistration;
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
                 listenerRegistration = domDataBroker.registerDataChangeListener(
@@ -193,8 +189,6 @@ public class TopologyRequestHandler {
                 listenerRegistration = domDataBroker.registerDataChangeListener(
                         LogicalDatastoreType.CONFIGURATION, nodeIdentifier, listener, DataChangeScope.SUBTREE);
             }
-            LOG.debug("Underlay topology listener for topology: " + underlayTopologyId
-                    + " has been successfully registered");
             listeners.add(listenerRegistration);
         }
     }
@@ -251,7 +245,7 @@ public class TopologyRequestHandler {
             try {
                 transactionChain.close();
             } catch (Exception e) {
-                LOG.error("An error occurred while closing transaction chain: " + transactionChain, e);
+                LOG.error("An error occurred while closing transaction chain: {}",transactionChain, e);
             }
         }
     }

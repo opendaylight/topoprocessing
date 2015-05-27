@@ -144,13 +144,11 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
 
     @Override
     public void onRpcAvailable(Collection<DOMRpcIdentifier> rpcs) {
-        LOGGER.debug("onRpcAvailable" + rpcs);
         availableRpcs.addAll(rpcs);
     }
 
     @Override
     public void onRpcUnavailable(Collection<DOMRpcIdentifier> rpcs) {
-        LOGGER.debug("onRpcUnavailable" + rpcs);
         availableRpcs.removeAll(rpcs);
     }
 
@@ -187,6 +185,5 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
                     .registerRpcImplementation(overlayImplementation, overlayRpcIdentifiers);
             }
         }
-        LOGGER.trace("Overlay RPCs registered");
     }
 }
