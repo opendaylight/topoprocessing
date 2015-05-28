@@ -60,13 +60,6 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>features-openflowplugin</artifactId>
-            <version>${openflowplugin.version}</version>
-            <classifier>features</classifier>
-            <type>xml</type>
-        </dependency>
         <!-- bundle dependencies -->
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
@@ -136,14 +129,24 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-	    <groupId>org.opendaylight.topoprocessing</groupId>
-	    <artifactId>mlmt-topology-inventory-impl</artifactId>
-	    <version>${project.version}</version>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>mlmt-topology-inventory-impl</artifactId>
+            <version>${project.version}</version>
         </dependency>
-       <dependency>
-	    <groupId>org.opendaylight.topoprocessing</groupId>
-	    <artifactId>mlmt-topology-inventory-model</artifactId>
-	    <version>${project.version}</version>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>mlmt-topology-inventory-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-topology</artifactId>
+            <version>${mdsal.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.model</groupId>
+            <artifactId>model-topology</artifactId>
+            <version>${mdsal.version}</version>
         </dependency>
 
         <!-- test to validate features.xml -->
