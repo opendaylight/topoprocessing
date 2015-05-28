@@ -46,6 +46,30 @@
       "revId": "ac592d8a358569ada0bd50e14d544bf4e61f3fc1",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_57756696",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-28T12:14:14Z",
+      "side": 1,
+      "message": "why did you add handlerList getter ?\nwhat kind of optimization ?",
+      "parentUuid": "1a9dcd25_d1f8a67e",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 39
+      },
+      "revId": "ac592d8a358569ada0bd50e14d544bf4e61f3fc1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
