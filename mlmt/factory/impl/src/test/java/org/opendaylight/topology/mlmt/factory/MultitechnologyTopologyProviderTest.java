@@ -54,22 +54,40 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.node.attributes.isis.node.attributes.TedBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.node.attributes.IsisNodeAttributesBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.IgpNodeAttributes1Builder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.IgpNodeAttributes1;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.link.attributes.IsisLinkAttributesBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.IgpLinkAttributes1Builder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.IgpLinkAttributes1;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.igp.node.attributes.IgpNodeAttributesBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.igp.node.attributes.IgpNodeAttributes;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.Node1Builder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.Node1;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.Link1Builder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.Link1;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.igp.link.attributes.IgpLinkAttributesBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.Link1Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.attribute.Value;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.Attribute;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.AttributeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtTedNodeAttributeValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtTedLinkAttributeValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtLinkMetricAttributeValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoLink;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.mlmt.parser.MultitechnologyAttributesParserImpl;
 import org.slf4j.Logger;
@@ -182,7 +200,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         assertCommit(rwTx.submit());
 
         synchronized (waitObject) {
-		    waitObject.wait(1500);
+            waitObject.wait(1500);
         }
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
@@ -219,7 +237,6 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
 
     @Test(timeout = 10000)
     public void onNodeCreatedTest() throws Exception {
-
         NodeBuilder nodeBuilder = new NodeBuilder();
         String nodeName = "node:1";
         NodeId nodeId = new NodeId(nodeName);
@@ -227,6 +244,14 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         NodeKey nodeKey = new NodeKey(nodeId);
         nodeBuilder.setKey(nodeKey);
         InstanceIdentifier<Node> nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
+
+        WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, nodeIid, nodeBuilder.build());
+        assertCommit(rwTx.submit());
+
+        synchronized (waitObject) {
+            waitObject.wait(1500);
+        }
 
         TedBuilder tedBuilder = new TedBuilder();
         Ipv4Address ipv4Address = new Ipv4Address("10.0.0.1");
@@ -240,17 +265,8 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         Node1Builder node1Builder = new Node1Builder();
         node1Builder.setIgpNodeAttributes(igpNodeAttributesBuilder.build());
         nodeBuilder.addAugmentation(Node1.class, node1Builder.build());
-        Node node = nodeBuilder.build();
 
-        WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, nodeIid, node);
-        assertCommit(rwTx.submit());
-
-        synchronized (waitObject) {
-            waitObject.wait(1500);
-        }
-
-        provider.onNodeCreated(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, node);
+        provider.onNodeCreated(LogicalDatastoreType.OPERATIONAL, exampleIid, nodeBuilder.build());
 
         synchronized (waitObject) {
             waitObject.wait(1500);
@@ -266,7 +282,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
                 rx.read(LogicalDatastoreType.OPERATIONAL, instanceAttributeId).get();
 
         assertNotNull(sourceAttributeObject);
-        assertNotNull(sourceAttributeObject.isPresent());
+        assertTrue(sourceAttributeObject.isPresent());
         Attribute attribute = sourceAttributeObject.get();
         assertNotNull(attribute);
         Value value = attribute.getValue();
@@ -274,6 +290,132 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         MtTedNodeAttributeValue mtTedNodeAttributeValue = value.getAugmentation(MtTedNodeAttributeValue.class);
         assertNotNull(mtTedNodeAttributeValue);
         assertEquals(mtTedNodeAttributeValue.getTeRouterIdIpv4().getValue(), ipv4Address.getValue());
+    }
+
+    @Test(timeout = 10000)
+    public void onTpCreatedTest() throws Exception {
+        NodeBuilder nodeBuilder = new NodeBuilder();
+        String nodeName = "node:1";
+        NodeId nodeId = new NodeId(nodeName);
+        nodeBuilder.setNodeId(nodeId);
+        NodeKey nodeKey = new NodeKey(nodeId);
+        nodeBuilder.setKey(nodeKey);
+        InstanceIdentifier<Node> nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
+
+        WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, nodeIid, nodeBuilder.build());
+        assertCommit(rwTx.submit());
+
+        synchronized (waitObject) {
+            waitObject.wait(1500);
+        }
+
+        TpId tpId = new TpId("tp:1");
+        final TerminationPointKey tpKey = new TerminationPointKey(tpId);
+        final TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
+        tpBuilder.setKey(tpKey);
+        tpBuilder.setTpId(tpId);
+        final InstanceIdentifier<TerminationPoint> instanceId = mlmtTopologyIid
+                .child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
+
+        rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, instanceId, tpBuilder.build());
+        assertCommit(rwTx.submit());
+
+        synchronized (waitObject) {
+            waitObject.wait(1500);
+        }
+
+        provider.onTpCreated(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid,
+                nodeKey, tpBuilder.build());
+
+        synchronized (waitObject) {
+            waitObject.wait(1500);
+        }
+
+        ReadOnlyTransaction rx = dataBroker.newReadOnlyTransaction();
+        final Optional<TerminationPoint> sourceAttributeObject =
+                rx.read(LogicalDatastoreType.OPERATIONAL, instanceId).get();
+        assertNotNull(sourceAttributeObject);
+        assertTrue(sourceAttributeObject.isPresent());
+    }
+
+    @Test(timeout = 10000)
+    public void onLinkCreatedTest() throws Exception {
+        LinkBuilder linkBuilder = new LinkBuilder();
+        String linkName = "link:1";
+        LinkId linkId = new LinkId(linkName);
+        linkBuilder.setLinkId(linkId);
+        LinkKey linkKey = new LinkKey(linkId);
+        linkBuilder.setKey(linkKey);
+        InstanceIdentifier<Link> linkIid = mlmtTopologyIid.child(Link.class, linkKey);
+
+        WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, linkIid, linkBuilder.build());
+        assertCommit(rwTx.submit());
+
+        synchronized (waitObject) {
+            waitObject.wait(1500);
+        }
+
+        java.lang.Long teDefaultMetric = 20L;
+        java.lang.Long metric = 100L;
+        org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.link.attributes.isis.link.attributes.TedBuilder
+                tedBuilder = new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.link.attributes.isis.link.attributes.TedBuilder();
+        tedBuilder.setTeDefaultMetric(teDefaultMetric);
+        IsisLinkAttributesBuilder isisLinkAttributesBuilder = new IsisLinkAttributesBuilder();
+        isisLinkAttributesBuilder.setTed(tedBuilder.build());
+        IgpLinkAttributes1Builder igpLinkAttributes1Builder = new IgpLinkAttributes1Builder();
+        igpLinkAttributes1Builder.setIsisLinkAttributes(isisLinkAttributesBuilder.build());
+        IgpLinkAttributesBuilder igpLinkAttributesBuilder = new IgpLinkAttributesBuilder();
+        igpLinkAttributesBuilder.addAugmentation(IgpLinkAttributes1.class, igpLinkAttributes1Builder.build());
+        igpLinkAttributesBuilder.setMetric(metric);
+        Link1Builder link1Builder = new Link1Builder();
+        link1Builder.setIgpLinkAttributes(igpLinkAttributesBuilder.build());
+        linkBuilder.addAugmentation(Link1.class, link1Builder.build());
+
+        provider.onLinkCreated(LogicalDatastoreType.OPERATIONAL, exampleIid, linkBuilder.build());
+
+        synchronized (waitObject) {
+            waitObject.wait(1500);
+        }
+
+        String path = "native-ted:1";
+        ReadOnlyTransaction rx = dataBroker.newReadOnlyTransaction();
+        Uri uri = new Uri(path);
+        AttributeKey attributeKey = new AttributeKey(uri);
+        InstanceIdentifier<Attribute> instanceAttributeId = mlmtTopologyIid.child(Link.class, linkKey)
+                .augmentation(MtInfoLink.class).child(Attribute.class, attributeKey);
+        Optional<Attribute> sourceAttributeObject =
+                rx.read(LogicalDatastoreType.OPERATIONAL, instanceAttributeId).get();
+
+        assertNotNull(sourceAttributeObject);
+        assertTrue(sourceAttributeObject.isPresent());
+        Attribute attribute = sourceAttributeObject.get();
+        assertNotNull(attribute);
+        Value value = attribute.getValue();
+        assertNotNull(value);
+        MtTedLinkAttributeValue mtTedLinkAttributeValue = value.getAugmentation(MtTedLinkAttributeValue.class);
+        assertNotNull(mtTedLinkAttributeValue);
+        assertEquals(mtTedLinkAttributeValue.getTeDefaultMetric(), teDefaultMetric);
+
+        path = "native-l3-igp-metric:1";
+        rx = dataBroker.newReadOnlyTransaction();
+        uri = new Uri(path);
+        attributeKey = new AttributeKey(uri);
+        instanceAttributeId = mlmtTopologyIid.child(Link.class, linkKey)
+                .augmentation(MtInfoLink.class).child(Attribute.class, attributeKey);
+        sourceAttributeObject = rx.read(LogicalDatastoreType.OPERATIONAL, instanceAttributeId).get();
+
+        assertNotNull(sourceAttributeObject);
+        assertTrue(sourceAttributeObject.isPresent());
+        attribute = sourceAttributeObject.get();
+        assertNotNull(attribute);
+        value = attribute.getValue();
+        assertNotNull(value);
+        MtLinkMetricAttributeValue mtLinkMetricAttributeValue = value.getAugmentation(MtLinkMetricAttributeValue.class);
+        assertNotNull(mtLinkMetricAttributeValue);
+        assertEquals(mtLinkMetricAttributeValue.getMetric(), metric);
     }
 
     @After
