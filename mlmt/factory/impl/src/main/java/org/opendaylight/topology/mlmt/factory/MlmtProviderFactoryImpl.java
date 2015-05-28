@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.topology.mlmt.utility.MlmtProviderFactory;
+import org.opendaylight.topology.mlmt.utility.MlmtConsequentAction;
 import org.opendaylight.topology.mlmt.inventory.InventoryTopologyProvider;
 import org.opendaylight.topology.multitechnology.MultitechnologyTopologyProvider;
 import org.opendaylight.topology.forwarding.adjacency.ForwardingAdjacencyTopologyProvider;
@@ -70,7 +71,7 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
         forwardingAdjacencyTopologyProvider.init(logger, processor, mlmtTopologyId);
         forwardingAdjacencyTopologyProvider.setDataProvider(dataBroker);
         /*
-	 * creating and adding multilayer provider
+         * creating and adding multilayer provider
          */
         MultilayerAttributesParserImpl multilayerAttributesParser = new MultilayerAttributesParserImpl();
         multilayerAttributesParser.init(logger);
@@ -88,8 +89,12 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
     }
 
     @Override
-    public boolean isBuildingTopologyType(TopologyTypes topologyType) {
-        return true;
+    public MlmtConsequentAction consequentAction(TopologyTypes topologyType) {
+        MtTopologyType mtTopologyType = topologyType.getAugmentation(MtTopologyType.class);
+        if (mtTopologyType != null)
+            return MlmtConsequentAction.COPY;
+
+        return MlmtConsequentAction.BUILD;
     }
 }
 

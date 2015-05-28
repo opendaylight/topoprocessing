@@ -208,6 +208,22 @@ public class MlmtTopologyBuilder {
         });
     }
 
+    public void copyNode(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final TopologyId nodeTopologyId,
+            final Node node) {
+        log.info("MlmtTopologyBuilder.copyNode type: " + type + " topologyInstanceId: "
+                + topologyInstanceId.toString() + " TopologyId: " + nodeTopologyId.toString()
+                + " nodeKey: " + node.getKey().toString());
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                final InstanceIdentifier<Node> path = topologyInstanceId.child(Node.class, node.getKey());
+                transaction.merge(type, path, node);
+            }
+        });
+    }
+
     public void createTp(final LogicalDatastoreType type,
            final InstanceIdentifier<Topology> topologyInstanceId,
            final NodeKey nodeKey,
@@ -250,6 +266,23 @@ public class MlmtTopologyBuilder {
 
              @Override
              public boolean isCommitNow() { return true; }
+        });
+    }
+
+   public void copyTp(final LogicalDatastoreType type,
+           final InstanceIdentifier<Topology> topologyInstanceId,
+           final NodeKey nodeKey,
+           final TerminationPoint tp) {
+        log.info("MlmtTopologyBuilder.copyTp type: " + type + " topologyInstanceId: "
+                + topologyInstanceId.toString() + " nodeKey: " + nodeKey.toString()
+                + " terminationPointKey: " + tp.getKey().toString());
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+             @Override
+             public void applyOperation(ReadWriteTransaction transaction) {
+                 final InstanceIdentifier<TerminationPoint> instanceId = topologyInstanceId
+                           .child(Node.class, nodeKey).child(TerminationPoint.class, tp.getKey());
+                 transaction.merge(type, instanceId, tp);
+             }
         });
     }
 
@@ -297,6 +330,20 @@ public class MlmtTopologyBuilder {
 
              @Override
              public boolean isCommitNow() { return true; }
+        });
+    }
+
+    public void copyLink(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final Link link) {
+        log.info("MlmtTopologyBuilder.copyLink type: " + type + " topologyInstanceId: "
+                + topologyInstanceId.toString() + " linkKey: " + link.getKey().toString());
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+             @Override
+             public void applyOperation(ReadWriteTransaction transaction) {
+                 InstanceIdentifier<Link> linkInstanceId = topologyInstanceId.child(Link.class, link.getKey());
+                 transaction.merge(type, linkInstanceId, link);
+             }
         });
     }
 }
