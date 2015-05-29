@@ -10,6 +10,7 @@ package org.opendaylight.topoprocessing.impl.rpc;
 
 import java.util.Collection;
 
+import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcException;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcImplementation;
@@ -45,8 +46,7 @@ import com.google.common.util.concurrent.CheckedFuture;
  */
 public class OverlayRpcImplementation implements DOMRpcImplementation {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(OverlayRpcImplementation.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OverlayRpcImplementation.class);
     private DOMRpcService rpcService;
     private SchemaContext schemaContext;
     private YangInstanceIdentifier underlayNodeIdentifier;
@@ -71,6 +71,10 @@ public class OverlayRpcImplementation implements DOMRpcImplementation {
             LOGGER.debug("Invoked rpc: " + rpc);
         }
         RpcDefinition rpcDefinition = findRpcDefinition(schemaContext, rpc.getType());
+        if (null == rpcDefinition) {
+            return Futures.immediateFailedCheckedFuture(
+                    (DOMRpcException) new DOMRpcException("Rpc definition not found") {});
+        }
         RpcRoutingStrategy routingStrategy = RpcRoutingStrategy.from(rpcDefinition);
         DataContainerNodeAttrBuilder<NodeIdentifier, ContainerNode> containerBuilder =
                 ImmutableContainerNodeBuilder.create(ImmutableNodes.containerNode(input.getNodeType()));
