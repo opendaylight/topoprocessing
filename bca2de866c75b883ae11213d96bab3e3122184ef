@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_069a4e63",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/translator/PathTranslatorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-29T14:18:20Z",
+      "side": 1,
+      "message": "do we need to call toString() ?",
+      "range": {
+        "startLine": 110,
+        "startChar": 35,
+        "endLine": 110,
+        "endChar": 45
+      },
+      "revId": "bca2de866c75b883ae11213d96bab3e3122184ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_c67c6623",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/translator/PathTranslatorTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-05-29T14:18:20Z",
+      "side": 1,
+      "message": "move expression on new line",
+      "revId": "bca2de866c75b883ae11213d96bab3e3122184ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
