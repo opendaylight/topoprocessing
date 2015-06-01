@@ -8,6 +8,9 @@
 
 package org.opendaylight.topoprocessing.impl.structure;
 
+import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
+
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 
 /**
@@ -18,11 +21,12 @@ public class IdentifierGenerator {
     /**
      * Value for internal counter
      */
-    private int id = 0;
+    private volatile int id = 0;
+    AtomicIntegerFieldUpdater<IdentifierGenerator> idUpdater =
+            AtomicIntegerFieldUpdater.newUpdater(IdentifierGenerator.class, "id");
 
     private int getNextId() {
-        id += 1;
-        return id;
+        return idUpdater.incrementAndGet(this);
     }
 
     /**
