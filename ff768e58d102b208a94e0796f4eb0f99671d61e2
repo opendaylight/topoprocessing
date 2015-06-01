@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_53f4915a",
+        "filename": "distribution-karaf/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-06-01T07:53:49Z",
+      "side": 1,
+      "message": "1.1.0-SNAPSHOT version is set in master. Was the \u003cbranding.version\u003e bumped also for stable/lithium ?",
+      "range": {
+        "startLine": 21,
+        "startChar": 26,
+        "endLine": 21,
+        "endChar": 31
+      },
+      "revId": "ff768e58d102b208a94e0796f4eb0f99671d61e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
