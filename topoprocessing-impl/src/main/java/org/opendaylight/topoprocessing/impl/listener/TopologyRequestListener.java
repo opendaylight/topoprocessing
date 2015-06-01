@@ -95,9 +95,9 @@ public class TopologyRequestListener implements DOMDataChangeListener {
                     if (topology.getAugmentation(CorrelationAugment.class) != null) {
                         TopologyRequestHandler requestHandler =
                                 new TopologyRequestHandler(dataBroker, schemaHolder, rpcServices);
-                        topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
                         requestHandler.setDatastoreType(datastoreType);
                         requestHandler.processNewRequest(topology);
+                        topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
 
                         Optional<DataContainerChild<? extends PathArgument, ?>> topologyTypes =
                                 ((MapEntryNode) normalizedNode).getChild(new NodeIdentifier(TopologyTypes.QNAME));
