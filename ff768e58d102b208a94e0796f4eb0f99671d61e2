@@ -22,6 +22,30 @@
       "revId": "ff768e58d102b208a94e0796f4eb0f99671d61e2",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_13ee0989",
+        "filename": "distribution-karaf/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-06-01T07:56:17Z",
+      "side": 1,
+      "message": "Found out what the problem is - please ignore previous comment. Thank you for the patch.",
+      "parentUuid": "1a9dcd25_53f4915a",
+      "range": {
+        "startLine": 21,
+        "startChar": 26,
+        "endLine": 21,
+        "endChar": 31
+      },
+      "revId": "ff768e58d102b208a94e0796f4eb0f99671d61e2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
