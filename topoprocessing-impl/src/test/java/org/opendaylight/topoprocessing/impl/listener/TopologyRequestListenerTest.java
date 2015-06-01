@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -38,6 +39,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
+import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableContainerNodeBuilder;
 
 import java.util.*;
 
@@ -74,7 +76,9 @@ public class TopologyRequestListenerTest {
     public void testCreateCorrectNode() {
         YangInstanceIdentifier yiid = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME).node(Topology.QNAME)
                 .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPO_NAME).build();
-        MapEntryNode node = ImmutableNodes.mapEntry(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPO_NAME);
+        MapEntryNode node = ImmutableNodes.mapEntryBuilder(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPO_NAME)
+                .addChild(ImmutableContainerNodeBuilder.create(
+                        ImmutableNodes.containerNode(TopologyTypes.QNAME)).build()).build();
         Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map = new HashMap<>();
         map.put(yiid, node);
         Mockito.when(mockChange.getCreatedData()).thenReturn(map);
@@ -135,6 +139,7 @@ public class TopologyRequestListenerTest {
                 (YangInstanceIdentifier) Matchers.any(), (NormalizedNode<?, ?>) Matchers.any());
     }
 
+    @Test
     public void testRemoveNode() {
         YangInstanceIdentifier yiid = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME).node(Topology.QNAME)
                 .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPO_NAME).build();
