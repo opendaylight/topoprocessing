@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a9dcd25_6e93e4fa",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-06-01T12:25:38Z",
+      "side": 1,
+      "message": "please remove",
+      "range": {
+        "startLine": 127,
+        "startChar": 20,
+        "endLine": 130,
+        "endChar": 21
+      },
+      "revId": "78e251b0955f83525d13d46a1e8097d314a86d74",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_8e90b0ed",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-06-01T12:25:38Z",
+      "side": 1,
+      "message": "please remove",
+      "range": {
+        "startLine": 137,
+        "startChar": 20,
+        "endLine": 140,
+        "endChar": 21
+      },
+      "revId": "78e251b0955f83525d13d46a1e8097d314a86d74",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_2ebddc68",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandler.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-06-01T12:25:38Z",
+      "side": 1,
+      "message": "please remove",
+      "range": {
+        "startLine": 147,
+        "startChar": 20,
+        "endLine": 150,
+        "endChar": 21
+      },
+      "revId": "78e251b0955f83525d13d46a1e8097d314a86d74",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a9dcd25_4ec2a8ea",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/handler/TopologyRequestHandlerTest.java",
+        "patchSetId": 11
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-06-01T12:25:38Z",
+      "side": 1,
+      "message": "why do we call this field handlerField ? Wouldn\u0027t it be enought to use handler (testHandler, ...) ?",
+      "range": {
+        "startLine": 91,
+        "startChar": 35,
+        "endLine": 91,
+        "endChar": 47
+      },
+      "revId": "78e251b0955f83525d13d46a1e8097d314a86d74",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
