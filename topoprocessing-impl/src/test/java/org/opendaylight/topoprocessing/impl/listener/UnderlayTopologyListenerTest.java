@@ -108,6 +108,20 @@ public class UnderlayTopologyListenerTest {
         ArrayList<YangInstanceIdentifier> identifiers = new ArrayList<>();
         identifiers.add(nodeIdYiid);
         Mockito.verify(mockOperator).processRemovedChanges(Matchers.refEq(identifiers), Matchers.eq(TOPOLOGY_ID));
+    }
 
+    @Test(expected = IllegalStateException.class)
+    public void testIncorrectNode() {
+        String topoId = "node:1";
+        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.of(Node.QNAME);
+        MapEntryNode nodeValue = ImmutableNodes.mapEntry(Node.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, topoId);
+        HashMap<YangInstanceIdentifier, NormalizedNode<?, ?>> mapCreated = new HashMap<>();
+        mapCreated.put(nodeYiid, nodeValue);
+
+        TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
+        UnderlayTopologyListener listener = new UnderlayTopologyListener(mockOperator, TOPOLOGY_ID, nodeYiid);
+
+        Mockito.when(mockChange.getCreatedData()).thenReturn(mapCreated);
+        listener.onDataChanged(mockChange);
     }
 }
