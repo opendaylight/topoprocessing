@@ -210,8 +210,7 @@ public class TopologyRequestHandler {
     }
 
     private static YangInstanceIdentifier buildNodeIdentifier(
-            YangInstanceIdentifier.InstanceIdentifierBuilder builder, CorrelationItemEnum correlationItemEnum)
-                    throws IllegalStateException {
+            YangInstanceIdentifier.InstanceIdentifierBuilder builder, CorrelationItemEnum correlationItemEnum) {
         switch (correlationItemEnum) {
             case Node:
                 builder.node(Node.QNAME);
