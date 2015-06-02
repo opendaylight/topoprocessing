@@ -10,6 +10,7 @@
 
     <groupId>org.opendaylight.topoprocessing</groupId>
     <artifactId>topoprocessing-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <name>topoprocessing</name> <!-- Used by Sonar to set project name -->
     <packaging>pom</packaging>
 

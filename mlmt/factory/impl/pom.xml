@@ -47,12 +47,12 @@
     <dependency>
       <groupId>org.opendaylight.yangtools.model</groupId>
       <artifactId>ietf-topology-l3-unicast-igp</artifactId>
-      <version>${ietf.l3.unicast.igp.version}</version>
+      <version>${ietf.model.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.yangtools.model</groupId>
       <artifactId>ietf-topology-isis</artifactId>
-      <version>${ietf.isis.version}</version>
+      <version>${ietf.model.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
