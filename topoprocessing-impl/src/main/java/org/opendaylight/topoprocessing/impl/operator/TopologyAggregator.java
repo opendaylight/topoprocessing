@@ -81,14 +81,15 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
                                 newNode.setLogicalNode(logicalNode);
                                 topologyManager.addLogicalNode(logicalNode);
                                 return;
+                            } else {
+                                LOG.debug("Adding physical node to existing Logical Node");
+                                // add new physical node into existing logical node
+                                LogicalNode logicalNodeIdentifier = topoStoreNode.getLogicalNode();
+                                newNode.setLogicalNode(logicalNodeIdentifier);
+                                logicalNodeIdentifier.addPhysicalNode(newNode);
+                                topologyManager.updateLogicalNode(logicalNodeIdentifier);
+                                return;
                             }
-                            LOG.debug("Adding physical node to existing Logical Node");
-                            // add new physical node into existing logical node
-                            LogicalNode logicalNodeIdentifier = topoStoreNode.getLogicalNode();
-                            newNode.setLogicalNode(logicalNodeIdentifier);
-                            logicalNodeIdentifier.addPhysicalNode(newNode);
-                            topologyManager.updateLogicalNode(logicalNodeIdentifier);
-                            return;
                         }
                     }
                 }
