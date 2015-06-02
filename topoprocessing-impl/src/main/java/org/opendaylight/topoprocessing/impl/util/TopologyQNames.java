@@ -19,7 +19,7 @@ import org.opendaylight.yangtools.yang.common.QName;
  * @author michal.polkorab
  *
  */
-public class TopologyQNames {
+public final class TopologyQNames {
 
     /** Network-topology topology-id QName */
     public static final QName TOPOLOGY_ID_QNAME = QName.create(Topology.QNAME, "topology-id");

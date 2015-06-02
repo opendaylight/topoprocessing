@@ -65,7 +65,6 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         schemaHolder = new GlobalSchemaContextHolder(schemaService.getGlobalContext());
         topologyRequestListener = new TopologyRequestListener(dataBroker, nodeSerializer, schemaHolder, rpcServices);
         topologyRequestListener.setDatastoreType(datastoreType);
-        startup();
     }
 
     @Override

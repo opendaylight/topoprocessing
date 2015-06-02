@@ -29,9 +29,11 @@ public class TopoProcessingProviderModule extends org.opendaylight.yang.gen.v1.u
         DOMRpcService rpcService = session.getService(DOMRpcService.class);
         DOMRpcProviderService rpcProviderService = session.getService(DOMRpcProviderService.class);
         RpcServices rpcServices = new RpcServices(rpcService, rpcProviderService);
-        return new TopoProcessingProviderImpl(getSchemaServiceDependency(),
+        TopoProcessingProviderImpl provider = new TopoProcessingProviderImpl(getSchemaServiceDependency(),
                 getDomDataBrokerDependency(), getBindingNormalizedNodeSerializerDependency(), rpcServices,
                 getDatastoreType());
+        provider.startup();
+        return provider;
     }
 
 }

@@ -29,7 +29,7 @@ public abstract class  TopoStoreProvider {
      */
     public TopologyStore getTopologyStore(String topologyId) {
         for (TopologyStore topologyStore : topologyStores) {
-            if (topologyId == topologyStore.getId()) {
+            if (topologyId.equals(topologyStore.getId())) {
                 return topologyStore;
             }
         }
