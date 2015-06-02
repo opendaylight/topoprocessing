@@ -23,6 +23,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
@@ -87,7 +88,6 @@ public class TopologyRequestHandlerTest {
 
     private YangInstanceIdentifier pathIdentifier;
     private Topology topology;
-
     private TopologyRequestHandler handler;
 
     private abstract class UnknownCorrelationBase extends CorrelationBase {
@@ -344,14 +344,73 @@ public class TopologyRequestHandlerTest {
                 .thenReturn(mockDOMDataChangeListener);
         handler.processNewRequest(topoBuilder.build());
         Assert.assertEquals(1, listeners.size());
+        // test registration CONFIGURATION listener registration
+        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler.setDatastoreType(DatastoreType.CONFIGURATION);
+        pathIdentifier = InstanceIdentifiers.NODE_IDENTIFIER;
+        Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
+                (GlobalSchemaContextHolder) any())).thenReturn(pathIdentifier);
+        handler.setTranslator(mockTranslator);
+        handler.setListeners(listeners);
+        Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.CONFIGURATION),
+                (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
+                Mockito.eq(DataChangeScope.SUBTREE)))
+                .thenReturn(mockDOMDataChangeListener);
+        handler.processNewRequest(topoBuilder.build());
+        Assert.assertEquals(2, listeners.size());
     }
 
+    @Test
     public void testCloseListeners() {
         testUnificationCase();
 
         handler.processDeletionRequest();
         Mockito.verify(mockDOMDataChangeListener, Mockito.times(1)).close();
         Assert.assertEquals(0, handler.getListeners().size());
-        Mockito.verify(handler).getTransactionChain().close();
+        Mockito.verify(handler.getTransactionChain(), Mockito.times(1)).close();
+    }
+
+    @Test
+    public void testDeletionWithEmptyListener() {
+        // pre-testing setup
+        TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
+        EqualityCaseBuilder caseBuilder = new EqualityCaseBuilder();
+        EqualityBuilder equalityBuilder = new EqualityBuilder();
+        ArrayList<Mapping> mappings = new ArrayList<>();
+        equalityBuilder.setMapping(mappings);
+        caseBuilder.setEquality(equalityBuilder.build());
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(Equality.class, caseBuilder.build(),
+                CorrelationItemEnum.Node);
+        topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
+        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler.setDatastoreType(DatastoreType.CONFIGURATION);
+
+        Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
+                (GlobalSchemaContextHolder) any())).thenReturn(pathIdentifier);
+        handler.setTranslator(mockTranslator);
+        List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+        handler.setListeners(listeners);
+        Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.CONFIGURATION),
+                (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
+                Mockito.eq(DataChangeScope.SUBTREE)))
+                .thenReturn(mockDOMDataChangeListener);
+        handler.processNewRequest(topoBuilder.build());
+        Assert.assertEquals(0, listeners.size());
+        // process deletion request
+        handler.processDeletionRequest();
+    }
+
+    @Test
+    public void testDeletionWithTransactionChainNull() {
+        Mockito.when(mockDomDataBroker.createTransactionChain((TransactionChainListener) any()))
+            .thenReturn(null);
+        testDeletionWithEmptyListener();
+    }
+
+    @Test
+    public void testDeletionWithTransactionChainClosed() {
+        Mockito.doThrow(new TransactionChainClosedException("The chain has been closed"))
+            .when(mockDomTransactionChain).close();
+        testDeletionWithEmptyListener();
     }
 }

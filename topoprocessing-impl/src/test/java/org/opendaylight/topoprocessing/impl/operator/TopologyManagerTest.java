@@ -57,6 +57,7 @@ public class TopologyManagerTest {
     private static final String TOPOLOGY1 = "pcep-topology:1";
     private static final String NODE_ID1 = "pcep:1";
     private static final String NODE_ID2 = "pcep:2";
+    private static final String NODE_ID3 = "pcep:3";
 
     @Mock private RpcServices mockRpcServices;
     @Mock private GlobalSchemaContextHolder mockSchemaHolder;
@@ -146,8 +147,8 @@ public class TopologyManagerTest {
         PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2);
         physicalNodes.add(physicalNode2);
         logicalNode2 = new LogicalNode(physicalNodes);
-
         manager.addLogicalNode(logicalNode2);
+
         Assert.assertEquals(2, manager.getWrappers().size());
         Mockito.verify(writer, Mockito.times(2)).writeNode((LogicalNodeWrapper) Mockito.any());
     }
@@ -237,6 +238,30 @@ public class TopologyManagerTest {
         Assert.assertEquals(1, manager.getWrappers().size());
     }
 
+    @Test
+    public void removeOneOfTwoLogicalNodesOfTheSameWrapper() {
+        List<PhysicalNode> physicalNodes = new ArrayList<>();
+        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1);
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2);
+        physicalNodes.add(physicalNode1);
+        physicalNodes.add(physicalNode2);
+        logicalNode = new LogicalNode(physicalNodes);
+        manager.addLogicalNode(logicalNode);
+
+        physicalNodes = new ArrayList<>();
+        PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID3);
+        physicalNodes.add(physicalNode1);
+        physicalNodes.add(physicalNode3);
+        logicalNode2 = new LogicalNode(physicalNodes);
+        manager.addLogicalNode(logicalNode2);
+
+        Assert.assertEquals(1, manager.getWrappers().size());
+        Mockito.verify(writer, Mockito.times(2)).writeNode((LogicalNodeWrapper) Mockito.any());
+
+        manager.removeLogicalNode(logicalNode);
+        Mockito.verify(writer, Mockito.times(3)).writeNode((LogicalNodeWrapper) Mockito.any());
+    }
+
     /**
      * If there is RPC registered on underlay's topology node,
      * it shall be republished onto the overlay's topology node.
@@ -271,4 +296,31 @@ public class TopologyManagerTest {
         Mockito.verify(mockDomRpcProviderService, Mockito.times(1))
             .registerRpcImplementation((DOMRpcImplementation) Mockito.any(),(Set<DOMRpcIdentifier>) Mockito.any());
     }
+
+    @Test
+    public void updateLogicalNode() {
+        addLogicalNode();
+        Mockito.reset(writer);
+
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2);
+        physicalNode2.setLogicalNode(logicalNode);
+        logicalNode.getPhysicalNodes().add(physicalNode2);
+        manager.updateLogicalNode(logicalNode);
+        Mockito.verify(writer, Mockito.times(1)).writeNode((LogicalNodeWrapper) Mockito.any());
+    }
+
+    @Test
+    public void updateNonExistingLogicalNode() {
+        addLogicalNode();
+        Mockito.reset(writer);
+
+        List<PhysicalNode> physicalNodes = new ArrayList<>();
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2);
+        physicalNodes.add(physicalNode2);
+        logicalNode2 = new LogicalNode(physicalNodes);
+
+        manager.updateLogicalNode(logicalNode2);
+        Mockito.verify(writer, Mockito.times(0)).writeNode((LogicalNodeWrapper) Mockito.any());
+    }
+
 }

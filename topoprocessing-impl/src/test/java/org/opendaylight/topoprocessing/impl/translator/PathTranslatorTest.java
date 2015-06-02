@@ -167,4 +167,11 @@ public class PathTranslatorTest {
     public void testPathBeginingWithSlash() {
         pathTranslator.translate("/network-topology-pcep:ip-address", null, mockSchemaHolder);
     }
+
+    @Test(expected=IllegalStateException.class)
+    public void testUnexistingModuleName() throws URISyntaxException, ParseException {
+        Mockito.when(mockSchemaContext.findModuleByName(Mockito.eq("network-topology-pcep"), (Date) Mockito.any()))
+            .thenReturn(null);
+        testLegalPath();
+    }
 }
