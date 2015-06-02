@@ -45,6 +45,9 @@ public class EqualityAggregatorTest {
     private static final String TOPO2 = "topo2";
     private static final String TOPO3 = "topo3";
     private static final String TOPO4 = "topo4";
+    private static final String TOPO5 = "topo5";
+    private static final String TOPO6 = "topo6";
+    private static final boolean AGGREGATE_INSIDE = false;
 
     private TopologyAggregator aggregator;
     private YangInstanceIdentifier leafYiid11, leafYiid12, leafYiid21, leafYiid22, leafYiid23;
@@ -73,10 +76,10 @@ public class EqualityAggregatorTest {
     public void setUp() throws Exception {
         // initialize and set up topology stores
         aggregator = new EqualityAggregator();
-        aggregator.initializeStore(TOPO1, false);
-        aggregator.initializeStore(TOPO2, false);
-        aggregator.initializeStore(TOPO3, false);
-        aggregator.initializeStore(TOPO4, false);
+        aggregator.initializeStore(TOPO1, AGGREGATE_INSIDE);
+        aggregator.initializeStore(TOPO2, AGGREGATE_INSIDE);
+        aggregator.initializeStore(TOPO3, AGGREGATE_INSIDE);
+        aggregator.initializeStore(TOPO4, AGGREGATE_INSIDE);
 
         TopologyStore topo1 = aggregator.getTopologyStore(TOPO1);
         TopologyStore topo2 = aggregator.getTopologyStore(TOPO2);
@@ -341,4 +344,65 @@ public class EqualityAggregatorTest {
         Mockito.verify(mockManager, Mockito.times(0)).removeLogicalNode((LogicalNode) any());
         Mockito.verify(mockManager, Mockito.times(1)).updateLogicalNode((LogicalNode) any());
     }
+
+    /**
+     * If in an aggregated (logical) node a Node value has been changed (it means LeafNode value remained unchanged),
+     * only this Node value will be updated
+     * @throws Exception
+     */
+    @Test
+    public void testProcessUpdatedChanges4() throws Exception {
+        testProcessCreatedChanges();
+
+        leafYiid23 = testNodeCreator.createNodeIdYiid("23");
+        LeafNode<String> leafNode23 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.1");
+        PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode2, leafNode23, TOPO3, "23");
+        Map<YangInstanceIdentifier, PhysicalNode> physicalNodes2 = new HashMap<>();
+        physicalNodes2.put(leafYiid23, physicalNode3);
+
+        aggregator.processUpdatedChanges(physicalNodes2, TOPO3);
+
+        Mockito.verify(mockManager, Mockito.times(1)).addLogicalNode((LogicalNode) any());
+        Mockito.verify(mockManager, Mockito.times(0)).removeLogicalNode((LogicalNode) any());
+        // updateLogicalNode method has been called
+        Mockito.verify(mockManager, Mockito.times(2)).updateLogicalNode((LogicalNode) any());
+    }
+
+    /**
+     * AggregateInside in the topologies TOPO5 and TOPO6 is set to true.
+     * @throws Exception
+     */
+    @Test
+    public void test() throws Exception {
+        boolean aggregateInside = true;
+        aggregator.initializeStore(TOPO5, aggregateInside);
+        aggregator.initializeStore(TOPO6, aggregateInside);
+
+        YangInstanceIdentifier leafYiid51 = testNodeCreator.createNodeIdYiid("51");
+        LeafNode<String> leafNode51 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.5");
+        YangInstanceIdentifier leafYiid61 = testNodeCreator.createNodeIdYiid("61");
+        LeafNode<String> leafNode61 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.6");
+        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode51, TOPO5, "51");
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode61, TOPO6, "61");
+        Map<YangInstanceIdentifier, PhysicalNode> physicalNodes1 = new HashMap<>();
+        physicalNodes1.put(leafYiid51, physicalNode1);
+        physicalNodes1.put(leafYiid61, physicalNode2);
+        aggregator.processCreatedChanges(physicalNodes1, TOPO5);
+        Mockito.verify(mockManager, Mockito.times(0)).addLogicalNode((LogicalNode) any());
+        Mockito.verify(mockManager, Mockito.times(0)).removeLogicalNode((LogicalNode) any());
+        Mockito.verify(mockManager, Mockito.times(0)).updateLogicalNode((LogicalNode) any());
+
+        // adds node and creates logical node inside the same topology
+        YangInstanceIdentifier leafYiid52 = testNodeCreator.createNodeIdYiid("52");
+        LeafNode<String> leafNode52 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.5");
+        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, leafNode52, TOPO5, "52");
+        physicalNodes1 = new HashMap<>();
+        physicalNodes1.put(leafYiid52, physicalNode);
+        aggregator.processCreatedChanges(physicalNodes1, TOPO5);
+        // logical node have been created over two physical nodes having the same IP partaining to the same topology 
+        Mockito.verify(mockManager, Mockito.times(1)).addLogicalNode((LogicalNode) any());
+        Mockito.verify(mockManager, Mockito.times(0)).removeLogicalNode((LogicalNode) any());
+        Mockito.verify(mockManager, Mockito.times(0)).updateLogicalNode((LogicalNode) any());
+    }
+
 }
