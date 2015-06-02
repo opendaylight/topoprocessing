@@ -49,7 +49,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
     private DOMDataBroker dataBroker;
     private YangInstanceIdentifier identifier = InstanceIdentifiers.TOPOLOGY_IDENTIFIER;
     private BindingNormalizedNodeSerializer nodeSerializer;
-    private HashMap<YangInstanceIdentifier, TopologyRequestHandler> topoRequestHandlers = new HashMap<>();
+    private Map<YangInstanceIdentifier, TopologyRequestHandler> topoRequestHandlers = new HashMap<>();
     private GlobalSchemaContextHolder schemaHolder;
     private RpcServices rpcServices;
     private DatastoreType datastoreType;
@@ -129,7 +129,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
      * For testing purposes only
      * @return Topology Request Handler List
      */
-    public HashMap<YangInstanceIdentifier, TopologyRequestHandler> getTopoRequestHandlers() {
+    public Map<YangInstanceIdentifier, TopologyRequestHandler> getTopoRequestHandlers() {
         return topoRequestHandlers;
     }
 }

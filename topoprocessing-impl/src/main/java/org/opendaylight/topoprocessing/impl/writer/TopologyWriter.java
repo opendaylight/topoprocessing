@@ -8,15 +8,18 @@
 
 package org.opendaylight.topoprocessing.impl.writer;
 
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
@@ -42,10 +45,6 @@ import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-
 /**
  * @author michal.polkorab
  *
@@ -60,7 +59,7 @@ public class TopologyWriter implements TransactionChainListener {
     private YangInstanceIdentifier nodeIdentifier;
     private DOMTransactionChain transactionChain;
     private YangInstanceIdentifier topologyIdentifier;
-    private ConcurrentLinkedQueue<TransactionOperation> preparedOperations;
+    private Queue<TransactionOperation> preparedOperations;
     private ThreadPoolExecutor pool;
 
     private static final AtomicIntegerFieldUpdater<TopologyWriter> WRITE_SCHEDULED_UPDATER =
