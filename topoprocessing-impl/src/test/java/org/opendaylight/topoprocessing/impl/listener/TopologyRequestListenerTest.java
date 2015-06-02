@@ -2,6 +2,11 @@ package org.opendaylight.topoprocessing.impl.listener;
 
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractCheckedFuture;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,9 +44,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
-import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableContainerNodeBuilder;
-
-import java.util.*;
 
 /**
  * @author matus.marko
@@ -142,7 +144,7 @@ public class TopologyRequestListenerTest {
     public void testRemoveNode() {
         YangInstanceIdentifier yiid = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME).node(Topology.QNAME)
                 .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPO_NAME).build();
-        HashMap<YangInstanceIdentifier, TopologyRequestHandler> handlers = listener.getTopoRequestHandlers();
+        Map<YangInstanceIdentifier, TopologyRequestHandler> handlers = listener.getTopoRequestHandlers();
         // pre insert topology request handler
         TopologyRequestHandler mockRequestHandler = Mockito.mock(TopologyRequestHandler.class);
         handlers.put(yiid, mockRequestHandler);
