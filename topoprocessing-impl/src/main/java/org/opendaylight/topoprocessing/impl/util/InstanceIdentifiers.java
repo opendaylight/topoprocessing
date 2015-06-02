@@ -18,7 +18,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  * Holds useful {@link YangInstanceIdentifier}s
  * @author michal.polkorab
  */
-public class InstanceIdentifiers {
+public final class InstanceIdentifiers {
 
     /** Network-topology {@link Topology} (MapNode) identifier */
     public static final YangInstanceIdentifier TOPOLOGY_IDENTIFIER =

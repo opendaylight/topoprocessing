@@ -20,6 +20,6 @@ public interface TransactionOperation {
      * Adds this operation into provided transaction (.put(), .delete())
      * @param transaction {@link DOMDataWriteTransaction} to be filled with operation
      */
-    public void addOperationIntoTransaction(DOMDataWriteTransaction transaction);
+    void addOperationIntoTransaction(DOMDataWriteTransaction transaction);
 
 }

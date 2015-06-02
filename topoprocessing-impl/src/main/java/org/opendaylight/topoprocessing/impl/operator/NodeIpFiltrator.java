@@ -65,7 +65,7 @@ public class NodeIpFiltrator {
                 LOG.debug("Node with value {} was filtered out", node.getNode());
             }
         } catch (UnknownHostException e) {
-            LOG.error("Wrong format of IP address");
+            LOG.error("Wrong format of IP address: {}", e);
         }
         return true;
     }
@@ -78,7 +78,7 @@ public class NodeIpFiltrator {
             address = ipToInt(matches[0]);
         } catch (UnknownHostException e) {
             throw new IllegalArgumentException("Filtrator initialization failed, "
-                    + "couldn't recognize ip address: " + matches[0]);
+                    + "couldn't recognize ip address: " + matches[0], e);
         }
         mask = (int) ((long) -1 << (32 - Integer.parseInt(matches[1])));
         return address & mask;

@@ -83,6 +83,7 @@ public class TopoProcessingProviderImplTest {
         // startup
         topoProcessingProvider = new TopoProcessingProviderImpl(
                 schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
+        topoProcessingProvider.startup();
         Mockito.verify(schemaService).registerSchemaContextListener((SchemaContextListener) Matchers.any());
         Mockito.verify(dataBroker).registerDataChangeListener(
                 Matchers.eq(LogicalDatastoreType.CONFIGURATION),
