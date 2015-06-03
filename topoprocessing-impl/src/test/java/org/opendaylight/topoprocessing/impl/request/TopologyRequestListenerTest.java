@@ -1,5 +1,8 @@
-package org.opendaylight.topoprocessing.impl.listener;
+package org.opendaylight.topoprocessing.impl.request;
 
+import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
+
+import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractCheckedFuture;
 import java.util.ArrayList;
@@ -21,7 +24,6 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
-import org.opendaylight.topoprocessing.impl.handler.TopologyRequestHandler;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;

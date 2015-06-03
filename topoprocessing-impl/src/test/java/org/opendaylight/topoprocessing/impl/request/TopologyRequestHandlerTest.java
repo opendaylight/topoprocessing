@@ -6,13 +6,14 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.impl.handler;
+package org.opendaylight.topoprocessing.impl.request;
 
 import static org.mockito.Matchers.any;
 
+import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
+
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,7 +66,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
-
 import com.google.common.util.concurrent.CheckedFuture;
 
 @RunWith(MockitoJUnitRunner.class)
