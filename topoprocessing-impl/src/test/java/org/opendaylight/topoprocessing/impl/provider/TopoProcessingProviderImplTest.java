@@ -1,5 +1,7 @@
 package org.opendaylight.topoprocessing.impl.provider;
 
+import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
+
 import com.google.common.collect.SetMultimap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +16,6 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
-import org.opendaylight.topoprocessing.impl.listener.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
@@ -25,7 +26,6 @@ import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.ModuleIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 import org.opendaylight.yangtools.yang.model.util.AbstractSchemaContext;
-
 import java.net.URI;
 import java.util.Map;
 import java.util.Set;

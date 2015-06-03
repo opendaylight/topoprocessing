@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.impl.handler;
+package org.opendaylight.topoprocessing.impl.request;
 
 import java.util.ArrayList;
 import java.util.List;
