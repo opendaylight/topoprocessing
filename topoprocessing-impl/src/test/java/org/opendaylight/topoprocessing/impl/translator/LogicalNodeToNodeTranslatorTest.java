@@ -15,6 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNode;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.*;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 
@@ -50,6 +51,27 @@ public class LogicalNodeToNodeTranslatorTest {
                 YangInstanceIdentifier.of(TopologyQNames.NETWORK_NODE_ID_QNAME)).get();
         Assert.assertEquals("NormalizedNode ID should be the same as the LogicalNodeWrapper ID",
                 logicalName, nodeId.getValue());
+    }
+
+    /**
+     * Wrap the same node more times to the wrapper, translate it, and check result for the duplicity
+     */
+    @Test
+    public void testSameNodePassed() throws Exception {
+        String logicalName = "node:1";
+        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode, null, TOPOLOGY_NAME, "node:1");
+        LogicalNode logicalNode = new LogicalNode(Collections.singletonList(physicalNode1));
+        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode, null, TOPOLOGY_NAME, "node:2");
+        LogicalNodeWrapper wrapper = new LogicalNodeWrapper(logicalName, logicalNode);
+        List<PhysicalNode> physicalNodes = new ArrayList<>();
+        physicalNodes.add(physicalNode1);
+        physicalNodes.add(physicalNode2);
+        wrapper.addLogicalNode(new LogicalNode(physicalNodes));
+        NormalizedNode<?, ?> normalizedNode = translator.translate(wrapper);
+
+        Collection supportingNodes = (Collection) ((MapEntryNode) normalizedNode)
+                .getChild(new NodeIdentifier(SupportingNode.QNAME)).get().getValue();
+        Assert.assertEquals("Incorrect amount of supporting nodes included", 2, supportingNodes.size());
     }
 
     /**
@@ -126,7 +148,7 @@ public class LogicalNodeToNodeTranslatorTest {
 
         // supporting-nodes
         Optional<DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?>> value =
-              ((MapEntryNode) normalizedNode).getChild(new YangInstanceIdentifier.NodeIdentifier(SupportingNode.QNAME));
+              ((MapEntryNode) normalizedNode).getChild(new NodeIdentifier(SupportingNode.QNAME));
         Assert.assertTrue("OverlayNode should contain UnderlayNodes", value.isPresent());
         Assert.assertEquals("OverlayNode contains wrong amount of UnderlayNodes", 5,
                 ((Collection) value.get().getValue()).size());
@@ -202,7 +224,7 @@ public class LogicalNodeToNodeTranslatorTest {
         NormalizedNode<?, ?> normalizedNode = translator.translate(wrapper);
 
         Collection value = (Collection) ((MapEntryNode) normalizedNode).getChild(
-                new YangInstanceIdentifier.NodeIdentifier(TerminationPoint.QNAME)).get().getValue();
+                new NodeIdentifier(TerminationPoint.QNAME)).get().getValue();
         Assert.assertEquals("OverlayNode contains wrong amount of TerminationPoints", 4, value.size());
     }
 }
