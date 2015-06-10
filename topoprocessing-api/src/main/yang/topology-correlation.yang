@@ -66,8 +66,12 @@
         ext:augment-identifier "correlation-augment";
         container correlations {
             list correlation {
-                key name;
-                leaf name {
+                key correlation-id;
+                leaf correlation-id {
+                    type string;
+                    description "User defined content to uniquely identify the correlation. This value is not used for further processing.";
+                }
+                leaf type {
                     type identityref {
                         base correlation-base;
                     }
