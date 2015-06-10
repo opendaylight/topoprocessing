@@ -140,7 +140,7 @@ public class TopologyRequestHandlerTest {
     private static CorrelationAugmentBuilder createCorrelation(Class<? extends CorrelationBase> correlationBase,
             CorrelationType correlationType, CorrelationItemEnum correlationItem) {
         CorrelationBuilder cBuilder = new CorrelationBuilder();
-        cBuilder.setName(correlationBase);
+        cBuilder.setType(correlationBase);
         cBuilder.setCorrelationType(correlationType);
         cBuilder.setCorrelationItem(correlationItem);
 
