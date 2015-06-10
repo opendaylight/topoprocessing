@@ -123,25 +123,25 @@ public class TopologyRequestHandler {
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
                 TopologyOperator operator;
-                if (correlation.getName().equals(Equality.class)) {
+                if (correlation.getType().equals(Equality.class)) {
                     EqualityCase equalityCase = (EqualityCase) correlation.getCorrelationType();
                     List<Mapping> mappings = equalityCase.getEquality().getMapping();
                     operator = new EqualityAggregator();
                     iterateMappings(operator, mappings, correlation.getCorrelationItem());
                 }
-                else if (correlation.getName().equals(Unification.class)) {
+                else if (correlation.getType().equals(Unification.class)) {
                     UnificationCase unificationCase = (UnificationCase) correlation.getCorrelationType();
                     List<Mapping> mappings = unificationCase.getUnification().getMapping();
                     operator = new UnificationAggregator();
                     iterateMappings(operator, mappings, correlation.getCorrelationItem());
                 }
-                else if (correlation.getName().equals(NodeIpFiltration.class)) {
+                else if (correlation.getType().equals(NodeIpFiltration.class)) {
                     NodeIpFiltrationCase nodeIpFiltrationCase = (NodeIpFiltrationCase) correlation.getCorrelationType();
                     List<Filter> filters = nodeIpFiltrationCase.getNodeIpFiltration().getFilter();
                     operator = new TopologyFiltrator();
                     iterateFilters((TopologyFiltrator) operator, filters, correlation.getCorrelationItem());
                 } else {
-                    throw new IllegalStateException("Unknown correlation: " + correlation.getName());
+                    throw new IllegalStateException("Unknown correlation: " + correlation.getType());
                 }
                 operator.setTopologyManager(topologyManager);
             }
