@@ -66,11 +66,15 @@
         ext:augment-identifier "correlation-augment";
         container correlations {
             list correlation {
-                key name;
+                key "name order";
                 leaf name {
                     type identityref {
                         base correlation-base;
                     }
+                }
+                leaf order {
+                    type string;
+                    description "Unique order number of the correlation.";
                 }
                 leaf correlation-item {
                     type correlation-item-enum;
