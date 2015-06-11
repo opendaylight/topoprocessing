@@ -15,6 +15,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
+import org.opendaylight.controller.md.sal.common.api.data.OptimisticLockFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,14 +25,19 @@ import java.util.concurrent.LinkedBlockingQueue;
 public final class MlmtOperationProcessor implements AutoCloseable, Runnable, TransactionChainListener {
     private static final Logger LOG = LoggerFactory.getLogger(MlmtOperationProcessor.class);
     private static final int MAX_TRANSACTION_OPERATIONS = 100;
-    private static final int OPERATION_QUEUE_DEPTH = 500;
-
-    private final BlockingQueue<MlmtTopologyOperation> queue = new LinkedBlockingQueue<>(OPERATION_QUEUE_DEPTH);
+    private static final int OPERATION_QUEUE_DEPTH_DEFAULT = 500;
+    private static final int MAX_RETRY = 5;
+    private BlockingQueue<MlmtTopologyOperation> queue;
     private final DataBroker dataBroker;
     private BindingTransactionChain transactionChain;
     private volatile boolean finishing = false;
 
     public MlmtOperationProcessor(final DataBroker dataBroker) {
+        this(dataBroker, OPERATION_QUEUE_DEPTH_DEFAULT);
+    }
+
+    public MlmtOperationProcessor(final DataBroker dataBroker, final int queueDepth) {
+        queue = new LinkedBlockingQueue<>(queueDepth);
         this.dataBroker = Preconditions.checkNotNull(dataBroker);
         transactionChain = this.dataBroker.createTransactionChain(this);
     }
@@ -44,20 +50,32 @@ public final class MlmtOperationProcessor implements AutoCloseable, Runnable, Tr
         }
     }
 
+    void submit(final ReadWriteTransaction tx) throws Exception {
+        boolean retrying = false;
+        int retry = 0;
+        do {
+            try {
+                tx.submit().checkedGet();
+                retrying = false;
+                retry = 0;
+            } catch (final OptimisticLockFailedException e) {
+                retrying = true;
+                retry = retry + 1;
+                LOG.debug("OptimisticLockFailedException: retry ", retry);
+            }
+        } while (retrying && retry < MAX_RETRY);
+    }
+
     @Override
     public void run() {
             while (!finishing) {
                 try {
                     MlmtTopologyOperation op = queue.take();
-
                     LOG.debug("New {} operation available, starting transaction", op);
-
                     final ReadWriteTransaction tx = transactionChain.newReadWriteTransaction();
-
                     int ops = 0;
                     do {
                         op.applyOperation(tx);
-
                         ops++;
                         if (ops < MAX_TRANSACTION_OPERATIONS && !op.isCommitNow()) {
                             op = queue.poll();
@@ -69,16 +87,14 @@ public final class MlmtOperationProcessor implements AutoCloseable, Runnable, Tr
                     } while (op != null);
 
                     LOG.debug("Processed {} operations, submitting transaction", ops);
-
                     try {
-                        tx.submit().checkedGet();
+                        submit(tx);
                     } catch (final TransactionCommitFailedException e) {
                         LOG.warn("Stat DataStoreOperation unexpected State!", e);
                         transactionChain.close();
                         transactionChain = dataBroker.createTransactionChain(this);
                         cleanDataStoreOperQueue();
                     }
-
                 } catch (final IllegalStateException e) {
                     LOG.warn("Stat DataStoreOperation unexpected State!", e);
                     transactionChain.close();
