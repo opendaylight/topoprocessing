@@ -118,6 +118,30 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
         }
     }
 
+    private void copyTopology(final LogicalDatastoreType type, final InstanceIdentifier<Topology> copyTopologyId,
+            Topology topology) {
+        List<Node> lNode = topology.getNode();
+        List<Link> lLink = topology.getLink();
+        if (lNode != null && !lNode.isEmpty()) {
+            for (Node node : lNode) {
+                mlmtTopologyBuilder.copyNode(LogicalDatastoreType.OPERATIONAL, copyTopologyId,
+                        topology.getTopologyId(), node);
+                List<TerminationPoint> lTp = node.getTerminationPoint();
+                if (lTp != null && !lTp.isEmpty()) {
+                    for (TerminationPoint tp : lTp) {
+                        mlmtTopologyBuilder.copyTp(LogicalDatastoreType.OPERATIONAL, copyTopologyId,
+                                node.getKey(), tp);
+                    }
+                }
+            }
+        }
+        if (lLink != null && !lLink.isEmpty()) {
+            for (Link link : lLink) {
+                mlmtTopologyBuilder.copyLink(LogicalDatastoreType.OPERATIONAL, copyTopologyId, link);
+            }
+        }
+    }
+
     protected void onObservedTopologyCreated(final LogicalDatastoreType type,
         final InstanceIdentifier<Topology> topologyInstanceId, final Topology topology) {
         LOG.info("MlmtTopologyObserver.onObservedTopologyCreated topologyInstanceId " + topologyInstanceId.toString());
@@ -127,6 +151,8 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
         }
         if (mlmtConsequentAction == MlmtConsequentAction.BUILD) {
              buildTopology(type, mlmtTopologyId, topology);
+        } else if (mlmtConsequentAction == MlmtConsequentAction.COPY) {
+             copyTopology(type, mlmtTopologyId, topology);
         }
     }
 
@@ -157,7 +183,6 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
         } catch (ExecutionException e) {
           LOG.error("MlmtTopologyObserver.getMlmtConsequentAction execution exception", e);
         }
-
     }
 
     protected void onMlmtTopologyCreated(final LogicalDatastoreType type,
@@ -524,20 +549,21 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
 
     @Override
     public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-         LOG.info("MlmtTopologyObserver.onDataChanged");
-         Map<InstanceIdentifier<?>, DataObject> c = change.getCreatedData();
-         this.dumpMap(c, MlmtDataChangeEventType.CREATED);
-         if (c != null) {
-             handleData(c, MlmtDataChangeEventType.CREATED);
-         }
-         c = change.getUpdatedData();
-         this.dumpMap(c, MlmtDataChangeEventType.UPDATED);
-         if (c != null) {
-             handleData(c, MlmtDataChangeEventType.UPDATED);
-         }
-         Set<InstanceIdentifier<?>> r = change.getRemovedPaths();
-         if (r != null) {
-             handleData(r);
-         }
+        LOG.info("MlmtTopologyObserver.onDataChanged");
+        Preconditions.checkNotNull(change);
+        Map<InstanceIdentifier<?>, DataObject> c = change.getCreatedData();
+        if (c != null) {
+            this.dumpMap(c, MlmtDataChangeEventType.CREATED);
+            handleData(c, MlmtDataChangeEventType.CREATED);
+        }
+        c = change.getUpdatedData();
+        if (c != null) {
+            this.dumpMap(c, MlmtDataChangeEventType.UPDATED);
+            handleData(c, MlmtDataChangeEventType.UPDATED);
+        }
+        Set<InstanceIdentifier<?>> r = change.getRemovedPaths();
+        if (r != null) {
+            handleData(r);
+        }
     }
 }
