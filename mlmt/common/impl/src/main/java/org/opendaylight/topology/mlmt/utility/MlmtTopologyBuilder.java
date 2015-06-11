@@ -188,6 +188,13 @@ public class MlmtTopologyBuilder {
                 transaction.merge(type, path, nbuilder.build());
             }
         });
+
+        List<TerminationPoint> lTp = node.getTerminationPoint();
+        if (lTp != null && !lTp.isEmpty()) {
+            for (TerminationPoint tp : lTp) {
+                createTp(type, topologyInstanceId, node.getKey(), tp);
+            }
+        }
     }
 
     public void deleteNode(final LogicalDatastoreType type,
