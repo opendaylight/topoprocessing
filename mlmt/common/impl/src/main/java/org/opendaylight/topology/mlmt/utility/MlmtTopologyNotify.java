@@ -15,16 +15,20 @@ import org.slf4j.Logger;
 public class MlmtTopologyNotify implements Runnable {
     private Logger log;
     private final BlockingQueue<MlmtTopologyUpdate> notifyQ;
-    private static final int MAX_NOTIFY_Q_LENGTH = 54;
+    private static final int NOTIFY_Q_LENGTH_DEFAULT = 54;
     private static final int THREAD_SLEEP = 100;
     private MlmtTopologyUpdate entry;
     private MlmtTopologyUpdateListener listener;
     private volatile boolean finishing = false;
 
     public MlmtTopologyNotify(final MlmtTopologyUpdateListener listener, final Logger logger) {
+        this(listener, logger, NOTIFY_Q_LENGTH_DEFAULT);
+    }
+
+    public MlmtTopologyNotify(final MlmtTopologyUpdateListener listener, final Logger logger, int queueLength) {
         this.log = logger;
         this.listener = listener;
-        this.notifyQ = new LinkedBlockingQueue<MlmtTopologyUpdate>(MAX_NOTIFY_Q_LENGTH);
+        this.notifyQ = new LinkedBlockingQueue<MlmtTopologyUpdate>(queueLength);
      }
 
     public void add(MlmtTopologyUpdate update) {
