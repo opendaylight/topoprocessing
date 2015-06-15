@@ -6,12 +6,10 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.impl.operator;
+package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpPrefix;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -21,30 +19,31 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.BitSet;
 
 /**
  * @author matus.marko
  */
-public class NodeIpFiltrator {
+public class NodeIpv6 implements Filtrator {
+    private static final Logger LOG = LoggerFactory.getLogger(NodeIpv6.class);
+    private static final int MAX_BITS = 128;
 
-    private static final Logger LOG = LoggerFactory.getLogger(NodeIpFiltrator.class);
-
-    private int mask;
-    private int maskedValue;
     private YangInstanceIdentifier pathIdentifier;
+    private BitSet mask;
+    private BitSet maskedValue;
 
     /**
      * Constructor
      * @param value IpAddress to compare with
      * @param pathIdentifier Path leading to value with ipAddress in examined node
      */
-    public NodeIpFiltrator(IpPrefix value, YangInstanceIdentifier pathIdentifier) {
+    public NodeIpv6(IpPrefix value, YangInstanceIdentifier pathIdentifier) {
         Preconditions.checkNotNull(value, "Filtering value can't be null");
         Preconditions.checkNotNull(pathIdentifier, "PathIdentifier can't be null");
         this.pathIdentifier = pathIdentifier;
-        maskedValue = initialize(value);
+        initialize(value);
     }
 
     /**
@@ -56,8 +55,10 @@ public class NodeIpFiltrator {
         try {
             Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node.getNode(), pathIdentifier);
             if (leafNode.isPresent()) {
-                int value = ipToInt((String) ((LeafNode) leafNode.get()).getValue());
-                if (maskedValue == (value & mask)) {
+                byte[] address = InetAddress.getByName((String) ((LeafNode) leafNode.get()).getValue()).getAddress();
+                BitSet bitSet = BitSet.valueOf(address);
+                bitSet.and(mask);
+                if (maskedValue.equals(bitSet)) {
                     return false;
                 }
             }
@@ -70,26 +71,21 @@ public class NodeIpFiltrator {
         return true;
     }
 
-    private int initialize(IpPrefix prefix) {
-        String strValue = prefix.getIpv4Prefix().getValue();
-        String[] matches = strValue.split("/");
-        int address;
+    private void initialize(IpPrefix prefix) {
+        String[] matches = prefix.getIpv6Prefix().getValue().split("/");
+        String rangeIp = matches[0];
+        int bits = Integer.parseInt(matches[1]);
+
+        mask = new BitSet(MAX_BITS);
+        mask.set(0, MAX_BITS - bits, true);
+        byte[] inetAddr;
         try {
-            address = ipToInt(matches[0]);
+            inetAddr = InetAddress.getByName(rangeIp).getAddress();
         } catch (UnknownHostException e) {
             throw new IllegalArgumentException("Filtrator initialization failed, "
-                    + "couldn't recognize ip address: " + matches[0], e);
+                    + "couldn't recognize ip address: " + rangeIp, e);
         }
-        mask = (int) ((long) -1 << (32 - Integer.parseInt(matches[1])));
-        return address & mask;
-    }
-
-    private int ipToInt(String strAddress) throws UnknownHostException {
-        Inet4Address inetAddr = (Inet4Address) InetAddress.getByName(strAddress);
-        byte[] bytes = inetAddr.getAddress();
-        return  ((bytes[0] & 0xFF) << 24) |
-                ((bytes[1] & 0xFF) << 16) |
-                ((bytes[2] & 0xFF) << 8)  |
-                ((bytes[3] & 0xFF) << 0);
+        maskedValue = BitSet.valueOf(inetAddr);
+        maskedValue.and(mask);
     }
 }

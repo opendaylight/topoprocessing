@@ -7,6 +7,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.topoprocessing.impl.operator.filtrator.NodeIp;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestNodeCreator;
@@ -27,7 +28,7 @@ public class TopologyFiltratorTest {
 
     private TestNodeCreator creator = new TestNodeCreator();
     private TopologyFiltrator filtrator;
-    @Mock private NodeIpFiltrator mockFiltrator;
+    @Mock private NodeIp mockFiltrator;
     @Mock private TopologyManager mockTopologyManager;
 
     private Map<YangInstanceIdentifier, PhysicalNode> threeNodesSameTopologyNodeEntry =
