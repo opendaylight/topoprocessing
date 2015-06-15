@@ -20,10 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
-import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
-import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
-import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
-import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.*;
 import org.opendaylight.yangtools.yang.model.api.*;
 
 import java.net.URI;
@@ -51,7 +48,7 @@ public class OverlayRpcImplementationTest {
     @Mock private Module module;
     @Mock private RpcDefinition rpcDefinition;
     @Mock private DataContainerChild<? extends PathArgument, ?> child1;
-    @Mock private DataContainerChild<? extends PathArgument, ?> child2;
+    @Mock private LeafNode child2;
     @Mock private AugmentationNode child3;
     @Mock private ContainerSchemaNode rpcInput;
     @Mock private DataSchemaNode schemaNode;
@@ -80,9 +77,9 @@ public class OverlayRpcImplementationTest {
         ArrayList<DataContainerChild<? extends PathArgument, ?>> inputChilds = new ArrayList<>();
         inputChilds.add(child1);
         Mockito.when(child1.getNodeType()).thenReturn(RPC_QNAME);
-        inputChilds.add(child2);
+//        inputChilds.add(child2);
         Mockito.when(child2.getNodeType()).thenReturn(Node.QNAME);
-        inputChilds.add(child3);
+//        inputChilds.add(child3);
         Mockito.when(input.getValue()).thenReturn(inputChilds);
         overlayRpcImplementation.invokeRpc(rpcIdentifier, input);
 
