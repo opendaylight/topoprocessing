@@ -57,9 +57,41 @@
         base correlation-base;
     }
 
-    identity node-ip-filtration {
+    identity filtration {
         description "Only nodes with specific leaf value will be present in overlay topology.";
         base correlation-base;
+    }
+
+    identity filter-base {
+        description "Base identity for filter types";
+    }
+
+    identity node-ip-filter {
+        base filter-base;
+    }
+
+    identity node-ip-v4 {
+        base filter-base;
+    }
+
+    identity node-ip-v6 {
+        base filter-base;
+    }
+
+    identity range-number {
+        base filter-base;
+    }
+
+    identity range-string {
+        base filter-base;
+    }
+
+    identity specific-number {
+        base filter-base;
+    }
+
+    identity specific-string {
+        base filter-base;
     }
 
     augment "/topo:network-topology/topo:topology" {
@@ -86,10 +118,15 @@
                             uses mapping-grouping;
                         }
                     }
-                    case node-ip-filtration-case {
-                        container node-ip-filtration {
+                    case filtration-case {
+                        container filtration {
                             list filter {
-                                key "underlay-topology";
+                                key "underlay-topology target-field";
+                                leaf filter-type {
+                                    type identityref {
+                                        base filter-base;
+                                    }
+                                }
                                 leaf underlay-topology {
                                     type string;
                                     description "Input topology which will be filtered.";
@@ -98,14 +135,59 @@
                                     type leaf-path;
                                     description "Path to target field";
                                 }
-                                leaf value {
-                                    type inet:ip-prefix;
-                                }
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:correlation-type/topo-correlation:filtration-case/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "node-ipv4-filtrator";
+        leaf ipv4-address {
+            type inet:ip-prefix;
+        }
+    }
+
+    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:correlation-type/topo-correlation:filtration-case/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "node-ipv6-filtrator";
+        leaf ipv6-address {
+            type inet:ip-prefix;
+        }
+    }
+
+    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:correlation-type/topo-correlation:filtration-case/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "range-number-filtrator";
+        leaf min-number-value {
+            type uint16;
+        }
+        leaf max-number-value {
+            type uint16;
+        }
+    }
+
+    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:correlation-type/topo-correlation:filtration-case/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "range-string-filtrator";
+        leaf min-string-value {
+            type string;
+        }
+        leaf max-string-value {
+            type string;
+        }
+    }
+
+    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:correlation-type/topo-correlation:filtration-case/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "specific-number-filtrator";
+        leaf specific-number {
+            type uint16;
+        }
+    }
+
+    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:correlation-type/topo-correlation:filtration-case/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "specific-string-filtrator";
+        leaf specific-string {
+            type string;
         }
     }
 

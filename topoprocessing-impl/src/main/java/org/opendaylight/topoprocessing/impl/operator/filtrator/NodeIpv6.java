@@ -77,7 +77,7 @@ public class NodeIpv6 implements Filtrator {
         int bits = Integer.parseInt(matches[1]);
 
         mask = new BitSet(MAX_BITS);
-        mask.set(0, MAX_BITS - bits, true);
+        mask.set(0, bits, true);
         byte[] inetAddr;
         try {
             inetAddr = InetAddress.getByName(rangeIp).getAddress();

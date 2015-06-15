@@ -29,7 +29,7 @@ public class RangeString implements Filtrator {
     protected final String max;
     protected final YangInstanceIdentifier pathIdentifier;
 
-    protected RangeString(String min, String max, YangInstanceIdentifier pathIdentifier) {
+    public RangeString(String min, String max, YangInstanceIdentifier pathIdentifier) {
         Preconditions.checkNotNull(min, "Filtering min value can't be null");
         Preconditions.checkNotNull(max, "Filtering max value can't be null");
         Preconditions.checkNotNull(pathIdentifier, "PathIdentifier can't be null");

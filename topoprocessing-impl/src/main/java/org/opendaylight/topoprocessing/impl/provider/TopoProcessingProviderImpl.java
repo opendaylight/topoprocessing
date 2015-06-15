@@ -8,14 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.provider;
 
-import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
-
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.topoprocessing.impl.listener.GlobalSchemaContextListener;
+import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.FiltratorFactory;
+import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
@@ -26,6 +26,7 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Preconditions;
 
 /**
@@ -42,6 +43,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private ListenerRegistration<SchemaContextListener> schemaContextListenerRegistration;
     private GlobalSchemaContextHolder schemaHolder;
     private TopologyRequestListener topologyRequestListener;
+    private ListenerRegistration<DOMDataChangeListener> filtratorsListenerRegistration;
 
     /**
      * @param schemaService
@@ -86,6 +88,10 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         topologyRequestListenerRegistration =
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                         InstanceIdentifiers.TOPOLOGY_IDENTIFIER, topologyRequestListener, DataChangeScope.ONE);
+    }
+
+    private void registerFiltrator() {
+        topologyRequestListener.registerFiltrator();
     }
 
 }

@@ -29,7 +29,7 @@ public class RangeNumber implements Filtrator {
     protected final int max;
     protected final YangInstanceIdentifier pathIdentifier;
 
-    protected RangeNumber(int min, int max, YangInstanceIdentifier pathIdentifier) {
+    public RangeNumber(int min, int max, YangInstanceIdentifier pathIdentifier) {
         Preconditions.checkNotNull(min, "Filtering min value can't be null");
         Preconditions.checkNotNull(max, "Filtering max value can't be null");
         Preconditions.checkNotNull(pathIdentifier, "PathIdentifier can't be null");

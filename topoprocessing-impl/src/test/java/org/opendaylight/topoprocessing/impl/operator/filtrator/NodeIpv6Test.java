@@ -24,39 +24,141 @@ public class NodeIpv6Test {
     private TestNodeCreator creator = new TestNodeCreator();
 
     @Test
-    public void test1() {
-        YangInstanceIdentifier pathIdentifier;
+    public void testMask0() {
+        IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0:0:0:0:0:0:0:0/0"));
+        NodeIpv6 nodeIpv6 = new NodeIpv6(ipPrefix, path);
+
+        boolean filtered1 = nodeIpv6.isFiltered(
+                new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+                        "0123:4567:89ab:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertFalse("Node should pass the filtrator", filtered1);
+    }
+
+    @Test
+    public void testMask16() {
+        IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:0:0:0:0:0:0:0/16"));
+        NodeIpv6 nodeIpv6 = new NodeIpv6(ipPrefix, path);
+
+        boolean filtered1 = nodeIpv6.isFiltered(
+                new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+                        "0123:4567:89ab:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertFalse("Node should pass the filtrator", filtered1);
+
+        boolean filtered2 = nodeIpv6.isFiltered(
+                new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+                        "0124:4567:89ab:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertTrue("Node should not pass the filtrator", filtered2);
+    }
+
+    @Test
+    public void testMask32() {
+        IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:0:0:0:0:0:0/32"));
+        NodeIpv6 nodeIpv6 = new NodeIpv6(ipPrefix, path);
+
+        boolean filtered1 = nodeIpv6.isFiltered(
+                new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+                        "0123:4567:89ab:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertFalse("Node should pass the filtrator", filtered1);
+
+        boolean filtered2 = nodeIpv6.isFiltered(
+                new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+                        "0123:4568:89ab:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertTrue("Node should not pass the filtrator", filtered2);
+    }
+
+    @Test
+    public void testMask48() {
+        IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:89ab:0:0:0:0:0/48"));
+        NodeIpv6 nodeIpv6 = new NodeIpv6(ipPrefix, path);
+
+        boolean filtered1 = nodeIpv6.isFiltered(
+                new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+                        "0123:4567:89ab:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertFalse("Node should pass the filtrator", filtered1);
+
+        boolean filtered2 = nodeIpv6.isFiltered(
+                new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+                        "0123:4567:89ac:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertTrue("Node should not pass the filtrator", filtered2);
+    }
+
+    @Test
+    public void testMask64() {
         IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:89ab:cdef:0:0:0:0/64"));
         NodeIpv6 nodeIpv6 = new NodeIpv6(ipPrefix, path);
 
         boolean filtered1 = nodeIpv6.isFiltered(
                 new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
-                        "0123:4567:89ab:cdef:0:0:0:0"), null, TOPOLOGY_ID, NODE_ID));
+                        "0123:4567:89ab:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
         boolean filtered2 = nodeIpv6.isFiltered(
                 new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+                        "0123:4567:89ab:cde0:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertTrue("Node should not pass the filtrator", filtered2);
+    }
+
+    @Test
+    public void testMask80() {
+        IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:89ab:cdef:0123:0:0:0/80"));
+        NodeIpv6 nodeIpv6 = new NodeIpv6(ipPrefix, path);
+
+        boolean filtered1 = nodeIpv6.isFiltered(
+                new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
                         "0123:4567:89ab:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
-        Assert.assertFalse("Node should pass the filtrator", filtered2);
+        Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered3 = nodeIpv6.isFiltered(
+        boolean filtered2 = nodeIpv6.isFiltered(
                 new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
-                        "0123:4567:89ab:cdef:ffff:ffff:ffff:ffff"), null, TOPOLOGY_ID, NODE_ID));
-        Assert.assertFalse("Node should pass the filtrator", filtered3);
+                        "0123:4567:89ab:cdef:0124:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertTrue("Node should not pass the filtrator", filtered2);
+    }
 
-        boolean filtered4 = nodeIpv6.isFiltered(
-                new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
-                        "0123:4567:89ac:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
-        Assert.assertTrue("Node should not pass the filtrator", filtered4);
+    @Test
+    public void testMask96() {
+        IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:89ab:cdef:0123:4567:0:0/96"));
+        NodeIpv6 nodeIpv6 = new NodeIpv6(ipPrefix, path);
 
-        boolean filtered5 = nodeIpv6.isFiltered(
+        boolean filtered1 = nodeIpv6.isFiltered(
                 new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
-                        "0123:4568:89ab:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
-        Assert.assertTrue("Node should not pass the filtrator", filtered5);
+                        "0123:4567:89ab:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered6 = nodeIpv6.isFiltered(
+        boolean filtered2 = nodeIpv6.isFiltered(
                 new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
-                        "0124:4567:89ab:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
-        Assert.assertTrue("Node should not pass the filtrator", filtered6);
+                        "0123:4567:89ab:cdef:0123:4568:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertTrue("Node should not pass the filtrator", filtered2);
+    }
+
+    @Test
+    public void testMask112() {
+        IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:89ab:cdef:0123:4567:89ab:0/112"));
+        NodeIpv6 nodeIpv6 = new NodeIpv6(ipPrefix, path);
+
+        boolean filtered1 = nodeIpv6.isFiltered(
+                new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+                        "0123:4567:89ab:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertFalse("Node should pass the filtrator", filtered1);
+
+        boolean filtered2 = nodeIpv6.isFiltered(
+                new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+                        "0123:4567:89ab:cdef:0123:4567:89ac:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertTrue("Node should not pass the filtrator", filtered2);
+    }
+
+    @Test
+    public void testMask128() {
+        IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:89ab:cdef:0123:4567:89ab:cdef/128"));
+        NodeIpv6 nodeIpv6 = new NodeIpv6(ipPrefix, path);
+
+        boolean filtered1 = nodeIpv6.isFiltered(
+                new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+                        "0123:4567:89ab:cdef:0123:4567:89ab:cdef"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertFalse("Node should pass the filtrator", filtered1);
+
+        boolean filtered2 = nodeIpv6.isFiltered(
+                new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+                        "0123:4567:89ab:cdef:0123:4567:89ab:cde0"), null, TOPOLOGY_ID, NODE_ID));
+        Assert.assertTrue("Node should not pass the filtrator", filtered2);
     }
 }
