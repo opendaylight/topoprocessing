@@ -18,7 +18,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
-import org.opendaylight.topoprocessing.impl.operator.NodeIpFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.filtrator.Ipv4AddressFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
@@ -159,7 +159,7 @@ public class TopologyRequestHandler {
             operator.initializeStore(underlayTopologyId, false);
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
                     correlationItem, schemaHolder);
-            operator.addFilter(new NodeIpFiltrator(filter.getValue(), pathIdentifier));
+            operator.addFilter(new Ipv4AddressFiltrator(filter.getValue(), pathIdentifier));
             UnderlayTopologyListener listener = new UnderlayTopologyListener(operator,
                     underlayTopologyId, null);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
