@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.opendaylight.topoprocessing.impl.operator.filtrator.NodeIp;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -26,7 +27,7 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyFiltrator.class);
 
-    private List<NodeIpFiltrator> filtrators = new ArrayList<>();
+    private List<NodeIp> filtrators = new ArrayList<>();
     private TopologyManager manager;
 
     @Override
@@ -95,12 +96,12 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
      * Add new filtrator
      * @param filter Node Ip Filtrator
      */
-    public void addFilter(NodeIpFiltrator filter) {
+    public void addFilter(NodeIp filter) {
         filtrators.add(filter);
     }
 
     private boolean passedFiltration(PhysicalNode physicalNode) {
-        for (NodeIpFiltrator filtrator : filtrators) {
+        for (NodeIp filtrator : filtrators) {
             if (filtrator.isFiltered(physicalNode)) {
                 return false;
             }
