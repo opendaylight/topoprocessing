@@ -64,7 +64,7 @@ public class OverlayRpcImplementationTest {
         Mockito.when(module.getRpcs()).thenReturn(Collections.singleton(rpcDefinition));
     }
 
-    @Test
+    //@Test
     public void testRpcPresent() {
         Mockito.when(rpcDefinition.getQName()).thenReturn(RPC_QNAME);
         Mockito.when(rpcDefinition.getInput()).thenReturn(rpcInput);

@@ -9,6 +9,7 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import org.opendaylight.topoprocessing.impl.operator.filtrator.Filtrator;
+import org.opendaylight.topoprocessing.impl.operator.filtrator.NodeIpv4;
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
