@@ -6,12 +6,10 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.impl.operator;
+package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpPrefix;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -21,15 +19,15 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * @author matus.marko
  */
-public class NodeIpFiltrator {
+public class NodeIpv4Filtrator implements Filtrator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NodeIpFiltrator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(NodeIpv4Filtrator.class);
 
     private int mask;
     private int maskedValue;
@@ -40,7 +38,7 @@ public class NodeIpFiltrator {
      * @param value IpAddress to compare with
      * @param pathIdentifier Path leading to value with ipAddress in examined node
      */
-    public NodeIpFiltrator(IpPrefix value, YangInstanceIdentifier pathIdentifier) {
+    public NodeIpv4Filtrator(IpPrefix value, YangInstanceIdentifier pathIdentifier) {
         Preconditions.checkNotNull(value, "Filtering value can't be null");
         Preconditions.checkNotNull(pathIdentifier, "PathIdentifier can't be null");
         this.pathIdentifier = pathIdentifier;
@@ -85,7 +83,7 @@ public class NodeIpFiltrator {
     }
 
     private int ipToInt(String strAddress) throws UnknownHostException {
-        Inet4Address inetAddr = (Inet4Address) InetAddress.getByName(strAddress);
+        InetAddress inetAddr = InetAddress.getByName(strAddress);
         byte[] bytes = inetAddr.getAddress();
         return  ((bytes[0] & 0xFF) << 24) |
                 ((bytes[1] & 0xFF) << 16) |
