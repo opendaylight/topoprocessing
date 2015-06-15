@@ -1,4 +1,4 @@
-package org.opendaylight.topoprocessing.impl.operator;
+package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,7 +13,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 /**
  * @author matus.marko
  */
-public class NodeIpFiltratorTest {
+public class NodeIpv4FiltratorTest {
 
     private static final String TOPOLOGY_ID = "mytopo:1";
     private static final String NODE_ID = "mynode:1";
@@ -27,102 +27,102 @@ public class NodeIpFiltratorTest {
     @Test
     public void testMask32() {
         IpPrefix ipPrefix = new IpPrefix(Ipv4Prefix.getDefaultInstance("192.168.1.1/32"));
-        NodeIpFiltrator nodeIpFiltrator = new NodeIpFiltrator(ipPrefix, path);
+        NodeIpv4Filtrator nodeIpv4Filtrator = new NodeIpv4Filtrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.168.1.1"));
+        boolean filtered1 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.168.1.1"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.168.1.2"));
+        boolean filtered2 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.168.1.2"));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
 
-        boolean filtered3 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.168.2.1"));
+        boolean filtered3 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.168.2.1"));
         Assert.assertTrue("Node should not pass the filtrator", filtered3);
 
-        boolean filtered4 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.169.1.1"));
+        boolean filtered4 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.169.1.1"));
         Assert.assertTrue("Node should not pass the filtrator", filtered4);
 
-        boolean filtered5 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("193.168.1.1"));
+        boolean filtered5 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("193.168.1.1"));
         Assert.assertTrue("Node should not pass the filtrator", filtered5);
     }
 
     @Test
     public void testMask24() {
         IpPrefix ipPrefix = new IpPrefix(Ipv4Prefix.getDefaultInstance("192.168.1.0/24"));
-        NodeIpFiltrator nodeIpFiltrator = new NodeIpFiltrator(ipPrefix, path);
+        NodeIpv4Filtrator nodeIpv4Filtrator = new NodeIpv4Filtrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.168.1.2"));
+        boolean filtered1 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.168.1.2"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.168.2.1"));
+        boolean filtered2 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.168.2.1"));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
 
-        boolean filtered3 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.169.1.1"));
+        boolean filtered3 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.169.1.1"));
         Assert.assertTrue("Node should not pass the filtrator", filtered3);
 
-        boolean filtered4 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("193.168.1.1"));
+        boolean filtered4 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("193.168.1.1"));
         Assert.assertTrue("Node should not pass the filtrator", filtered4);
     }
 
     @Test
     public void testMask16() {
         IpPrefix ipPrefix = new IpPrefix(Ipv4Prefix.getDefaultInstance("192.168.0.0/16"));
-        NodeIpFiltrator nodeIpFiltrator = new NodeIpFiltrator(ipPrefix, path);
+        NodeIpv4Filtrator nodeIpv4Filtrator = new NodeIpv4Filtrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.168.1.2"));
+        boolean filtered1 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.168.1.2"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.168.2.1"));
+        boolean filtered2 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.168.2.1"));
         Assert.assertFalse("Node should pass the filtrator", filtered2);
 
-        boolean filtered3 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.169.1.1"));
+        boolean filtered3 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.169.1.1"));
         Assert.assertTrue("Node should not pass the filtrator", filtered3);
 
-        boolean filtered4 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("193.168.1.1"));
+        boolean filtered4 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("193.168.1.1"));
         Assert.assertTrue("Node should not pass the filtrator", filtered4);
     }
 
     @Test
     public void testMask8() {
         IpPrefix ipPrefix = new IpPrefix(Ipv4Prefix.getDefaultInstance("192.0.0.0/8"));
-        NodeIpFiltrator nodeIpFiltrator = new NodeIpFiltrator(ipPrefix, path);
+        NodeIpv4Filtrator nodeIpv4Filtrator = new NodeIpv4Filtrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.168.1.2"));
+        boolean filtered1 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.168.1.2"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.168.2.1"));
+        boolean filtered2 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.168.2.1"));
         Assert.assertFalse("Node should pass the filtrator", filtered2);
 
-        boolean filtered3 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.169.1.1"));
+        boolean filtered3 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.169.1.1"));
         Assert.assertFalse("Node should pass the filtrator", filtered3);
 
-        boolean filtered4 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("193.168.1.1"));
+        boolean filtered4 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("193.168.1.1"));
         Assert.assertTrue("Node should not pass the filtrator", filtered4);
     }
 
     @Test
     public void testMask0() {
         IpPrefix ipPrefix = new IpPrefix(Ipv4Prefix.getDefaultInstance("0.0.0.0/0"));
-        NodeIpFiltrator nodeIpFiltrator = new NodeIpFiltrator(ipPrefix, path);
+        NodeIpv4Filtrator nodeIpv4Filtrator = new NodeIpv4Filtrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.168.1.2"));
+        boolean filtered1 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.168.1.2"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.168.2.1"));
+        boolean filtered2 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.168.2.1"));
         Assert.assertFalse("Node should pass the filtrator", filtered2);
 
-        boolean filtered3 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("192.169.1.1"));
+        boolean filtered3 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("192.169.1.1"));
         Assert.assertFalse("Node should pass the filtrator", filtered3);
 
-        boolean filtered4 = nodeIpFiltrator.isFiltered(this.createPhysicalNode("193.168.1.1"));
+        boolean filtered4 = nodeIpv4Filtrator.isFiltered(this.createPhysicalNode("193.168.1.1"));
         Assert.assertFalse("Node should pass the filtrator", filtered4);
     }
 
     @Test
     public void testMissingIp() {
         IpPrefix ipPrefix = new IpPrefix(Ipv4Prefix.getDefaultInstance("192.168.1.0/24"));
-        NodeIpFiltrator nodeIpFiltrator = new NodeIpFiltrator(ipPrefix, path);
+        NodeIpv4Filtrator nodeIpv4Filtrator = new NodeIpv4Filtrator(ipPrefix, path);
 
-        boolean filtered = nodeIpFiltrator.isFiltered(new PhysicalNode(
+        boolean filtered = nodeIpv4Filtrator.isFiltered(new PhysicalNode(
                 creator.createMapEntryNode(NODE_ID), null, TOPOLOGY_ID, NODE_ID));
         Assert.assertTrue("Node sholud not pass the filtrator", filtered);
     }
