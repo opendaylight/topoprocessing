@@ -24,6 +24,7 @@
         <karaf.empty.version>1.5.0-SNAPSHOT</karaf.empty.version>
         <features.file>features.xml</features.file>
         <surefire.version>2.16</surefire.version>
+        <bgp.version>0.4.0-SNAPSHOT</bgp.version>
     </properties>
 
     <dependencies>
@@ -150,6 +151,13 @@
         </dependency>
 
         <!-- test to validate features.xml -->
+        <dependency>
+            <groupId>org.opendaylight.bgpcep</groupId>
+            <artifactId>features-pcep</artifactId>
+            <version>${bgp.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
         <dependency>
             <groupId>org.opendaylight.odlparent</groupId>
             <artifactId>features-test</artifactId>

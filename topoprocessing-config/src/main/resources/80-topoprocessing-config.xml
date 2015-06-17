@@ -17,7 +17,7 @@
                 <module>
                     <type xmlns:topo="urn:opendaylight:params:xml:ns:yang:topoprocessing:provider:impl">topo:topoprocessing-provider-impl</type>
                     <name>topoprocessing-provider-module</name>
-                    <datastore-type>OPERATIONAL</datastore-type>
+                    <datastore-type>CONFIGURATION</datastore-type>
                     <schema-service>
                         <type xmlns:dom="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom">dom:schema-service</type>
                         <name>yang-schema-service</name>

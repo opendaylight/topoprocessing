@@ -7,6 +7,7 @@
     <repository>mvn:org.opendaylight.controller/features-config/${config.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
+    <repository>mvn:org.opendaylight.bgpcep/features-pcep/${bgp.version}/xml/features</repository>
     <feature name='odl-topoprocessing-framework' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Framework">
         <feature version='${yangtools.version}'>odl-yangtools-common</feature>
         <feature version='${yangtools.version}'>odl-yangtools-binding</feature>
@@ -14,6 +15,8 @@
         <feature version='${config.version}'>odl-config-api</feature>
         <feature version='${mdsal.version}'>odl-mdsal-common</feature>
         <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+        <feature version='${bgp.version}'>odl-bgpcep-pcep-all</feature>
+        <feature version='1.2.0-SNAPSHOT'>odl-restconf</feature>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-api/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-spi/${project.version}</bundle>
