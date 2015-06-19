@@ -85,7 +85,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
         for(Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : map.entrySet()) {
             YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
             NormalizedNode<?, ?> normalizedNode = entry.getValue();
-            if(normalizedNode instanceof MapEntryNode && normalizedNode.getNodeType().equals(Topology.QNAME)) {
+            if (normalizedNode instanceof MapEntryNode && normalizedNode.getNodeType().equals(Topology.QNAME)) {
                 Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode =
                         nodeSerializer.fromNormalizedNode(identifier, normalizedNode);
                 Topology topology = (Topology) fromNormalizedNode.getValue();
@@ -94,7 +94,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
                             new TopologyRequestHandler(dataBroker, schemaHolder, rpcServices);
                     requestHandler.setDatastoreType(datastoreType);
                     requestHandler.processNewRequest(topology);
-                    topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
+                    topoRequestHandlers.put(yangInstanceIdentifier, requestHandler);
 
                     Optional<DataContainerChild<? extends PathArgument, ?>> topologyTypes =
                             ((MapEntryNode) normalizedNode).getChild(new NodeIdentifier(TopologyTypes.QNAME));

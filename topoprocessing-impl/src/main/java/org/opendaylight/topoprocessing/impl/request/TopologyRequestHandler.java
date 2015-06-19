@@ -8,21 +8,20 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
-import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
-import org.opendaylight.topoprocessing.impl.operator.NodeIpFiltrator;
-import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
-import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
-import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
-import org.opendaylight.topoprocessing.impl.operator.UnificationAggregator;
+import org.opendaylight.topoprocessing.impl.operator.*;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
@@ -30,11 +29,7 @@ import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NodeIpFiltration;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
@@ -50,10 +45,13 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
+import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
+import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import java.util.*;
 
 
 /**
@@ -174,6 +172,7 @@ public class TopologyRequestHandler {
                 listenerRegistration = domDataBroker.registerDataChangeListener(
                         LogicalDatastoreType.CONFIGURATION, nodeIdentifier, listener, DataChangeScope.SUBTREE);
             }
+            initializeListener(underlayTopologyId, datastoreType, listener);
             listeners.add(listenerRegistration);
         }
     }
@@ -198,6 +197,7 @@ public class TopologyRequestHandler {
                 listenerRegistration = domDataBroker.registerDataChangeListener(
                         LogicalDatastoreType.CONFIGURATION, nodeIdentifier, listener, DataChangeScope.SUBTREE);
             }
+            initializeListener(underlayTopologyId, datastoreType, listener);
             listeners.add(listenerRegistration);
         }
     }
@@ -272,5 +272,46 @@ public class TopologyRequestHandler {
      */
     public void setDatastoreType(DatastoreType datastoreType) {
         this.datastoreType = datastoreType;
+    }
+
+    private void initializeListener(final String underlayTopologyId, DatastoreType datastoreType,
+                                    final UnderlayTopologyListener listener) {
+        LogicalDatastoreType logicalDatastoreType = (DatastoreType.CONFIGURATION == datastoreType) ?
+                LogicalDatastoreType.CONFIGURATION : LogicalDatastoreType.OPERATIONAL;
+
+        YangInstanceIdentifier path = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, underlayTopologyId)
+                .node(Node.QNAME).build();
+        DOMDataReadOnlyTransaction domDataReadOnlyTransaction = transactionChain.newReadOnlyTransaction();
+        CheckedFuture<Optional<NormalizedNode<?, ?>>, ReadFailedException> future =
+                domDataReadOnlyTransaction.read(logicalDatastoreType, path);
+        Futures.addCallback(future, new FutureCallback<Optional<NormalizedNode<?, ?>>>() {
+            @Override
+            public void onSuccess(Optional<NormalizedNode<?, ?>> result) {
+                if (result.isPresent()) {
+                    LOG.trace("Read from dataStore: {}", result);
+                    listener.initialize(listToMap((Set) result.get().getValue(), underlayTopologyId));
+                }
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+                LOG.warn("DataStore read failed");
+            }
+        });
+    }
+
+    private Map<YangInstanceIdentifier, NormalizedNode<?, ?>> listToMap(
+            Set nodes, String underlayTopologyId) {
+        InstanceIdentifierBuilder nodeYiidBuilder  = YangInstanceIdentifier
+                .builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, underlayTopologyId)
+                .node(Node.QNAME);
+        Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map = new HashMap<>();
+        for (MapEntryNode node : (Collection<MapEntryNode>) nodes) {
+            map.put(nodeYiidBuilder.nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, node.getIdentifier())
+                            .build(), node);
+        }
+        return map;
     }
 }
