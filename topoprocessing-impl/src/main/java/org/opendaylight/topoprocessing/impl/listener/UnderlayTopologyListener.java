@@ -8,13 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.listener;
 
-import java.util.List;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
@@ -47,9 +42,11 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         CREATE, UPDATE, DELETE
     }
 
+    private boolean active;
     private TopologyOperator operator;
     private YangInstanceIdentifier pathIdentifier;
     private String underlayTopologyId;
+    private LinkedList<AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>>> changesQueue;
 
     /**
      * Default constructor
@@ -62,10 +59,17 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         this.operator = operator;
         this.underlayTopologyId = underlayTopologyId;
         this.pathIdentifier = pathIdentifier;
+        LOGGER.debug("Processing changes was deactivated");
+        changesQueue = new LinkedList<>();
+        active = false;
     }
 
     @Override
     public void onDataChanged(AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
+        if (! active) {
+            changesQueue.add(change);
+            return;
+        }
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("DataChangeEvent received: {}", change);
         }
@@ -149,4 +153,16 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         operator.processRemovedChanges(identifiers, underlayTopologyId);
     }
 
+    /**
+     * @param active Activate/Deactivate processing changes
+     */
+    public void setActive(boolean active) {
+        LOGGER.debug("Processing changes was {}", active ? "activated" : "deactivated");
+        this.active = active;
+    }
+
+    public void initialize(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map) {
+        proceedChangeRequest(map, RequestAction.CREATE);
+        setActive(true);
+    }
 }
