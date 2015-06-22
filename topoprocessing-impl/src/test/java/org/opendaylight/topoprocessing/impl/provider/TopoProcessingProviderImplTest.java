@@ -37,7 +37,7 @@ import java.util.Set;
 public class TopoProcessingProviderImplTest {
 
     private TopoProcessingProviderImpl topoProcessingProvider;
-    
+
     @Mock private SchemaService schemaService;
     @Mock private DOMDataBroker dataBroker;
     @Mock private BindingNormalizedNodeSerializer nodeSerializer;
