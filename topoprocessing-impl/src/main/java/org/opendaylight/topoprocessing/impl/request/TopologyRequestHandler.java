@@ -10,15 +10,17 @@ package org.opendaylight.topoprocessing.impl.request;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
+import org.opendaylight.topoprocessing.api.filtration.Filtrator;
+import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
-import org.opendaylight.topoprocessing.impl.operator.filtrator.NodeIpv4;
 import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
@@ -33,14 +35,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoproc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NodeIpFiltration;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Filtration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.NodeIpFiltrationCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.FiltrationCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.UnificationCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.node.ip.filtration._case.node.ip.filtration.Filter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.filtration._case.filtration.Filter;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -74,6 +77,7 @@ public class TopologyRequestHandler {
     private DOMTransactionChain transactionChain;
     private TopologyWriter writer;
     private DatastoreType datastoreType;
+    private Map<Class<? extends FilterBase>, FiltratorFactory> filtrators;
 
     /**
      * Default constructor
@@ -134,10 +138,9 @@ public class TopologyRequestHandler {
                     List<Mapping> mappings = unificationCase.getUnification().getMapping();
                     operator = new UnificationAggregator();
                     iterateMappings(operator, mappings, correlation.getCorrelationItem());
-                }
-                else if (correlation.getName().equals(NodeIpFiltration.class)) {
-                    NodeIpFiltrationCase nodeIpFiltrationCase = (NodeIpFiltrationCase) correlation.getCorrelationType();
-                    List<Filter> filters = nodeIpFiltrationCase.getNodeIpFiltration().getFilter();
+                } else if (correlation.getName().equals(Filtration.class)) {
+                    FiltrationCase filtrationCase = (FiltrationCase) correlation.getCorrelationType();
+                    List<Filter> filters = filtrationCase.getFiltration().getFilter();
                     operator = new TopologyFiltrator();
                     iterateFilters((TopologyFiltrator) operator, filters, correlation.getCorrelationItem());
                 } else {
@@ -159,7 +162,9 @@ public class TopologyRequestHandler {
             operator.initializeStore(underlayTopologyId, false);
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
                     correlationItem, schemaHolder);
-            operator.addFilter(new NodeIpv4(filter.getValue(), pathIdentifier));
+            FiltratorFactory ff = filtrators.get(filter.getFilterType());
+            Filtrator currentFiltrator = ff.createFiltrator(filter, pathIdentifier);
+            operator.addFilter(currentFiltrator);
             UnderlayTopologyListener listener = new UnderlayTopologyListener(operator,
                     underlayTopologyId, null);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
@@ -272,5 +277,12 @@ public class TopologyRequestHandler {
      */
     public void setDatastoreType(DatastoreType datastoreType) {
         this.datastoreType = datastoreType;
+    }
+
+    /**
+     * @param filtrators
+     */
+    public void setFiltrators(Map<Class<? extends FilterBase>, FiltratorFactory> filtrators) {
+        this.filtrators = filtrators;
     }
 }

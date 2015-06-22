@@ -8,6 +8,9 @@
 
 package org.opendaylight.topoprocessing.spi.provider;
 
+import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
+
 /**
  * @author michal.polkorab
  *
@@ -18,4 +21,17 @@ public interface TopoProcessingProvider extends AutoCloseable {
      * Starts Topology Processing Framework
      */
     void startup();
+
+    /**
+     * Registers user defined filtrator
+     * @param filtrator - filtrator to be registered
+     * @param filtratorFactory - factory dealing with filtering functionality
+     */
+    void registerFiltratorFactory(Class<? extends FilterBase> filtrator, FiltratorFactory filtratorFactory);
+
+    /**
+     * Unregister user defined filtrator
+     * @param filtrator - filtrator to be unregistered
+     */
+    void unregisterFiltratorFactory(Class<? extends FilterBase> filtrator);
 }

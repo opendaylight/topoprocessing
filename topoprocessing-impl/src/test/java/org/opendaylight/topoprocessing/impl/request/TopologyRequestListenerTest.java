@@ -1,15 +1,11 @@
 package org.opendaylight.topoprocessing.impl.request;
 
-import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
-
-import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
-import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.AbstractCheckedFuture;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +42,9 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
+
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.AbstractCheckedFuture;
 
 /**
  * @author matus.marko

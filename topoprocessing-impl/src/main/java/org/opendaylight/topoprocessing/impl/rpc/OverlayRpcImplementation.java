@@ -10,7 +10,6 @@ package org.opendaylight.topoprocessing.impl.rpc;
 
 import java.util.Collection;
 
-import com.google.common.util.concurrent.Futures;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcException;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcImplementation;
@@ -36,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.Futures;
 
 /**
  * Used for delegation of RPC calls.
