@@ -6,9 +6,8 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.impl.operator.filtrator;
+package org.opendaylight.topoprocessing.api.filtration;
 
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 
 /**
  * @author matus.marko
@@ -16,9 +15,9 @@ import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 public interface Filtrator {
 
     /**
-     * Filters {@link PhysicalNode}
-     * @param node {@link PhysicalNode} to be filtered
+     * Filters {@link UnderlayItem}
+     * @param node {@link UnderlayItem} to be filtered
      * @return true if node was filtered out false otherwise
      */
-    boolean isFiltered(PhysicalNode node);
+    boolean isFiltered(UnderlayItem node);
 }
