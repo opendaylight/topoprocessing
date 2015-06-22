@@ -7,13 +7,12 @@
  */
 package org.opendaylight.topoprocessing.impl.writer;
 
-import static org.junit.Assert.fail;
+import static org.mockito.Matchers.eq;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import static org.mockito.Matchers.eq;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;

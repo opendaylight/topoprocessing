@@ -8,8 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import org.opendaylight.topoprocessing.api.filtration.Filtrator;
+import org.opendaylight.topoprocessing.api.filtration.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
@@ -17,6 +17,9 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 /**
  * @author matus.marko
@@ -34,11 +37,12 @@ public abstract class Specific<T> implements Filtrator {
         this.value = value;
     }
 
-    public boolean isFiltered(PhysicalNode node) {
+    @Override
+    public boolean isFiltered(UnderlayItem node) {
         Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node.getNode(), pathIdentifier);
         if (leafNode.isPresent()) {
             T value = (T) ((LeafNode) leafNode.get()).getValue();
-            if (this.value == value) {
+            if (this.value.equals(value)) {
                 return false;
             }
         }

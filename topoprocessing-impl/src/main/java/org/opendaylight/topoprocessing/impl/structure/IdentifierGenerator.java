@@ -8,9 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.structure;
 
-import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
-
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 
 /**
