@@ -10,6 +10,9 @@ package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+
+import org.opendaylight.topoprocessing.api.filtration.Filtrator;
+import org.opendaylight.topoprocessing.api.filtration.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
@@ -41,7 +44,7 @@ public class SpecificValueFiltrator<T> implements Filtrator {
     }
 
     @Override
-    public boolean isFiltered(PhysicalNode node) {
+    public boolean isFiltered(UnderlayItem node) {
         Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node.getNode(), pathIdentifier);
         if (leafNode.isPresent()) {
             T value = (T) ((LeafNode) leafNode.get()).getValue();

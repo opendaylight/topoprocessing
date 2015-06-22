@@ -12,7 +12,7 @@ import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 /**
  * @author matus.marko
  */
-public class SpecificFiltratorTest {
+public class SpecificValueFiltratorTest {
 
     private static final String TOPOLOGY_ID = "mytopo:1";
     private static final String NODE_ID = "mynode:1";

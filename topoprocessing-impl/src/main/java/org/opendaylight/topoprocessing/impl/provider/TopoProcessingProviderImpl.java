@@ -8,8 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.provider;
 
+import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
-
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
@@ -21,11 +21,13 @@ import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Preconditions;
 
 /**
@@ -86,6 +88,17 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         topologyRequestListenerRegistration =
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                         InstanceIdentifiers.TOPOLOGY_IDENTIFIER, topologyRequestListener, DataChangeScope.ONE);
+    }
+
+    @Override
+    public void registerFiltratorFactory(Class<? extends FilterBase> filterType,
+            FiltratorFactory filtratorFactory) {
+        topologyRequestListener.registerFiltrator(filterType, filtratorFactory);
+    }
+
+    @Override
+    public void unregisterFiltratorFactory(Class<? extends FilterBase> filterType) {
+        topologyRequestListener.unregisterFiltrator(filterType);
     }
 
 }
