@@ -1,5 +1,8 @@
 package org.opendaylight.topoprocessing.impl.rpc;
 
+import java.util.HashSet;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -22,7 +25,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.data.api.schema.*;
 import org.opendaylight.yangtools.yang.model.api.*;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +39,8 @@ public class OverlayRpcImplementationTest {
     private static final QName CONTEXT_REFERENCE = QName.cachedReference(QName.create("urn:opendaylight:yang:extension:yang-ext",
             "2013-07-09", "context-reference"));
     private static final QName RPC_QNAME = QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "rpc");
+    private static final QName TEST_QNAME = QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "test");
+    private static final QName AUG_QNAME = QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "aug");
 
     private OverlayRpcImplementation overlayRpcImplementation;
     private YangInstanceIdentifier underlayNodeIdentifier;
@@ -48,7 +52,7 @@ public class OverlayRpcImplementationTest {
     @Mock private Module module;
     @Mock private RpcDefinition rpcDefinition;
     @Mock private DataContainerChild<? extends PathArgument, ?> child1;
-    @Mock private LeafNode child2;
+    @Mock private LeafNode<?> child2;
     @Mock private AugmentationNode child3;
     @Mock private ContainerSchemaNode rpcInput;
     @Mock private DataSchemaNode schemaNode;
@@ -77,9 +81,13 @@ public class OverlayRpcImplementationTest {
         ArrayList<DataContainerChild<? extends PathArgument, ?>> inputChilds = new ArrayList<>();
         inputChilds.add(child1);
         Mockito.when(child1.getNodeType()).thenReturn(RPC_QNAME);
-//        inputChilds.add(child2);
+        inputChilds.add(child2);
         Mockito.when(child2.getNodeType()).thenReturn(Node.QNAME);
-//        inputChilds.add(child3);
+        Mockito.when(child2.getIdentifier()).thenReturn(new NodeIdentifier(TEST_QNAME));
+        inputChilds.add(child3);
+        HashSet<QName> set = new HashSet<>();
+        set.add(AUG_QNAME);
+        Mockito.when(child3.getIdentifier()).thenReturn(new AugmentationIdentifier(set));
         Mockito.when(input.getValue()).thenReturn(inputChilds);
         overlayRpcImplementation.invokeRpc(rpcIdentifier, input);
 
