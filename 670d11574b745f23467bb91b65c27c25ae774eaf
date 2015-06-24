@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_a3092433",
+        "filename": "topoprocessing-api/src/main/yang/topology-correlation.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-06-24T16:16:27Z",
+      "side": 1,
+      "message": "I agree with the change, but let\u0027s change the model to something really nice and easy to understand, please change it in following manner:\nkey correlation-id;\nleaf correlation-id {\n    type string;\n    description \"User defined content to uniquely identify the correlation. This value is not used for further processing.\"\n}\n+ change \"name\" to \"type\"",
+      "range": {
+        "startLine": 69,
+        "startChar": 1,
+        "endLine": 78,
+        "endChar": 17
+      },
+      "revId": "670d11574b745f23467bb91b65c27c25ae774eaf",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
