@@ -1,15 +1,17 @@
 package org.opendaylight.topoprocessing.impl.translator;
 
 import com.google.common.base.Optional;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
-import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.api.structure.OverlayItem;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNode;
@@ -34,7 +36,7 @@ public class LogicalNodeToNodeTranslatorTest {
     private NormalizedNode<?, ?> mockNormalizedNode;
 
     @Mock
-    private PhysicalNode mockPhysicalNode;
+    private UnderlayItem mockPhysicalNode;
 
     /**
      * Test case: NodeId translation
@@ -42,9 +44,10 @@ public class LogicalNodeToNodeTranslatorTest {
     @Test
     public void testNodeId() {
         String logicalName = "node:1";
-        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode, null, TOPOLOGY_NAME, "node:1");
-        LogicalNode logicalNode = new LogicalNode(Collections.singletonList(physicalNode));
-        LogicalNodeWrapper wrapper = new LogicalNodeWrapper(logicalName, logicalNode);
+        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode, null, TOPOLOGY_NAME, "node:1",
+                CorrelationItemEnum.Node);
+        OverlayItem logicalNode = new OverlayItem(Collections.singletonList(physicalNode));
+        OverlayItemWrapper wrapper = new OverlayItemWrapper(logicalName, logicalNode);
         NormalizedNode<?, ?> normalizedNode = translator.translate(wrapper);
 
         NormalizedNode<?, ?> nodeId = NormalizedNodes.findNode(normalizedNode,
@@ -59,14 +62,16 @@ public class LogicalNodeToNodeTranslatorTest {
     @Test
     public void testSameNodePassed() throws Exception {
         String logicalName = "node:1";
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode, null, TOPOLOGY_NAME, "node:1");
-        LogicalNode logicalNode = new LogicalNode(Collections.singletonList(physicalNode1));
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode, null, TOPOLOGY_NAME, "node:2");
-        LogicalNodeWrapper wrapper = new LogicalNodeWrapper(logicalName, logicalNode);
-        List<PhysicalNode> physicalNodes = new ArrayList<>();
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode, null, TOPOLOGY_NAME, "node:1",
+                CorrelationItemEnum.Node);
+        OverlayItem logicalNode = new OverlayItem(Collections.singletonList(physicalNode1));
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode, null, TOPOLOGY_NAME, "node:2",
+                CorrelationItemEnum.Node);
+        OverlayItemWrapper wrapper = new OverlayItemWrapper(logicalName, logicalNode);
+        List<UnderlayItem> physicalNodes = new ArrayList<>();
         physicalNodes.add(physicalNode1);
         physicalNodes.add(physicalNode2);
-        wrapper.addLogicalNode(new LogicalNode(physicalNodes));
+        wrapper.addOverlayItem(new OverlayItem(physicalNodes));
         NormalizedNode<?, ?> normalizedNode = translator.translate(wrapper);
 
         Collection supportingNodes = (Collection) ((MapEntryNode) normalizedNode)
@@ -83,9 +88,10 @@ public class LogicalNodeToNodeTranslatorTest {
         String logicalName = "node:1";
         String physicalName = "node:11";
 
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode, null, TOPOLOGY_NAME, physicalName);
-        LogicalNode logicalNode = new LogicalNode(Collections.singletonList(physicalNode1));
-        LogicalNodeWrapper wrapper = new LogicalNodeWrapper(logicalName, logicalNode);
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode, null, TOPOLOGY_NAME, physicalName,
+                CorrelationItemEnum.Node);
+        OverlayItem logicalNode = new OverlayItem(Collections.singletonList(physicalNode1));
+        OverlayItemWrapper wrapper = new OverlayItemWrapper(logicalName, logicalNode);
         NormalizedNode<?, ?> normalizedNode = translator.translate(wrapper);
         Map<QName, Object> keyValues = new HashMap<>();
         keyValues.put(TopologyQNames.TOPOLOGY_REF, TOPOLOGY_NAME);
@@ -124,26 +130,31 @@ public class LogicalNodeToNodeTranslatorTest {
         String physicalName5 = "node:15";
 
         // logical 1
-        List<PhysicalNode> toAggregate1 = new ArrayList<>();
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode, null, topologyName, physicalName1);
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode, null, topologyName, physicalName2);
-        PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode, null, topologyName, physicalName3);
+        List<UnderlayItem> toAggregate1 = new ArrayList<>();
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode, null, topologyName, physicalName1,
+                CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode, null, topologyName, physicalName2,
+                CorrelationItemEnum.Node);
+        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode, null, topologyName, physicalName3,
+                CorrelationItemEnum.Node);
         toAggregate1.add(physicalNode1);
         toAggregate1.add(physicalNode2);
         toAggregate1.add(physicalNode3);
-        LogicalNode logicalNode1 = new LogicalNode(toAggregate1);
+        OverlayItem logicalNode1 = new OverlayItem(toAggregate1);
 
         // logical 2
-        List<PhysicalNode> toAggregate2 = new ArrayList<>();
-        PhysicalNode physicalNode4 = new PhysicalNode(mockNormalizedNode, null, topologyName, physicalName4);
-        PhysicalNode physicalNode5 = new PhysicalNode(mockNormalizedNode, null, topologyName, physicalName5);
+        List<UnderlayItem> toAggregate2 = new ArrayList<>();
+        UnderlayItem physicalNode4 = new UnderlayItem(mockNormalizedNode, null, topologyName, physicalName4,
+                CorrelationItemEnum.Node);
+        UnderlayItem physicalNode5 = new UnderlayItem(mockNormalizedNode, null, topologyName, physicalName5,
+                CorrelationItemEnum.Node);
         toAggregate2.add(physicalNode4);
         toAggregate2.add(physicalNode5);
-        LogicalNode logicalNode2 = new LogicalNode(toAggregate2);
+        OverlayItem logicalNode2 = new OverlayItem(toAggregate2);
 
         // process
-        LogicalNodeWrapper wrapper = new LogicalNodeWrapper(wrapperName, logicalNode1);
-        wrapper.addLogicalNode(logicalNode2);
+        OverlayItemWrapper wrapper = new OverlayItemWrapper(wrapperName, logicalNode1);
+        wrapper.addOverlayItem(logicalNode2);
         NormalizedNode<?, ?> normalizedNode = translator.translate(wrapper);
 
         // supporting-nodes
@@ -212,15 +223,15 @@ public class LogicalNodeToNodeTranslatorTest {
         final MapEntryNode node3 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, physicalName3)
                 .withChild(terminationPoints3).build();
 
-        LogicalNode logicalNode1 = new LogicalNode(new ArrayList<PhysicalNode>() {{
-            add(new PhysicalNode(node1, mockNormalizedNode, TOPOLOGY_NAME, physicalName1));
-            add(new PhysicalNode(node2, mockNormalizedNode, TOPOLOGY_NAME, physicalName2));
+        OverlayItem logicalNode1 = new OverlayItem(new ArrayList<UnderlayItem>() {{
+            add(new UnderlayItem(node1, mockNormalizedNode, TOPOLOGY_NAME, physicalName1, CorrelationItemEnum.Node));
+            add(new UnderlayItem(node2, mockNormalizedNode, TOPOLOGY_NAME, physicalName2, CorrelationItemEnum.Node));
         }});
-        LogicalNode logicalNode2 = new LogicalNode(Collections.singletonList(
-                new PhysicalNode(node3, mockNormalizedNode, TOPOLOGY_NAME, physicalName3)
+        OverlayItem logicalNode2 = new OverlayItem(Collections.singletonList(
+                new UnderlayItem(node3, mockNormalizedNode, TOPOLOGY_NAME, physicalName3, CorrelationItemEnum.Node)
         ));
-        LogicalNodeWrapper wrapper = new LogicalNodeWrapper(logicalName, logicalNode1);
-        wrapper.addLogicalNode(logicalNode2);
+        OverlayItemWrapper wrapper = new OverlayItemWrapper(logicalName, logicalNode1);
+        wrapper.addOverlayItem(logicalNode2);
         NormalizedNode<?, ?> normalizedNode = translator.translate(wrapper);
 
         Collection value = (Collection) ((MapEntryNode) normalizedNode).getChild(

@@ -8,9 +8,10 @@
 
 package org.opendaylight.topoprocessing.impl.translator;
 
-import com.google.common.base.Splitter;
 import java.util.Iterator;
+
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -25,6 +26,8 @@ import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Splitter;
+
 
 /**
  * @author martin.uhlir
@@ -37,10 +40,10 @@ public class PathTranslator {
     /**
      * Translates yang path into {@link YangInstanceIdentifier}
      *
-     * @param yangPath path to target node
-     * @param correlationItem 
-     * @param schemaHolder 
-     * @return {@link YangInstanceIdentifier} leading to target node
+     * @param yangPath path to target item
+     * @param correlationItem
+     * @param schemaHolder
+     * @return {@link YangInstanceIdentifier} leading to target item
      * @throws IllegalArgumentException if yangPath is in incorrect format
      * @throws IllegalStateException if required module is not loaded
      */
@@ -48,14 +51,16 @@ public class PathTranslator {
             GlobalSchemaContextHolder schemaHolder) {
         LOGGER.debug("Translating target-field path: " + yangPath);
         DataSchemaContextTree contextTree = schemaHolder.getContextTree();
-        YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder()
+        YangInstanceIdentifier itemIdentifier = YangInstanceIdentifier.builder()
                 .node(NetworkTopology.QNAME)
                 .node(Topology.QNAME)
                 .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, "")
-                .node(Node.QNAME)
-                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, "")
+                .node(TopologyQNames.buildItemQName(correlationItem))
+                .nodeWithKey(TopologyQNames.buildItemQName(correlationItem),
+                        TopologyQNames.buildItemIdQName(correlationItem), "")
                 .build();
-        DataSchemaContextNode<?> contextNode = contextTree.getChild(nodeIdentifier);
+
+        DataSchemaContextNode<?> contextNode = contextTree.getChild(itemIdentifier);
         Iterable<String> pathArguments = splitYangPath(yangPath);
         Iterator<String> iterator = pathArguments.iterator();
         YangInstanceIdentifier targetIdentifier = YangInstanceIdentifier.builder().build();
