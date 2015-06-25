@@ -8,10 +8,11 @@
 
 package org.opendaylight.topoprocessing.impl.structure;
 
+import java.util.Map;
+
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-
-import java.util.Map;
 
 /**
  * @author matus.marko
@@ -20,19 +21,19 @@ public class TopologyStore {
 
     private String id;
     private final boolean aggregateInside;
-    private Map<YangInstanceIdentifier, PhysicalNode> physicalNodes;
+    private Map<YangInstanceIdentifier, UnderlayItem> underlayItems;
 
     /**
      * Default constructor
      * @param id topology-id of stored topology
      * @param aggregateInside signals if aggregation should happen even inside
      *        the same topology
-     * @param physicalNode all nodes present in this topology
+     * @param underlayItem all items (either nodes, links or termination points) present in this topology
      */
-    public TopologyStore(String id, boolean aggregateInside, Map<YangInstanceIdentifier, PhysicalNode> physicalNode) {
+    public TopologyStore(String id, boolean aggregateInside, Map<YangInstanceIdentifier, UnderlayItem> underlayItem) {
         this.id = id;
         this.aggregateInside = aggregateInside;
-        this.physicalNodes = physicalNode;
+        this.underlayItems = underlayItem;
     }
 
     /**
@@ -50,10 +51,10 @@ public class TopologyStore {
     }
 
     /**
-     * @return all {@link PhysicalNode}s present in this {@link TopologyStore}
+     * @return all {@link UnderlayItem}s present in this {@link TopologyStore}
      */
-    public Map<YangInstanceIdentifier, PhysicalNode> getPhysicalNodes() {
-        return physicalNodes;
+    public Map<YangInstanceIdentifier, UnderlayItem> getUnderlayItems() {
+        return underlayItems;
     }
 
 }
