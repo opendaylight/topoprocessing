@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opendaylight.topoprocessing</groupId>
         <artifactId>topoprocessing-parent</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1-Lithium</version>
     </parent>
     <groupId>org.opendaylight.topoprocessing</groupId>
     <artifactId>features-topoprocessing</artifactId>
@@ -21,7 +21,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <karaf.empty.version>1.5.0-SNAPSHOT</karaf.empty.version>
+        <karaf.empty.version>1.5.0-Lithium</karaf.empty.version>
         <features.file>features.xml</features.file>
         <surefire.version>2.16</surefire.version>
     </properties>
