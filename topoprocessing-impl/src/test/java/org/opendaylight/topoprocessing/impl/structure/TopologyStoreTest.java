@@ -17,13 +17,14 @@ import java.util.Map.Entry;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
-
 /**
  * @author martin.uhlir
  *
@@ -41,7 +42,7 @@ public class TopologyStoreTest {
         
         boolean aggregateInside = true;
         topologyStore = new TopologyStore(TOPOLOGY_ID , aggregateInside ,
-                new HashMap<YangInstanceIdentifier, PhysicalNode>());
+                new HashMap<YangInstanceIdentifier, UnderlayItem>());
     }
 
     @Test
@@ -59,11 +60,11 @@ public class TopologyStoreTest {
     @Test
     public void testGetPhysicalNodes() {
         testInitialization();
-        HashMap<YangInstanceIdentifier, PhysicalNode> physicalNodes = new HashMap<>();
-        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY_ID, NODE_ID);
+        HashMap<YangInstanceIdentifier, UnderlayItem> physicalNodes = new HashMap<>();
+        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY_ID, NODE_ID, CorrelationItemEnum.Node);
         physicalNodes.put(createTopologyIdentifier(TOPOLOGY_ID).build(), physicalNode);
 
-        physicalNodesEqual(physicalNodes, topologyStore.getPhysicalNodes());
+        physicalNodesEqual(physicalNodes, topologyStore.getUnderlayItems());
     }
 
     /**
@@ -71,18 +72,18 @@ public class TopologyStoreTest {
      * @param physicalNodes2
      * @return 
      */
-    private static boolean physicalNodesEqual(Map<YangInstanceIdentifier, PhysicalNode> expectedPhysicalNodes,
-            Map<YangInstanceIdentifier, PhysicalNode> actualPhysicalNodes) {
-        Iterator<Entry<YangInstanceIdentifier, PhysicalNode>> expectedIterator = expectedPhysicalNodes.entrySet().iterator();
-        Iterator<Entry<YangInstanceIdentifier, PhysicalNode>> actualIterator = actualPhysicalNodes.entrySet().iterator();
+    private static boolean physicalNodesEqual(Map<YangInstanceIdentifier, UnderlayItem> expectedPhysicalNodes,
+            Map<YangInstanceIdentifier, UnderlayItem> actualPhysicalNodes) {
+        Iterator<Entry<YangInstanceIdentifier, UnderlayItem>> expectedIterator = expectedPhysicalNodes.entrySet().iterator();
+        Iterator<Entry<YangInstanceIdentifier, UnderlayItem>> actualIterator = actualPhysicalNodes.entrySet().iterator();
         if (expectedIterator.hasNext() && actualIterator.hasNext()) {
-            Entry<YangInstanceIdentifier, PhysicalNode> expected = expectedIterator.next();
-            Entry<YangInstanceIdentifier, PhysicalNode> actual = actualIterator.next();
+            Entry<YangInstanceIdentifier, UnderlayItem> expected = expectedIterator.next();
+            Entry<YangInstanceIdentifier, UnderlayItem> actual = actualIterator.next();
             if (expected.getKey().equals(actual.getKey()) &&
                     expected.getValue().getNode().equals(actual.getValue().getNode()) &&
                     expected.getValue().getLeafNode().equals(actual.getValue().getLeafNode()) &&
                     expected.getValue().getTopologyId().equals(actual.getValue().getTopologyId()) &&
-                    expected.getValue().getNodeId().equals(actual.getValue().getNodeId())) {
+                    expected.getValue().getItemId().equals(actual.getValue().getItemId())) {
                 return true;
             }
         }

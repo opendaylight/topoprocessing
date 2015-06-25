@@ -2,10 +2,11 @@ package org.opendaylight.topoprocessing.impl.operator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestNodeCreator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpPrefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -122,12 +123,13 @@ public class NodeIpFiltratorTest {
         IpPrefix ipPrefix = new IpPrefix(Ipv4Prefix.getDefaultInstance("192.168.1.0/24"));
         NodeIpFiltrator nodeIpFiltrator = new NodeIpFiltrator(ipPrefix, path);
 
-        boolean filtered = nodeIpFiltrator.isFiltered(new PhysicalNode(
-                creator.createMapEntryNode(NODE_ID), null, TOPOLOGY_ID, NODE_ID));
+        boolean filtered = nodeIpFiltrator.isFiltered(new UnderlayItem(
+                creator.createMapEntryNode(NODE_ID), null, TOPOLOGY_ID, NODE_ID, CorrelationItemEnum.Node));
         Assert.assertTrue("Node sholud not pass the filtrator", filtered);
     }
 
-    protected PhysicalNode createPhysicalNode(String ipAddress) {
-        return new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID, ipAddress), null, TOPOLOGY_ID, NODE_ID);
+    protected UnderlayItem createPhysicalNode(String ipAddress) {
+        return new UnderlayItem(creator.createMapEntryNodeWithIpAddress(NODE_ID, ipAddress), null, TOPOLOGY_ID, NODE_ID,
+                CorrelationItemEnum.Node);
     }
 }
