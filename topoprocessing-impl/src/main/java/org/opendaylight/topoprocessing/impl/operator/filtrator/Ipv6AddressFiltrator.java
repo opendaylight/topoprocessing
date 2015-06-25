@@ -8,12 +8,11 @@
 
 package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.BitSet;
 
-import org.opendaylight.topoprocessing.api.filtration.Filtrator;
-import org.opendaylight.topoprocessing.api.filtration.UnderlayItem;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpPrefix;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
@@ -22,9 +21,8 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.BitSet;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 /**
  * @author matus.marko

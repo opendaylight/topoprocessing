@@ -9,8 +9,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -47,10 +48,10 @@ public class UnderlayTopologyListenerTest {
 
         YangInstanceIdentifier pathIdentifier = YangInstanceIdentifier.of(ipAddressQname);
         TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
-        UnderlayTopologyListener listener = new UnderlayTopologyListener(mockOperator, TOPOLOGY_ID, pathIdentifier);
+        UnderlayTopologyListener listener = new UnderlayTopologyListener(mockOperator, TOPOLOGY_ID, pathIdentifier, CorrelationItemEnum.Node);
 
-        Map<YangInstanceIdentifier, PhysicalNode> createdEntries = new HashMap<>();
-        PhysicalNode physicalNode = new PhysicalNode(nodeValueWithIp, nodeIpValue, TOPOLOGY_ID, nodeName);
+        Map<YangInstanceIdentifier, UnderlayItem> createdEntries = new HashMap<>();
+        UnderlayItem physicalNode = new UnderlayItem(nodeValueWithIp, nodeIpValue, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
         createdEntries.put(nodeYiid, physicalNode);
 
         // create
@@ -83,10 +84,10 @@ public class UnderlayTopologyListenerTest {
         mapCreated.put(nodeYiid, nodeValue);
 
         TopologyFiltrator mockOperator = Mockito.mock(TopologyFiltrator.class);
-        UnderlayTopologyListener listener = new UnderlayTopologyListener(mockOperator, TOPOLOGY_ID, nodeYiid);
+        UnderlayTopologyListener listener = new UnderlayTopologyListener(mockOperator, TOPOLOGY_ID, nodeYiid, CorrelationItemEnum.Node);
 
-        Map<YangInstanceIdentifier, PhysicalNode> createdEntries = new HashMap<>();
-        PhysicalNode physicalNode = new PhysicalNode(nodeValue, null, TOPOLOGY_ID, nodeName);
+        Map<YangInstanceIdentifier, UnderlayItem> createdEntries = new HashMap<>();
+        UnderlayItem physicalNode = new UnderlayItem(nodeValue, null, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
         createdEntries.put(nodeYiid, physicalNode);
 
         // create
@@ -119,7 +120,7 @@ public class UnderlayTopologyListenerTest {
         mapCreated.put(nodeYiid, nodeValue);
 
         TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
-        UnderlayTopologyListener listener = new UnderlayTopologyListener(mockOperator, TOPOLOGY_ID, nodeYiid);
+        UnderlayTopologyListener listener = new UnderlayTopologyListener(mockOperator, TOPOLOGY_ID, nodeYiid, CorrelationItemEnum.Node);
 
         Mockito.when(mockChange.getCreatedData()).thenReturn(mapCreated);
         listener.onDataChanged(mockChange);

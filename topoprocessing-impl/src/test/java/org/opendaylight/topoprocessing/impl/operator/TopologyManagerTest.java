@@ -8,6 +8,7 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.any;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,14 +28,15 @@ import org.opendaylight.controller.md.sal.dom.api.DOMRpcImplementation;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcImplementationRegistration;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
+import org.opendaylight.topoprocessing.api.structure.OverlayItem;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
-import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
-import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -43,7 +45,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import org.opendaylight.yangtools.yang.model.api.SchemaPath;
-
 /**
  * @author martin.uhlir
  *
@@ -74,8 +75,8 @@ public class TopologyManagerTest {
     TopologyManager manager;
     private YangInstanceIdentifier identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
             .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY1).build();
-    private LogicalNode logicalNode;
-    private LogicalNode logicalNode2;
+    private OverlayItem logicalNode;
+    private OverlayItem logicalNode2;
 
     /**
      * Initialize mockitoRpcServiceCall and set writer in manager
@@ -91,11 +92,11 @@ public class TopologyManagerTest {
 
     @Test(expected=NullPointerException.class)
     public void addLogicalNodeNullOrEmpty() {
-        manager.addLogicalNode(null);
-        Mockito.verify(writer, Mockito.times(0)).writeNode((LogicalNodeWrapper) Mockito.any());
+        manager.addOverlayItem(null);
+        Mockito.verify(writer, Mockito.times(0)).writeNode((OverlayItemWrapper) Mockito.any());
 
-        List<PhysicalNode> physicalNodes = null;
-        LogicalNode newLogicalNode = new LogicalNode(physicalNodes);
+        List<UnderlayItem> physicalNodes = null;
+        OverlayItem newLogicalNode = new OverlayItem(physicalNodes);
     }
 
     /**
@@ -103,13 +104,13 @@ public class TopologyManagerTest {
      */
     @Test
     public void addLogicalNode() {
-        List<PhysicalNode> physicalNodes = new ArrayList<>();
-        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1);
+        List<UnderlayItem> physicalNodes = new ArrayList<>();
+        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode);
-        logicalNode = new LogicalNode(physicalNodes);
+        logicalNode = new OverlayItem(physicalNodes);
 
-        manager.addLogicalNode(logicalNode);
-        Mockito.verify(writer, Mockito.times(1)).writeNode((LogicalNodeWrapper) Mockito.any());
+        manager.addOverlayItem(logicalNode);
+        Mockito.verify(writer, Mockito.times(1)).writeNode((OverlayItemWrapper) Mockito.any());
     }
 
     /**
@@ -118,17 +119,17 @@ public class TopologyManagerTest {
      */
     @Test
     public void addLogicalNodeWithTwoPhysicalNodes() {
-        List<PhysicalNode> physicalNodes = new ArrayList<>();
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1);
+        List<UnderlayItem> physicalNodes = new ArrayList<>();
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode2);
 
-        logicalNode = new LogicalNode(physicalNodes);
+        logicalNode = new OverlayItem(physicalNodes);
 
-        manager.addLogicalNode(logicalNode);
+        manager.addOverlayItem(logicalNode);
         Assert.assertEquals(1, manager.getWrappers().size());
-        Mockito.verify(writer, Mockito.times(1)).writeNode((LogicalNodeWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(1)).writeNode((OverlayItemWrapper) Mockito.any());
     }
 
     /**
@@ -137,20 +138,20 @@ public class TopologyManagerTest {
      */
     @Test
     public void addTwoLogicalNodesInTwoCalls() {
-        List<PhysicalNode> physicalNodes = new ArrayList<>();
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1);
+        List<UnderlayItem> physicalNodes = new ArrayList<>();
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
-        logicalNode = new LogicalNode(physicalNodes);
-        manager.addLogicalNode(logicalNode);
+        logicalNode = new OverlayItem(physicalNodes);
+        manager.addOverlayItem(logicalNode);
 
         physicalNodes = new ArrayList<>();
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode2);
-        logicalNode2 = new LogicalNode(physicalNodes);
-        manager.addLogicalNode(logicalNode2);
+        logicalNode2 = new OverlayItem(physicalNodes);
+        manager.addOverlayItem(logicalNode2);
 
         Assert.assertEquals(2, manager.getWrappers().size());
-        Mockito.verify(writer, Mockito.times(2)).writeNode((LogicalNodeWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(2)).writeNode((OverlayItemWrapper) Mockito.any());
     }
 
     /**
@@ -159,20 +160,20 @@ public class TopologyManagerTest {
      */
     @Test
     public void addTwoSameLogicalNodesInTwoCalls() {
-        List<PhysicalNode> physicalNodes = new ArrayList<>();
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1);
+        List<UnderlayItem> physicalNodes = new ArrayList<>();
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
-        LogicalNode newLogicalNode = new LogicalNode(physicalNodes);
-        manager.addLogicalNode(newLogicalNode);
+        OverlayItem newLogicalNode = new OverlayItem(physicalNodes);
+        manager.addOverlayItem(newLogicalNode);
 
         physicalNodes = new ArrayList<>();
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode2);
-        newLogicalNode = new LogicalNode(physicalNodes);
+        newLogicalNode = new OverlayItem(physicalNodes);
 
-        manager.addLogicalNode(newLogicalNode);
+        manager.addOverlayItem(newLogicalNode);
         Assert.assertEquals(1, manager.getWrappers().size());
-        Mockito.verify(writer, Mockito.times(2)).writeNode((LogicalNodeWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(2)).writeNode((OverlayItemWrapper) Mockito.any());
     }
 
     /**
@@ -182,9 +183,9 @@ public class TopologyManagerTest {
     public void removeNullNode() {
         addLogicalNode();
         Mockito.reset(writer);
-        manager.removeLogicalNode(null);
-        Mockito.verify(writer, Mockito.times(0)).writeNode((LogicalNodeWrapper) Mockito.any());
-        Mockito.verify(writer, Mockito.times(0)).deleteNode((LogicalNodeWrapper) Mockito.any());
+        manager.removeOverlayItem(null);
+        Mockito.verify(writer, Mockito.times(0)).writeNode((OverlayItemWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(0)).deleteNode((OverlayItemWrapper) Mockito.any());
     }
 
     /**
@@ -195,9 +196,9 @@ public class TopologyManagerTest {
     public void removeTheOnlyExistingNode() {
         addLogicalNode();
         Mockito.reset(writer);
-        manager.removeLogicalNode(this.logicalNode);
-        Mockito.verify(writer, Mockito.times(0)).writeNode((LogicalNodeWrapper) Mockito.any());
-        Mockito.verify(writer, Mockito.times(1)).deleteNode((LogicalNodeWrapper) Mockito.any());
+        manager.removeOverlayItem(this.logicalNode);
+        Mockito.verify(writer, Mockito.times(0)).writeNode((OverlayItemWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(1)).deleteNode((OverlayItemWrapper) Mockito.any());
         Assert.assertEquals(0, manager.getWrappers().size());
     }
 
@@ -210,13 +211,13 @@ public class TopologyManagerTest {
         addLogicalNode();
         Mockito.reset(writer);
 
-        List<PhysicalNode> physicalNodes = new ArrayList<>();
-        physicalNodes.add(logicalNode.getPhysicalNodes().get(0));
-        LogicalNode nodeToRemove = new LogicalNode(physicalNodes);
+        List<UnderlayItem> physicalNodes = new ArrayList<>();
+        physicalNodes.add(logicalNode.getUnderlayItems().get(0));
+        OverlayItem nodeToRemove = new OverlayItem(physicalNodes);
 
-        manager.removeLogicalNode(nodeToRemove);
-        Mockito.verify(writer, Mockito.times(0)).writeNode((LogicalNodeWrapper) Mockito.any());
-        Mockito.verify(writer, Mockito.times(0)).deleteNode((LogicalNodeWrapper) Mockito.any());
+        manager.removeOverlayItem(nodeToRemove);
+        Mockito.verify(writer, Mockito.times(0)).writeNode((OverlayItemWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(0)).deleteNode((OverlayItemWrapper) Mockito.any());
         Assert.assertEquals(1, manager.getWrappers().size());
     }
 
@@ -228,38 +229,38 @@ public class TopologyManagerTest {
         addTwoLogicalNodesInTwoCalls();
 
         // remove node
-        manager.removeLogicalNode(logicalNode2);
+        manager.removeOverlayItem(logicalNode2);
         Mockito.reset(writer);
         // remove that node again
-        manager.removeLogicalNode(logicalNode2);
+        manager.removeOverlayItem(logicalNode2);
 
-        Mockito.verify(writer, Mockito.times(0)).writeNode((LogicalNodeWrapper) Mockito.any());
-        Mockito.verify(writer, Mockito.times(0)).deleteNode((LogicalNodeWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(0)).writeNode((OverlayItemWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(0)).deleteNode((OverlayItemWrapper) Mockito.any());
         Assert.assertEquals(1, manager.getWrappers().size());
     }
 
     @Test
     public void removeOneOfTwoLogicalNodesOfTheSameWrapper() {
-        List<PhysicalNode> physicalNodes = new ArrayList<>();
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1);
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2);
+        List<UnderlayItem> physicalNodes = new ArrayList<>();
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
         physicalNodes.add(physicalNode2);
-        logicalNode = new LogicalNode(physicalNodes);
-        manager.addLogicalNode(logicalNode);
+        logicalNode = new OverlayItem(physicalNodes);
+        manager.addOverlayItem(logicalNode);
 
         physicalNodes = new ArrayList<>();
-        PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID3);
+        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID3, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
         physicalNodes.add(physicalNode3);
-        logicalNode2 = new LogicalNode(physicalNodes);
-        manager.addLogicalNode(logicalNode2);
+        logicalNode2 = new OverlayItem(physicalNodes);
+        manager.addOverlayItem(logicalNode2);
 
         Assert.assertEquals(1, manager.getWrappers().size());
-        Mockito.verify(writer, Mockito.times(2)).writeNode((LogicalNodeWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(2)).writeNode((OverlayItemWrapper) Mockito.any());
 
-        manager.removeLogicalNode(logicalNode);
-        Mockito.verify(writer, Mockito.times(3)).writeNode((LogicalNodeWrapper) Mockito.any());
+        manager.removeOverlayItem(logicalNode);
+        Mockito.verify(writer, Mockito.times(3)).writeNode((OverlayItemWrapper) Mockito.any());
     }
 
     /**
@@ -286,12 +287,12 @@ public class TopologyManagerTest {
         rpcs.add(domRpcIdentifier);
         manager.onRpcAvailable(rpcs);
 
-        List<PhysicalNode> physicalNodes = new ArrayList<>();
-        PhysicalNode physicalNode = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1);
+        List<UnderlayItem> physicalNodes = new ArrayList<>();
+        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode);
-        logicalNode = new LogicalNode(physicalNodes);
+        logicalNode = new OverlayItem(physicalNodes);
 
-        manager.addLogicalNode(logicalNode);
+        manager.addOverlayItem(logicalNode);
 
         Mockito.verify(mockDomRpcProviderService, Mockito.times(1))
             .registerRpcImplementation((DOMRpcImplementation) Mockito.any(),(Set<DOMRpcIdentifier>) Mockito.any());
@@ -302,11 +303,11 @@ public class TopologyManagerTest {
         addLogicalNode();
         Mockito.reset(writer);
 
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2);
-        physicalNode2.setLogicalNode(logicalNode);
-        logicalNode.getPhysicalNodes().add(physicalNode2);
-        manager.updateLogicalNode(logicalNode);
-        Mockito.verify(writer, Mockito.times(1)).writeNode((LogicalNodeWrapper) Mockito.any());
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
+        physicalNode2.setOverlayItem(logicalNode);
+        logicalNode.getUnderlayItems().add(physicalNode2);
+        manager.updateOverlayItem(logicalNode);
+        Mockito.verify(writer, Mockito.times(1)).writeNode((OverlayItemWrapper) Mockito.any());
     }
 
     @Test
@@ -314,13 +315,13 @@ public class TopologyManagerTest {
         addLogicalNode();
         Mockito.reset(writer);
 
-        List<PhysicalNode> physicalNodes = new ArrayList<>();
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2);
+        List<UnderlayItem> physicalNodes = new ArrayList<>();
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode2);
-        logicalNode2 = new LogicalNode(physicalNodes);
+        logicalNode2 = new OverlayItem(physicalNodes);
 
-        manager.updateLogicalNode(logicalNode2);
-        Mockito.verify(writer, Mockito.times(0)).writeNode((LogicalNodeWrapper) Mockito.any());
+        manager.updateOverlayItem(logicalNode2);
+        Mockito.verify(writer, Mockito.times(0)).writeNode((OverlayItemWrapper) Mockito.any());
     }
 
 }

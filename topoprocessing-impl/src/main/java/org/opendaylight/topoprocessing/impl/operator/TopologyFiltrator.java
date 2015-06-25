@@ -9,8 +9,8 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
-import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.api.structure.OverlayItem;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,46 +31,46 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
     private TopologyManager manager;
 
     @Override
-    public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, String topologyId) {
+    public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, String topologyId) {
         LOG.trace("Processing createdChanges");
-        for (Map.Entry<YangInstanceIdentifier, PhysicalNode> nodeEntry : createdEntries.entrySet()) {
-            PhysicalNode newNodeValue = nodeEntry.getValue();
-            if (passedFiltration(newNodeValue)) {
-                getTopologyStore(topologyId).getPhysicalNodes().put(nodeEntry.getKey(), newNodeValue);
-                LogicalNode logicalNode = wrapPhysicalNode(newNodeValue);
-                manager.addLogicalNode(logicalNode);
+        for (Map.Entry<YangInstanceIdentifier, UnderlayItem> itemEntry : createdEntries.entrySet()) {
+            UnderlayItem newItemValue = itemEntry.getValue();
+            if (passedFiltration(newItemValue)) {
+                getTopologyStore(topologyId).getUnderlayItems().put(itemEntry.getKey(), newItemValue);
+                OverlayItem overlayItem = wrapUnderlayItem(newItemValue);
+                manager.addOverlayItem(overlayItem);
             }
         }
     }
 
     @Override
-    public void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId) {
+    public void processUpdatedChanges(Map<YangInstanceIdentifier, UnderlayItem> updatedEntries, String topologyId) {
         LOG.trace("Processing updatedChanges");
-        for (Map.Entry<YangInstanceIdentifier, PhysicalNode> mapEntry : updatedEntries.entrySet()) {
-            PhysicalNode updatedNode = mapEntry.getValue();
-            PhysicalNode oldNode = getTopologyStore(topologyId).getPhysicalNodes().get(mapEntry.getKey());
-            if (null == oldNode) {
-                // updatedNode is not present yet
-                if (passedFiltration(updatedNode)) {
+        for (Map.Entry<YangInstanceIdentifier, UnderlayItem> mapEntry : updatedEntries.entrySet()) {
+            UnderlayItem updatedItem = mapEntry.getValue();
+            UnderlayItem oldItem = getTopologyStore(topologyId).getUnderlayItems().get(mapEntry.getKey());
+            if (null == oldItem) {
+                // updatedItem is not present yet
+                if (passedFiltration(updatedItem)) {
                     // passed through filtrator
-                    getTopologyStore(topologyId).getPhysicalNodes().put(mapEntry.getKey(), updatedNode);
-                    manager.addLogicalNode(wrapPhysicalNode(updatedNode));
+                    getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
+                    manager.addOverlayItem(wrapUnderlayItem(updatedItem));
                 }
                 // else do nothing
             } else {
-                // updatedNode exists already
-                if (passedFiltration(updatedNode)) {
+                // updatedItem exists already
+                if (passedFiltration(updatedItem)) {
                     // passed through filtrator
-                    getTopologyStore(topologyId).getPhysicalNodes().put(mapEntry.getKey(), updatedNode);
-                    LogicalNode logicalNode = oldNode.getLogicalNode();
-                    updatedNode.setLogicalNode(logicalNode);
-                    logicalNode.setPhysicalNodes(Collections.singletonList(updatedNode));
-                    manager.updateLogicalNode(logicalNode);
+                    getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
+                    OverlayItem overlayItem = oldItem.getOverlayItem();
+                    updatedItem.setOverlayItem(overlayItem);
+                    overlayItem.setUnderlayItems(Collections.singletonList(updatedItem));
+                    manager.updateOverlayItem(overlayItem);
                 } else {
                     // filtered out
-                    LogicalNode oldLogicalNode = oldNode.getLogicalNode();
-                    getTopologyStore(topologyId).getPhysicalNodes().remove(mapEntry.getKey());
-                    manager.removeLogicalNode(oldLogicalNode);
+                    OverlayItem oldOverlayItem = oldItem.getOverlayItem();
+                    getTopologyStore(topologyId).getUnderlayItems().remove(mapEntry.getKey());
+                    manager.removeOverlayItem(oldOverlayItem);
                 }
             }
         }
@@ -79,10 +79,10 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
     @Override
     public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
         LOG.trace("Processing removedChanges");
-        for (YangInstanceIdentifier nodeIdentifier : identifiers) {
-            PhysicalNode physicalNode = getTopologyStore(topologyId).getPhysicalNodes().remove(nodeIdentifier);
-            if (null != physicalNode) {
-                manager.removeLogicalNode(physicalNode.getLogicalNode());
+        for (YangInstanceIdentifier itemIdentifier : identifiers) {
+            UnderlayItem underlayItem = getTopologyStore(topologyId).getUnderlayItems().remove(itemIdentifier);
+            if (null != underlayItem) {
+                manager.removeOverlayItem(underlayItem.getOverlayItem());
             }
         }
     }
@@ -100,20 +100,20 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
         filtrators.add(filter);
     }
 
-    private boolean passedFiltration(PhysicalNode physicalNode) {
+    private boolean passedFiltration(UnderlayItem underlayItem) {
         for (Filtrator filtrator : filtrators) {
-            if (filtrator.isFiltered(physicalNode)) {
+            if (filtrator.isFiltered(underlayItem)) {
                 return false;
             }
         }
         return true;
     }
 
-    private LogicalNode wrapPhysicalNode(PhysicalNode physicalNode) {
-        List<PhysicalNode> physicalNodes = Collections.singletonList(physicalNode);
-        LogicalNode logicalNode = new LogicalNode(physicalNodes);
-        physicalNode.setLogicalNode(logicalNode);
-        return logicalNode;
+    private OverlayItem wrapUnderlayItem(UnderlayItem underlayItem) {
+        List<UnderlayItem> underlayItems = Collections.singletonList(underlayItem);
+        OverlayItem overlayItem = new OverlayItem(underlayItems);
+        underlayItem.setOverlayItem(overlayItem);
+        return overlayItem;
     }
 
 }
