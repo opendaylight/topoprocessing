@@ -12,7 +12,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpPrefix;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
@@ -48,13 +48,13 @@ public class NodeIpFiltrator {
     }
 
     /**
-     * Filters {@link PhysicalNode}
-     * @param node {@link PhysicalNode} to be filtered
+     * Filters {@link UnderlayItem}
+     * @param underlayItem {@link UnderlayItem} to be filtered
      * @return true if node was filtered out false otherwise
      */
-    public boolean isFiltered(PhysicalNode node) {
+    public boolean isFiltered(UnderlayItem underlayItem) {
         try {
-            Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node.getNode(), pathIdentifier);
+            Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(underlayItem.getNode(), pathIdentifier);
             if (leafNode.isPresent()) {
                 int value = ipToInt((String) ((LeafNode) leafNode.get()).getValue());
                 if (maskedValue == (value & mask)) {
@@ -62,7 +62,7 @@ public class NodeIpFiltrator {
                 }
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Node with value {} was filtered out", node.getNode());
+                LOG.debug("Item with value {} was filtered out", underlayItem.getNode());
             }
         } catch (UnknownHostException e) {
             LOG.error("Wrong format of IP address: {}", e);
