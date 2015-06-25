@@ -8,6 +8,9 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import org.opendaylight.topoprocessing.api.structure.OverlayItem;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assert;
@@ -17,8 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestNodeCreator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.Scripting;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.ScriptingBuilder;
@@ -46,6 +48,7 @@ public class UnificationCustomScriptTest {
 
     private TopologyAggregator aggregator;
     private YangInstanceIdentifier leafYiid21, leafYiid22, leafYiid23;
+    private CorrelationItemEnum nodeItem = CorrelationItemEnum.Node;
 
     @Mock
     private NormalizedNode<?,?> mockNormalizedNode1, mockNormalizedNode2;
@@ -60,7 +63,7 @@ public class UnificationCustomScriptTest {
         aggregator = new UnificationAggregator();
         aggregator.initializeStore(TOPO1, false);
         aggregator.initializeStore(TOPO2, false);
-        String script = "if (originalNode.getLeafNode().getValue() === newNode.getLeafNode().getValue()) {"
+        String script = "if (originalItem.getLeafNode().getValue() === newItem.getLeafNode().getValue()) {"
                 + "    aggregable.setResult(true);"
                 + "} else {"
                 + "    aggregable.setResult(false);"
@@ -86,22 +89,22 @@ public class UnificationCustomScriptTest {
 
         leafYiid22 = testNodeCreator.createNodeIdYiid("22");
         LeafNode<String> leafNode22 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.3");
-        PhysicalNode physicalNode1 = new PhysicalNode(mockNormalizedNode1, leafNode21, TOPO1, "21");
-        PhysicalNode physicalNode2 = new PhysicalNode(mockNormalizedNode1, leafNode22, TOPO1, "22");
-        Map<YangInstanceIdentifier, PhysicalNode> physicalNodes1 = new HashMap<>();
-        physicalNodes1.put(leafYiid21, physicalNode1);
-        physicalNodes1.put(leafYiid22, physicalNode2);
+        UnderlayItem UnderlayItem1 = new UnderlayItem(mockNormalizedNode1, leafNode21, TOPO1, "21", nodeItem);
+        UnderlayItem UnderlayItem2 = new UnderlayItem(mockNormalizedNode1, leafNode22, TOPO1, "22", nodeItem);
+        Map<YangInstanceIdentifier, UnderlayItem> UnderlayItems1 = new HashMap<>();
+        UnderlayItems1.put(leafYiid21, UnderlayItem1);
+        UnderlayItems1.put(leafYiid22, UnderlayItem2);
 
-        aggregator.processCreatedChanges(physicalNodes1, TOPO1);
+        aggregator.processCreatedChanges(UnderlayItems1, TOPO1);
 
-        Assert.assertEquals(2, aggregator.getTopologyStore(TOPO1).getPhysicalNodes().size());
+        Assert.assertEquals(2, aggregator.getTopologyStore(TOPO1).getUnderlayItems().size());
         // checks that two nodes have been correctly added into topology TOPO2
-        Assert.assertEquals(0, aggregator.getTopologyStore(TOPO2).getPhysicalNodes().size());
+        Assert.assertEquals(0, aggregator.getTopologyStore(TOPO2).getUnderlayItems().size());
 
         // addLogicalNode method has been called twice
-        Mockito.verify(mockManager, Mockito.times(2)).addLogicalNode((LogicalNode) Mockito.any());
-        Mockito.verify(mockManager, Mockito.times(0)).removeLogicalNode((LogicalNode) Mockito.any());
-        Mockito.verify(mockManager, Mockito.times(0)).updateLogicalNode((LogicalNode) Mockito.any());
+        Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) Mockito.any());
+        Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) Mockito.any());
+        Mockito.verify(mockManager, Mockito.times(0)).updateOverlayItem((OverlayItem) Mockito.any());
 
         // change 2
         leafYiid23 = YangInstanceIdentifier.builder()
@@ -109,19 +112,19 @@ public class UnificationCustomScriptTest {
         LeafNode<Object> leafNode23 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.1").build();
-        PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode1, leafNode23, TOPO2, "23");
-        Map<YangInstanceIdentifier, PhysicalNode> physicalNodes2 = new HashMap<>();
-        physicalNodes2.put(leafYiid23, physicalNode3);
+        UnderlayItem UnderlayItem3 = new UnderlayItem(mockNormalizedNode1, leafNode23, TOPO2, "23", nodeItem);
+        Map<YangInstanceIdentifier, UnderlayItem> UnderlayItems2 = new HashMap<>();
+        UnderlayItems2.put(leafYiid23, UnderlayItem3);
 
-        aggregator.processCreatedChanges(physicalNodes2, TOPO2);
+        aggregator.processCreatedChanges(UnderlayItems2, TOPO2);
 
-        Assert.assertEquals(2, aggregator.getTopologyStore(TOPO1).getPhysicalNodes().size());
-        Assert.assertEquals(1, aggregator.getTopologyStore(TOPO2).getPhysicalNodes().size());
+        Assert.assertEquals(2, aggregator.getTopologyStore(TOPO1).getUnderlayItems().size());
+        Assert.assertEquals(1, aggregator.getTopologyStore(TOPO2).getUnderlayItems().size());
 
-        Mockito.verify(mockManager, Mockito.times(2)).addLogicalNode((LogicalNode) Mockito.any());
-        Mockito.verify(mockManager, Mockito.times(0)).removeLogicalNode((LogicalNode) Mockito.any());
+        Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) Mockito.any());
+        Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) Mockito.any());
         // updateLogicalNode method has been called once
-        Mockito.verify(mockManager, Mockito.times(1)).updateLogicalNode((LogicalNode) Mockito.any());
+        Mockito.verify(mockManager, Mockito.times(1)).updateOverlayItem((OverlayItem) Mockito.any());
     }
 
     /**

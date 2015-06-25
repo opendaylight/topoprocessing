@@ -8,6 +8,7 @@
 
 package org.opendaylight.topoprocessing.api.filtration;
 
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 
 /**
  * @author matus.marko
@@ -16,8 +17,8 @@ public interface Filtrator {
 
     /**
      * Filters {@link UnderlayItem}
-     * @param node {@link UnderlayItem} to be filtered
-     * @return true if node was filtered out false otherwise
+     * @param item {@link UnderlayItem} to be filtered
+     * @return true if item was filtered out false otherwise
      */
-    boolean isFiltered(UnderlayItem node);
+    boolean isFiltered(UnderlayItem item);
 }

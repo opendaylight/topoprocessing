@@ -2,8 +2,9 @@ package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -30,14 +31,14 @@ public class SpecificValueFiltratorTest {
     public void testSpecificNumber() {
         SpecificValueFiltrator<Integer> filtrator = new SpecificValueFiltrator<>(56, numberPath);
 
-        boolean filtered1 = filtrator.isFiltered(new PhysicalNode(
+        boolean filtered1 = filtrator.isFiltered(new UnderlayItem(
                 ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID).withChild(
-                        ImmutableNodes.leafNode(NUMBER_QNAME, 56)).build(), null, TOPOLOGY_ID, NODE_ID));
+                        ImmutableNodes.leafNode(NUMBER_QNAME, 56)).build(), null, TOPOLOGY_ID, NODE_ID, CorrelationItemEnum.Node));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = filtrator.isFiltered(new PhysicalNode(
+        boolean filtered2 = filtrator.isFiltered(new UnderlayItem(
                 ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID).withChild(
-                        ImmutableNodes.leafNode(NUMBER_QNAME, 16)).build(), null, TOPOLOGY_ID, NODE_ID));
+                        ImmutableNodes.leafNode(NUMBER_QNAME, 16)).build(), null, TOPOLOGY_ID, NODE_ID, CorrelationItemEnum.Node));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
     }
 
@@ -48,14 +49,14 @@ public class SpecificValueFiltratorTest {
     public void testSpecificString() {
         SpecificValueFiltrator<String> filtrator = new SpecificValueFiltrator<>("fooBar", path);
 
-        boolean filtered1 = filtrator.isFiltered(new PhysicalNode(
+        boolean filtered1 = filtrator.isFiltered(new UnderlayItem(
                 ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID).withChild(
-                        ImmutableNodes.leafNode(STRING_QNAME, "fooBar")).build(), null, TOPOLOGY_ID, NODE_ID));
+                        ImmutableNodes.leafNode(STRING_QNAME, "fooBar")).build(), null, TOPOLOGY_ID, NODE_ID, CorrelationItemEnum.Node));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = filtrator.isFiltered(new PhysicalNode(
+        boolean filtered2 = filtrator.isFiltered(new UnderlayItem(
                 ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID).withChild(
-                        ImmutableNodes.leafNode(STRING_QNAME, "lopata")).build(), null, TOPOLOGY_ID, NODE_ID));
+                        ImmutableNodes.leafNode(STRING_QNAME, "lopata")).build(), null, TOPOLOGY_ID, NODE_ID, CorrelationItemEnum.Node));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
     }
 }

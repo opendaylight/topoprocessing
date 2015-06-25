@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,9 +13,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
-import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.api.structure.OverlayItem;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestNodeCreator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
@@ -30,17 +32,17 @@ public class TopologyFiltratorTest {
     @Mock private Filtrator mockFiltrator;
     @Mock private TopologyManager mockTopologyManager;
 
-    private Map<YangInstanceIdentifier, PhysicalNode> threeNodesSameTopologyNodeEntry =
-            new HashMap<YangInstanceIdentifier, PhysicalNode>() {{
+    private Map<YangInstanceIdentifier, UnderlayItem> threeNodesSameTopologyNodeEntry =
+            new HashMap<YangInstanceIdentifier, UnderlayItem>() {{
                 String nodeId = "node:1";
-                put(creator.createNodeIdYiid(nodeId), new PhysicalNode(creator.createMapEntryNodeWithIpAddress(
-                        nodeId, "192.168.1.1"), null, TOPOLOGY_NAME, nodeId));
+                put(creator.createNodeIdYiid(nodeId), new UnderlayItem(creator.createMapEntryNodeWithIpAddress(
+                        nodeId, "192.168.1.1"), null, TOPOLOGY_NAME, nodeId, CorrelationItemEnum.Node));
                 nodeId = "node:2";
-                put(creator.createNodeIdYiid(nodeId), new PhysicalNode(creator.createMapEntryNodeWithIpAddress(
-                        nodeId, "192.168.1.2"), null, TOPOLOGY_NAME, nodeId));
+                put(creator.createNodeIdYiid(nodeId), new UnderlayItem(creator.createMapEntryNodeWithIpAddress(
+                        nodeId, "192.168.1.2"), null, TOPOLOGY_NAME, nodeId, CorrelationItemEnum.Node));
                 nodeId = "node:3";
-                put(creator.createNodeIdYiid(nodeId), new PhysicalNode(creator.createMapEntryNodeWithIpAddress(
-                        nodeId, "192.168.1.3"), null, TOPOLOGY_NAME, nodeId));
+                put(creator.createNodeIdYiid(nodeId), new UnderlayItem(creator.createMapEntryNodeWithIpAddress(
+                        nodeId, "192.168.1.3"), null, TOPOLOGY_NAME, nodeId, CorrelationItemEnum.Node));
             }};
 
     protected List<YangInstanceIdentifier> threeNodesSameTopologyNodeYiid = new ArrayList<YangInstanceIdentifier>() {{
@@ -60,39 +62,42 @@ public class TopologyFiltratorTest {
     @Test
     public void testProcessChanges() {
         String nodeId;
-        Map<YangInstanceIdentifier, PhysicalNode> map = new HashMap<>();
+        Map<YangInstanceIdentifier, UnderlayItem> map = new HashMap<>();
 
         // create 3 nodes
-        Mockito.when(mockFiltrator.isFiltered((PhysicalNode) Matchers.any())).thenReturn(false);
+        Mockito.when(mockFiltrator.isFiltered((UnderlayItem) Matchers.any())).thenReturn(false);
         filtrator.processCreatedChanges(threeNodesSameTopologyNodeEntry, TOPOLOGY_NAME);
-        Mockito.verify(mockTopologyManager, Mockito.times(3)).addLogicalNode((LogicalNode) Matchers.any());
+        Mockito.verify(mockTopologyManager, Mockito.times(3)).addOverlayItem((OverlayItem) Matchers.any());
 
         // update node which didn't exist before
         nodeId = "node:4";
-        map.put(creator.createNodeIdYiid(nodeId), new PhysicalNode(
-                creator.createMapEntryNodeWithIpAddress(nodeId, "192.168.1.4"), null, TOPOLOGY_NAME, nodeId));
+        map.put(creator.createNodeIdYiid(nodeId), new UnderlayItem(
+                creator.createMapEntryNodeWithIpAddress(nodeId, "192.168.1.4"), null, TOPOLOGY_NAME, nodeId,
+                CorrelationItemEnum.Node));
         filtrator.processUpdatedChanges(map, TOPOLOGY_NAME);
-        Mockito.verify(mockTopologyManager, Mockito.times(4)).addLogicalNode((LogicalNode) Matchers.any());
+        Mockito.verify(mockTopologyManager, Mockito.times(4)).addOverlayItem((OverlayItem) Matchers.any());
 
         // update existing node
         nodeId = "node:4";
         map.clear();
-        map.put(creator.createNodeIdYiid(nodeId), new PhysicalNode(
-                creator.createMapEntryNodeWithIpAddress(nodeId, "192.168.1.14"), null, TOPOLOGY_NAME, nodeId));
+        map.put(creator.createNodeIdYiid(nodeId), new UnderlayItem(
+                creator.createMapEntryNodeWithIpAddress(nodeId, "192.168.1.14"), null, TOPOLOGY_NAME, nodeId,
+                CorrelationItemEnum.Node));
         filtrator.processUpdatedChanges(map, TOPOLOGY_NAME);
-        Mockito.verify(mockTopologyManager).updateLogicalNode((LogicalNode) Matchers.any());
+        Mockito.verify(mockTopologyManager).updateOverlayItem((OverlayItem) Matchers.any());
 
         // update existing node - should be filtered out
         nodeId = "node:4";
         map.clear();
-        map.put(creator.createNodeIdYiid(nodeId), new PhysicalNode(
-                creator.createMapEntryNodeWithIpAddress(nodeId, "192.168.1.14"), null, TOPOLOGY_NAME, nodeId));
-        Mockito.when(mockFiltrator.isFiltered((PhysicalNode) Matchers.any())).thenReturn(true);
+        map.put(creator.createNodeIdYiid(nodeId), new UnderlayItem(
+                creator.createMapEntryNodeWithIpAddress(nodeId, "192.168.1.14"), null, TOPOLOGY_NAME, nodeId,
+                CorrelationItemEnum.Node));
+        Mockito.when(mockFiltrator.isFiltered((UnderlayItem) Matchers.any())).thenReturn(true);
         filtrator.processUpdatedChanges(map, TOPOLOGY_NAME);
-        Mockito.verify(mockTopologyManager, Mockito.times(1)).removeLogicalNode((LogicalNode) Matchers.any());
+        Mockito.verify(mockTopologyManager, Mockito.times(1)).removeOverlayItem((OverlayItem) Matchers.any());
 
         // remove 3 existing nodes
         filtrator.processRemovedChanges(threeNodesSameTopologyNodeYiid, TOPOLOGY_NAME);
-        Mockito.verify(mockTopologyManager, Mockito.times(4)).removeLogicalNode((LogicalNode) Matchers.any());
+        Mockito.verify(mockTopologyManager, Mockito.times(4)).removeOverlayItem((OverlayItem) Matchers.any());
     }
 }

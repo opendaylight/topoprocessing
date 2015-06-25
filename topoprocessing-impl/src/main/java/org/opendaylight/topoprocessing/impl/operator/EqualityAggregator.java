@@ -14,17 +14,17 @@ package org.opendaylight.topoprocessing.impl.operator;
  */
 public class EqualityAggregator extends TopologyAggregator {
 
-    private static final int PHYSICAL_NODES_IN_LOGICAL_NODE = 2;
-    private static final boolean WRAP_SINGLE_PHYSICAL_NODE = false;
+    private static final int UNDERLAY_ITEMS_IN_OVERLAY_ITEM = 2;
+    private static final boolean WRAP_SINGLE_UNDERLAY_ITEM = false;
 
     @Override
-    protected int getMinPhysicalNodes() {
-        return PHYSICAL_NODES_IN_LOGICAL_NODE;
+    protected int getMinUnderlayItems() {
+        return UNDERLAY_ITEMS_IN_OVERLAY_ITEM;
     }
 
     @Override
-    protected boolean wrapSingleNode() {
-        return WRAP_SINGLE_PHYSICAL_NODE;
+    protected boolean wrapSingleItem() {
+        return WRAP_SINGLE_UNDERLAY_ITEM;
     }
 
 }
