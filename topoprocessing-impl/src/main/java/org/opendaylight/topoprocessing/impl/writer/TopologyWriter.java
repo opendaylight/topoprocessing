@@ -27,7 +27,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListen
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
-import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
+import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.translator.LogicalNodeToNodeTranslator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
@@ -188,17 +188,17 @@ public class TopologyWriter implements TransactionChainListener {
     /**
      * @param wrapper
      */
-    public void writeNode(final LogicalNodeWrapper wrapper) {
+    public void writeNode(final OverlayItemWrapper wrapper) {
         NormalizedNode<?, ?> node = translator.translate(wrapper);
-        preparedOperations.add(new PutOperation(createNodeIdentifier(wrapper.getNodeId()), node));
+        preparedOperations.add(new PutOperation(createNodeIdentifier(wrapper.getItemId()), node));
         scheduleWrite();
     }
 
     /**
      * @param wrapper
      */
-    public void deleteNode(final LogicalNodeWrapper wrapper) {
-        preparedOperations.add(new DeleteOperation(createNodeIdentifier(wrapper.getNodeId())));
+    public void deleteNode(final OverlayItemWrapper wrapper) {
+        preparedOperations.add(new DeleteOperation(createNodeIdentifier(wrapper.getItemId())));
         scheduleWrite();
     }
 

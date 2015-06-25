@@ -6,35 +6,40 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.impl.structure;
+package org.opendaylight.topoprocessing.api.structure;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 
 /**
  * @author matus.marko
  */
-public class PhysicalNode {
+public class UnderlayItem {
 
     private NormalizedNode<?, ?> node;
     private NormalizedNode<?, ?> leafNode;
-    private LogicalNode logicalNode = null;
+    private OverlayItem overlayItem = null;
     private String topologyId;
-    private String nodeId;
+    private String itemId;
+    private CorrelationItemEnum correlationItem;
 
     /**
      * Constructor
-     * @param node underlay topology {@link Node}
+     * @param node underlay topology {@link Node} or {@link Link} or {@link TerminationPoint}
      * @param leafNode specified in target-field (in mapping)
      * @param topologyId identifier of {@link Topology}
-     * @param nodeId identifier of {@link Node}
+     * @param itemId identifier of {@link Node} or {@link Link} or {@link TerminationPoint}
+     * @param correlationItem can be either Node or Link or TerminationPoint
      */
-    public PhysicalNode(NormalizedNode<?, ?> node, NormalizedNode<?, ?> leafNode,
-            String topologyId, String nodeId) {
+    public UnderlayItem(NormalizedNode<?, ?> node, NormalizedNode<?, ?> leafNode,
+            String topologyId, String itemId, CorrelationItemEnum correlationItem) {
         this.node = node;
         this.leafNode = leafNode;
         this.topologyId = topologyId;
-        this.nodeId = nodeId;
+        this.itemId = itemId;
+        this.correlationItem = correlationItem;
     }
 
     /**
@@ -67,24 +72,24 @@ public class PhysicalNode {
 
     /**
      * 
-     * @return {@link LogicalNode} that wraps this {@link PhysicalNode}
+     * @return {@link OverlayItem} that wraps this {@link UnderlayItem}
      */
-    public LogicalNode getLogicalNode() {
-        return logicalNode;
+    public OverlayItem getOverlayItem() {
+        return overlayItem;
     }
 
     /**
-     * @param logicalNode {@link LogicalNode} that wraps this {@link PhysicalNode}
+     * @param overlayItem {@link OverlayItem} that wraps this {@link UnderlayItem}
      */
-    public void setLogicalNode(LogicalNode logicalNode) {
-        this.logicalNode = logicalNode;
+    public void setOverlayItem(OverlayItem overlayItem) {
+        this.overlayItem = overlayItem;
     }
 
     /**
      * @return node's Id
      */
     public String getNodeId() {
-        return nodeId;
+        return itemId;
     }
 
     /**
@@ -92,5 +97,12 @@ public class PhysicalNode {
      */
     public String getTopologyId() {
         return topologyId;
+    }
+
+    /**
+     * @return correlation item: Node or Link or TerminationPoint
+     */
+    public CorrelationItemEnum getCorrelationItem() {
+        return correlationItem;
     }
 }
