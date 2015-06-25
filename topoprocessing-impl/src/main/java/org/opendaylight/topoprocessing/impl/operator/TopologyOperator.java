@@ -8,11 +8,11 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-
 import java.util.List;
 import java.util.Map;
+
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
  * @author matus.marko
@@ -24,14 +24,14 @@ public interface TopologyOperator {
      * @param createdEntries
      * @param topologyId
      */
-    void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, final String topologyId);
+    void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, final String topologyId);
 
     /**
      * Process newly updated changes
      * @param updatedEntries
      * @param topologyId
      */
-    void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId);
+    void processUpdatedChanges(Map<YangInstanceIdentifier, UnderlayItem> updatedEntries, String topologyId);
 
     /**
      * Process newly deleted changes
@@ -41,7 +41,7 @@ public interface TopologyOperator {
     void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId);
 
     /**
-     * @param topologyManager handles aggregated nodes from all correlations
+     * @param topologyManager handles aggregated items from all correlations
      */
     void setTopologyManager(TopologyManager topologyManager);
 

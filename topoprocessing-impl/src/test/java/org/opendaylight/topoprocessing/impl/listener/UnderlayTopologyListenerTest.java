@@ -18,7 +18,6 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -74,8 +73,8 @@ public class UnderlayTopologyListenerTest {
         UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, mockOperator, TOPOLOGY_ID, pathIdentifier);
         listener.readExistingData(YangInstanceIdentifier.builder().build(), DatastoreType.OPERATIONAL);
 
-        Map<YangInstanceIdentifier, PhysicalNode> createdEntries = new HashMap<>();
-        PhysicalNode physicalNode = new PhysicalNode(nodeValueWithIp, nodeIpValue, TOPOLOGY_ID, nodeName);
+        Map<YangInstanceIdentifier, UnderlayItem> createdEntries = new HashMap<>();
+        UnderlayItem physicalNode = new UnderlayItem(nodeValueWithIp, nodeIpValue, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
         createdEntries.put(nodeYiid, physicalNode);
 
         // create
@@ -111,8 +110,8 @@ public class UnderlayTopologyListenerTest {
         UnderlayTopologyListener listener = new UnderlayTopologyListener(
                 domDataBroker, mockOperator, TOPOLOGY_ID, nodeYiid);
         listener.readExistingData(YangInstanceIdentifier.builder().build(), DatastoreType.OPERATIONAL);
-        Map<YangInstanceIdentifier, PhysicalNode> createdEntries = new HashMap<>();
-        PhysicalNode physicalNode = new PhysicalNode(nodeValue, null, TOPOLOGY_ID, nodeName);
+        Map<YangInstanceIdentifier, UnderlayItem> createdEntries = new HashMap<>();
+        UnderlayItem physicalNode = new UnderlayItem(nodeValue, null, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
         createdEntries.put(nodeYiid, physicalNode);
 
         // create

@@ -33,12 +33,11 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
@@ -57,8 +56,6 @@ import org.slf4j.LoggerFactory;
 public class UnderlayTopologyListener implements DOMDataChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UnderlayTopologyListener.class);
-    private static final YangInstanceIdentifier NODE_IDENTIFIER = YangInstanceIdentifier.builder().node(Node.QNAME).build();
-    private static final YangInstanceIdentifier NODE_ID_IDENTIFIER = YangInstanceIdentifier.of(TopologyQNames.NETWORK_NODE_ID_QNAME);
     private final DOMDataBroker domDataBroker;
     private volatile CountDownLatch lastLatch;
     private AtomicReferenceFieldUpdater<UnderlayTopologyListener, CountDownLatch> updater =
@@ -71,6 +68,10 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
     private TopologyOperator operator;
     private YangInstanceIdentifier pathIdentifier;
     private String underlayTopologyId;
+    private YangInstanceIdentifier itemIdentifier;
+    private YangInstanceIdentifier relativeItemIdIdentifier;
+    private QName itemQName;
+    private CorrelationItemEnum correlationItem;
 
     /**
      * Default constructor
@@ -78,13 +79,18 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
      * @param operator processes received notifications (aggregates them)
      * @param underlayTopologyId underlay topology identifier
      * @param pathIdentifier identifies leaf (node), which aggregation / filtering will be based on
+     * @param correlationItem can be either Node or Link or TerminationPoint
      */
     public UnderlayTopologyListener(DOMDataBroker domDataBroker, TopologyOperator operator, String underlayTopologyId,
-            YangInstanceIdentifier pathIdentifier) {
+            YangInstanceIdentifier pathIdentifier, CorrelationItemEnum correlationItem) {
         this.domDataBroker = domDataBroker;
         this.operator = operator;
         this.underlayTopologyId = underlayTopologyId;
         this.pathIdentifier = pathIdentifier;
+        this.correlationItem = correlationItem;
+        this.itemIdentifier = InstanceIdentifiers.buildItemIdentifier(YangInstanceIdentifier.builder(), correlationItem);
+        this.relativeItemIdIdentifier = InstanceIdentifiers.buildRelativeItemIdIdentifier(correlationItem);
+        this.itemQName = TopologyQNames.buildItemQName(correlationItem);
     }
 
     @Override
@@ -120,43 +126,45 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
 
     private void proceedChangeRequest(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map,
             RequestAction requestAction) {
-        Map<YangInstanceIdentifier, PhysicalNode> resultEntries = new HashMap<>();
+        Map<YangInstanceIdentifier, UnderlayItem> resultEntries = new HashMap<>();
         Iterator<Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator = map.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry = iterator.next();
-            if (entry.getValue() instanceof MapEntryNode && entry.getValue().getNodeType().equals(Node.QNAME)) {
+            if (entry.getValue() instanceof MapEntryNode && entry.getValue().getNodeType().equals(itemQName)) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Processing entry: {}", entry.getValue());
                 }
-                Optional<NormalizedNode<?,?>> nodeWithNodeId =
-                        NormalizedNodes.findNode(entry.getValue(), NODE_ID_IDENTIFIER);
-                String nodeId;
-                if (nodeWithNodeId.isPresent()) {
-                    LeafNode<?> nodeIdLeafNode = (LeafNode<?>) nodeWithNodeId.get();
-                    nodeId = nodeIdLeafNode.getValue().toString();
+                Optional<NormalizedNode<?,?>> itemWithItemId =
+                        NormalizedNodes.findNode(entry.getValue(), relativeItemIdIdentifier);
+                String itemId;
+                if (itemWithItemId.isPresent()) {
+                    LeafNode<?> itemIdLeafNode = (LeafNode<?>) itemWithItemId.get();
+                    itemId = itemIdLeafNode.getValue().toString();
                 } else {
-                    throw new IllegalStateException("node-id was not found in: " + entry.getValue());
+                    throw new IllegalStateException("item-id was not found in: " + entry.getValue());
                 }
-                PhysicalNode physicalNode;
+                UnderlayItem underlayItem = null;
                 if (operator instanceof TopologyAggregator) {
                     // AGGREGATION
-                    LOGGER.debug("Finding node: {}", pathIdentifier);
+                    LOGGER.debug("Finding leafnode: {}", pathIdentifier);
                     Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
                     if (node.isPresent()) {
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("Found node: {}", node.get());
                         }
                         LeafNode<?> leafnode = (LeafNode<?>) node.get();
-                        physicalNode = new PhysicalNode(entry.getValue(), leafnode, underlayTopologyId, nodeId);
+                        underlayItem = new UnderlayItem(entry.getValue(), leafnode, underlayTopologyId, itemId,
+                                correlationItem);
                     } else {
                         continue;
                     }
                 } else {
                     // FILTRATION
-                    physicalNode = new PhysicalNode(entry.getValue(), null, underlayTopologyId, nodeId);
+                    underlayItem = new UnderlayItem(entry.getValue(), null, underlayTopologyId, itemId,
+                            correlationItem);
                 }
-                resultEntries.put(entry.getKey(), physicalNode);
-                LOGGER.debug("PhysicalNode created");
+                resultEntries.put(entry.getKey(), underlayItem);
+                LOGGER.debug("underlayItem created");
             }
         }
         if (! resultEntries.isEmpty()) {
@@ -175,14 +183,13 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
             YangInstanceIdentifier identifierOperational = iterator.next();
             PathArgument lastPathArgument = identifierOperational.getLastPathArgument();
             if (! (lastPathArgument instanceof AugmentationIdentifier) &&
-                    lastPathArgument.getNodeType().equals(Node.QNAME) && 
-                    ! lastPathArgument.equals(NODE_IDENTIFIER.getLastPathArgument())) {
+                    lastPathArgument.getNodeType().equals(itemQName) &&
+                    ! lastPathArgument.equals(itemIdentifier.getLastPathArgument())) {
                 identifiers.add(identifierOperational);
             }
         }
         operator.processRemovedChanges(identifiers, underlayTopologyId);
     }
-
     /**
      * Reads data that were written before overlay topology request was received
      * @param path path to existing data

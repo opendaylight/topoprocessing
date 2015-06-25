@@ -8,18 +8,17 @@
 
 package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
-import org.opendaylight.topoprocessing.api.filtration.UnderlayItem;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 /**
  * @author matus.marko
@@ -45,7 +44,7 @@ public class SpecificValueFiltrator<T> implements Filtrator {
 
     @Override
     public boolean isFiltered(UnderlayItem node) {
-        Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node.getNode(), pathIdentifier);
+        Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node.getItem(), pathIdentifier);
         if (leafNode.isPresent()) {
             T value = (T) ((LeafNode) leafNode.get()).getValue();
             if (this.value.equals(value)) {
@@ -53,7 +52,7 @@ public class SpecificValueFiltrator<T> implements Filtrator {
             }
         }
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Node with value {} was filtered out", node.getNode());
+            LOG.debug("Node with value {} was filtered out", node.getItem());
         }
         return true;
     }
