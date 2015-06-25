@@ -8,6 +8,7 @@
 
 package org.opendaylight.topoprocessing.api.filtration;
 
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 
 /**
  * @author matus.marko

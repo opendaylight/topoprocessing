@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
-import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.api.structure.OverlayItem;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
@@ -47,24 +47,24 @@ public class LogicalNodeToNodeTranslator {
      * @param wrapper LogicalNodeWrapper object
      * @return Node
      */
-    public NormalizedNode<?, ?> translate(LogicalNodeWrapper wrapper) {
+    public NormalizedNode<?, ?> translate(OverlayItemWrapper wrapper) {
         LOG.debug("Transforming LogicalNodeWrapper to Node");
-        List<PhysicalNode> writtenNodes = new ArrayList<>();
+        List<UnderlayItem> writtenNodes = new ArrayList<>();
         CollectionNodeBuilder<MapEntryNode, MapNode> supportingNodes = ImmutableNodes.mapNodeBuilder(
                 SupportingNode.QNAME);
         CollectionNodeBuilder<MapEntryNode, MapNode> terminationPoints = ImmutableNodes.mapNodeBuilder(
                 TerminationPoint.QNAME);
         // iterate through logical nodes
-        for (LogicalNode logicalNode : wrapper.getLogicalNodes()) {
+        for (OverlayItem logicalNode : wrapper.getOverlayItems()) {
             // iterate through physical nodes
-            for (PhysicalNode physicalNode : logicalNode.getPhysicalNodes()) {
+            for (UnderlayItem physicalNode : logicalNode.getUnderlayItems()) {
                 if (! writtenNodes.contains(physicalNode)) {
                     writtenNodes.add(physicalNode);
                     NormalizedNode<?, ?> physicalWholeNode = physicalNode.getNode();
                     // prepare supporting nodes
                     Map<QName, Object> keyValues = new HashMap<>();
                     keyValues.put(TopologyQNames.TOPOLOGY_REF, physicalNode.getTopologyId());
-                    keyValues.put(TopologyQNames.NODE_REF, physicalNode.getNodeId());
+                    keyValues.put(TopologyQNames.NODE_REF, physicalNode.getItemId());
                     supportingNodes.withChild(ImmutableNodes.mapEntryBuilder().withNodeIdentifier(
                             new YangInstanceIdentifier.NodeIdentifierWithPredicates(
                                     SupportingNode.QNAME, keyValues)).build());
@@ -83,7 +83,7 @@ public class LogicalNodeToNodeTranslator {
         }
 
         return ImmutableNodes
-                .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, wrapper.getNodeId())
+                .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, wrapper.getId())
                 .withChild(supportingNodes.build())
                 .withChild(terminationPoints.build())
                 .build();

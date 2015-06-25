@@ -19,12 +19,12 @@ public class UnificationAggregator extends TopologyAggregator {
     private static final boolean WRAP_SINGLE_PHYSICAL_NODE = true;
 
     @Override
-    protected int getMinPhysicalNodes() {
+    protected int getMinUnderlayItems() {
         return PHYSICAL_NODES_IN_LOGICAL_NODE;
     }
 
     @Override
-    protected boolean wrapSingleNode() {
+    protected boolean wrapSingleItem() {
         return WRAP_SINGLE_PHYSICAL_NODE;
     }
 

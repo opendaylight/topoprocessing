@@ -45,9 +45,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.UnificationCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.filtration._case.filtration.Filter;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
@@ -163,18 +160,19 @@ public class TopologyRequestHandler {
                     correlationItem, schemaHolder);
             addFiltrator(operator, filter, pathIdentifier);
             UnderlayTopologyListener listener = new UnderlayTopologyListener(operator,
-                    underlayTopologyId, null);
+                    underlayTopologyId, null, correlationItem);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
+            YangInstanceIdentifier itemIdentifier =
+                    InstanceIdentifiers.buildItemIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering filtering underlay topology listener for topology: {}", underlayTopologyId);
             ListenerRegistration<DOMDataChangeListener> listenerRegistration;
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
                 listenerRegistration = domDataBroker.registerDataChangeListener(
-                        LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+                        LogicalDatastoreType.OPERATIONAL, itemIdentifier, listener, DataChangeScope.SUBTREE);
             } else {
                 listenerRegistration = domDataBroker.registerDataChangeListener(
-                        LogicalDatastoreType.CONFIGURATION, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+                        LogicalDatastoreType.CONFIGURATION, itemIdentifier, listener, DataChangeScope.SUBTREE);
             }
             listeners.add(listenerRegistration);
         }
@@ -194,18 +192,19 @@ public class TopologyRequestHandler {
             YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
                     correlationItem, schemaHolder);
             UnderlayTopologyListener listener = new UnderlayTopologyListener(operator,
-                    underlayTopologyId, pathIdentifier);
+                    underlayTopologyId, pathIdentifier, correlationItem);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
+            YangInstanceIdentifier itemIdentifier =
+                    InstanceIdentifiers.buildItemIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
             ListenerRegistration<DOMDataChangeListener> listenerRegistration;
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
                 listenerRegistration = domDataBroker.registerDataChangeListener(
-                        LogicalDatastoreType.OPERATIONAL, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+                        LogicalDatastoreType.OPERATIONAL, itemIdentifier, listener, DataChangeScope.SUBTREE);
             } else {
                 listenerRegistration = domDataBroker.registerDataChangeListener(
-                        LogicalDatastoreType.CONFIGURATION, nodeIdentifier, listener, DataChangeScope.SUBTREE);
+                        LogicalDatastoreType.CONFIGURATION, itemIdentifier, listener, DataChangeScope.SUBTREE);
             }
             listeners.add(listenerRegistration);
         }
@@ -216,25 +215,6 @@ public class TopologyRequestHandler {
         InstanceIdentifierBuilder identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
                 .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, underlayTopologyId);
         return identifier;
-    }
-
-    private static YangInstanceIdentifier buildNodeIdentifier(
-            YangInstanceIdentifier.InstanceIdentifierBuilder builder, CorrelationItemEnum correlationItemEnum) {
-        switch (correlationItemEnum) {
-            case Node:
-                builder.node(Node.QNAME);
-                break;
-            case Link:
-                builder.node(Link.QNAME);
-                break;
-            case TerminationPoint:
-                builder.node(Node.QNAME);
-                builder.node(TerminationPoint.QNAME);
-                break;
-            default:
-                throw new IllegalArgumentException("Wrong Correlation item set: " + correlationItemEnum);
-        }
-        return builder.build();
     }
 
     /**

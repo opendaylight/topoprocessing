@@ -15,6 +15,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.topoprocessing.api.structure.OverlayItem;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 
 /**
@@ -29,8 +32,8 @@ public class LogicalNodeTest {
     private static final String TOPOLOGY2 = "pcep-topology:2";
     private static final String NODE_ID2 = "pcep:2";
     private static final String NODE_ID3 = "pcep:3";
-    private LogicalNode logicalNode;
-    private PhysicalNode physicalNode, physicalNode2;
+    private OverlayItem logicalNode;
+    private UnderlayItem physicalNode, physicalNode2;
 
     @Mock private NormalizedNode<?,?> mockNormalizedNode1;
     @Mock private NormalizedNode<?,?> mockLeafNode1;
@@ -39,51 +42,51 @@ public class LogicalNodeTest {
 
     @Test
     public void testLogicalNodeCreation() {
-        physicalNode = new PhysicalNode(mockNormalizedNode1, mockLeafNode1, TOPOLOGY1, NODE_ID1);
-        List<PhysicalNode> physicalNodes = new ArrayList<>();
+        physicalNode = new UnderlayItem(mockNormalizedNode1, mockLeafNode1, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        List<UnderlayItem> physicalNodes = new ArrayList<>();
         physicalNodes.add(physicalNode);
-        logicalNode = new LogicalNode(physicalNodes);
-        Assert.assertEquals(1, logicalNode.getPhysicalNodes().size());
-        Assert.assertTrue(physicalNodeEquals(physicalNode, logicalNode.getPhysicalNodes().get(0)));
+        logicalNode = new OverlayItem(physicalNodes);
+        Assert.assertEquals(1, logicalNode.getUnderlayItems().size());
+        Assert.assertTrue(physicalNodeEquals(physicalNode, logicalNode.getUnderlayItems().get(0)));
     }
 
     @Test
     public void testAddPhysicalNode() {
-        physicalNode = new PhysicalNode(mockNormalizedNode1, mockLeafNode1, TOPOLOGY1, NODE_ID1);
-        List<PhysicalNode> physicalNodes = new ArrayList<>();
+        physicalNode = new UnderlayItem(mockNormalizedNode1, mockLeafNode1, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        List<UnderlayItem> physicalNodes = new ArrayList<>();
         physicalNodes.add(physicalNode);
-        logicalNode = new LogicalNode(physicalNodes);
+        logicalNode = new OverlayItem(physicalNodes);
 
-        physicalNode2 = new PhysicalNode(mockNormalizedNode2, mockLeafNode2, TOPOLOGY2, NODE_ID2);
-        logicalNode.addPhysicalNode(physicalNode2);
-        Assert.assertEquals(2, logicalNode.getPhysicalNodes().size());
-        Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getPhysicalNodes().get(1)));
+        physicalNode2 = new UnderlayItem(mockNormalizedNode2, mockLeafNode2, TOPOLOGY2, NODE_ID2, CorrelationItemEnum.Node);
+        logicalNode.addUnderlayItem(physicalNode2);
+        Assert.assertEquals(2, logicalNode.getUnderlayItems().size());
+        Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getUnderlayItems().get(1)));
     }
 
     @Test
     public void testRemovePhysicalNode() {
         testAddPhysicalNode();
 
-        logicalNode.removePhysicalNode(physicalNode);
-        Assert.assertEquals(1, logicalNode.getPhysicalNodes().size());
-        Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getPhysicalNodes().get(0)));
+        logicalNode.removeUnderlayItem(physicalNode);
+        Assert.assertEquals(1, logicalNode.getUnderlayItems().size());
+        Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getUnderlayItems().get(0)));
     }
 
     @Test
     public void testUpdatePhysicalNode() {
         testLogicalNodeCreation();
 
-        physicalNode2 = new PhysicalNode(mockNormalizedNode2, mockLeafNode2, TOPOLOGY2, NODE_ID2);
-        logicalNode.updatePhysicalNode(physicalNode, physicalNode2);
-        Assert.assertEquals(1, logicalNode.getPhysicalNodes().size());
-        Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getPhysicalNodes().get(0)));
+        physicalNode2 = new UnderlayItem(mockNormalizedNode2, mockLeafNode2, TOPOLOGY2, NODE_ID2, CorrelationItemEnum.Node);
+        logicalNode.updateUnderlayItem(physicalNode, physicalNode2);
+        Assert.assertEquals(1, logicalNode.getUnderlayItems().size());
+        Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getUnderlayItems().get(0)));
     }
 
     @Test
     public void testGetPhysicalNodes() {
         testLogicalNodeCreation();
 
-        List<PhysicalNode> physicalNodes = logicalNode.getPhysicalNodes();
+        List<UnderlayItem> physicalNodes = logicalNode.getUnderlayItems();
         Assert.assertEquals(1, physicalNodes.size());
         Assert.assertTrue(physicalNodeEquals(physicalNode, physicalNodes.get(0)));
     }
@@ -92,41 +95,43 @@ public class LogicalNodeTest {
     public void testSetPhysicalNodes() {
         testAddPhysicalNode();
 
-        PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode1, mockLeafNode1, TOPOLOGY2, NODE_ID3);
-        List<PhysicalNode> newPhysicalNodes = new ArrayList<>();
+        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, mockLeafNode1, TOPOLOGY2, NODE_ID3,
+                CorrelationItemEnum.Node);
+        List<UnderlayItem> newPhysicalNodes = new ArrayList<>();
         newPhysicalNodes.add(physicalNode3);
 
-        logicalNode.setPhysicalNodes(newPhysicalNodes);
+        logicalNode.setUnderlayItems(newPhysicalNodes);
 
-        Assert.assertEquals(1, logicalNode.getPhysicalNodes().size());
-        Assert.assertTrue(physicalNodeEquals(physicalNode3, logicalNode.getPhysicalNodes().get(0)));
+        Assert.assertEquals(1, logicalNode.getUnderlayItems().size());
+        Assert.assertTrue(physicalNodeEquals(physicalNode3, logicalNode.getUnderlayItems().get(0)));
     }
 
     @Test(expected=NullPointerException.class)
     public void testCreationWithNull() {
-        LogicalNode logicalNode = new LogicalNode(null);
+        OverlayItem logicalNode = new OverlayItem(null);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testRemovingUnexistingNode() {
         testLogicalNodeCreation();
 
-        logicalNode.removePhysicalNode(physicalNode2);
+        logicalNode.removeUnderlayItem(physicalNode2);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testUpdatingUnexistingNode() {
         testLogicalNodeCreation();
-        PhysicalNode physicalNode3 = new PhysicalNode(mockNormalizedNode1, null, TOPOLOGY2, NODE_ID3);
+        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY2, NODE_ID3,
+                CorrelationItemEnum.Node);
 
-        logicalNode.updatePhysicalNode(physicalNode2, physicalNode3);
+        logicalNode.updateUnderlayItem(physicalNode2, physicalNode3);
     }
 
-    private static boolean physicalNodeEquals(PhysicalNode node1, PhysicalNode node2) {
+    private static boolean physicalNodeEquals(UnderlayItem node1, UnderlayItem node2) {
         if (node1.getNode().equals(node2.getNode()) &&
                 node1.getLeafNode().equals(node2.getLeafNode()) && 
                 node1.getTopologyId().equals(node2.getTopologyId()) && 
-                node1.getNodeId().equals(node2.getNodeId())) {
+                node1.getItemId().equals(node2.getItemId())) {
             return true;
         } else {
             return false;
