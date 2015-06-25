@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
@@ -52,7 +52,7 @@ public abstract class  TopoStoreProvider {
             }
         }
         topologyStores.add(new TopologyStore(underlayTopologyId, aggregateInside,
-                new HashMap<YangInstanceIdentifier, PhysicalNode>()));
+                new HashMap<YangInstanceIdentifier, UnderlayItem>()));
     }
 
     /**

@@ -8,9 +8,6 @@
 
 package org.opendaylight.topoprocessing.impl.writer;
 
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,6 +17,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
@@ -27,7 +25,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListen
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
-import org.opendaylight.topoprocessing.impl.structure.LogicalNodeWrapper;
+import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.translator.LogicalNodeToNodeTranslator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
@@ -44,6 +42,10 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 
 /**
  * @author michal.polkorab
@@ -188,21 +190,21 @@ public class TopologyWriter implements TransactionChainListener {
     /**
      * @param wrapper LogicalNodeWrapper to be written into datastore
      */
-    public void writeNode(final LogicalNodeWrapper wrapper) {
+    public void writeNode(final OverlayItemWrapper wrapper) {
         NormalizedNode<?, ?> node = translator.translate(wrapper);
-        preparedOperations.add(new PutOperation(createNodeIdentifier(wrapper.getNodeId()), node));
+        preparedOperations.add(new PutOperation(createItemIdentifier(wrapper.getId()), node));
         scheduleWrite();
     }
 
     /**
      * @param wrapper LogicalNodeWrapper to be removed from datastore
      */
-    public void deleteNode(final LogicalNodeWrapper wrapper) {
-        preparedOperations.add(new DeleteOperation(createNodeIdentifier(wrapper.getNodeId())));
+    public void deleteNode(final OverlayItemWrapper wrapper) {
+        preparedOperations.add(new DeleteOperation(createItemIdentifier(wrapper.getId())));
         scheduleWrite();
     }
 
-    private YangInstanceIdentifier createNodeIdentifier(String nodeId) {
+    private YangInstanceIdentifier createItemIdentifier(String nodeId) {
         return YangInstanceIdentifier.builder(nodeIdentifier)
                 .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeId).build();
     }

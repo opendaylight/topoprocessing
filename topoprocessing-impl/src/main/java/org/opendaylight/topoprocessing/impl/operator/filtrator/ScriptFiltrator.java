@@ -16,7 +16,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
-import org.opendaylight.topoprocessing.api.filtration.UnderlayItem;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.Scripting;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -57,7 +57,7 @@ public class ScriptFiltrator implements Filtrator {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Item received: {}", item);
         }
-        Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(item.getNode(), pathIdentifier);
+        Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(item.getItem(), pathIdentifier);
         if (node.isPresent()) {
             ScriptResult filterOut = new ScriptResult();
             engine.put("filterOut", filterOut);
@@ -71,7 +71,7 @@ public class ScriptFiltrator implements Filtrator {
             }
         }
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Node with value {} was filtered out", item.getNode());
+            LOGGER.debug("Item with value {} was filtered out", item.getItem());
         }
         return true;
     }

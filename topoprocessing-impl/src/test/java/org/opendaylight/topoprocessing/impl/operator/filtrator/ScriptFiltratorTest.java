@@ -8,9 +8,11 @@
 
 package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
+import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestNodeCreator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.Scripting;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.ScriptingBuilder;
@@ -32,6 +34,7 @@ public class ScriptFiltratorTest {
 
     private TestNodeCreator creator = new TestNodeCreator();
     private ScriptFiltrator filtrator;
+    private CorrelationItemEnum nodeItem = CorrelationItemEnum.Node;
 
     /**
      * Test correct script filtration - exact match on ipv4 address
@@ -50,14 +53,14 @@ public class ScriptFiltratorTest {
         Scripting scripting = scriptingBuilder.build();
         filtrator = new ScriptFiltrator(scripting, path);
 
-        PhysicalNode node = new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID, "192.168.1.1"),
-                null, TOPOLOGY_ID, NODE_ID);
+        UnderlayItem node = new UnderlayItem(creator.createMapEntryNodeWithIpAddress(NODE_ID, "192.168.1.1"),
+                null, TOPOLOGY_ID, NODE_ID, nodeItem);
         Assert.assertFalse("Node should pass the filtrator", filtrator.isFiltered(node));
-        node = new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID, "192.168.1.2"),
-                null, TOPOLOGY_ID, NODE_ID);
+        node = new UnderlayItem(creator.createMapEntryNodeWithIpAddress(NODE_ID, "192.168.1.2"),
+                null, TOPOLOGY_ID, NODE_ID, nodeItem);
         Assert.assertTrue("Node should not pass the filtrator", filtrator.isFiltered(node));
-        node = new PhysicalNode(creator.createMapEntryNodeWithIpAddress(NODE_ID, ""),
-                null, TOPOLOGY_ID, NODE_ID);
+        node = new UnderlayItem(creator.createMapEntryNodeWithIpAddress(NODE_ID, ""),
+                null, TOPOLOGY_ID, NODE_ID, nodeItem);
         Assert.assertTrue("Node should not pass the filtrator", filtrator.isFiltered(node));
     }
 
