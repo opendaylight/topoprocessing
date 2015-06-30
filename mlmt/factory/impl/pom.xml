@@ -43,12 +43,10 @@
     <dependency>
       <groupId>org.opendaylight.yangtools</groupId>
       <artifactId>yang-binding</artifactId>
-      <version>${yangtools.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.yangtools</groupId>
       <artifactId>yang-common</artifactId>
-      <version>${yangtools.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.yangtools.model</groupId>
@@ -57,12 +55,10 @@
     <dependency>
       <groupId>org.opendaylight.yangtools.model</groupId>
       <artifactId>ietf-topology-l3-unicast-igp</artifactId>
-      <version>${ietf.model.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.yangtools.model</groupId>
       <artifactId>ietf-topology-isis</artifactId>
-      <version>${ietf.model.version}</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -77,26 +73,22 @@
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>sal-binding-broker-impl</artifactId>
-      <version>${mdsal.version}</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>sal-binding-broker-impl</artifactId>
-      <version>${mdsal.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>sal-broker-impl</artifactId>
-      <version>${mdsal.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.controller</groupId>
       <artifactId>sal-core-api</artifactId>
-      <version>${mdsal.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
