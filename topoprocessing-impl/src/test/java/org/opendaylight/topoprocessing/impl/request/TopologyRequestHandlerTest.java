@@ -8,15 +8,13 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
-import static org.mockito.Matchers.any;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.util.concurrent.CheckedFuture;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -25,12 +23,7 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
-import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
-import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
-import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
+import org.opendaylight.controller.md.sal.dom.api.*;
 import org.opendaylight.topoprocessing.impl.operator.filtrator.DefaultFiltrators;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
@@ -39,17 +32,11 @@ import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpPrefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugmentBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.*;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Filtration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4AddressAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4AddressAugmentBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.LeafPath;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.MappingBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.CorrelationsBuilder;
@@ -72,7 +59,10 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 
-import com.google.common.util.concurrent.CheckedFuture;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.Matchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyRequestHandlerTest {
@@ -110,6 +100,12 @@ public class TopologyRequestHandlerTest {
             .thenReturn(mockDomTransactionChain);
         Mockito.when(mockDomTransactionChain.newWriteOnlyTransaction()).thenReturn(mockDomDataWriteTransaction);
         Mockito.when(mockDomDataWriteTransaction.submit()).thenReturn(domCheckedFuture);
+        // initialize read-only transaction for pre-loading datastore
+        DOMDataReadOnlyTransaction mockTransaction = Mockito.mock(DOMDataReadOnlyTransaction.class);
+        Mockito.when(mockDomDataBroker.newReadOnlyTransaction()).thenReturn(mockTransaction);
+        CheckedFuture mockReadFuture = Mockito.mock(CheckedFuture.class);
+        Mockito.when(mockTransaction.read((LogicalDatastoreType) Matchers.any(),
+                (YangInstanceIdentifier) Matchers.any())).thenReturn(mockReadFuture);
     }
 
     @Test (expected=NullPointerException.class)
