@@ -29,12 +29,6 @@
 
     <dependencies>
         <!-- This project -->
-        <dependency>
-            <groupId>org.opendaylight.topoprocessing</groupId>
-            <artifactId>topoprocessing-artifacts</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <!-- feature dependencies -->
         <dependency>
             <groupId>org.opendaylight.yangtools</groupId>
@@ -57,7 +51,6 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>features-restconf</artifactId>
-            <version>${mdsal.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
@@ -66,94 +59,82 @@
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-common-model</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-common-impl</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-observer-model</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-observer-impl</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-observer-impl</artifactId>
-            <version>${project.version}</version>
             <type>xml</type>
             <classifier>config</classifier>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>multitechnology-topology-model</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>multitechnology-topology-impl</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>multilayer-topology-model</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>multilayer-impl</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>forwarding-adjacency-impl</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-factory-model</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-factory-impl</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-parser-model</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-parser-impl</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-inventory-impl</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-inventory-model</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>topoprocessing-config</artifactId>
+            <classifier>config</classifier>
+            <type>xml</type>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-topology</artifactId>
-            <version>${mdsal.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-inventory</artifactId>
-            <version>${mdsal.version}</version>
         </dependency>
 
         <!-- test to validate features.xml -->
