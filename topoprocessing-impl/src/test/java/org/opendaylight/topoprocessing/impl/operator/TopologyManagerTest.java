@@ -92,7 +92,7 @@ public class TopologyManagerTest {
     @Test(expected=NullPointerException.class)
     public void addLogicalNodeNullOrEmpty() {
         manager.addOverlayItem(null);
-        Mockito.verify(writer, Mockito.times(0)).writeNode((OverlayItemWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(0)).writeItem((OverlayItemWrapper) Mockito.any());
 
         List<UnderlayItem> physicalNodes = null;
         OverlayItem newLogicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
@@ -109,7 +109,7 @@ public class TopologyManagerTest {
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
         manager.addOverlayItem(logicalNode);
-        Mockito.verify(writer, Mockito.times(1)).writeNode((OverlayItemWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(1)).writeItem((OverlayItemWrapper) Mockito.any());
     }
 
     /**
@@ -127,8 +127,8 @@ public class TopologyManagerTest {
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
         manager.addOverlayItem(logicalNode);
-        Assert.assertEquals(1, manager.getWrappers().size());
-        Mockito.verify(writer, Mockito.times(1)).writeNode((OverlayItemWrapper) Mockito.any());
+        Assert.assertEquals(1, manager.getNodeWrappers().size());
+        Mockito.verify(writer, Mockito.times(1)).writeItem((OverlayItemWrapper) Mockito.any());
     }
 
     /**
@@ -149,8 +149,8 @@ public class TopologyManagerTest {
         logicalNode2 = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
         manager.addOverlayItem(logicalNode2);
 
-        Assert.assertEquals(2, manager.getWrappers().size());
-        Mockito.verify(writer, Mockito.times(2)).writeNode((OverlayItemWrapper) Mockito.any());
+        Assert.assertEquals(2, manager.getNodeWrappers().size());
+        Mockito.verify(writer, Mockito.times(2)).writeItem((OverlayItemWrapper) Mockito.any());
     }
 
     /**
@@ -171,20 +171,8 @@ public class TopologyManagerTest {
         newLogicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
         manager.addOverlayItem(newLogicalNode);
-        Assert.assertEquals(1, manager.getWrappers().size());
-        Mockito.verify(writer, Mockito.times(2)).writeNode((OverlayItemWrapper) Mockito.any());
-    }
-
-    /**
-     * Removing null LogicalNode should not produce any call of writer's methods
-     */
-    @Test
-    public void removeNullNode() {
-        addLogicalNode();
-        Mockito.reset(writer);
-        manager.removeOverlayItem(null);
-        Mockito.verify(writer, Mockito.times(0)).writeNode((OverlayItemWrapper) Mockito.any());
-        Mockito.verify(writer, Mockito.times(0)).deleteNode((OverlayItemWrapper) Mockito.any());
+        Assert.assertEquals(1, manager.getNodeWrappers().size());
+        Mockito.verify(writer, Mockito.times(2)).writeItem((OverlayItemWrapper) Mockito.any());
     }
 
     /**
@@ -196,9 +184,9 @@ public class TopologyManagerTest {
         addLogicalNode();
         Mockito.reset(writer);
         manager.removeOverlayItem(this.logicalNode);
-        Mockito.verify(writer, Mockito.times(0)).writeNode((OverlayItemWrapper) Mockito.any());
-        Mockito.verify(writer, Mockito.times(1)).deleteNode((OverlayItemWrapper) Mockito.any());
-        Assert.assertEquals(0, manager.getWrappers().size());
+        Mockito.verify(writer, Mockito.times(0)).writeItem((OverlayItemWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(1)).deleteItem((OverlayItemWrapper) Mockito.any());
+        Assert.assertEquals(0, manager.getNodeWrappers().size());
     }
 
     /**
@@ -215,9 +203,9 @@ public class TopologyManagerTest {
         OverlayItem nodeToRemove = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
         manager.removeOverlayItem(nodeToRemove);
-        Mockito.verify(writer, Mockito.times(0)).writeNode((OverlayItemWrapper) Mockito.any());
-        Mockito.verify(writer, Mockito.times(0)).deleteNode((OverlayItemWrapper) Mockito.any());
-        Assert.assertEquals(1, manager.getWrappers().size());
+        Mockito.verify(writer, Mockito.times(0)).writeItem((OverlayItemWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(0)).deleteItem((OverlayItemWrapper) Mockito.any());
+        Assert.assertEquals(1, manager.getNodeWrappers().size());
     }
 
     /**
@@ -233,9 +221,9 @@ public class TopologyManagerTest {
         // remove that node again
         manager.removeOverlayItem(logicalNode2);
 
-        Mockito.verify(writer, Mockito.times(0)).writeNode((OverlayItemWrapper) Mockito.any());
-        Mockito.verify(writer, Mockito.times(0)).deleteNode((OverlayItemWrapper) Mockito.any());
-        Assert.assertEquals(1, manager.getWrappers().size());
+        Mockito.verify(writer, Mockito.times(0)).writeItem((OverlayItemWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(0)).deleteItem((OverlayItemWrapper) Mockito.any());
+        Assert.assertEquals(1, manager.getNodeWrappers().size());
     }
 
     @Test
@@ -255,11 +243,11 @@ public class TopologyManagerTest {
         logicalNode2 = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
         manager.addOverlayItem(logicalNode2);
 
-        Assert.assertEquals(1, manager.getWrappers().size());
-        Mockito.verify(writer, Mockito.times(2)).writeNode((OverlayItemWrapper) Mockito.any());
+        Assert.assertEquals(1, manager.getNodeWrappers().size());
+        Mockito.verify(writer, Mockito.times(2)).writeItem((OverlayItemWrapper) Mockito.any());
 
         manager.removeOverlayItem(logicalNode);
-        Mockito.verify(writer, Mockito.times(3)).writeNode((OverlayItemWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(3)).writeItem((OverlayItemWrapper) Mockito.any());
     }
 
     /**
@@ -306,7 +294,7 @@ public class TopologyManagerTest {
         physicalNode2.setOverlayItem(logicalNode);
         logicalNode.getUnderlayItems().add(physicalNode2);
         manager.updateOverlayItem(logicalNode);
-        Mockito.verify(writer, Mockito.times(1)).writeNode((OverlayItemWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(1)).writeItem((OverlayItemWrapper) Mockito.any());
     }
 
     @Test
@@ -320,7 +308,7 @@ public class TopologyManagerTest {
         logicalNode2 = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
         manager.updateOverlayItem(logicalNode2);
-        Mockito.verify(writer, Mockito.times(0)).writeNode((OverlayItemWrapper) Mockito.any());
+        Mockito.verify(writer, Mockito.times(0)).writeItem((OverlayItemWrapper) Mockito.any());
     }
 
 }
