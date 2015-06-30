@@ -1,208 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+ Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+
+ This program and the accompanying materials are made available under the
+ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.opendaylight.odlparent</groupId>
-        <artifactId>odlparent</artifactId>
-        <version>1.6.0-SNAPSHOT</version>
-        <relativePath/>
+        <groupId>org.opendaylight.topoprocessing</groupId>
+        <artifactId>topoprocessing-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+        <relativePath>parent</relativePath>
     </parent>
 
-    <groupId>org.opendaylight.topoprocessing</groupId>
-    <artifactId>topoprocessing-parent</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <artifactId>tcpmd5-aggregator</artifactId>
     <name>topoprocessing</name> <!-- Used by Sonar to set project name -->
     <packaging>pom</packaging>
 
     <modules>
-        <module>topoprocessing-api</module>
-        <module>topoprocessing-spi</module>
-        <module>topoprocessing-impl</module>
-        <module>mlmt</module>
-        <module>forwarding</module>
-        <module>features</module>
         <module>distribution-karaf</module>
-    <module>topoprocessing-config</module>
-    <module>topoprocessing-artifacts</module>
-  </modules>
-    <scm>
-        <connection>scm:git:ssh://git.opendaylight.org:29418/topoprocessing.git</connection>
-        <developerConnection>scm:git:ssh://git.opendaylight.org:29418/topoprocessing.git</developerConnection>
-        <url>https://wiki.opendaylight.org/view/Topology_Processing_Framework:Main</url>
-        <tag>HEAD</tag>
-    </scm>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <yangtools.version>0.8.0-SNAPSHOT</yangtools.version>
-        <salGeneratorPath>${project.build.directory}/yang-gen-sal</salGeneratorPath>
-        <jmxGeneratorPath>${project.build.directory}/yang-gen-config</jmxGeneratorPath>
-        <yang.jmx.generator.plugin>0.4.0-SNAPSHOT</yang.jmx.generator.plugin>
-        <config.version>0.4.0-SNAPSHOT</config.version>
-        <mdsal.version>1.3.0-SNAPSHOT</mdsal.version>
-        <features.test.version>1.6.0-SNAPSHOT</features.test.version>
-        <!-- TODO - bump openflowplugin version once its version is bumped --> 
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.opendaylight.yangtools</groupId>
-                <artifactId>yangtools-artifacts</artifactId>
-                <version>${yangtools.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.controller</groupId>
-                <artifactId>mdsal-artifacts</artifactId>
-                <version>${mdsal.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.controller</groupId>
-                <artifactId>config-artifacts</artifactId>
-                <version>${config.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
-            <!-- feature dependencies -->
-            <dependency>
-                <groupId>org.opendaylight.controller</groupId>
-                <artifactId>features-restconf</artifactId>
-                <version>${mdsal.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.odlparent</groupId>
-                <artifactId>features-test</artifactId>
-                <version>${features.test.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
-                <version>5.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-                <optional>true</optional>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-    
-    <dependencies>
-        <!-- Sonar -->
-        <dependency>
-            <groupId>org.codehaus.sonar-plugins.java</groupId>
-            <artifactId>sonar-jacoco-listeners</artifactId>
-            <version>${sonar-jacoco-listeners.version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
-                    </instructions>
-                    <manifestLocation>${project.build.directory}/META-INF</manifestLocation>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>prepare-ut-agent</id>
-                        <phase>process-test-classes</phase>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <destFile>${sonar.jacoco.reportPath}</destFile>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>prepare-it-agent</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <destFile>${sonar.jacoco.itReportPath}</destFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.8</version>
-                    <executions>
-                        <execution>
-                            <id>add-resource</id>
-                            <goals>
-                                <goal>add-resource</goal>
-                            </goals>
-                            <phase>generate-resources</phase>
-                            <configuration>
-                                <resources>
-                                <resource>
-                                    <directory>src/main/yang</directory>
-                                </resource>
-                                </resources>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-        </plugins>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.7</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
-                    <version>${releaseplugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>${jacoco.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.opendaylight.yangtools</groupId>
-                    <artifactId>yang-maven-plugin</artifactId>
-                    <version>${yangtools.version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
+        <module>features</module>
+        <module>forwarding</module>
+        <module>mlmt</module>
+        <module>parent</module>
+        <module>topoprocessing-api</module>
+        <module>topoprocessing-artifacts</module>
+        <module>topoprocessing-config</module>
+        <module>topoprocessing-impl</module>
+        <module>topoprocessing-spi</module>
+    </modules>
 </project>
