@@ -160,8 +160,9 @@ public class TopologyRequestHandler {
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
                     correlationItem, schemaHolder);
             operator.addFilter(new NodeIpFiltrator(filter.getValue(), pathIdentifier));
-            UnderlayTopologyListener listener = new UnderlayTopologyListener(operator,
-                    underlayTopologyId, null);
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, operator,
+                    underlayTopologyId, null, datastoreType);
+            listener.readExistingData();
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
@@ -184,8 +185,9 @@ public class TopologyRequestHandler {
             operator.initializeStore(underlayTopologyId, mapping.isAggregateInside());
             YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
                     correlationItem, schemaHolder);
-            UnderlayTopologyListener listener = new UnderlayTopologyListener(operator,
-                    underlayTopologyId, pathIdentifier);
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, operator,
+                    underlayTopologyId, pathIdentifier, datastoreType);
+            listener.readExistingData();
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
