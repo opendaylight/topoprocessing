@@ -62,6 +62,11 @@ module topology-correlation {
         base correlation-base;
     }
 
+    identity link-unfication {
+        description "Only links with specific leaf value will be present in overlay topology.";
+        base correlation-base;
+    }
+
     identity filter-base {
         description "Base identity for filter types";
     }
@@ -142,6 +147,11 @@ module topology-correlation {
                                     description "Path to target field";
                                 }
                             }
+                        }
+                    }
+                    case link-unification-case {
+                        container link-unification {
+                            uses mapping-grouping;
                         }
                     }
                 }
