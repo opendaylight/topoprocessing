@@ -52,6 +52,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.opendaylight.topoprocessing</groupId>
+                <artifactId>topoprocessing-artifacts</artifactId>
+                <version>${project.version}</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
                 <groupId>org.opendaylight.yangtools</groupId>
                 <artifactId>yangtools-artifacts</artifactId>
                 <version>${yangtools.version}</version>
