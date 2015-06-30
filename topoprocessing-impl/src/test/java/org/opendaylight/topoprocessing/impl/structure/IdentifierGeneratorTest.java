@@ -43,6 +43,12 @@ public class IdentifierGeneratorTest {
         String linkId = idGenerator.getNextIdentifier(CorrelationItemEnum.Link);
         String terminationPointId = idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint);
         Assert.assertEquals("node:1", nodeId);
+        Assert.assertEquals("link:1", linkId);
+        Assert.assertEquals("tp:1", terminationPointId);
+        linkId = idGenerator.getNextIdentifier(CorrelationItemEnum.Link);
+        terminationPointId = idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint);
+        terminationPointId = idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint);
+        Assert.assertEquals("node:1", nodeId);
         Assert.assertEquals("link:2", linkId);
         Assert.assertEquals("tp:3", terminationPointId);
     }
