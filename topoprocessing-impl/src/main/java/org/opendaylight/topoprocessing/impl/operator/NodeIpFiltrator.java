@@ -87,9 +87,9 @@ public class NodeIpFiltrator {
     private int ipToInt(String strAddress) throws UnknownHostException {
         Inet4Address inetAddr = (Inet4Address) InetAddress.getByName(strAddress);
         byte[] bytes = inetAddr.getAddress();
-        return  ((bytes[0] & 0xFF) << 24) |
-                ((bytes[1] & 0xFF) << 16) |
-                ((bytes[2] & 0xFF) << 8)  |
-                ((bytes[3] & 0xFF) << 0);
+        return  ((bytes[0] & 0xFF) << 24)
+                | ((bytes[1] & 0xFF) << 16)
+                | ((bytes[2] & 0xFF) << 8)
+                | ((bytes[3] & 0xFF) << 0);
     }
 }

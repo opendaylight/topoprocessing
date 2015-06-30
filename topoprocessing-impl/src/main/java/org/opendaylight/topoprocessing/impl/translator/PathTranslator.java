@@ -80,8 +80,8 @@ public class PathTranslator {
         String moduleName = getModuleName(pathArgument, index);
         Module module = context.findModuleByName(moduleName, null);
         if (null == module) {
-            throw new IllegalStateException("Couldn't find specified module: " + moduleName +
-                    ". Check if all necessary modules are loaded");
+            throw new IllegalStateException("Couldn't find specified module: " + moduleName
+                    + ". Check if all necessary modules are loaded");
         }
         String childName = getChildName(pathArgument, index + 1);
         return QName.create(module.getNamespace(), module.getRevision(), childName);
@@ -94,25 +94,25 @@ public class PathTranslator {
         return Splitter.on("/").split(yangPath);
     }
 
-    private static int getSeparatorIndex(String s, char separator) {
-        int index = s.indexOf(separator);
-         if (index == -1) {
-            throw new IllegalArgumentException("Invalid format of yang path, ':' not found in '" + s + "'");
-        } else if (s.lastIndexOf(separator) != index) {
+    private static int getSeparatorIndex(String pathArgument, char separator) {
+        int index = pathArgument.indexOf(separator);
+        if (index == -1) {
+            throw new IllegalArgumentException("Invalid format of yang path, ':' not found in '" + pathArgument + "'");
+        } else if (pathArgument.lastIndexOf(separator) != index) {
             throw new IllegalArgumentException("Invalid format of yang path, only one occurence of ':'"
-                    + " is valid in " + s);
-        } else if (index == s.length() - 1 || index == 0) {
+                    + " is valid in " + pathArgument);
+        } else if (index == pathArgument.length() - 1 || index == 0) {
             throw new IllegalArgumentException("Invalid format of yang path, "
-                    + "format [module name]:[child name] expected in " + s);
+                    + "format [module name]:[child name] expected in " + pathArgument);
         }
         return index;
     }
 
-    private static String getModuleName(String s, int index) {
-        return s.substring(0, index);
+    private static String getModuleName(String pathArgument, int index) {
+        return pathArgument.substring(0, index);
     }
 
-    private static String getChildName(String s, int index) {
-        return s.substring(index, s.length());
+    private static String getChildName(String pathArgument, int index) {
+        return pathArgument.substring(index, pathArgument.length());
     }
 }

@@ -37,17 +37,17 @@ public class IdentifierGenerator {
     public String getNextIdentifier(CorrelationItemEnum correlationItem) {
         String identifier = null;
         switch (correlationItem) {
-        case Node:
-            identifier = new String("node:" + getNextId());
-            break;
-        case Link:
-            identifier = new String("link:" + getNextId());
-            break;
-        case TerminationPoint:
-            identifier = new String("tp:" + getNextId());
-            break;
-        default:
-            throw new IllegalStateException("Unknown Correlation item used: " + correlationItem);
+            case Node:
+                identifier = new String("node:" + getNextId());
+                break;
+            case Link:
+                identifier = new String("link:" + getNextId());
+                break;
+            case TerminationPoint:
+                identifier = new String("tp:" + getNextId());
+                break;
+            default:
+                throw new IllegalStateException("Unknown Correlation item used: " + correlationItem);
         }
         return identifier;
     }

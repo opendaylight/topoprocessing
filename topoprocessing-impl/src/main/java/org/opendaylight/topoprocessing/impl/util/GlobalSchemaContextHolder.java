@@ -29,6 +29,10 @@ public class GlobalSchemaContextHolder {
         this.contextTree = DataSchemaContextTree.from(globalSchemaContext);
     }
 
+    /**
+     * updates global {@link SchemaContext}
+     * @param globalSchemaContext
+     */
     public void updateSchemaContext(SchemaContext globalSchemaContext) {
         this.globalSchemaContext = globalSchemaContext;
         this.contextTree = DataSchemaContextTree.from(globalSchemaContext);

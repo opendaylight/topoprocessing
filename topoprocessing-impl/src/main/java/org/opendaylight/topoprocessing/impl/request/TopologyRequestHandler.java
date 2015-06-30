@@ -88,7 +88,9 @@ public class TopologyRequestHandler {
     }
 
     /** Only for testing purposes */
-    public void setTranslator(PathTranslator translator) { this.translator = translator; }
+    public void setTranslator(PathTranslator translator) {
+        this.translator = translator;
+    }
 
     /** Only for testing purposes */
     public void setListeners(List<ListenerRegistration<DOMDataChangeListener>> listeners) {
@@ -96,10 +98,14 @@ public class TopologyRequestHandler {
     }
 
     /** Only for testing purposes */
-    public List<ListenerRegistration<DOMDataChangeListener>> getListeners() { return listeners; }
+    public List<ListenerRegistration<DOMDataChangeListener>> getListeners() {
+        return listeners;
+    }
 
     /** Only for testing purposes */
-    public DOMTransactionChain getTransactionChain() { return transactionChain; }
+    public DOMTransactionChain getTransactionChain() {
+        return transactionChain;
+    }
 
     /**
      * @param topology overlay topology request
@@ -127,14 +133,12 @@ public class TopologyRequestHandler {
                     List<Mapping> mappings = equalityCase.getEquality().getMapping();
                     operator = new EqualityAggregator();
                     iterateMappings(operator, mappings, correlation.getCorrelationItem());
-                }
-                else if (correlation.getType().equals(Unification.class)) {
+                } else if (correlation.getType().equals(Unification.class)) {
                     UnificationCase unificationCase = (UnificationCase) correlation.getCorrelationType();
                     List<Mapping> mappings = unificationCase.getUnification().getMapping();
                     operator = new UnificationAggregator();
                     iterateMappings(operator, mappings, correlation.getCorrelationItem());
-                }
-                else if (correlation.getType().equals(NodeIpFiltration.class)) {
+                } else if (correlation.getType().equals(NodeIpFiltration.class)) {
                     NodeIpFiltrationCase nodeIpFiltrationCase = (NodeIpFiltrationCase) correlation.getCorrelationType();
                     List<Filter> filters = nodeIpFiltrationCase.getNodeIpFiltration().getFilter();
                     operator = new TopologyFiltrator();
@@ -152,7 +156,8 @@ public class TopologyRequestHandler {
         }
     }
 
-    private void iterateFilters(TopologyFiltrator operator, List<Filter> filters, CorrelationItemEnum correlationItem) {
+    private void iterateFilters(TopologyFiltrator operator, List<Filter> filters,
+            CorrelationItemEnum correlationItem) {
         for (Filter filter : filters) {
             String underlayTopologyId = filter.getUnderlayTopology();
             operator.initializeStore(underlayTopologyId, false);
@@ -177,7 +182,8 @@ public class TopologyRequestHandler {
         }
     }
 
-    private void iterateMappings(TopologyOperator operator, List<Mapping> mappings, CorrelationItemEnum correlationItem) {
+    private void iterateMappings(TopologyOperator operator, List<Mapping> mappings,
+            CorrelationItemEnum correlationItem) {
         for (Mapping mapping : mappings) {
             String underlayTopologyId = mapping.getUnderlayTopology();
             operator.initializeStore(underlayTopologyId, mapping.isAggregateInside());

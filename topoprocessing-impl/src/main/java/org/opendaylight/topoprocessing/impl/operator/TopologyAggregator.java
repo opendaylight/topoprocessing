@@ -67,8 +67,8 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
             if ((! ts.getId().equals(topologyId)) || ts.isAggregateInside()) {
                 for (Entry<YangInstanceIdentifier, PhysicalNode> topoStoreEntry : ts.getPhysicalNodes().entrySet()) {
                     PhysicalNode topoStoreNode = topoStoreEntry.getValue();
-                    if (! newNode.equals(topoStoreNode) &&
-                            topoStoreNode.getLeafNode().getValue().equals(newNode.getLeafNode().getValue())) {
+                    if (! newNode.equals(topoStoreNode)
+                            && topoStoreNode.getLeafNode().getValue().equals(newNode.getLeafNode().getValue())) {
                         // no previous aggregation on this node
                         if (topoStoreNode.getLogicalNode() == null) {
                             LOG.debug("Creating new Logical Node");
@@ -81,15 +81,15 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
                             newNode.setLogicalNode(logicalNode);
                             topologyManager.addLogicalNode(logicalNode);
                             return;
-                            } else {
-                                LOG.debug("Adding physical node to existing Logical Node");
-                                // add new physical node into existing logical node
-                                LogicalNode logicalNodeIdentifier = topoStoreNode.getLogicalNode();
-                                newNode.setLogicalNode(logicalNodeIdentifier);
-                                logicalNodeIdentifier.addPhysicalNode(newNode);
-                                topologyManager.updateLogicalNode(logicalNodeIdentifier);
-                                return;
-                            }
+                        } else {
+                            LOG.debug("Adding physical node to existing Logical Node");
+                            // add new physical node into existing logical node
+                            LogicalNode logicalNodeIdentifier = topoStoreNode.getLogicalNode();
+                            newNode.setLogicalNode(logicalNodeIdentifier);
+                            logicalNodeIdentifier.addPhysicalNode(newNode);
+                            topologyManager.updateLogicalNode(logicalNodeIdentifier);
+                            return;
+                        }
                     }
                 }
             }

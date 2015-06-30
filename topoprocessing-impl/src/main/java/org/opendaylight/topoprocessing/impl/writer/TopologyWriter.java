@@ -103,7 +103,7 @@ public class TopologyWriter implements TransactionChainListener {
         CheckedFuture<Void,TransactionCommitFailedException> commitFuture = transaction.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {
+            public void onSuccess(Void empty) {
                 LOGGER.debug("Data updated successfully");
             }
 
@@ -129,7 +129,7 @@ public class TopologyWriter implements TransactionChainListener {
         CheckedFuture<Void,TransactionCommitFailedException> commitFuture = transaction.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {
+            public void onSuccess(Void empty) {
                 LOGGER.debug("Data written successfully");
             }
 
@@ -153,7 +153,7 @@ public class TopologyWriter implements TransactionChainListener {
         CheckedFuture<Void,TransactionCommitFailedException> commitFuture = transaction.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {
+            public void onSuccess(Void empty) {
                 LOGGER.debug("Data successfully removed");
             }
 
@@ -263,7 +263,7 @@ public class TopologyWriter implements TransactionChainListener {
 
         Futures.addCallback(submit, new FutureCallback<Void>() {
             @Override
-            public void onSuccess(Void aVoid) {
+            public void onSuccess(Void empty) {
                 LOGGER.debug("Transaction successfully written.");
             }
             @Override

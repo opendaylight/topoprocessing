@@ -40,8 +40,9 @@ import com.google.common.base.Optional;
 public class UnderlayTopologyListener implements DOMDataChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UnderlayTopologyListener.class);
-    private static final YangInstanceIdentifier NODE_IDENTIFIER = YangInstanceIdentifier.builder().node(Node.QNAME).build();
-    private static final YangInstanceIdentifier NODE_ID_IDENTIFIER = YangInstanceIdentifier.of(TopologyQNames.NETWORK_NODE_ID_QNAME);
+    private static final YangInstanceIdentifier NODE_IDENTIFIER = YangInstanceIdentifier.of(Node.QNAME);
+    private static final YangInstanceIdentifier NODE_ID_IDENTIFIER =
+            YangInstanceIdentifier.of(TopologyQNames.NETWORK_NODE_ID_QNAME);
 
     public enum RequestAction {
         CREATE, UPDATE, DELETE
@@ -140,9 +141,9 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         while (iterator.hasNext()) {
             YangInstanceIdentifier identifierOperational = iterator.next();
             PathArgument lastPathArgument = identifierOperational.getLastPathArgument();
-            if (! (lastPathArgument instanceof AugmentationIdentifier) &&
-                    lastPathArgument.getNodeType().equals(Node.QNAME) && 
-                    ! lastPathArgument.equals(NODE_IDENTIFIER.getLastPathArgument())) {
+            if (! (lastPathArgument instanceof AugmentationIdentifier)
+                    && lastPathArgument.getNodeType().equals(Node.QNAME)
+                    && ! lastPathArgument.equals(NODE_IDENTIFIER.getLastPathArgument())) {
                 identifiers.add(identifierOperational);
             }
         }

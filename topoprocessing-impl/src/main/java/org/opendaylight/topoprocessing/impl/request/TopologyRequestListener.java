@@ -82,10 +82,10 @@ public class TopologyRequestListener implements DOMDataChangeListener {
 
     private void processCreatedData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map) {
         LOGGER.debug("Processing created data changes");
-        for(Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : map.entrySet()) {
+        for (Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : map.entrySet()) {
             YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
             NormalizedNode<?, ?> normalizedNode = entry.getValue();
-            if(normalizedNode instanceof MapEntryNode && normalizedNode.getNodeType().equals(Topology.QNAME)) {
+            if (normalizedNode instanceof MapEntryNode && normalizedNode.getNodeType().equals(Topology.QNAME)) {
                 Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode =
                         nodeSerializer.fromNormalizedNode(identifier, normalizedNode);
                 Topology topology = (Topology) fromNormalizedNode.getValue();

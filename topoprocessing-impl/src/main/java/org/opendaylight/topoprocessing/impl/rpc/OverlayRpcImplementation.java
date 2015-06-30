@@ -73,7 +73,7 @@ public class OverlayRpcImplementation implements DOMRpcImplementation {
         RpcDefinition rpcDefinition = findRpcDefinition(schemaContext, rpc.getType());
         if (null == rpcDefinition) {
             return Futures.immediateFailedCheckedFuture(
-                    (DOMRpcException) new DOMRpcException("Rpc definition not found") {});
+                    (DOMRpcException) new DOMRpcException("Rpc definition not found") { });
         }
         RpcRoutingStrategy routingStrategy = RpcRoutingStrategy.from(rpcDefinition);
         DataContainerNodeAttrBuilder<NodeIdentifier, ContainerNode> containerBuilder =
