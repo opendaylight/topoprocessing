@@ -127,23 +127,25 @@ public class TopologyRequestHandler {
                     EqualityCase equalityCase = (EqualityCase) correlation.getCorrelationType();
                     List<Mapping> mappings = equalityCase.getEquality().getMapping();
                     operator = new EqualityAggregator();
+                    operator.setTopologyManager(topologyManager);
                     iterateMappings(operator, mappings, correlation.getCorrelationItem());
                 }
                 else if (correlation.getName().equals(Unification.class)) {
                     UnificationCase unificationCase = (UnificationCase) correlation.getCorrelationType();
                     List<Mapping> mappings = unificationCase.getUnification().getMapping();
                     operator = new UnificationAggregator();
+                    operator.setTopologyManager(topologyManager);
                     iterateMappings(operator, mappings, correlation.getCorrelationItem());
                 }
                 else if (correlation.getName().equals(NodeIpFiltration.class)) {
                     NodeIpFiltrationCase nodeIpFiltrationCase = (NodeIpFiltrationCase) correlation.getCorrelationType();
                     List<Filter> filters = nodeIpFiltrationCase.getNodeIpFiltration().getFilter();
                     operator = new TopologyFiltrator();
+                    operator.setTopologyManager(topologyManager);
                     iterateFilters((TopologyFiltrator) operator, filters, correlation.getCorrelationItem());
                 } else {
                     throw new IllegalStateException("Unknown correlation: " + correlation.getName());
                 }
-                operator.setTopologyManager(topologyManager);
             }
             LOG.debug("Correlation configuration successfully read");
         } catch (Exception e) {
@@ -160,8 +162,14 @@ public class TopologyRequestHandler {
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
                     correlationItem, schemaHolder);
             operator.addFilter(new NodeIpFiltrator(filter.getValue(), pathIdentifier));
-            UnderlayTopologyListener listener = new UnderlayTopologyListener(operator,
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, operator,
                     underlayTopologyId, null);
+            YangInstanceIdentifier path = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+                    .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, underlayTopologyId)
+                    .node(Node.QNAME).build();
+            LogicalDatastoreType logicalDatastoreType = (DatastoreType.CONFIGURATION == datastoreType) ?
+                    LogicalDatastoreType.CONFIGURATION : LogicalDatastoreType.OPERATIONAL;
+            listener.readExistingData(path, logicalDatastoreType);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
@@ -184,8 +192,14 @@ public class TopologyRequestHandler {
             operator.initializeStore(underlayTopologyId, mapping.isAggregateInside());
             YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
                     correlationItem, schemaHolder);
-            UnderlayTopologyListener listener = new UnderlayTopologyListener(operator,
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, operator,
                     underlayTopologyId, pathIdentifier);
+            YangInstanceIdentifier path = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+                    .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, underlayTopologyId)
+                    .node(Node.QNAME).build();
+            LogicalDatastoreType logicalDatastoreType = (DatastoreType.CONFIGURATION == datastoreType) ?
+                    LogicalDatastoreType.CONFIGURATION : LogicalDatastoreType.OPERATIONAL;
+            listener.readExistingData(path, logicalDatastoreType);
             YangInstanceIdentifier.InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
