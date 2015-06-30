@@ -43,6 +43,11 @@ public final class TopologyQNames {
         throw new UnsupportedOperationException("TopologyQNames can't be instantiated.");
     }
 
+    /**
+     * Returns corresponding item QName
+     * @param correlationItem item type
+     * @return corresponding item QName
+     */
     public static QName buildItemQName(CorrelationItemEnum correlationItem) {
         QName itemQName;
         switch (correlationItem) {
@@ -61,6 +66,11 @@ public final class TopologyQNames {
         return itemQName;
     }
 
+    /**
+     * Returns corresponding item id QName
+     * @param correlationItem item type
+     * @return corresponding item id QName
+     */
     public static QName buildItemIdQName(CorrelationItemEnum correlationItem) {
         QName itemIdQName;
         switch (correlationItem) {

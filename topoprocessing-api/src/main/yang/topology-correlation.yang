@@ -76,6 +76,11 @@ module topology-correlation {
         base aggregation-base;
     }
 
+    identity link-unfication {
+        description "Only links with specific leaf value will be present in overlay topology.";
+        base correlation-base;
+    }
+
     identity filter-base {
         description "Base identity for filter types";
     }

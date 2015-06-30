@@ -6,7 +6,6 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.topoprocessing.impl.operator;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,7 +25,7 @@ import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,23 +39,24 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyManager.class);
 
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
-    private List<OverlayItemWrapper> wrappers = new ArrayList<>();
+    private List<OverlayItemWrapper> nodeWrappers = new ArrayList<>();
+    private List<OverlayItemWrapper> linkWrappers = new ArrayList<>();
     private TopologyWriter writer;
     private RpcServices rpcServices;
     private Collection<DOMRpcIdentifier> availableRpcs;
-    private YangInstanceIdentifier itemIdentifier;
+    private YangInstanceIdentifier topologyIdentifier;
     private GlobalSchemaContextHolder schemaHolder;
 
     /**
-     * @param rpcServices           used for rpc republishing
-     * @param schemaHolder          access to SchemaContext
-     * @param topologyIdentifier    topology identifier
+     * @param rpcServices used for rpc republishing
+     * @param schemaHolder access to SchemaContext
+     * @param topologyIdentifier topology identifier
      */
     public TopologyManager(RpcServices rpcServices, GlobalSchemaContextHolder schemaHolder,
             YangInstanceIdentifier topologyIdentifier) {
         this.rpcServices = rpcServices;
         this.schemaHolder = schemaHolder;
-        this.itemIdentifier = topologyIdentifier.node(Node.QNAME);
+        this.topologyIdentifier = topologyIdentifier;
         availableRpcs = new HashSet<>();
         this.rpcServices.getRpcService().registerRpcListener(this);
     }
@@ -65,26 +65,26 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
      * For testing purpose only
      * @return All overlayItem wrappers
      */
-    public List<OverlayItemWrapper> getWrappers(){
-        return wrappers;
+    public List<OverlayItemWrapper> getNodeWrappers(){
+        return nodeWrappers;
     }
 
     /**
-     * Adds new Logical node into
-     * - existing Logical node wrapper
-     * - new Logical node wrapper
+     * Adds new overlay item into
+     * - existing overlay item wrapper
+     * - new overlay item wrapper
      * @param newOverlayItem - OverlayItem which shall be put into wrapper
      */
     public void addOverlayItem(OverlayItem newOverlayItem) {
         if (newOverlayItem != null && !newOverlayItem.getUnderlayItems().isEmpty()) {
             for (UnderlayItem newUnderlayItem : newOverlayItem.getUnderlayItems()) {
-                for (OverlayItemWrapper wrapper : wrappers) {
+                for (OverlayItemWrapper wrapper : getWrappersList(newOverlayItem.getCorrelationItem())) {
                     for (OverlayItem overlayItemFromWrapper : wrapper.getOverlayItems()) {
                         for (UnderlayItem underlayItemFromWrapper : overlayItemFromWrapper.getUnderlayItems()) {
                             if (underlayItemFromWrapper.getItemId().equals(newUnderlayItem.getItemId())) {
                                 // update existing wrapper
                                 wrapper.addOverlayItem(newOverlayItem);
-                                writer.writeNode(wrapper);
+                                writer.writeItem(wrapper, newOverlayItem.getCorrelationItem());
                                 registerOverlayRpcs(wrapper, newOverlayItem);
                                 return;
                             }
@@ -92,11 +92,11 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
                     }
                 }
             }
-            // create new Logical node wrapper with unique id and add the logical node into it
-            String wrapperId = idGenerator.getNextIdentifier(CorrelationItemEnum.Node);
+            // create new overlay item wrapper with unique id and add the overlay item into it
+            String wrapperId = idGenerator.getNextIdentifier(newOverlayItem.getCorrelationItem());
             OverlayItemWrapper newWrapper = new OverlayItemWrapper(wrapperId, newOverlayItem);
-            wrappers.add(newWrapper);
-            writer.writeNode(newWrapper);
+            getWrappersList(newOverlayItem.getCorrelationItem()).add(newWrapper);
+            writer.writeItem(newWrapper, newOverlayItem.getCorrelationItem());
             registerOverlayRpcs(newWrapper, newOverlayItem);
         }
     }
@@ -105,11 +105,11 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
      * @param overlayItemIdentifier OverlayItem with new changes to update
      */
     public void updateOverlayItem(OverlayItem overlayItemIdentifier) {
-        for (OverlayItemWrapper wrapper : wrappers) {
-            for (OverlayItem logicalNode : wrapper.getOverlayItems()) {
-                if (logicalNode.equals(overlayItemIdentifier)) {
-                    writer.writeNode(wrapper);
-                    registerOverlayRpcs(wrapper, logicalNode);
+        for (OverlayItemWrapper wrapper : getWrappersList(overlayItemIdentifier.getCorrelationItem())) {
+            for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
+                if (overlayItem.equals(overlayItemIdentifier)) {
+                    writer.writeItem(wrapper, overlayItemIdentifier.getCorrelationItem());
+                    registerOverlayRpcs(wrapper, overlayItem);
                 }
             }
         }
@@ -120,7 +120,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
      */
     public void removeOverlayItem(OverlayItem overlayItemIdentifier) {
         OverlayItemWrapper foundWrapper = null;
-        for (OverlayItemWrapper wrapper : wrappers) {
+        for (OverlayItemWrapper wrapper : getWrappersList(overlayItemIdentifier.getCorrelationItem())) {
             if (wrapper.getOverlayItems().contains(overlayItemIdentifier)) {
                 wrapper.getOverlayItems().remove(overlayItemIdentifier);
                 foundWrapper = wrapper;
@@ -129,11 +129,11 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
         }
         if (foundWrapper != null) {
             if (foundWrapper.getOverlayItems().size() == 0) {
-                // remove logical node wrapper as well
-                writer.deleteNode(foundWrapper);
-                wrappers.remove(foundWrapper);
+                // remove overlay item wrapper as well
+                writer.deleteItem(foundWrapper, overlayItemIdentifier.getCorrelationItem());
+                getWrappersList(overlayItemIdentifier.getCorrelationItem()).remove(foundWrapper);
             } else {
-                writer.writeNode(foundWrapper);
+                writer.writeItem(foundWrapper, overlayItemIdentifier.getCorrelationItem());
             }
         }
     }
@@ -163,13 +163,17 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
      */
     private void registerOverlayRpcs(OverlayItemWrapper wrapper, OverlayItem overlayItem) {
         LOGGER.trace("Registering overlay RPCs");
-        YangInstanceIdentifier contextIdentifier = YangInstanceIdentifier.builder(itemIdentifier)
-                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, wrapper.getId()).build();
+        QName itemQName = TopologyQNames.buildItemQName(overlayItem.getCorrelationItem());
+        QName itemIdQName = TopologyQNames.buildItemIdQName(overlayItem.getCorrelationItem());
+        YangInstanceIdentifier contextIdentifier = YangInstanceIdentifier.builder(topologyIdentifier)
+                .node(itemQName)
+                .nodeWithKey(itemQName, itemIdQName, wrapper.getId()).build();
         YangInstanceIdentifier nodeEntryIdentifier;
         for (UnderlayItem item : overlayItem.getUnderlayItems()) {
             List<DOMRpcIdentifier> underlayRpcs = new ArrayList<>();
-            nodeEntryIdentifier = YangInstanceIdentifier.builder(itemIdentifier)
-                    .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, item.getItemId()).build();
+            nodeEntryIdentifier = YangInstanceIdentifier.builder(topologyIdentifier)
+                    .node(itemQName)
+                    .nodeWithKey(itemQName, itemIdQName, item.getItemId()).build();
             for (Iterator<DOMRpcIdentifier> iterator = availableRpcs.iterator(); iterator.hasNext();) {
                 DOMRpcIdentifier rpcIdentifier = iterator.next();
                 if (rpcIdentifier.getContextReference().equals(nodeEntryIdentifier)) {
@@ -188,5 +192,21 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
                     .registerRpcImplementation(overlayImplementation, overlayRpcIdentifiers);
             }
         }
+    }
+
+    private List<OverlayItemWrapper> getWrappersList(CorrelationItemEnum correlationItem) {
+        List<OverlayItemWrapper> resultList = null;
+        switch (correlationItem) {
+        case Node:
+        case TerminationPoint:
+            resultList = nodeWrappers; 
+            break;
+        case Link:
+            resultList = linkWrappers;
+            break;
+        default:
+            throw new IllegalArgumentException("Wrong Correlation item set: " + correlationItem);
+        }
+        return resultList;
     }
 }

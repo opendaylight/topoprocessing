@@ -49,7 +49,7 @@ public class OverlayRpcImplementation implements DOMRpcImplementation {
     private static final Logger LOGGER = LoggerFactory.getLogger(OverlayRpcImplementation.class);
     private DOMRpcService rpcService;
     private SchemaContext schemaContext;
-    private YangInstanceIdentifier underlayNodeIdentifier;
+    private YangInstanceIdentifier underlayItemIdentifier;
 
     /**
      * Default constructor
@@ -61,7 +61,7 @@ public class OverlayRpcImplementation implements DOMRpcImplementation {
             YangInstanceIdentifier underlayNodeIdentifier) {
         this.rpcService = rpcService;
         this.schemaContext = schemaContext;
-        this.underlayNodeIdentifier = underlayNodeIdentifier;
+        this.underlayItemIdentifier = underlayNodeIdentifier;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class OverlayRpcImplementation implements DOMRpcImplementation {
         for (DataContainerChild<? extends PathArgument, ?> child : inputChilds) {
             if (! (child instanceof AugmentationNode)) {
                 if (child.getNodeType().equals(routingStrategy.getLeaf())) {
-                    containerBuilder.addChild(ImmutableNodes.leafNode(child.getNodeType(), underlayNodeIdentifier));
+                    containerBuilder.addChild(ImmutableNodes.leafNode(child.getNodeType(), underlayItemIdentifier));
                 } else {
                     containerBuilder.addChild(child);
                 }
@@ -92,7 +92,7 @@ public class OverlayRpcImplementation implements DOMRpcImplementation {
         }
         ContainerNode underlayRpcInput = containerBuilder.build();
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Reinvoking RPC at: {} with input: {}", underlayNodeIdentifier, underlayRpcInput);
+            LOGGER.debug("Reinvoking RPC at: {} with input: {}", underlayItemIdentifier, underlayRpcInput);
         }
         return rpcService.invokeRpc(rpc.getType(), underlayRpcInput);
     }
