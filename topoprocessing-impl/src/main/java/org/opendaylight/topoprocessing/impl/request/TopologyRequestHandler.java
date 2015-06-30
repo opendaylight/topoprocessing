@@ -11,7 +11,6 @@ package org.opendaylight.topoprocessing.impl.request;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
@@ -55,7 +54,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgum
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
 
 /**
@@ -66,6 +64,7 @@ import com.google.common.base.Preconditions;
 public class TopologyRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
+    private static final int CLOSE_RESOURCES_SLEEP_TIME = 500;
     private DOMDataBroker domDataBroker;
     private Topology topology;
     private PathTranslator translator = new PathTranslator();
@@ -280,11 +279,16 @@ public class TopologyRequestHandler {
         }
         listeners.clear();
         writer.deleteOverlayTopology();
+        try {
+            Thread.sleep(CLOSE_RESOURCES_SLEEP_TIME);
+        } catch (InterruptedException e) {
+            LOG.error("An error occurred while Thread.sleep was called: {}", e);
+        }
         if (transactionChain != null) {
             try {
                 transactionChain.close();
             } catch (Exception e) {
-                LOG.error("An error occurred while closing transaction chain: {}",transactionChain, e);
+                LOG.error("An error occurred while closing transaction chain: {}", transactionChain, e);
             }
         }
     }
