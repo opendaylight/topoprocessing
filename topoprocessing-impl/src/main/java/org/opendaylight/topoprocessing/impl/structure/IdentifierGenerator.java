@@ -9,6 +9,7 @@
 package org.opendaylight.topoprocessing.impl.structure;
 
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 
 /**
@@ -19,16 +20,30 @@ public class IdentifierGenerator {
     /**
      * Value for internal counter
      */
-    private volatile int id = 0;
-    AtomicIntegerFieldUpdater<IdentifierGenerator> idUpdater =
-            AtomicIntegerFieldUpdater.newUpdater(IdentifierGenerator.class, "id");
+    private volatile int nodeId = 0;
+    private volatile int linkId = 0;
+    private volatile int tpId = 0;
+    AtomicIntegerFieldUpdater<IdentifierGenerator> nodeIdUpdater =
+            AtomicIntegerFieldUpdater.newUpdater(IdentifierGenerator.class, "nodeId");
+    AtomicIntegerFieldUpdater<IdentifierGenerator> linkIdUpdater =
+            AtomicIntegerFieldUpdater.newUpdater(IdentifierGenerator.class, "linkId");
+    AtomicIntegerFieldUpdater<IdentifierGenerator> tpIdUpdater =
+            AtomicIntegerFieldUpdater.newUpdater(IdentifierGenerator.class, "tpId");
 
-    private int getNextId() {
-        return idUpdater.incrementAndGet(this);
+    private int getNextNodeId() {
+        return nodeIdUpdater.incrementAndGet(this);
+    }
+
+    private int getNextLinkId() {
+        return linkIdUpdater.incrementAndGet(this);
+    }
+
+    private int getNextTpId() {
+        return tpIdUpdater.incrementAndGet(this);
     }
 
     /**
-     * Create unique identifier
+     * Create unique identifier for nodes, links and termination points
      * @param correlationItem 
      * @return unique identifier
      */
@@ -36,13 +51,13 @@ public class IdentifierGenerator {
         String identifier = null;
         switch (correlationItem) {
         case Node:
-            identifier = new String("node:" + getNextId());
+            identifier = new String("node:" + getNextNodeId());
             break;
         case Link:
-            identifier = new String("link:" + getNextId());
+            identifier = new String("link:" + getNextLinkId());
             break;
         case TerminationPoint:
-            identifier = new String("tp:" + getNextId());
+            identifier = new String("tp:" + getNextTpId());
             break;
         default:
             throw new IllegalStateException("Unknown Correlation item used: " + correlationItem);

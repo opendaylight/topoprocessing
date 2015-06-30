@@ -38,35 +38,41 @@ public final class InstanceIdentifiers {
     }
 
     public static YangInstanceIdentifier buildItemIdentifier(
-            YangInstanceIdentifier.InstanceIdentifierBuilder builder, CorrelationItemEnum correlationItemEnum) {
+            YangInstanceIdentifier.InstanceIdentifierBuilder builder,
+            CorrelationItemEnum correlationItemEnum) {
         switch (correlationItemEnum) {
-            case Node:
-                builder.node(Node.QNAME);
-                break;
-            case Link:
-                builder.node(Link.QNAME);
-                break;
-            case TerminationPoint:
-                builder.node(Node.QNAME);
-                builder.node(TerminationPoint.QNAME);
-                break;
-            default:
-                throw new IllegalArgumentException("Wrong Correlation item set: " + correlationItemEnum);
+        case Node:
+            builder.node(Node.QNAME);
+            break;
+        case Link:
+            builder.node(Link.QNAME);
+            break;
+        case TerminationPoint:
+            builder.node(Node.QNAME);
+            builder.node(TerminationPoint.QNAME);
+            break;
+        default:
+            throw new IllegalArgumentException("Wrong Correlation item set: "
+                    + correlationItemEnum);
         }
         return builder.build();
     }
 
-    public static YangInstanceIdentifier buildItemIdIdentifier(CorrelationItemEnum correlationItem) {
+    public static YangInstanceIdentifier buildItemIdIdentifier(
+            CorrelationItemEnum correlationItem) {
         YangInstanceIdentifier itemIdIdentifier;
         switch (correlationItem) {
         case Node:
-            itemIdIdentifier = YangInstanceIdentifier.of(TopologyQNames.NETWORK_NODE_ID_QNAME);
+            itemIdIdentifier = YangInstanceIdentifier
+                    .of(TopologyQNames.NETWORK_NODE_ID_QNAME);
             break;
         case Link:
-            itemIdIdentifier = YangInstanceIdentifier.of(TopologyQNames.NETWORK_LINK_ID_QNAME);
+            itemIdIdentifier = YangInstanceIdentifier
+                    .of(TopologyQNames.NETWORK_LINK_ID_QNAME);
             break;
         case TerminationPoint:
-            itemIdIdentifier = YangInstanceIdentifier.of(TopologyQNames.NETWORK_TP_ID_QNAME);
+            itemIdIdentifier = YangInstanceIdentifier
+                    .of(TopologyQNames.NETWORK_TP_ID_QNAME);
             break;
         default:
             throw new IllegalArgumentException("Wrong Correlation item set: "
@@ -74,4 +80,37 @@ public final class InstanceIdentifiers {
         }
         return itemIdIdentifier;
     }
+
+    public static YangInstanceIdentifier buildItemWithItemIdIdentifier(YangInstanceIdentifier topologyIdentifier,
+            String nodeId, CorrelationItemEnum correlationItem) {
+        InstanceIdentifierBuilder builder = null;
+        switch (correlationItem) {
+        case Node:
+            builder = YangInstanceIdentifier
+                    .builder(topologyIdentifier)
+                    .node(Node.QNAME)
+                    .nodeWithKey(Node.QNAME,
+                            TopologyQNames.NETWORK_NODE_ID_QNAME, nodeId);
+            break;
+        case Link:
+            builder = YangInstanceIdentifier
+                    .builder(topologyIdentifier)
+                    .node(Link.QNAME)
+                    .nodeWithKey(Link.QNAME,
+                            TopologyQNames.NETWORK_LINK_ID_QNAME, nodeId);
+            break;
+        case TerminationPoint:
+            builder = YangInstanceIdentifier
+                    .builder(topologyIdentifier)
+                    .node(TerminationPoint.QNAME)
+                    .nodeWithKey(TerminationPoint.QNAME,
+                            TopologyQNames.NETWORK_TP_ID_QNAME, nodeId);
+            break;
+        default:
+            throw new IllegalArgumentException("Wrong Correlation item set: "
+                    + correlationItem);
+        }
+        return builder.build();
+    }
+
 }
