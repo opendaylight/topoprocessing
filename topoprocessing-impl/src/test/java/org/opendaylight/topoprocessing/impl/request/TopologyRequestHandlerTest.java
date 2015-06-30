@@ -10,10 +10,16 @@ package org.opendaylight.topoprocessing.impl.request;
 
 import static org.mockito.Matchers.any;
 
+import com.google.common.base.Optional;
+import org.mockito.Matchers;
+import org.opendaylight.controller.md.sal.common.api.data.*;
+import org.opendaylight.controller.md.sal.dom.api.*;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,16 +28,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
-import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
-import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
-import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
@@ -66,6 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import com.google.common.util.concurrent.CheckedFuture;
 
@@ -105,6 +102,12 @@ public class TopologyRequestHandlerTest {
             .thenReturn(mockDomTransactionChain);
         Mockito.when(mockDomTransactionChain.newWriteOnlyTransaction()).thenReturn(mockDomDataWriteTransaction);
         Mockito.when(mockDomDataWriteTransaction.submit()).thenReturn(domCheckedFuture);
+        // initialize read-only transaction for pre-loading datastore
+        DOMDataReadOnlyTransaction mockTransaction = Mockito.mock(DOMDataReadOnlyTransaction.class);
+        Mockito.when(mockDomDataBroker.newReadOnlyTransaction()).thenReturn(mockTransaction);
+        CheckedFuture mockReadFuture = Mockito.mock(CheckedFuture.class);
+        Mockito.when(mockTransaction.read((LogicalDatastoreType) Matchers.any(),
+                (YangInstanceIdentifier) Matchers.any())).thenReturn(mockReadFuture);
     }
 
     @Test (expected=NullPointerException.class)
