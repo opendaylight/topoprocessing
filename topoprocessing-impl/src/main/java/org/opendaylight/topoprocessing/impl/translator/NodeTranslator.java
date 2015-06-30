@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.topoprocessing.impl.translator;
 
 import java.util.ArrayList;
@@ -35,32 +34,33 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Optional;
 
 /**
- * @author matus.marko
+ * @author martin.uhlir
+ *
  */
-public class LogicalNodeToNodeTranslator {
+public class NodeTranslator {
 
+    private static final Logger LOG = LoggerFactory.getLogger(NodeTranslator.class);
     private static final YangInstanceIdentifier TP_IDENTIFIER = YangInstanceIdentifier.of(TerminationPoint.QNAME);
-    private static final Logger LOG = LoggerFactory.getLogger(LogicalNodeToNodeTranslator.class);
 
     /**
-     * Convert LogicalNode to Node
-     * @param wrapper LogicalNodeWrapper object
-     * @return Node
+     * Converts OverlayItemWrapper object containing logical nodes to datastore node object
+     * @param wrapper OverlayItemWrapper object containing OverlayItems containing Node items
+     * @return Node in datastore format
      */
     public NormalizedNode<?, ?> translate(OverlayItemWrapper wrapper) {
-        LOG.debug("Transforming OverlayItemWrapper to Node");
+        LOG.debug("Transforming OverlayItemWrapper containing Nodes to datastore format");
         List<UnderlayItem> writtenNodes = new ArrayList<>();
         CollectionNodeBuilder<MapEntryNode, MapNode> supportingNodes = ImmutableNodes.mapNodeBuilder(
                 SupportingNode.QNAME);
         CollectionNodeBuilder<MapEntryNode, MapNode> terminationPoints = ImmutableNodes.mapNodeBuilder(
                 TerminationPoint.QNAME);
-        // iterate through overlay items
+        // iterate through overlay items containing nodes
         for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
-            // iterate through physical nodes
+            // iterate through overlay item
             for (UnderlayItem underlayItem : overlayItem.getUnderlayItems()) {
                 if (! writtenNodes.contains(underlayItem)) {
                     writtenNodes.add(underlayItem);
-                    NormalizedNode<?, ?> physicalWholeNode = underlayItem.getItem();
+                    NormalizedNode<?, ?> itemNode = underlayItem.getItem();
                     // prepare supporting nodes
                     Map<QName, Object> keyValues = new HashMap<>();
                     keyValues.put(TopologyQNames.TOPOLOGY_REF, underlayItem.getTopologyId());
@@ -70,7 +70,7 @@ public class LogicalNodeToNodeTranslator {
                                     SupportingNode.QNAME, keyValues)).build());
                     // prepare termination points
                     Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
-                            physicalWholeNode, TP_IDENTIFIER);
+                            itemNode, TP_IDENTIFIER);
                     if (terminationPointMapNode.isPresent()) {
                         Collection<MapEntryNode> terminationPointMapEntries =
                                 ((MapNode) terminationPointMapNode.get()).getValue();

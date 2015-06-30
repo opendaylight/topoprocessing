@@ -8,7 +8,10 @@
 
 package org.opendaylight.topoprocessing.impl.writer;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
@@ -17,7 +20,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
@@ -25,8 +27,9 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListen
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
+import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
-import org.opendaylight.topoprocessing.impl.translator.LogicalNodeToNodeTranslator;
+import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -42,7 +45,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -57,8 +59,7 @@ public class TopologyWriter implements TransactionChainListener {
     private static final int MAXIMUM_OPERATIONS = 50;
     private static final int EXECUTOR_POOL_THREADS = 1;
     private String topologyId;
-    private LogicalNodeToNodeTranslator translator;
-    private YangInstanceIdentifier nodeIdentifier;
+    private OverlayItemTranslator translator;
     private DOMTransactionChain transactionChain;
     private YangInstanceIdentifier topologyIdentifier;
     private Queue<TransactionOperation> preparedOperations;
@@ -81,11 +82,10 @@ public class TopologyWriter implements TransactionChainListener {
      */
     public TopologyWriter(String topologyId) {
         this.topologyId = topologyId;
-        translator = new LogicalNodeToNodeTranslator();
+        translator = new OverlayItemTranslator();
         topologyIdentifier =
                 YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
                 .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, topologyId).build();
-        nodeIdentifier = topologyIdentifier.node(Node.QNAME);
         preparedOperations = new ConcurrentLinkedQueue<>();
         pool = new ScheduledThreadPoolExecutor(EXECUTOR_POOL_THREADS);
     }
@@ -189,26 +189,33 @@ public class TopologyWriter implements TransactionChainListener {
 
     /**
      * @param wrapper LogicalNodeWrapper to be written into datastore
+     * @param itemType item type
      */
-    public void writeNode(final OverlayItemWrapper wrapper) {
+    public void writeItem(final OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
         NormalizedNode<?, ?> node = translator.translate(wrapper);
-        preparedOperations.add(new PutOperation(createItemIdentifier(wrapper.getId()), node));
+        preparedOperations.add(new PutOperation(createItemIdentifier(wrapper, itemType), node));
         scheduleWrite();
     }
 
     /**
      * @param wrapper LogicalNodeWrapper to be removed from datastore
+     * @param itemType item type
      */
-    public void deleteNode(final OverlayItemWrapper wrapper) {
-        preparedOperations.add(new DeleteOperation(createItemIdentifier(wrapper.getId())));
+    public void deleteItem(final OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
+        preparedOperations.add(new DeleteOperation(createItemIdentifier(wrapper, itemType)));
         scheduleWrite();
     }
 
-    private YangInstanceIdentifier createItemIdentifier(String nodeId) {
-        return YangInstanceIdentifier.builder(nodeIdentifier)
-                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeId).build();
+    private YangInstanceIdentifier createItemIdentifier(OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
+        YangInstanceIdentifier itemWithItemIdIdentifier = null;
+        if (wrapper != null) {
+            itemWithItemIdIdentifier = InstanceIdentifiers.buildItemIdIdentifier(topologyIdentifier,
+                    wrapper.getId(), itemType);
+        }
+        return itemWithItemIdIdentifier;
     }
 
+    
     @Override
     public void onTransactionChainFailed(TransactionChain<?, ?> chain, AsyncTransaction<?, ?> transaction,
             Throwable cause) {

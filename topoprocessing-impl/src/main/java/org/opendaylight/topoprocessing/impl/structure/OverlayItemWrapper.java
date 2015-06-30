@@ -22,8 +22,8 @@ public class OverlayItemWrapper {
 
     /**
      * Constructor
-     * @param itemId
-     * @param overlayItem
+     * @param itemId aggregated item id
+     * @param overlayItem initial overlay item to be wrapped
      */
     public OverlayItemWrapper(String itemId, OverlayItem overlayItem) {
         this.id = itemId;
@@ -31,35 +31,35 @@ public class OverlayItemWrapper {
     }
 
     /**
-     * @param overlayItem
+     * @param overlayItem adds overlay item into this wrapper
      */
     public void addOverlayItem(OverlayItem overlayItem) {
         overlayItems.add(overlayItem);
     }
 
     /**
-     * @return
+     * @return all overlay items wrapped by this wrapper
      */
     public List<OverlayItem> getOverlayItems() {
         return overlayItems;
     }
 
     /**
-     * @param overlayItems
+     * @param overlayItems sets overlay items wrapped by this wrapper
      */
     public void setLogicalNodes(List<OverlayItem> overlayItems) {
         this.overlayItems = overlayItems;
     }
 
     /**
-     * @return the nodeId
+     * @return aggregated item id
      */
     public String getId() {
         return id;
     }
 
     /**
-     * @param wrapperId the itemId to set
+     * @param wrapperId aggregated item item id to set
      */
     public void setId(String wrapperId) {
         this.id = wrapperId;

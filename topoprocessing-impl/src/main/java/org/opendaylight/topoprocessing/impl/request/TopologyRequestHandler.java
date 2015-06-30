@@ -234,8 +234,7 @@ public class TopologyRequestHandler {
                 listener = new UnderlayTopologyListener(domDataBroker, aggregator, underlayTopologyId,
                         pathIdentifier, correlationItem);
             }
-            InstanceIdentifierBuilder topologyIdentifier =
-                    createTopologyIdentifier(underlayTopologyId);
+            InstanceIdentifierBuilder topologyIdentifier = createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier itemIdentifier =
                     InstanceIdentifiers.buildItemIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
