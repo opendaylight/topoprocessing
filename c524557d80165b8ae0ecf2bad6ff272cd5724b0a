@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_483296a8",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-01T15:33:29Z",
+      "side": 1,
+      "message": "these values can be input parameters for readExistingData()",
+      "range": {
+        "startLine": 184,
+        "startChar": 8,
+        "endLine": 188,
+        "endChar": 86
+      },
+      "revId": "c524557d80165b8ae0ecf2bad6ff272cd5724b0a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_e8260268",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-01T15:33:29Z",
+      "side": 1,
+      "message": "we can possibly take advantage of Maps.toMap() method",
+      "range": {
+        "startLine": 208,
+        "startChar": 4,
+        "endLine": 220,
+        "endChar": 5
+      },
+      "revId": "c524557d80165b8ae0ecf2bad6ff272cd5724b0a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
