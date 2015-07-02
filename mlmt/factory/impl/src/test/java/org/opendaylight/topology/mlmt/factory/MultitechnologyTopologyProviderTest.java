@@ -287,7 +287,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         }
 
         synchronized (waitObject) {
-            waitObject.wait(1500);
+            waitObject.wait(5000);
         }
 
         final String path = "native-ted:1";
@@ -362,7 +362,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         }
 
         synchronized (waitObject) {
-            waitObject.wait(1500);
+            waitObject.wait(5000);
         }
 
         ReadOnlyTransaction rx = dataBroker.newReadOnlyTransaction();
@@ -422,7 +422,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         }
 
         synchronized (waitObject) {
-            waitObject.wait(1500);
+            waitObject.wait(5000);
         }
 
         String path = "native-ted:1";
