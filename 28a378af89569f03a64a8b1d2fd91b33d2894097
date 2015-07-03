@@ -1,0 +1,222 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_5ed24dd3",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:40:06Z",
+      "side": 1,
+      "message": "here should be testing class e.g. UserDefinedFilter",
+      "range": {
+        "startLine": 75,
+        "startChar": 17,
+        "endLine": 75,
+        "endChar": 37
+      },
+      "revId": "28a378af89569f03a64a8b1d2fd91b33d2894097",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_7ed5c9b7",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:40:06Z",
+      "side": 1,
+      "message": "UserDefinedFilter.class",
+      "range": {
+        "startLine": 179,
+        "startChar": 35,
+        "endLine": 179,
+        "endChar": 66
+      },
+      "revId": "28a378af89569f03a64a8b1d2fd91b33d2894097",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_9eef8587",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:40:06Z",
+      "side": 1,
+      "message": "this is not true, listener\u0027s map should contain default filtrators",
+      "range": {
+        "startLine": 180,
+        "startChar": 29,
+        "endLine": 180,
+        "endChar": 92
+      },
+      "revId": "28a378af89569f03a64a8b1d2fd91b33d2894097",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_defc1d41",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:40:06Z",
+      "side": 1,
+      "message": "we should rather check if there is one filtrator added",
+      "range": {
+        "startLine": 181,
+        "startChar": 19,
+        "endLine": 181,
+        "endChar": 100
+      },
+      "revId": "28a378af89569f03a64a8b1d2fd91b33d2894097",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_1edcd5e3",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:40:06Z",
+      "side": 1,
+      "message": "UserDefinedFilter.class",
+      "range": {
+        "startLine": 187,
+        "startChar": 37,
+        "endLine": 187,
+        "endChar": 68
+      },
+      "revId": "28a378af89569f03a64a8b1d2fd91b33d2894097",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_fee0f997",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:40:06Z",
+      "side": 1,
+      "message": "this is not true, listener\u0027s map should contain default filtrators",
+      "range": {
+        "startLine": 188,
+        "startChar": 29,
+        "endLine": 188,
+        "endChar": 59
+      },
+      "revId": "28a378af89569f03a64a8b1d2fd91b33d2894097",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_3efe7139",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 189,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:40:06Z",
+      "side": 1,
+      "message": "we should rather check if there is no filtrator added",
+      "range": {
+        "startLine": 189,
+        "startChar": 19,
+        "endLine": 189,
+        "endChar": 100
+      },
+      "revId": "28a378af89569f03a64a8b1d2fd91b33d2894097",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_becb611d",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:40:06Z",
+      "side": 1,
+      "message": "here we should check if default filtrators are untouched",
+      "revId": "28a378af89569f03a64a8b1d2fd91b33d2894097",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_be992121",
+        "filename": "topoprocessing-spi/src/main/java/org/opendaylight/topoprocessing/spi/provider/TopoProcessingProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:40:06Z",
+      "side": 1,
+      "message": "key under which the filtrator will be registered, represented by modeled identity",
+      "revId": "28a378af89569f03a64a8b1d2fd91b33d2894097",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_5ea00d43",
+        "filename": "topoprocessing-spi/src/main/java/org/opendaylight/topoprocessing/spi/provider/TopoProcessingProvider.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:40:06Z",
+      "side": 1,
+      "message": "key of filtrator to be unregistered - represented by modeled identity",
+      "range": {
+        "startLine": 34,
+        "startChar": 27,
+        "endLine": 34,
+        "endChar": 55
+      },
+      "revId": "28a378af89569f03a64a8b1d2fd91b33d2894097",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
