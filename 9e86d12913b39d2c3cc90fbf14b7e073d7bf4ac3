@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_fea55947",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:50:37Z",
+      "side": 1,
+      "message": "please remove this log",
+      "range": {
+        "startLine": 129,
+        "startChar": 20,
+        "endLine": 129,
+        "endChar": 72
+      },
+      "revId": "9e86d12913b39d2c3cc90fbf14b7e073d7bf4ac3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_9e4b0587",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:50:37Z",
+      "side": 1,
+      "message": "can\u0027t we use nodeIdentifier ?",
+      "range": {
+        "startLine": 167,
+        "startChar": 12,
+        "endLine": 169,
+        "endChar": 46
+      },
+      "revId": "9e86d12913b39d2c3cc90fbf14b7e073d7bf4ac3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_be4e0195",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:50:37Z",
+      "side": 1,
+      "message": "why don\u0027t we use datastoreType variable ?",
+      "range": {
+        "startLine": 170,
+        "startChar": 12,
+        "endLine": 171,
+        "endChar": 90
+      },
+      "revId": "9e86d12913b39d2c3cc90fbf14b7e073d7bf4ac3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_7e486987",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:50:37Z",
+      "side": 1,
+      "message": "can\u0027t we use nodeIdentifier ?",
+      "revId": "9e86d12913b39d2c3cc90fbf14b7e073d7bf4ac3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_1e5ff542",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:50:37Z",
+      "side": 1,
+      "message": "why don\u0027t we use datastoreType variable ?",
+      "range": {
+        "startLine": 200,
+        "startChar": 12,
+        "endLine": 201,
+        "endChar": 90
+      },
+      "revId": "9e86d12913b39d2c3cc90fbf14b7e073d7bf4ac3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_9e32250f",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T12:50:37Z",
+      "side": 1,
+      "message": "is this import needed ?",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 31
+      },
+      "revId": "9e86d12913b39d2c3cc90fbf14b7e073d7bf4ac3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
