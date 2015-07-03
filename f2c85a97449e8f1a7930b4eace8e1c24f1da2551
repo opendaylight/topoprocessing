@@ -1,0 +1,165 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_3469b3f9",
+        "filename": "topoprocessing-api/src/main/yang/topology-correlation.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T09:11:15Z",
+      "side": 1,
+      "message": "rename to ipv4-address-augment",
+      "range": {
+        "startLine": 153,
+        "startChar": 32,
+        "endLine": 153,
+        "endChar": 49
+      },
+      "revId": "f2c85a97449e8f1a7930b4eace8e1c24f1da2551",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_d46ddf05",
+        "filename": "topoprocessing-api/src/main/yang/topology-correlation.yang",
+        "patchSetId": 6
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T09:11:15Z",
+      "side": 1,
+      "message": "rename to ipv6-address-augment",
+      "range": {
+        "startLine": 160,
+        "startChar": 32,
+        "endLine": 160,
+        "endChar": 49
+      },
+      "revId": "f2c85a97449e8f1a7930b4eace8e1c24f1da2551",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_7455eb1b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/filtratorFactory/SpecificNumberFiltratorFactory.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T09:11:15Z",
+      "side": 1,
+      "message": "fix imports",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 103
+      },
+      "revId": "f2c85a97449e8f1a7930b4eace8e1c24f1da2551",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_f449fb8b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/filtratorFactory/SpecificNumberFiltratorFactory.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T09:11:15Z",
+      "side": 1,
+      "message": "Number",
+      "range": {
+        "startLine": 31,
+        "startChar": 47,
+        "endLine": 31,
+        "endChar": 53
+      },
+      "revId": "f2c85a97449e8f1a7930b4eace8e1c24f1da2551",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_945e8744",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/filtratorFactory/SpecificStringFiltratorFactory.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T09:11:15Z",
+      "side": 1,
+      "message": "String",
+      "range": {
+        "startLine": 26,
+        "startChar": 47,
+        "endLine": 26,
+        "endChar": 53
+      },
+      "revId": "f2c85a97449e8f1a7930b4eace8e1c24f1da2551",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_d43b9fe9",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T09:11:15Z",
+      "side": 1,
+      "message": "this needs to be called only once, not in every request",
+      "range": {
+        "startLine": 103,
+        "startChar": 20,
+        "endLine": 103,
+        "endChar": 79
+      },
+      "revId": "f2c85a97449e8f1a7930b4eace8e1c24f1da2551",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_34377301",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T09:11:15Z",
+      "side": 1,
+      "message": "why do we store removed FiltratorFactory ?",
+      "range": {
+        "startLine": 161,
+        "startChar": 8,
+        "endLine": 161,
+        "endChar": 33
+      },
+      "revId": "f2c85a97449e8f1a7930b4eace8e1c24f1da2551",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
