@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_0116b4f1",
+        "filename": "topoprocessing-api/src/main/java/org/opendaylight/topoprocessing/api/structure/OverlayItem.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T15:03:34Z",
+      "side": 1,
+      "message": "could we use OverlayItem(List\u003cUnderlayItem\u003e underlayItems, CorrelationItemEnum item) ?",
+      "range": {
+        "startLine": 34,
+        "startChar": 12,
+        "endLine": 34,
+        "endChar": 37
+      },
+      "revId": "e074c1152864c0d957a6f8f313dab33e033f5bf8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_21e890e1",
+        "filename": "topoprocessing-api/src/main/java/org/opendaylight/topoprocessing/api/structure/UnderlayItem.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T15:03:34Z",
+      "side": 1,
+      "message": "update javadoc",
+      "range": {
+        "startLine": 46,
+        "startChar": 14,
+        "endLine": 46,
+        "endChar": 45
+      },
+      "revId": "e074c1152864c0d957a6f8f313dab33e033f5bf8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_81e16400",
+        "filename": "topoprocessing-api/src/main/java/org/opendaylight/topoprocessing/api/structure/UnderlayItem.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T15:03:34Z",
+      "side": 1,
+      "message": "Item",
+      "range": {
+        "startLine": 48,
+        "startChar": 35,
+        "endLine": 48,
+        "endChar": 39
+      },
+      "revId": "e074c1152864c0d957a6f8f313dab33e033f5bf8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_41e34c05",
+        "filename": "topoprocessing-api/src/main/java/org/opendaylight/topoprocessing/api/structure/UnderlayItem.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T15:03:34Z",
+      "side": 1,
+      "message": "Item variant",
+      "range": {
+        "startLine": 53,
+        "startChar": 4,
+        "endLine": 57,
+        "endChar": 5
+      },
+      "revId": "e074c1152864c0d957a6f8f313dab33e033f5bf8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_c1be7cd4",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T15:03:34Z",
+      "side": 1,
+      "message": "leafnode",
+      "range": {
+        "startLine": 119,
+        "startChar": 42,
+        "endLine": 119,
+        "endChar": 69
+      },
+      "revId": "e074c1152864c0d957a6f8f313dab33e033f5bf8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
