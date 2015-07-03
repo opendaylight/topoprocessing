@@ -131,6 +131,9 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
             nodeToRemove.setLogicalNode(null);
             if (physicalNodes.size() < getMinPhysicalNodes()) {
                 LOG.debug("Removing logical node");
+                for (PhysicalNode remainingNode : physicalNodes) {
+                    remainingNode.setLogicalNode(null);
+                }
                 topologyManager.removeLogicalNode(logicalIdentifier);
             } else {
                 LOG.debug("Removing physical node from logical node");
