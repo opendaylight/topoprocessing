@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_617d286e",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListenerTest.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T13:24:25Z",
+      "side": 1,
+      "message": "please add comment - something like testing class",
+      "revId": "f276acc4271ce3a22eed8da43950664edbcb6822",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_c1867c65",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListenerTest.java",
+        "patchSetId": 9
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-03T13:24:25Z",
+      "side": 1,
+      "message": "this is not true - the map should contain only default filtrators again - so there was a filtrator added and again removed",
+      "range": {
+        "startLine": 186,
+        "startChar": 55,
+        "endLine": 186,
+        "endChar": 71
+      },
+      "revId": "f276acc4271ce3a22eed8da43950664edbcb6822",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
