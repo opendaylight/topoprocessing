@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_b492a355",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 185,
+      "author": {
+        "id": 3312
+      },
+      "writtenOn": "2015-07-03T07:26:20Z",
+      "side": 0,
+      "message": "NodeIpFiltrator does not exist anymore",
+      "range": {
+        "startLine": 177,
+        "startChar": 0,
+        "endLine": 185,
+        "endChar": 5
+      },
+      "revId": "42ddaf4f9727668390da05c7950847bbb2aeaee9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_749c0b6a",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 361,
+      "author": {
+        "id": 3312
+      },
+      "writtenOn": "2015-07-03T07:26:20Z",
+      "side": 0,
+      "message": "NodeIpFiltrator does not exist anymore",
+      "range": {
+        "startLine": 314,
+        "startChar": 3,
+        "endLine": 361,
+        "endChar": 5
+      },
+      "revId": "42ddaf4f9727668390da05c7950847bbb2aeaee9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
