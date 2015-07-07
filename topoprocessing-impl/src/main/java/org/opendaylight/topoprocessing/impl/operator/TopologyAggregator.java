@@ -67,8 +67,8 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
             if ((! ts.getId().equals(topologyId)) || ts.isAggregateInside()) {
                 for (Entry<YangInstanceIdentifier, PhysicalNode> topoStoreEntry : ts.getPhysicalNodes().entrySet()) {
                     PhysicalNode topoStoreNode = topoStoreEntry.getValue();
-                    if (! newNode.equals(topoStoreNode)
-                            && topoStoreNode.getLeafNode().getValue().equals(newNode.getLeafNode().getValue())) {
+                    if (! newNode.equals(topoStoreNode) &&
+                            topoStoreNode.getLeafNode().getValue().equals(newNode.getLeafNode().getValue())) {
                         // no previous aggregation on this node
                         if (topoStoreNode.getLogicalNode() == null) {
                             LOG.debug("Creating new Logical Node");

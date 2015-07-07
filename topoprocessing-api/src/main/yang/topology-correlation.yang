@@ -45,21 +45,35 @@ module topology-correlation {
         description "Base identity for correlation types";
     }
 
+    identity aggregation-only {
+        description "Aggregates node based on provided field.";
+        base correlation-base;
+    }
+
+    identity filtration-only {
+        description "Only nodes with specific leaf value will be present in overlay topology.";
+        base correlation-base;
+    }
+
+    identity filtration-aggregation {
+        description "Unification aggregation preceeded with filtration.";
+        base correlation-base;
+    }
+
+    identity aggregation-base {
+        description "Base identity for aggregation types";
+    }
+
     identity equality {
         description "Only aggregated correlation-items (nodes/links/termination points) will
                      be present in overlay topology.";
-        base correlation-base;
+        base aggregation-base;
     }
 
     identity unification {
         description "All correlation-items (nodes/links/termination points) will be present
                      in overlay topology. Those that can be aggregated, will be aggregated";
-        base correlation-base;
-    }
-
-    identity filtration {
-        description "Only nodes with specific leaf value will be present in overlay topology.";
-        base correlation-base;
+        base aggregation-base;
     }
 
     identity filter-base {
@@ -113,35 +127,51 @@ module topology-correlation {
                 leaf correlation-item {
                     type correlation-item-enum;
                 }
-                choice correlation-type {
-                    case equality-case {
-                        container equality {
-                            uses mapping-grouping;
+                container aggregation {
+                    leaf aggregation-type {
+                        type identityref {
+                            base aggregation-base;
                         }
                     }
-                    case unification-case {
-                        container unification {
-                            uses mapping-grouping;
+                    list mapping {
+                        key "underlay-topology target-field";
+                        leaf underlay-topology {
+                            type string;
+                            description "Input topology which will be used for aggregation.";
+                        }
+                        leaf target-field {
+                            type leaf-path;
+                            description "Path to target field";
+                        }
+                        leaf aggregate-inside {
+                            type boolean;
+                            mandatory true;
+                            description "True if aggregation should happen even inside the same topology.";
+                        }
+                        leaf-list apply-filters {
+                            type string;
+                            description "Refers to filter-id of filter to be applied.";
                         }
                     }
-                    case filtration-case {
-                        container filtration {
-                            list filter {
-                                key "underlay-topology target-field";
-                                leaf filter-type {
-                                    type identityref {
-                                        base filter-base;
-                                    }
-                                }
-                                leaf underlay-topology {
-                                    type string;
-                                    description "Input topology which will be filtered.";
-                                }
-                                leaf target-field {
-                                    type leaf-path;
-                                    description "Path to target field";
-                                }
+                }
+                container filtration {
+                    leaf underlay-topology {
+                        type string;
+                        description "Input topology which will be filtered.";
+                    }
+                    list filter {
+                        key "filter-type target-field";
+                        leaf filter-id {
+                            type string;
+                        }
+                        leaf filter-type {
+                            type identityref {
+                                base filter-base;
                             }
+                        }
+                        leaf target-field {
+                            type leaf-path;
+                            description "Path to target field";
                         }
                     }
                 }
@@ -149,21 +179,21 @@ module topology-correlation {
         }
     }
 
-    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:correlation-type/topo-correlation:filtration-case/topo-correlation:filtration/topo-correlation:filter" {
+    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
         ext:augment-identifier "ipv4-address-augment";
         leaf ipv4-address {
             type inet:ip-prefix;
         }
     }
 
-    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:correlation-type/topo-correlation:filtration-case/topo-correlation:filtration/topo-correlation:filter" {
+    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
         ext:augment-identifier "ipv6-address-augment";
         leaf ipv6-address {
             type inet:ip-prefix;
         }
     }
 
-    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:correlation-type/topo-correlation:filtration-case/topo-correlation:filtration/topo-correlation:filter" {
+    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
         ext:augment-identifier "range-number-augment";
         leaf min-number-value {
             type uint16;
@@ -173,7 +203,7 @@ module topology-correlation {
         }
     }
 
-    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:correlation-type/topo-correlation:filtration-case/topo-correlation:filtration/topo-correlation:filter" {
+    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
         ext:augment-identifier "range-string-augment";
         leaf min-string-value {
             type string;
@@ -183,36 +213,18 @@ module topology-correlation {
         }
     }
 
-    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:correlation-type/topo-correlation:filtration-case/topo-correlation:filtration/topo-correlation:filter" {
+    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
         ext:augment-identifier "specific-number-augment";
         leaf specific-number {
             type uint16;
         }
     }
 
-    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:correlation-type/topo-correlation:filtration-case/topo-correlation:filtration/topo-correlation:filter" {
+    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
         ext:augment-identifier "specific-string-augment";
         leaf specific-string {
             type string;
         }
     }
 
-    grouping mapping-grouping {
-        list mapping {
-            key "underlay-topology target-field";
-            leaf underlay-topology {
-                type string;
-                description "Input topology which will be used for aggregation.";
-            }
-            leaf target-field {
-                type leaf-path;
-                description "Path to target field";
-            }
-            leaf aggregate-inside {
-                type boolean;
-                mandatory true;
-                description "True if aggregation should happen even inside the same topology.";
-            }
-        }
-    }
 }

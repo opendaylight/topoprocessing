@@ -8,27 +8,22 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import org.opendaylight.topoprocessing.api.filtration.Filtrator;
-import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 /**
- * @author matus.marko
+ * @author michal.polkorab
+ *
  */
-public class TopologyFiltrator extends TopoStoreProvider implements TopologyOperator {
+public class PreAggregationFiltrator extends TopologyFiltrator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TopologyFiltrator.class);
-
-    private List<Filtrator> filtrators = new ArrayList<>();
-    private TopologyManager manager;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PreAggregationFiltrator.class);
+    private TopologyAggregator aggregator;
 
     @Override
     public void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, String topologyId) {
@@ -37,8 +32,8 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
             PhysicalNode newNodeValue = nodeEntry.getValue();
             if (passedFiltration(newNodeValue)) {
                 getTopologyStore(topologyId).getPhysicalNodes().put(nodeEntry.getKey(), newNodeValue);
-                LogicalNode logicalNode = wrapPhysicalNode(newNodeValue);
-                manager.addLogicalNode(logicalNode);
+                aggregator.processCreatedChanges(Collections.singletonMap(nodeEntry.getKey(), newNodeValue),
+                        topologyId);
             }
         }
     }
@@ -54,7 +49,8 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
                 if (passedFiltration(updatedNode)) {
                     // passed through filtrator
                     getTopologyStore(topologyId).getPhysicalNodes().put(mapEntry.getKey(), updatedNode);
-                    manager.addLogicalNode(wrapPhysicalNode(updatedNode));
+                    aggregator.processCreatedChanges(Collections.singletonMap(mapEntry.getKey(), updatedNode),
+                            topologyId);
                 }
                 // else do nothing
             } else {
@@ -62,15 +58,12 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
                 if (passedFiltration(updatedNode)) {
                     // passed through filtrator
                     getTopologyStore(topologyId).getPhysicalNodes().put(mapEntry.getKey(), updatedNode);
-                    LogicalNode logicalNode = oldNode.getLogicalNode();
-                    updatedNode.setLogicalNode(logicalNode);
-                    logicalNode.setPhysicalNodes(Collections.singletonList(updatedNode));
-                    manager.updateLogicalNode(logicalNode);
+                    aggregator.processUpdatedChanges(Collections.singletonMap(mapEntry.getKey(), updatedNode),
+                            topologyId);
                 } else {
                     // filtered out
-                    LogicalNode oldLogicalNode = oldNode.getLogicalNode();
                     getTopologyStore(topologyId).getPhysicalNodes().remove(mapEntry.getKey());
-                    manager.removeLogicalNode(oldLogicalNode);
+                    aggregator.processRemovedChanges(Collections.singletonList(mapEntry.getKey()), topologyId);
                 }
             }
         }
@@ -82,38 +75,20 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
         for (YangInstanceIdentifier nodeIdentifier : identifiers) {
             PhysicalNode physicalNode = getTopologyStore(topologyId).getPhysicalNodes().remove(nodeIdentifier);
             if (null != physicalNode) {
-                manager.removeLogicalNode(physicalNode.getLogicalNode());
+                aggregator.processRemovedChanges(Collections.singletonList(nodeIdentifier), topologyId);
             }
         }
     }
 
     @Override
     public void setTopologyManager(TopologyManager topologyManager) {
-        this.manager = topologyManager;
+        throw new UnsupportedOperationException("PreAggregationFiltrator doesn't use TopologyManager");
     }
 
     /**
-     * Add new filtrator
-     * @param filter Node Ip Filtrator
+     * @param aggregator performs aggregation after filtering is done
      */
-    public void addFilter(Filtrator filter) {
-        filtrators.add(filter);
+    public void setTopologyAggregator(TopologyAggregator aggregator) {
+        this.aggregator = aggregator;
     }
-
-    protected boolean passedFiltration(PhysicalNode physicalNode) {
-        for (Filtrator filtrator : filtrators) {
-            if (filtrator.isFiltered(physicalNode)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private LogicalNode wrapPhysicalNode(PhysicalNode physicalNode) {
-        List<PhysicalNode> physicalNodes = Collections.singletonList(physicalNode);
-        LogicalNode logicalNode = new LogicalNode(physicalNodes);
-        physicalNode.setLogicalNode(logicalNode);
-        return logicalNode;
-    }
-
 }

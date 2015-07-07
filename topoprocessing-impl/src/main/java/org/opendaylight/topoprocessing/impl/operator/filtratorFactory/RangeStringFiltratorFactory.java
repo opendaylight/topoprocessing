@@ -11,7 +11,7 @@ import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.operator.filtrator.RangeStringFiltrator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.RangeStringAugment;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.filtration._case.filtration.Filter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.filtration.Filter;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
