@@ -8,6 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.listener;
 
+import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -139,7 +141,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                     throw new IllegalStateException("node-id was not found in: " + entry.getValue());
                 }
                 PhysicalNode physicalNode;
-                if (operator instanceof TopologyAggregator) {
+                if (operator instanceof TopologyAggregator || operator instanceof PreAggregationFiltrator) {
                     // AGGREGATION
                     LOGGER.debug("Finding node: {}", pathIdentifier);
                     Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);

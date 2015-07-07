@@ -8,8 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
-import com.google.common.util.concurrent.CheckedFuture;
+import static org.mockito.Matchers.any;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.AggregationBuilder;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.Aggregation;
+import com.google.common.util.concurrent.CheckedFuture;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +29,13 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.controller.md.sal.dom.api.*;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
+import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
+import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.operator.filtrator.DefaultFiltrators;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
@@ -33,36 +45,21 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.*;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Filtration;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4AddressAugment;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4AddressAugmentBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.MappingBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.CorrelationsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.CorrelationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.CorrelationType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.FiltrationCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.UnificationCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.equality._case.EqualityBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.filtration._case.FiltrationBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.filtration._case.filtration.Filter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.filtration._case.filtration.FilterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.unification._case.UnificationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.Filtration;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.FiltrationBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.aggregation.Mapping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.aggregation.MappingBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.filtration.Filter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.filtration.FilterBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.Matchers.any;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyRequestHandlerTest {
@@ -139,10 +136,11 @@ public class TopologyRequestHandlerTest {
     }
 
     private static CorrelationAugmentBuilder createCorrelation(Class<? extends CorrelationBase> correlationBase,
-            CorrelationType correlationType, CorrelationItemEnum correlationItem) {
+            Filtration filtration, Aggregation aggregation, CorrelationItemEnum correlationItem) {
         CorrelationBuilder cBuilder = new CorrelationBuilder();
         cBuilder.setType(correlationBase);
-        cBuilder.setCorrelationType(correlationType);
+        cBuilder.setAggregation(aggregation);
+        cBuilder.setFiltration(filtration);
         cBuilder.setCorrelationItem(correlationItem);
 
         List<Correlation> correlations = new ArrayList<>();
@@ -157,8 +155,8 @@ public class TopologyRequestHandlerTest {
     @Test (expected=IllegalStateException.class)
     public void testCorrelationWithoutCorrelationTypeEqualityCase() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
-        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(Equality.class, null,
-                CorrelationItemEnum.Node);
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
+                null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
         handler.processNewRequest(topoBuilder.build());
@@ -167,8 +165,8 @@ public class TopologyRequestHandlerTest {
     @Test (expected=IllegalStateException.class)
     public void testCorrelationWithoutCorrelationTypeUnificationCase() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
-        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(Unification.class, null,
-                CorrelationItemEnum.Node);
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
+                null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         handler = new TopologyRequestHandler(mockDomDataBroker,
                 mockSchemaHolder, mockRpcServices);
@@ -178,8 +176,8 @@ public class TopologyRequestHandlerTest {
     @Test (expected=IllegalStateException.class)
     public void testCorrelationWithoutCorrelationTypeNodeIpFiltrationCase() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
-        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(Filtration.class, null,
-                CorrelationItemEnum.Node);
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(FiltrationOnly.class, null,
+                null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
         handler.processNewRequest(topoBuilder.build());
@@ -189,7 +187,7 @@ public class TopologyRequestHandlerTest {
     public void testCorrelationWithUnknownCorrelationType() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(UnknownCorrelationBase.class, null,
-                CorrelationItemEnum.Node);
+                null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
         handler.processNewRequest(topoBuilder.build());
@@ -198,11 +196,10 @@ public class TopologyRequestHandlerTest {
     @Test (expected=IllegalStateException.class)
     public void testCorrelationWithMappingsNull() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
-        EqualityCaseBuilder caseBuilder = new EqualityCaseBuilder();
-        EqualityBuilder equalityBuilder = new EqualityBuilder();
-        caseBuilder.setEquality(equalityBuilder.build());
-        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(Equality.class, caseBuilder.build(),
-                CorrelationItemEnum.Node);
+        AggregationBuilder aggBuilder = new AggregationBuilder();
+        aggBuilder.setAggregationType(Equality.class);
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null, 
+                aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
         handler.processNewRequest(topoBuilder.build());
@@ -211,17 +208,17 @@ public class TopologyRequestHandlerTest {
     @Test (expected=IllegalStateException.class)
     public void testCorrelationItemNull() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
-        EqualityCaseBuilder caseBuilder = new EqualityCaseBuilder();
-        EqualityBuilder equalityBuilder = new EqualityBuilder();
+        AggregationBuilder aggBuilder = new AggregationBuilder();
+        aggBuilder.setAggregationType(Equality.class);
         ArrayList<Mapping> mappings = new ArrayList<>();
         MappingBuilder mappingBuilder1 = new MappingBuilder();
         mappingBuilder1.setUnderlayTopology("pcep-topology:1");
         mappingBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
         mappingBuilder1.setAggregateInside(false);
         mappings.add(mappingBuilder1.build());
-        equalityBuilder.setMapping(mappings);
-        caseBuilder.setEquality(equalityBuilder.build());
-        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(Equality.class, caseBuilder.build(), null);
+        aggBuilder.setMapping(mappings);
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
+                aggBuilder.build(), null);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
 
@@ -234,18 +231,17 @@ public class TopologyRequestHandlerTest {
     @Test
     public void testConfigurationAndOperationListenerRegistration() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
-        EqualityCaseBuilder caseBuilder = new EqualityCaseBuilder();
-        EqualityBuilder equalityBuilder = new EqualityBuilder();
+        AggregationBuilder aggBuilder = new AggregationBuilder();
+        aggBuilder.setAggregationType(Equality.class);
         ArrayList<Mapping> mappings = new ArrayList<>();
         MappingBuilder mappingBuilder1 = new MappingBuilder();
         mappingBuilder1.setUnderlayTopology("pcep-topology:1");
         mappingBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
         mappingBuilder1.setAggregateInside(false);
         mappings.add(mappingBuilder1.build());
-        equalityBuilder.setMapping(mappings);
-        caseBuilder.setEquality(equalityBuilder.build());
-        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(Equality.class, caseBuilder.build(),
-                CorrelationItemEnum.Node);
+        aggBuilder.setMapping(mappings);
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
+                aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         // CONFIGURATION listener registration
         handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
@@ -282,17 +278,16 @@ public class TopologyRequestHandlerTest {
     @Test
     public void testUnificationCase() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
-        UnificationCaseBuilder caseBuilder = new UnificationCaseBuilder();
-        UnificationBuilder unificationBuilder = new UnificationBuilder();
+        AggregationBuilder aggBuilder = new AggregationBuilder();
+        aggBuilder.setAggregationType(Unification.class);
         ArrayList<Mapping> mappings = new ArrayList<>();
         MappingBuilder mappingBuilder1 = new MappingBuilder();
         mappingBuilder1.setUnderlayTopology("pcep-topology:1");
         mappingBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
         mappingBuilder1.setAggregateInside(false);
         mappings.add(mappingBuilder1.build());
-        unificationBuilder.setMapping(mappings);
-        caseBuilder.setUnification(unificationBuilder.build());
-        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(Unification.class, caseBuilder.build(),
+        aggBuilder.setMapping(mappings);
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null, aggBuilder.build(),
                 CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         handler = new TopologyRequestHandler(mockDomDataBroker,
@@ -315,11 +310,10 @@ public class TopologyRequestHandlerTest {
     @Test
     public void testIpv4AddressFiltration() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
-        FiltrationCaseBuilder caseBuilder = new FiltrationCaseBuilder();
-        FiltrationBuilder filtrationBuilder = new FiltrationBuilder();
+        FiltrationBuilder fBuilder = new FiltrationBuilder();
+        fBuilder.setUnderlayTopology("pcep-topology:1");
         ArrayList<Filter> filters = new ArrayList<>();
         FilterBuilder filterBuilder1 = new FilterBuilder();
-        filterBuilder1.setUnderlayTopology("pcep-topology:1");
         filterBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
         Ipv4Prefix ipv4prefix = new Ipv4Prefix("192.168.0.1/24");
         IpPrefix ipPrefix = new IpPrefix(ipv4prefix);
@@ -329,10 +323,9 @@ public class TopologyRequestHandlerTest {
 
         filterBuilder1.addAugmentation(Ipv4AddressAugment.class, augmentBuilder.build());
         filters.add(filterBuilder1.build());
-        filtrationBuilder.setFilter(filters);
-        caseBuilder.setFiltration(filtrationBuilder.build());
-        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(Filtration.class, caseBuilder.build(),
-                CorrelationItemEnum.Node);
+        fBuilder.setFilter(filters);
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(FiltrationOnly.class,
+                fBuilder.build(), null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
         handler.setDatastoreType(DatastoreType.OPERATIONAL);
@@ -380,13 +373,12 @@ public class TopologyRequestHandlerTest {
     public void testDeletionWithEmptyListener() {
         // pre-testing setup
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
-        EqualityCaseBuilder caseBuilder = new EqualityCaseBuilder();
-        EqualityBuilder equalityBuilder = new EqualityBuilder();
+        AggregationBuilder aggBuilder = new AggregationBuilder();
+        aggBuilder.setAggregationType(Equality.class);
         ArrayList<Mapping> mappings = new ArrayList<>();
-        equalityBuilder.setMapping(mappings);
-        caseBuilder.setEquality(equalityBuilder.build());
-        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(Equality.class, caseBuilder.build(),
-                CorrelationItemEnum.Node);
+        aggBuilder.setMapping(mappings);
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
+                aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
         handler.setDatastoreType(DatastoreType.CONFIGURATION);

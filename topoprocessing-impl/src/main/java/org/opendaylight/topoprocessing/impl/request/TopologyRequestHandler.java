@@ -8,6 +8,16 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationBase;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationOnly;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationAggregation;
+import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.Filtration;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.Aggregation;
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,14 +45,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Filtration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.mapping.grouping.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.EqualityCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.FiltrationCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.UnificationCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.correlation.type.filtration._case.filtration.Filter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.aggregation.Mapping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.filtration.Filter;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -54,8 +60,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgum
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Preconditions;
-
 /**
  * Picks up information from topology request, engages corresponding
  * listeners, aggregators.
@@ -142,28 +146,17 @@ public class TopologyRequestHandler {
             CorrelationAugment augmentation = topology.getAugmentation(CorrelationAugment.class);
             List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
             for (Correlation correlation : correlations) {
-                TopologyOperator operator;
-                if (correlation.getType().equals(Equality.class)) {
-                    EqualityCase equalityCase = (EqualityCase) correlation.getCorrelationType();
-                    List<Mapping> mappings = equalityCase.getEquality().getMapping();
-                    operator = new EqualityAggregator();
-                    operator.setTopologyManager(topologyManager);
-                    iterateMappings(operator, mappings, correlation.getCorrelationItem());
-                } else if (correlation.getType().equals(Unification.class)) {
-                    UnificationCase unificationCase = (UnificationCase) correlation.getCorrelationType();
-                    List<Mapping> mappings = unificationCase.getUnification().getMapping();
-                    operator = new UnificationAggregator();
-                    operator.setTopologyManager(topologyManager);
-                    iterateMappings(operator, mappings, correlation.getCorrelationItem());
-                } else if (correlation.getType().equals(Filtration.class)) {
-                    FiltrationCase filtrationCase = (FiltrationCase) correlation.getCorrelationType();
-                    List<Filter> filters = filtrationCase.getFiltration().getFilter();
-                    operator = new TopologyFiltrator();
-                    operator.setTopologyManager(topologyManager);
-                    iterateFilters((TopologyFiltrator) operator, filters, correlation.getCorrelationItem());
+                TopologyOperator operator = null;
+                if (FiltrationAggregation.class.equals(correlation.getType())) {
+                    operator = initAggregation(correlation, true);
+                } else if (FiltrationOnly.class.equals(correlation.getType())) {
+                    operator = initFiltration(correlation);
+                } else if (AggregationOnly.class.equals(correlation.getType())) {
+                    operator = initAggregation(correlation, false);
                 } else {
-                    throw new IllegalStateException("Unknown correlation: " + correlation.getType());
+                    throw new IllegalStateException("Filtration and Aggregation data missing: " + correlation);
                 }
+                operator.setTopologyManager(topologyManager);
             }
             LOG.debug("Correlation configuration successfully read");
         } catch (Exception e) {
@@ -173,15 +166,21 @@ public class TopologyRequestHandler {
         }
     }
 
-    private void iterateFilters(TopologyFiltrator operator, List<Filter> filters,
-            CorrelationItemEnum correlationItem) {
-        for (Filter filter : filters) {
-            String underlayTopologyId = filter.getUnderlayTopology();
-            operator.initializeStore(underlayTopologyId, false);
+    /**
+     * @param correlation contains filtration configuration
+     * @return configured {@link TopologyFiltrator}
+     */
+    private TopologyFiltrator initFiltration(Correlation correlation) {
+        CorrelationItemEnum correlationItem = correlation.getCorrelationItem();
+        Filtration filtration = correlation.getFiltration();
+        String underlayTopologyId = filtration.getUnderlayTopology();
+        TopologyFiltrator filtrator = new TopologyFiltrator();
+        for (Filter filter : filtration.getFilter()) {
+            filtrator.initializeStore(underlayTopologyId, false);
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
-                    correlationItem, schemaHolder);
-            addFiltrator(operator, filter, pathIdentifier);
-            UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, operator,
+                    correlation.getCorrelationItem(), schemaHolder);
+            addFiltrator(filtrator, filter, pathIdentifier);
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, filtrator,
                     underlayTopologyId, null);
             InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
@@ -198,6 +197,7 @@ public class TopologyRequestHandler {
             listener.readExistingData(nodeIdentifier, datastoreType);
             listeners.add(listenerRegistration);
         }
+        return filtrator;
     }
 
     private void addFiltrator(TopologyFiltrator operator, Filter filter,
@@ -207,14 +207,30 @@ public class TopologyRequestHandler {
         operator.addFilter(currentFiltrator);
     }
 
-    private void iterateMappings(TopologyOperator operator, List<Mapping> mappings, CorrelationItemEnum correlationItem) {
-        for (Mapping mapping : mappings) {
+    private TopologyAggregator initAggregation(Correlation correlation, boolean filtration) {
+        CorrelationItemEnum correlationItem = correlation.getCorrelationItem();
+        Aggregation aggregation = correlation.getAggregation();
+        TopologyAggregator aggregator = createAggregator(aggregation.getAggregationType());
+        for (Mapping mapping : aggregation.getMapping()) {
             String underlayTopologyId = mapping.getUnderlayTopology();
-            operator.initializeStore(underlayTopologyId, mapping.isAggregateInside());
+            aggregator.initializeStore(underlayTopologyId, mapping.isAggregateInside());
             YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
                     correlationItem, schemaHolder);
-            UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, operator,
-                    underlayTopologyId, pathIdentifier);
+            UnderlayTopologyListener listener = null;
+            if (filtration && mapping.getApplyFilters() != null) {
+                PreAggregationFiltrator filtrator = new PreAggregationFiltrator();
+                filtrator.initializeStore(underlayTopologyId, false);
+                filtrator.setTopologyAggregator(aggregator);
+                for (String filterId : mapping.getApplyFilters()) {
+                    Filter filter = findFilter(correlation.getFiltration().getFilter(), filterId);
+                    YangInstanceIdentifier filterPath = translator.translate(filter.getTargetField().getValue(),
+                            correlationItem, schemaHolder);
+                    addFiltrator(filtrator, filter, filterPath);
+                }
+                listener = new UnderlayTopologyListener(domDataBroker, filtrator, underlayTopologyId, pathIdentifier);
+            } else {
+                listener = new UnderlayTopologyListener(domDataBroker, aggregator, underlayTopologyId, pathIdentifier);
+            }
             InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier nodeIdentifier = buildNodeIdentifier(topologyIdentifier, correlationItem);
@@ -229,6 +245,31 @@ public class TopologyRequestHandler {
             }
             listener.readExistingData(nodeIdentifier, datastoreType);
             listeners.add(listenerRegistration);
+        }
+        return aggregator;
+    }
+
+/**
+ * @param filters 
+ * @param filterId
+ * @return
+ */
+private Filter findFilter(List<Filter> filters, String filterId) {
+    for (Filter filter : filters) {
+        if (filterId.equals(filter.getFilterId())) {
+            return filter;
+        }
+    }
+    return null;
+}
+
+    private TopologyAggregator createAggregator(Class<? extends AggregationBase> type) {
+        if (Equality.class.equals(type)) {
+            return new EqualityAggregator();
+        } else if (Unification.class.equals(type)) {
+            return new UnificationAggregator();
+        } else {
+            throw new IllegalArgumentException("Unsupported correlation type received: " + type);
         }
     }
 
