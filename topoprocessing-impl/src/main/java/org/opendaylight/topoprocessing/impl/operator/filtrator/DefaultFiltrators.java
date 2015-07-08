@@ -7,9 +7,12 @@
  */
 package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
+import org.opendaylight.topoprocessing.api.filtration.Filtrator;
+
+import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.ScriptFiltratorFactory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Script;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.Ipv4FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.Ipv6FiltratorFactory;
@@ -31,6 +34,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
  */
 public class DefaultFiltrators {
 
+    /**
+     * @return Map initiliazed with default set of {@link Filtrator}s
+     */
     public static Map<Class<? extends FilterBase>, FiltratorFactory> getDefaultFiltrators() {
         Map<Class<? extends FilterBase>, FiltratorFactory> filtrators = new HashMap<>();
         filtrators.put(Ipv4Address.class, new Ipv4FiltratorFactory());
@@ -39,6 +45,7 @@ public class DefaultFiltrators {
         filtrators.put(RangeString.class, new RangeStringFiltratorFactory());
         filtrators.put(SpecificString.class, new SpecificStringFiltratorFactory());
         filtrators.put(SpecificNumber.class, new SpecificNumberFiltratorFactory());
+        filtrators.put(Script.class, new ScriptFiltratorFactory());
         return filtrators;
     }
 
