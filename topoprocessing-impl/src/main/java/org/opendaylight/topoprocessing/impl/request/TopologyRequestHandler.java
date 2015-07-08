@@ -211,6 +211,9 @@ public class TopologyRequestHandler {
         CorrelationItemEnum correlationItem = correlation.getCorrelationItem();
         Aggregation aggregation = correlation.getAggregation();
         TopologyAggregator aggregator = createAggregator(aggregation.getAggregationType());
+        if (aggregation.getScripting() != null) {
+            aggregator.initCustomAggregation(aggregation.getScripting());
+        }
         for (Mapping mapping : aggregation.getMapping()) {
             String underlayTopologyId = mapping.getUnderlayTopology();
             aggregator.initializeStore(underlayTopologyId, mapping.isAggregateInside());

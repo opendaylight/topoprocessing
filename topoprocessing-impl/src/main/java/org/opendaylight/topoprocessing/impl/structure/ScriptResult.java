@@ -24,7 +24,7 @@ public class ScriptResult {
     /**
      * @return the result
      */
-    public boolean isResult() {
+    public boolean getResult() {
         return result;
     }
 

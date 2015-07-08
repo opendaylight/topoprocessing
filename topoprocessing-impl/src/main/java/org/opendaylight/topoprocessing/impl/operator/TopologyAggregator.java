@@ -8,11 +8,16 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import org.opendaylight.topoprocessing.impl.structure.ScriptResult;
+
+import javax.script.ScriptException;
+import javax.script.ScriptEngine;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.Scripting;
+import javax.script.ScriptEngineManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.opendaylight.topoprocessing.impl.structure.LogicalNode;
 import org.opendaylight.topoprocessing.impl.structure.PhysicalNode;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
@@ -20,7 +25,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
 
 /**
@@ -32,6 +36,8 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyAggregator.class);
     private TopologyManager topologyManager;
+    private ScriptEngine scriptEngine;
+    private String script;
 
     /**
      * @param topologyManager handles aggregated nodes from all correlations
@@ -52,7 +58,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
                         ts.getPhysicalNodes().put(createdEntry.getKey(), createdEntry.getValue());
                     }
                 }
-                createAggregatedNodes(createdEntry.getValue(), topologyId);
+                checkForPossibleAggregation(createdEntry.getValue(), topologyId);
             }
         }
     }
@@ -62,34 +68,21 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
      * for correlation is satisfied
      * @param newNode - new physical node on which the correlation is created
      */
-    private void createAggregatedNodes(PhysicalNode newNode, String topologyId) {
+    private void checkForPossibleAggregation(PhysicalNode newNode, String topologyId) {
         for (TopologyStore ts : getTopologyStores()) {
             if ((! ts.getId().equals(topologyId)) || ts.isAggregateInside()) {
                 for (Entry<YangInstanceIdentifier, PhysicalNode> topoStoreEntry : ts.getPhysicalNodes().entrySet()) {
                     PhysicalNode topoStoreNode = topoStoreEntry.getValue();
-                    if (! newNode.equals(topoStoreNode) &&
-                            topoStoreNode.getLeafNode().getValue().equals(newNode.getLeafNode().getValue())) {
-                        // no previous aggregation on this node
-                        if (topoStoreNode.getLogicalNode() == null) {
-                            LOG.debug("Creating new Logical Node");
-                            // create new logical node
-                            List<PhysicalNode> nodesToAggregate = new ArrayList<>();
-                            nodesToAggregate.add(newNode);
-                            nodesToAggregate.add(topoStoreNode);
-                            LogicalNode logicalNode = new LogicalNode(nodesToAggregate);
-                            topoStoreNode.setLogicalNode(logicalNode);
-                            newNode.setLogicalNode(logicalNode);
-                            topologyManager.addLogicalNode(logicalNode);
-                            return;
-                        } else {
-                            LOG.debug("Adding physical node to existing Logical Node");
-                            // add new physical node into existing logical node
-                            LogicalNode logicalNodeIdentifier = topoStoreNode.getLogicalNode();
-                            newNode.setLogicalNode(logicalNodeIdentifier);
-                            logicalNodeIdentifier.addPhysicalNode(newNode);
-                            topologyManager.updateLogicalNode(logicalNodeIdentifier);
+                    if (scriptEngine != null) {
+                        if (aggregableWithScript(newNode, topoStoreNode)) {
+                            aggregateNodes(newNode, topoStoreNode);
                             return;
                         }
+                    } else if (! newNode.equals(topoStoreNode) &&
+                            topoStoreNode.getLeafNode().getValue().equals(newNode.getLeafNode().getValue())) {
+                        // no previous aggregation on this node
+                        aggregateNodes(newNode, topoStoreNode);
+                        return;
                     }
                 }
             }
@@ -101,6 +94,44 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
             newNode.setLogicalNode(logicalNode);
             topologyManager.addLogicalNode(logicalNode);
         }
+    }
+
+    private boolean aggregableWithScript(PhysicalNode newNode, PhysicalNode topoStoreNode) {
+        ScriptResult scriptResult = new ScriptResult();
+        scriptEngine.put("aggregable", scriptResult);
+        scriptEngine.put("originalNode", topoStoreNode);
+        scriptEngine.put("newNode", newNode);
+        try {
+            scriptEngine.eval(script);
+            return scriptResult.getResult();
+        } catch (ScriptException e) {
+            throw new IllegalStateException("Exception during script evaluation: " + script, e);
+        }
+    }
+
+    /**
+     * @param newNode
+     * @param topoStoreNode
+     */
+    private void aggregateNodes(PhysicalNode newNode, PhysicalNode topoStoreNode) {
+        if (topoStoreNode.getLogicalNode() == null) {
+            LOG.debug("Creating new Logical Node");
+            // create new logical node
+            List<PhysicalNode> nodesToAggregate = new ArrayList<>();
+            nodesToAggregate.add(newNode);
+            nodesToAggregate.add(topoStoreNode);
+            LogicalNode logicalNode = new LogicalNode(nodesToAggregate);
+            topoStoreNode.setLogicalNode(logicalNode);
+            newNode.setLogicalNode(logicalNode);
+            topologyManager.addLogicalNode(logicalNode);
+            return;
+        }
+        LOG.debug("Adding physical node to existing Logical Node");
+        // add new physical node into existing logical node
+        LogicalNode logicalNodeIdentifier = topoStoreNode.getLogicalNode();
+        newNode.setLogicalNode(logicalNodeIdentifier);
+        logicalNodeIdentifier.addPhysicalNode(newNode);
+        topologyManager.updateLogicalNode(logicalNodeIdentifier);
     }
 
     @Override
@@ -162,7 +193,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
                             if (physicalNode.getLogicalNode() != null) {
                                 removePhysicalNodeFromLogicalNode(physicalNode);
                             }
-                            createAggregatedNodes(physicalNode, topologyId);
+                            checkForPossibleAggregation(physicalNode, topologyId);
                         } else if (physicalNode.getLogicalNode() != null) {
                             // in case that only Node value was changed
                             topologyManager.updateLogicalNode(physicalNode.getLogicalNode());
@@ -183,4 +214,17 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
      * @return true if a single {@link PhysicalNode} should be wrapped into {@link LogicalNode}
      */
     protected abstract boolean wrapSingleNode();
+
+    /**
+     * Overrides default behavior of aggregation with the one programmed in script
+     * @param scripting script definition
+     */
+    public void initCustomAggregation(Scripting scripting) {
+        ScriptEngineManager factory = new ScriptEngineManager();
+        scriptEngine = factory.getEngineByName(scripting.getLanguage());
+        Preconditions.checkNotNull(scriptEngine, "ScriptEngine for language {} was not found.",
+                scripting.getLanguage());
+        script = scripting.getScript();
+        LOG.debug("Next script will be used for custom aggregation: {}", script);
+    }
 }

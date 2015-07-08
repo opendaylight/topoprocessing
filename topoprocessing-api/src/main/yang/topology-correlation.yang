@@ -138,7 +138,7 @@ module topology-correlation {
                             base aggregation-base;
                         }
                     }
-                    
+                    uses scripting-grouping;
                     list mapping {
                         key "underlay-topology target-field";
                         leaf underlay-topology {

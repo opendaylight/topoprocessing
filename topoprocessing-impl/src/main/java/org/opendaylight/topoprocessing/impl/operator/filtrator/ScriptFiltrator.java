@@ -64,8 +64,8 @@ public class ScriptFiltrator implements Filtrator {
             engine.put("node", node.get());
             try {
                 engine.eval(script);
-                LOGGER.debug("Item filtered out: {}", filterOut.isResult());
-                return filterOut.isResult();
+                LOGGER.debug("Item filtered out: {}", filterOut.getResult());
+                return filterOut.getResult();
             } catch (ScriptException e) {
                 throw new IllegalStateException("Problem while evaluating script: " + script, e);
             }
