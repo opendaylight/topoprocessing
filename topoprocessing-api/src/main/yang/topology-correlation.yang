@@ -110,6 +110,11 @@ module topology-correlation {
         base filter-base;
     }
 
+    identity script {
+        description "Filters out string values corresponding to a specific string.";
+        base filter-base;
+    }
+
     augment "/topo:network-topology/topo:topology" {
         ext:augment-identifier "correlation-augment";
         container correlations {
@@ -133,6 +138,7 @@ module topology-correlation {
                             base aggregation-base;
                         }
                     }
+                    
                     list mapping {
                         key "underlay-topology target-field";
                         leaf underlay-topology {
@@ -175,6 +181,17 @@ module topology-correlation {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    grouping scripting-grouping {
+        container scripting {
+            leaf language {
+                type string;
+            }
+            leaf script {
+                type string;
             }
         }
     }
@@ -225,6 +242,11 @@ module topology-correlation {
         leaf specific-string {
             type string;
         }
+    }
+
+    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "scripting-augment";
+        uses scripting-grouping;
     }
 
 }
