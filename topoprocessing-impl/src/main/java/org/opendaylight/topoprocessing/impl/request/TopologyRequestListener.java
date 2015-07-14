@@ -60,10 +60,10 @@ public class TopologyRequestListener implements DOMDataChangeListener {
 
     /**
      * Default constructor
-     * @param dataBroker
-     * @param nodeSerializer
-     * @param schemaHolder
-     * @param rpcServices
+     * @param dataBroker        Access to Datastore
+     * @param nodeSerializer    Searching for Children in Normalized Node
+     * @param schemaHolder      Access to Schema Holder and Schema Listener
+     * @param rpcServices       RPC Services Provider
      */
     public TopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
             GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices) {
@@ -125,7 +125,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
     }
 
     /**
-     * @param datastoreType
+     * @param datastoreType Whether to use CONFIGURATION or OPERATIONAL Datastore
      */
     public void setDatastoreType(DatastoreType datastoreType) {
         this.datastoreType = datastoreType;
@@ -145,8 +145,9 @@ public class TopologyRequestListener implements DOMDataChangeListener {
     }
 
     /**
-     * @param filtrator
-     * @param filtratorFactory
+     * Register new filtrator with its own factory
+     * @param filtrator New Filtrator
+     * @param filtratorFactory Factory for Filtrator
      */
     public void registerFiltrator(Class<? extends FilterBase> filtrator,
             FiltratorFactory filtratorFactory) {
@@ -154,7 +155,8 @@ public class TopologyRequestListener implements DOMDataChangeListener {
     }
 
     /**
-     * @param filtrator
+     * Unregister Filtrator from Listener
+     * @param filtrator Filtrator instance
      */
     public void unregisterFiltrator(Class<? extends FilterBase> filtrator) {
         filtrators.remove(filtrator);

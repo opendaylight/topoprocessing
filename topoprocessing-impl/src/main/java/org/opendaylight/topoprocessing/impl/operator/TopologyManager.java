@@ -48,9 +48,9 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     private GlobalSchemaContextHolder schemaHolder;
 
     /**
-     * @param rpcServices
-     * @param schemaHolder
-     * @param topologyIdentifier
+     * @param rpcServices           Provides RPC Services {@link RpcServices}
+     * @param schemaHolder          Access to Schema Holder
+     * @param topologyIdentifier    Topology Identifier
      */
     public TopologyManager(RpcServices rpcServices, GlobalSchemaContextHolder schemaHolder,
             YangInstanceIdentifier topologyIdentifier) {
@@ -99,7 +99,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     }
 
     /**
-     * @param logicalIdentifier
+     * @param logicalIdentifier Logical Node with new changes to update
      */
     public void updateLogicalNode(LogicalNode logicalIdentifier) {
         for (LogicalNodeWrapper wrapper : wrappers) {
@@ -113,7 +113,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     }
 
     /**
-     * @param logicalIdentifier
+     * @param logicalIdentifier Logical Node to remove
      */
     public void removeLogicalNode(LogicalNode logicalIdentifier) {
         LogicalNodeWrapper foundWrapper = null;
@@ -155,8 +155,8 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     /**
      * Gathers RPCs for all {@link PhysicalNode}s present in the {@link LogicalNode} and registers them under
      * {@link LogicalNodeWrapper} Id
-     * @param wrapper
-     * @param logicalNode
+     * @param wrapper Node Wrapper to get Identifier from
+     * @param logicalNode Which contains Physical Nodes with RPCs
      */
     private void registerOverlayRpcs(LogicalNodeWrapper wrapper, LogicalNode logicalNode) {
         LOGGER.trace("Registering overlay RPCs");

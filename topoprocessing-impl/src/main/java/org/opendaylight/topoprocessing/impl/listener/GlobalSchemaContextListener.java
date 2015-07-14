@@ -26,7 +26,7 @@ public class GlobalSchemaContextListener implements SchemaContextListener {
     private GlobalSchemaContextHolder schemaHolder;
 
     /**
-     * @param schemaHolder
+     * @param schemaHolder Global Schema Context Listener
      */
     public GlobalSchemaContextListener(GlobalSchemaContextHolder schemaHolder) {
         this.schemaHolder = schemaHolder;

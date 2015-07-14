@@ -20,8 +20,8 @@ public class LogicalNodeWrapper {
     
     /**
      * Constructor
-     * @param nodeId
-     * @param logicalNode 
+     * @param nodeId Wrapper Identifier
+     * @param logicalNode Logical Node
      */
     public LogicalNodeWrapper(String nodeId, LogicalNode logicalNode) {
         this.nodeId = nodeId;
@@ -29,35 +29,38 @@ public class LogicalNodeWrapper {
     }
     
     /**
-     * @param logicalNode
+     * Add Logical Node to Wrapper
+     * @param logicalNode Logical Node
      */
     public void addLogicalNode(LogicalNode logicalNode) {
         logicalNodes.add(logicalNode);
     }
     
     /**
-     * @return
+     * @return List with Logical Nodes
      */
     public List<LogicalNode> getLogicalNodes() {
         return logicalNodes;
     }
 
     /**
-     * @param logicalNodes
+     * Set|replace Logical Nodes
+     * @param logicalNodes List with Logical Nodes
      */
     public void setLogicalNodes(List<LogicalNode> logicalNodes) {
         this.logicalNodes = logicalNodes;
     }
 
     /**
-     * @return the nodeId
+     * @return Wrapper Identifier
      */
     public String getNodeId() {
         return nodeId;
     }
 
     /**
-     * @param nodeId the nodeId to set
+     * Set Wrapper Identifier
+     * @param nodeId Wrapper Identifier
      */
     public void setNodeId(String nodeId) {
         this.nodeId = nodeId;

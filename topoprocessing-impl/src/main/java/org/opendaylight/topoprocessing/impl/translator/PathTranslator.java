@@ -37,8 +37,8 @@ public class PathTranslator {
      * Translates yang path into {@link YangInstanceIdentifier}
      *
      * @param yangPath path to target node
-     * @param correlationItem 
-     * @param schemaHolder 
+     * @param correlationItem Type of Correlation Item
+     * @param schemaHolder Provides access to Schema Context Holder
      * @return {@link YangInstanceIdentifier} leading to target node
      * @throws IllegalArgumentException if yangPath is in incorrect format
      * @throws IllegalStateException if required module is not loaded

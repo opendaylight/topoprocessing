@@ -80,8 +80,8 @@ public class TopologyRequestHandler {
     /**
      * Default constructor
      * @param domDataBroker broker used for transaction operations
-     * @param schemaHolder
-     * @param rpcServices
+     * @param schemaHolder  Provides model search
+     * @param rpcServices   Access to Rpc Service Provider
      */
     public TopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices) {
@@ -90,22 +90,34 @@ public class TopologyRequestHandler {
         this.rpcServices = rpcServices;
     }
 
-    /** Only for testing purposes */
+    /**
+     * Only for testing purposes
+     * @param translator Provides translating String to Path
+     */
     public void setTranslator(PathTranslator translator) {
         this.translator = translator;
     }
 
-    /** Only for testing purposes */
+    /**
+     * Only for testing purposes
+     * @param listeners Sets Registration Listeners
+     */
     public void setListeners(List<ListenerRegistration<DOMDataChangeListener>> listeners) {
         this.listeners = listeners;
     }
 
-    /** Only for testing purposes */
+    /**
+     * Only for testing purposes
+     * @return Registration Listeners
+     */
     public List<ListenerRegistration<DOMDataChangeListener>> getListeners() {
         return listeners;
     }
 
-    /** Only for testing purposes */
+    /**
+     * Only for testing purposes
+     * @return Transaction Chain
+     */
     public DOMTransactionChain getTransactionChain() {
         return transactionChain;
     }
@@ -291,14 +303,14 @@ public class TopologyRequestHandler {
     }
 
     /**
-     * @param datastoreType
+     * @param datastoreType Whether to use CONFIGURATION or OPERATIONAL datastore
      */
     public void setDatastoreType(DatastoreType datastoreType) {
         this.datastoreType = datastoreType;
     }
 
     /**
-     * @param filtrators
+     * @param filtrators sets required filtrators
      */
     public void setFiltrators(Map<Class<? extends FilterBase>, FiltratorFactory> filtrators) {
         this.filtrators = filtrators;

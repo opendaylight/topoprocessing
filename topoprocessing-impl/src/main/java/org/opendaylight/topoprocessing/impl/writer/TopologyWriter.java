@@ -186,7 +186,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * @param wrapper
+     * @param wrapper Node Wrapper to Write
      */
     public void writeNode(final LogicalNodeWrapper wrapper) {
         NormalizedNode<?, ?> node = translator.translate(wrapper);
@@ -195,7 +195,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * @param wrapper
+     * @param wrapper Node Wrapper to Delete
      */
     public void deleteNode(final LogicalNodeWrapper wrapper) {
         preparedOperations.add(new DeleteOperation(createNodeIdentifier(wrapper.getNodeId())));
@@ -221,7 +221,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * @param transactionChain
+     * @param transactionChain Set Transaction Chain
      */
     public void setTransactionChain(DOMTransactionChain transactionChain) {
         this.transactionChain = transactionChain;

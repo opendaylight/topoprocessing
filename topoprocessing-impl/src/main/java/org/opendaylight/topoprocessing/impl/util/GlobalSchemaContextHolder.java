@@ -22,7 +22,7 @@ public class GlobalSchemaContextHolder {
 
     /**
      * Default constructor
-     * @param globalSchemaContext
+     * @param globalSchemaContext   Access to Global Schema Context
      */
     public GlobalSchemaContextHolder(SchemaContext globalSchemaContext) {
         this.globalSchemaContext = globalSchemaContext;
@@ -31,7 +31,7 @@ public class GlobalSchemaContextHolder {
 
     /**
      * updates global {@link SchemaContext}
-     * @param globalSchemaContext
+     * @param globalSchemaContext    Access to Global Schema Context
      */
     public void updateSchemaContext(SchemaContext globalSchemaContext) {
         this.globalSchemaContext = globalSchemaContext;

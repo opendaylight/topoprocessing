@@ -46,11 +46,11 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private TopologyRequestListener topologyRequestListener;
 
     /**
-     * @param schemaService
-     * @param dataBroker
-     * @param nodeSerializer
-     * @param rpcServices
-     * @param datastoreType
+     * @param schemaService     Provide us schema context for lookup models
+     * @param dataBroker        Access to data store
+     * @param nodeSerializer    Searches children in a Normalized Node
+     * @param rpcServices       Access to Rpc Services Provider
+     * @param datastoreType     Whether to use CONFIGURATION or OPERATIONAL Datastore
      */
     public TopoProcessingProviderImpl(SchemaService schemaService, DOMDataBroker dataBroker,
             BindingNormalizedNodeSerializer nodeSerializer, RpcServices rpcServices,
