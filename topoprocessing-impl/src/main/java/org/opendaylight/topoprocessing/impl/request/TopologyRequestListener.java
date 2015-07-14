@@ -60,10 +60,10 @@ public class TopologyRequestListener implements DOMDataChangeListener {
 
     /**
      * Default constructor
-     * @param dataBroker
-     * @param nodeSerializer
-     * @param schemaHolder
-     * @param rpcServices
+     * @param dataBroker        access to Datastore
+     * @param nodeSerializer    translates Topology into BindingAware object - for easier handling in TopologyRequestHandler
+     * @param schemaHolder      access to SchemaContext and SchemaListener
+     * @param rpcServices       rpcServices for rpc republishing
      */
     public TopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
             GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices) {
@@ -125,7 +125,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
     }
 
     /**
-     * @param datastoreType
+     * @param datastoreType defines whether to use CONFIGURATION or OPERATIONAL Datastore
      */
     public void setDatastoreType(DatastoreType datastoreType) {
         this.datastoreType = datastoreType;
@@ -139,14 +139,18 @@ public class TopologyRequestListener implements DOMDataChangeListener {
         return topoRequestHandlers;
     }
 
-    /** for testing purpose */
+    /**
+     * For testing purpose
+     * @return All Filtrators
+     */
     public Map<Class<? extends FilterBase>, FiltratorFactory> getFiltrators() {
         return filtrators;
     }
 
     /**
-     * @param filtrator
-     * @param filtratorFactory
+     * Register new filtrator with its own factory
+     * @param filtrator         filter type
+     * @param filtratorFactory  creates Filtrators based on Filter configuration
      */
     public void registerFiltrator(Class<? extends FilterBase> filtrator,
             FiltratorFactory filtratorFactory) {
@@ -154,7 +158,9 @@ public class TopologyRequestListener implements DOMDataChangeListener {
     }
 
     /**
-     * @param filtrator
+     * Unregister Filtrator from Listener
+     * @param filtrator unregisters FiltratorFactory for specifier filter type,
+     *                  filtrators for this filter type can no longer be created
      */
     public void unregisterFiltrator(Class<? extends FilterBase> filtrator) {
         filtrators.remove(filtrator);

@@ -22,8 +22,8 @@ public class LogicalNode {
     private List<PhysicalNode> physicalNodes = new ArrayList<>();
 
     /**
-     * Creates logical node
-     * @param physicalNodes
+     * Creates Logical Node
+     * @param physicalNodes List with Physical nodes
      */
     public LogicalNode(List<PhysicalNode> physicalNodes) {
         Preconditions.checkNotNull(physicalNodes, "physicalNodes cannot be null");
@@ -51,8 +51,8 @@ public class LogicalNode {
 
     /**
      * Update physical node. Old node will be replaced by the new one.
-     * @param oldNode 
-     * @param newNode
+     * @param oldNode Old Physical Node
+     * @param newNode New Physical Node
      */
     public void updatePhysicalNode(PhysicalNode oldNode, PhysicalNode newNode) {
         boolean removed = physicalNodes.remove(oldNode); 
