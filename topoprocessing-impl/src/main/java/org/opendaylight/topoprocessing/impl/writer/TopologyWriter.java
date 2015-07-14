@@ -186,7 +186,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * @param wrapper
+     * @param wrapper LogicalNodeWrapper to be written into datastore
      */
     public void writeNode(final LogicalNodeWrapper wrapper) {
         NormalizedNode<?, ?> node = translator.translate(wrapper);
@@ -195,7 +195,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * @param wrapper
+     * @param wrapper LogicalNodeWrapper to be removed from datastore
      */
     public void deleteNode(final LogicalNodeWrapper wrapper) {
         preparedOperations.add(new DeleteOperation(createNodeIdentifier(wrapper.getNodeId())));
@@ -221,7 +221,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * @param transactionChain
+     * @param transactionChain Sets {@TransactionChain}
      */
     public void setTransactionChain(DOMTransactionChain transactionChain) {
         this.transactionChain = transactionChain;

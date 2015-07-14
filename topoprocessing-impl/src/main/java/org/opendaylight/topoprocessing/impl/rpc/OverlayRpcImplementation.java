@@ -54,7 +54,7 @@ public class OverlayRpcImplementation implements DOMRpcImplementation {
     /**
      * Default constructor
      * @param rpcService used to reinvoked RPC at correct place
-     * @param schemaContext used to get {@link RpcDefinition} -> {@link RpcRoutingStrategy}
+     * @param schemaContext used to get {@link RpcDefinition} {@link RpcRoutingStrategy}
      * @param underlayNodeIdentifier identifies node which the RPC should be really invoked on
      */
     public OverlayRpcImplementation(DOMRpcService rpcService, SchemaContext schemaContext,

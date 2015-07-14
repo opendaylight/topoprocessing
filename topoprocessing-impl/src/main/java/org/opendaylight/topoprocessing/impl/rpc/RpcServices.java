@@ -22,8 +22,8 @@ public class RpcServices {
 
     /**
      * Default constructor
-     * @param rpcService
-     * @param rpcProviderService
+     * @param rpcService            registers new RpcListeners and invokes Rpcs
+     * @param rpcProviderService    registers new RpcImplementations
      */
     public RpcServices(DOMRpcService rpcService, DOMRpcProviderService rpcProviderService) {
         this.rpcService = rpcService;

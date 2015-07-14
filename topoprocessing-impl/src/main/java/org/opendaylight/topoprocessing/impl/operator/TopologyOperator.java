@@ -21,22 +21,22 @@ public interface TopologyOperator {
 
     /**
      * Process newly created changes
-     * @param createdEntries
-     * @param topologyId
+     * @param createdEntries created changes
+     * @param topologyId identifies topology, which the new changes came from
      */
     void processCreatedChanges(Map<YangInstanceIdentifier, PhysicalNode> createdEntries, final String topologyId);
 
     /**
      * Process newly updated changes
-     * @param updatedEntries
-     * @param topologyId
+     * @param updatedEntries updated changes
+     * @param topologyId identifies topology, which the updated changes came from
      */
     void processUpdatedChanges(Map<YangInstanceIdentifier, PhysicalNode> updatedEntries, String topologyId);
 
     /**
      * Process newly deleted changes
-     * @param identifiers Yang instance identifier
-     * @param topologyId Topology Identification
+     * @param identifiers removed changes
+     * @param topologyId identifies topology, which the removed changes came from
      */
     void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId);
 
