@@ -8,6 +8,9 @@
 
 package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
+import com.google.common.base.Preconditions;
+
+import org.opendaylight.topoprocessing.impl.structure.ScriptResult;
 import com.google.common.base.Optional;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -34,23 +37,35 @@ public class ScriptFiltrator implements Filtrator {
 
     /**
      * Creates {@link ScriptFiltrator} instance
-     * @param scripting 
-     * @param pathIdentifier 
+     * @param scripting script configuration - defines script language and script used
+     * @param pathIdentifier path to node that the filtration 
      */
     public ScriptFiltrator(Scripting scripting, YangInstanceIdentifier pathIdentifier) {
+        Preconditions.checkNotNull(scripting, "Scripting configuration can't be null.");
+        Preconditions.checkNotNull(pathIdentifier, "PathIdentifier can't be null.");
         this.pathIdentifier = pathIdentifier;
         ScriptEngineManager factory = new ScriptEngineManager();
         engine = factory.getEngineByName(scripting.getLanguage());
+        Preconditions.checkNotNull(engine, "ScriptEngine for language {} was not found.", scripting.getLanguage());
+        LOGGER.debug("Engine for language {} is: {}", scripting.getLanguage(), engine);
+        LOGGER.debug("Script provided : {}", scripting.getScript());
         script = scripting.getScript();
     }
 
     @Override
     public boolean isFiltered(UnderlayItem item) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Item received: {}", item);
+        }
         Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(item.getNode(), pathIdentifier);
         if (node.isPresent()) {
-            engine.put("node", node);
+            ScriptResult filterOut = new ScriptResult();
+            engine.put("filterOut", filterOut);
+            engine.put("node", node.get());
             try {
                 engine.eval(script);
+                LOGGER.debug("Item filtered out: {}", filterOut.isResult());
+                return filterOut.isResult();
             } catch (ScriptException e) {
                 throw new IllegalStateException("Problem while evaluating script: " + script, e);
             }
