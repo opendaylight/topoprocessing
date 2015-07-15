@@ -725,6 +725,30 @@
     },
     {
       "key": {
+        "uuid": "7a7fa997_c74bd357",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/structure/PhysicalNode.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 3585
+      },
+      "writtenOn": "2015-07-15T07:50:02Z",
+      "side": 1,
+      "message": "Yes, it needs to be imported because the \u0027Topology\u0027 class is presented in javadoc documentation in \u0027@link\u0027 directive on line 31",
+      "parentUuid": "7a7fa997_f6f7a757",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 116
+      },
+      "revId": "6070ed72d4f366a99e9c9b915edd316f4c29b764",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a7fa997_b6992f21",
         "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/PathTranslator.java",
         "patchSetId": 1
