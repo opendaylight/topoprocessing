@@ -48,9 +48,9 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     private GlobalSchemaContextHolder schemaHolder;
 
     /**
-     * @param rpcServices
-     * @param schemaHolder
-     * @param topologyIdentifier
+     * @param rpcServices           used for rpc republishing
+     * @param schemaHolder          access to SchemaContext
+     * @param topologyIdentifier    topology identifier
      */
     public TopologyManager(RpcServices rpcServices, GlobalSchemaContextHolder schemaHolder,
             YangInstanceIdentifier topologyIdentifier) {
@@ -61,7 +61,10 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
         this.rpcServices.getRpcService().registerRpcListener(this);
     }
 
-    /** for testing purpose only */
+    /**
+     * For testing purpose only
+     * @return All logicalNode wrappers
+     */
     public List<LogicalNodeWrapper> getWrappers() {
         return wrappers;
     }
@@ -99,7 +102,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     }
 
     /**
-     * @param logicalIdentifier
+     * @param logicalIdentifier Logical Node with new changes to update
      */
     public void updateLogicalNode(LogicalNode logicalIdentifier) {
         for (LogicalNodeWrapper wrapper : wrappers) {
@@ -113,7 +116,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     }
 
     /**
-     * @param logicalIdentifier
+     * @param logicalIdentifier Logical Node to remove
      */
     public void removeLogicalNode(LogicalNode logicalIdentifier) {
         LogicalNodeWrapper foundWrapper = null;
@@ -155,8 +158,8 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     /**
      * Gathers RPCs for all {@link PhysicalNode}s present in the {@link LogicalNode} and registers them under
      * {@link LogicalNodeWrapper} Id
-     * @param wrapper
-     * @param logicalNode
+     * @param wrapper wraps LogicalNode and contains id for republished rpc
+     * @param logicalNode Which contains Physical Nodes with RPCs
      */
     private void registerOverlayRpcs(LogicalNodeWrapper wrapper, LogicalNode logicalNode) {
         LOGGER.trace("Registering overlay RPCs");

@@ -24,7 +24,7 @@ public abstract class  TopoStoreProvider {
     private List<TopologyStore> topologyStores = new ArrayList<>();
 
     /**
-     * @param topologyId
+     * @param topologyId Topology Identifier
      * @return TopologyStore by given Topology Id
      */
     public TopologyStore getTopologyStore(String topologyId) {

@@ -22,13 +22,17 @@ public class GlobalSchemaContextHolder {
 
     /**
      * Default constructor
-     * @param globalSchemaContext
+     * @param globalSchemaContext   Global Schema Context used for lookup in models
      */
     public GlobalSchemaContextHolder(SchemaContext globalSchemaContext) {
         this.globalSchemaContext = globalSchemaContext;
         this.contextTree = DataSchemaContextTree.from(globalSchemaContext);
     }
 
+    /**
+     * updates global {@link SchemaContext}
+     * @param globalSchemaContext    updated Global Schema Context
+     */
     public void updateSchemaContext(SchemaContext globalSchemaContext) {
         this.globalSchemaContext = globalSchemaContext;
         this.contextTree = DataSchemaContextTree.from(globalSchemaContext);

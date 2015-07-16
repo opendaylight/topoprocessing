@@ -65,7 +65,7 @@ public class TopologyWriter implements TransactionChainListener {
     private static final AtomicIntegerFieldUpdater<TopologyWriter> WRITE_SCHEDULED_UPDATER =
             AtomicIntegerFieldUpdater.newUpdater(TopologyWriter.class, "writeScheduled");
     private volatile int writeScheduled = 0;
-    
+
     private final Runnable writeTask = new Runnable() {
         @Override
         public void run() {
@@ -186,7 +186,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * @param wrapper
+     * @param wrapper LogicalNodeWrapper to be written into datastore
      */
     public void writeNode(final LogicalNodeWrapper wrapper) {
         NormalizedNode<?, ?> node = translator.translate(wrapper);
@@ -195,7 +195,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * @param wrapper
+     * @param wrapper LogicalNodeWrapper to be removed from datastore
      */
     public void deleteNode(final LogicalNodeWrapper wrapper) {
         preparedOperations.add(new DeleteOperation(createNodeIdentifier(wrapper.getNodeId())));
@@ -221,7 +221,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * @param transactionChain
+     * @param transactionChain Sets {@link TransactionChain}
      */
     public void setTransactionChain(DOMTransactionChain transactionChain) {
         this.transactionChain = transactionChain;

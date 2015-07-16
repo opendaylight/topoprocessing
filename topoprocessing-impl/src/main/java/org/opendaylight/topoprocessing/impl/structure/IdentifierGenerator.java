@@ -29,7 +29,7 @@ public class IdentifierGenerator {
 
     /**
      * Create unique identifier
-     * @param correlationItem 
+     * @param correlationItem Type of the Item to generate ID for
      * @return unique identifier
      */
     public String getNextIdentifier(CorrelationItemEnum correlationItem) {

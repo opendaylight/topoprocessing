@@ -81,8 +81,8 @@ public class TopologyRequestHandler {
     /**
      * Default constructor
      * @param domDataBroker broker used for transaction operations
-     * @param schemaHolder
-     * @param rpcServices
+     * @param schemaHolder  provides model search
+     * @param rpcServices   rpc services needed for rpc republishing
      */
     public TopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices) {
@@ -91,19 +91,37 @@ public class TopologyRequestHandler {
         this.rpcServices = rpcServices;
     }
 
-    /** Only for testing purposes */
-    public void setTranslator(PathTranslator translator) { this.translator = translator; }
+    /**
+     * Only for testing purposes
+     * @param translator Provides translating String to Path
+     */
+    public void setTranslator(PathTranslator translator) {
+        this.translator = translator;
+    }
 
-    /** Only for testing purposes */
+    /**
+     * Only for testing purposes
+     * @param listeners Sets UnderlayTopologyListener registrations
+     */
     public void setListeners(List<ListenerRegistration<DOMDataChangeListener>> listeners) {
         this.listeners = listeners;
     }
 
-    /** Only for testing purposes */
-    public List<ListenerRegistration<DOMDataChangeListener>> getListeners() { return listeners; }
+    /**
+     * Only for testing purposes
+     * @return UnderlayTopologyListener registrations
+     */
+    public List<ListenerRegistration<DOMDataChangeListener>> getListeners() {
+        return listeners;
+    }
 
-    /** Only for testing purposes */
-    public DOMTransactionChain getTransactionChain() { return transactionChain; }
+    /**
+     * Only for testing purposes
+     * @return Transaction Chain
+     */
+    public DOMTransactionChain getTransactionChain() {
+        return transactionChain;
+    }
 
     /**
      * @param topology overlay topology request
@@ -281,14 +299,14 @@ public class TopologyRequestHandler {
     }
 
     /**
-     * @param datastoreType
+     * @param datastoreType configures whether to use CONFIGURATION or OPERATIONAL datastore
      */
     public void setDatastoreType(DatastoreType datastoreType) {
         this.datastoreType = datastoreType;
     }
 
     /**
-     * @param filtrators
+     * @param filtrators sets default and registered filtrators
      */
     public void setFiltrators(Map<Class<? extends FilterBase>, FiltratorFactory> filtrators) {
         this.filtrators = filtrators;
