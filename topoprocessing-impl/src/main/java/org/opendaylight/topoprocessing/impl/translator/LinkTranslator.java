@@ -43,8 +43,8 @@ public class LinkTranslator {
                 SupportingLink.QNAME);
         // iterate through overlay items containing lists
         for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
-            // iterate through underlay items
             // TODO - add source and destination translation
+            // iterate through underlay items
             for (UnderlayItem underlayItem : overlayItem.getUnderlayItems()) {
                 if (! writtenLinks.contains(underlayItem)) {
                     writtenLinks.add(underlayItem);

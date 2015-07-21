@@ -8,10 +8,10 @@
 
 package org.opendaylight.topoprocessing.impl.writer;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
@@ -27,16 +27,17 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListen
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
-import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
@@ -45,9 +46,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 
 /**
  * @author michal.polkorab
@@ -62,6 +60,8 @@ public class TopologyWriter implements TransactionChainListener {
     private OverlayItemTranslator translator;
     private DOMTransactionChain transactionChain;
     private YangInstanceIdentifier topologyIdentifier;
+    private YangInstanceIdentifier nodeIdentifier;
+    private YangInstanceIdentifier linkIdentifier;
     private Queue<TransactionOperation> preparedOperations;
     private ThreadPoolExecutor pool;
 
@@ -83,9 +83,10 @@ public class TopologyWriter implements TransactionChainListener {
     public TopologyWriter(String topologyId) {
         this.topologyId = topologyId;
         translator = new OverlayItemTranslator();
-        topologyIdentifier =
-                YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+        topologyIdentifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
                 .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, topologyId).build();
+        nodeIdentifier = YangInstanceIdentifier.builder(topologyIdentifier).node(Node.QNAME).build();
+        linkIdentifier = YangInstanceIdentifier.builder(topologyIdentifier).node(Link.QNAME).build();
         preparedOperations = new ConcurrentLinkedQueue<>();
         pool = new ScheduledThreadPoolExecutor(EXECUTOR_POOL_THREADS);
     }
@@ -209,8 +210,7 @@ public class TopologyWriter implements TransactionChainListener {
     private YangInstanceIdentifier createItemIdentifier(OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
         YangInstanceIdentifier itemWithItemIdIdentifier = null;
         if (wrapper != null) {
-            itemWithItemIdIdentifier = InstanceIdentifiers.buildItemIdIdentifier(topologyIdentifier,
-                    wrapper.getId(), itemType);
+            itemWithItemIdIdentifier = buildDatastoreIdentifier(wrapper.getId(), itemType);
         }
         return itemWithItemIdIdentifier;
     }
@@ -293,5 +293,24 @@ public class TopologyWriter implements TransactionChainListener {
     public void deleteOverlayTopology() {
         preparedOperations.add(new DeleteOperation(topologyIdentifier));
         scheduleWrite();
+    }
+
+    private YangInstanceIdentifier buildDatastoreIdentifier(String itemId, CorrelationItemEnum correlationItem) {
+        InstanceIdentifierBuilder builder = null;
+        switch (correlationItem) {
+        case Node:
+        case TerminationPoint:
+            builder = YangInstanceIdentifier.builder(nodeIdentifier)
+                        .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, itemId);
+            break;
+        case Link:
+            builder = YangInstanceIdentifier.builder(linkIdentifier)
+                    .nodeWithKey(Link.QNAME, TopologyQNames.NETWORK_LINK_ID_QNAME, itemId);
+            break;
+        default:
+            throw new IllegalArgumentException("Wrong Correlation item set: "
+                    + correlationItem);
+        }
+        return builder.build();
     }
 }

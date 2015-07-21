@@ -96,7 +96,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         this.underlayTopologyId = underlayTopologyId;
         this.pathIdentifier = pathIdentifier;
         this.correlationItem = correlationItem;
-        this.relativeItemIdIdentifier = InstanceIdentifiers.buildRelativeItemIdIdentifier(correlationItem);
+        this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(correlationItem);
         this.itemQName = TopologyQNames.buildItemQName(correlationItem);
         this.itemIdentifier = YangInstanceIdentifier.of(itemQName);
     }

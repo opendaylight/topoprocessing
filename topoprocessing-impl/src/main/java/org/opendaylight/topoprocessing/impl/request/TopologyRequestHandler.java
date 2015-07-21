@@ -8,8 +8,11 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationBase;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationAggregation;
@@ -181,8 +184,7 @@ public class TopologyRequestHandler {
                     underlayTopologyId, null, correlationItem);
             InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier itemIdentifier =
-                    InstanceIdentifiers.buildItemIdentifier(topologyIdentifier, correlationItem);
+            YangInstanceIdentifier itemIdentifier = buildListenerIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering filtering underlay topology listener for topology: {}", underlayTopologyId);
             ListenerRegistration<DOMDataChangeListener> listenerRegistration;
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
@@ -235,8 +237,7 @@ public class TopologyRequestHandler {
                         pathIdentifier, correlationItem);
             }
             InstanceIdentifierBuilder topologyIdentifier = createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier itemIdentifier =
-                    InstanceIdentifiers.buildItemIdentifier(topologyIdentifier, correlationItem);
+            YangInstanceIdentifier itemIdentifier = buildListenerIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
             ListenerRegistration<DOMDataChangeListener> listenerRegistration;
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
@@ -339,5 +340,29 @@ private Filter findFilter(List<Filter> filters, String filterId) {
      */
     public void setFiltrators(Map<Class<? extends FilterBase>, FiltratorFactory> filtrators) {
         this.filtrators = filtrators;
+    }
+
+    /**
+     * Builds item identifier (identifies item {@link MapNode})
+     * @param builder starting builder (set with specific topology) that will be appended
+     * with corresponding item QName
+     * @param correlationItemEnum item type
+     * @return item identifier (identifies item {@link MapNode})
+     */
+    private YangInstanceIdentifier buildListenerIdentifier(YangInstanceIdentifier.InstanceIdentifierBuilder builder,
+            CorrelationItemEnum correlationItemEnum) {
+        switch (correlationItemEnum) {
+        case Node:
+        case TerminationPoint:
+            builder.node(Node.QNAME);
+            break;
+        case Link:
+            builder.node(Link.QNAME);
+            break;
+        default:
+            throw new IllegalArgumentException("Wrong Correlation item set: "
+                    + correlationItemEnum);
+        }
+        return builder.build();
     }
 }

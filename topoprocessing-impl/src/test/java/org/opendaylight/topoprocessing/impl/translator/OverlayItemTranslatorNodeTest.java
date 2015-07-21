@@ -36,7 +36,7 @@ import com.google.common.base.Optional;
  * @author matus.marko
  */
 @RunWith(MockitoJUnitRunner.class)
-public class LogicalNodeToNodeTranslatorTest {
+public class OverlayItemTranslatorNodeTest {
 
     private OverlayItemTranslator translator = new OverlayItemTranslator();
     private static final String TOPOLOGY_NAME = "topology:1";
