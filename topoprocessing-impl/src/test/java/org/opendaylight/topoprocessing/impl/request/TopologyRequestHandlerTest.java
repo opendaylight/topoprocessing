@@ -10,8 +10,9 @@ package org.opendaylight.topoprocessing.impl.request;
 
 import static org.mockito.Matchers.any;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.AggregationBuilder;
+import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.AggregationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.Aggregation;
 import com.google.common.util.concurrent.CheckedFuture;
 import java.util.ArrayList;
@@ -36,7 +37,6 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
-import org.opendaylight.topoprocessing.impl.operator.filtrator.DefaultFiltrators;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;

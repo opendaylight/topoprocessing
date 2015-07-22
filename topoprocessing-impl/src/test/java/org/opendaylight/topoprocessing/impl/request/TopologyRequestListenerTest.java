@@ -1,19 +1,17 @@
 package org.opendaylight.topoprocessing.impl.request;
 
+import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
+
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
-import org.opendaylight.topoprocessing.impl.operator.filtrator.DefaultFiltrators;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
-
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractCheckedFuture;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
