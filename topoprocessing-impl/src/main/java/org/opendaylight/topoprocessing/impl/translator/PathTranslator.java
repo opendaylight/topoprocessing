@@ -9,7 +9,6 @@
 package org.opendaylight.topoprocessing.impl.translator;
 
 import com.google.common.base.Splitter;
-import java.util.Iterator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -17,6 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.util.DataSchemaContextNode;
@@ -25,6 +25,8 @@ import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Iterator;
 
 /**
  * @author martin.uhlir
@@ -85,13 +87,16 @@ public class PathTranslator {
                             TopologyQNames.INVENTORY_NODE_ID_QNAME, "")
                     .build();
         } else {
-            itemIdentifier = YangInstanceIdentifier.builder()
+            YangInstanceIdentifier.InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
                     .node(NetworkTopology.QNAME)
                     .node(Topology.QNAME)
-                    .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, "")
-                    .node(itemQName)
-                    .nodeWithKey(itemQName, TopologyQNames.buildItemIdQName(correlationItem), "")
-                    .build();
+                    .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, "");
+            if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
+                itemIdentifierBuilder.node(Node.QNAME)
+                        .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, "");
+            }
+            itemIdentifier = itemIdentifierBuilder.node(itemQName)
+                    .nodeWithKey(itemQName, TopologyQNames.buildItemIdQName(correlationItem), "").build();
         }
         return itemIdentifier;
     }
