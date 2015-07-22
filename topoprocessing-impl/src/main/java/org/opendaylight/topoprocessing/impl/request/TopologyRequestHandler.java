@@ -8,6 +8,7 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
+import org.opendaylight.topoprocessing.impl.operator.*;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
@@ -16,8 +17,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationAggregation;
-import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
-import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.Filtration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.Aggregation;
 import com.google.common.base.Preconditions;
@@ -32,11 +31,6 @@ import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
-import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
-import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
-import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
-import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
-import org.opendaylight.topoprocessing.impl.operator.UnificationAggregator;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
@@ -210,7 +204,7 @@ public class TopologyRequestHandler {
     private TopologyAggregator initAggregation(Correlation correlation, boolean filtration) {
         CorrelationItemEnum correlationItem = correlation.getCorrelationItem();
         Aggregation aggregation = correlation.getAggregation();
-        TopologyAggregator aggregator = createAggregator(aggregation.getAggregationType());
+        TopologyAggregator aggregator = createAggregator(correlation);
         if (aggregation.getScripting() != null) {
             aggregator.initCustomAggregation(aggregation.getScripting());
         }
@@ -220,6 +214,9 @@ public class TopologyRequestHandler {
             YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
                     correlationItem, schemaHolder);
             UnderlayTopologyListener listener = null;
+            if (aggregator instanceof TerminationPointAggregator) {
+                ((TerminationPointAggregator) aggregator).setTargetField(pathIdentifier);
+            }
             if (filtration && mapping.getApplyFilters() != null) {
                 PreAggregationFiltrator filtrator = new PreAggregationFiltrator();
                 filtrator.initializeStore(underlayTopologyId, false);
@@ -254,7 +251,7 @@ public class TopologyRequestHandler {
     }
 
 /**
- * @param filters 
+ * @param filters
  * @param filterId
  * @return
  */
@@ -267,14 +264,19 @@ private Filter findFilter(List<Filter> filters, String filterId) {
     return null;
 }
 
-    private TopologyAggregator createAggregator(Class<? extends AggregationBase> type) {
-        if (Equality.class.equals(type)) {
-            return new EqualityAggregator();
-        } else if (Unification.class.equals(type)) {
-            return new UnificationAggregator();
+    private TopologyAggregator createAggregator(Correlation correlation) {
+        TopologyAggregator aggregator;
+        Class<? extends AggregationBase> aggregationType = correlation.getAggregation().getAggregationType();
+        if (CorrelationItemEnum.TerminationPoint.equals(correlation.getCorrelationItem())) {
+            aggregator = new TerminationPointAggregator();
+        } else if (Equality.class.equals(aggregationType)) {
+            aggregator = new EqualityAggregator();
+        } else if (Unification.class.equals(aggregationType)) {
+            aggregator = new UnificationAggregator();
         } else {
-            throw new IllegalArgumentException("Unsupported correlation type received: " + type);
+            throw new IllegalArgumentException("Unsupported correlation type received: " + aggregationType);
         }
+        return aggregator;
     }
 
     private static InstanceIdentifierBuilder createTopologyIdentifier(
