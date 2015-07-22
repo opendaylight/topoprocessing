@@ -96,6 +96,13 @@ public class UnderlayItem {
     }
 
     /**
+     * @param itemId node's Id
+     */
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    /**
      * @return topology's Id
      */
     public String getTopologyId() {
