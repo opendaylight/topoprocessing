@@ -8,6 +8,11 @@
 
 package org.opendaylight.topoprocessing.impl.writer;
 
+import java.util.concurrent.Future;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+import com.google.common.util.concurrent.SettableFuture;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -19,6 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -67,7 +73,10 @@ public class TopologyWriter implements TransactionChainListener {
 
     private static final AtomicIntegerFieldUpdater<TopologyWriter> WRITE_SCHEDULED_UPDATER =
             AtomicIntegerFieldUpdater.newUpdater(TopologyWriter.class, "writeScheduled");
+    private static final int MAX_DELETE_TOPOLOGY_WAIT_TIME = 1000;
     private volatile int writeScheduled = 0;
+    private boolean shutdownInitiated = false;
+    private SettableFuture<Boolean> tearDownFuture = SettableFuture.create();
 
     private final Runnable writeTask = new Runnable() {
         @Override
@@ -193,9 +202,11 @@ public class TopologyWriter implements TransactionChainListener {
      * @param itemType item type
      */
     public void writeItem(final OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
-        NormalizedNode<?, ?> node = translator.translate(wrapper);
-        preparedOperations.add(new PutOperation(createItemIdentifier(wrapper, itemType), node));
-        scheduleWrite();
+        if (! shutdownInitiated) {
+            NormalizedNode<?, ?> node = translator.translate(wrapper);
+            preparedOperations.add(new PutOperation(createItemIdentifier(wrapper, itemType), node));
+            scheduleWrite();
+        }
     }
 
     /**
@@ -203,8 +214,10 @@ public class TopologyWriter implements TransactionChainListener {
      * @param itemType item type
      */
     public void deleteItem(final OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
-        preparedOperations.add(new DeleteOperation(createItemIdentifier(wrapper, itemType)));
-        scheduleWrite();
+        if (! shutdownInitiated) {
+            preparedOperations.add(new DeleteOperation(createItemIdentifier(wrapper, itemType)));
+            scheduleWrite();
+        }
     }
 
     private YangInstanceIdentifier createItemIdentifier(OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
@@ -284,15 +297,41 @@ public class TopologyWriter implements TransactionChainListener {
         if (! WRITE_SCHEDULED_UPDATER.compareAndSet(this, 1, 0)) {
             LOGGER.warn("Writer found unscheduled");
         }
+        if (shutdownInitiated) {
+            LOGGER.trace("Shutting down writer");
+            releaseResources(transactionChain.newWriteOnlyTransaction());
+            return;
+        }
         scheduleWrite();
     }
 
     /**
-     * Deletes whole overlay {@link Topology}
+     * Signals that allocated resources should be released
+     * @return tear down finished future
      */
-    public void deleteOverlayTopology() {
-        preparedOperations.add(new DeleteOperation(topologyIdentifier));
-        scheduleWrite();
+    public Future<Boolean> tearDown() {
+        LOGGER.trace("Tear down signaled.");
+        shutdownInitiated = true;
+        return tearDownFuture;
+    }
+
+    /**
+     * Clears list of unexecuted operations, deletes overlay topology from datastore
+     * and shuts down {@link ThreadPoolExecutor}. Then sets the tearDownFuture - notifying
+     * that the tearDown action has been completed.
+     * @param transaction used for overlay topology deletion
+     */
+    private void releaseResources(DOMDataWriteTransaction transaction) {
+        LOGGER.trace("Releasing allocated resources.");
+        preparedOperations.clear();
+        transaction.delete(LogicalDatastoreType.OPERATIONAL, topologyIdentifier);
+        try {
+            transaction.submit().get(MAX_DELETE_TOPOLOGY_WAIT_TIME, TimeUnit.MILLISECONDS);
+            pool.shutdownNow();
+            tearDownFuture.set(true);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            LOGGER.warn("Exception during overlay topology removal: {}", e);
+        }
     }
 
     private YangInstanceIdentifier buildDatastoreIdentifier(String itemId, CorrelationItemEnum correlationItem) {
