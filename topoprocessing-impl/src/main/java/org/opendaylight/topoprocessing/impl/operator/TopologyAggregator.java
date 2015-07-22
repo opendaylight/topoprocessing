@@ -35,7 +35,7 @@ import com.google.common.base.Preconditions;
 public abstract class TopologyAggregator extends TopoStoreProvider implements TopologyOperator {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyAggregator.class);
-    private TopologyManager topologyManager;
+    protected TopologyManager topologyManager;
     private ScriptEngine scriptEngine;
     private String script;
 

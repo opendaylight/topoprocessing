@@ -116,7 +116,6 @@ public class UnderlayTopologyListenerTest {
         UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, TOPOLOGY_ID,
                 CorrelationItemEnum.Node);
         listener.setOperator(mockOperator);
-        listener.setPathIdentifier(nodeYiid);
         listener.readExistingData(YangInstanceIdentifier.builder().build(), DatastoreType.OPERATIONAL);
         Map<YangInstanceIdentifier, UnderlayItem> createdEntries = new HashMap<>();
         UnderlayItem physicalNode = new UnderlayItem(nodeValue, null, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
