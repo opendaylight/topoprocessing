@@ -14,9 +14,8 @@ import com.google.common.util.concurrent.Futures;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
@@ -28,6 +27,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
+import org.opendaylight.topoprocessing.impl.structure.ShutdownableQueue;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
@@ -62,7 +62,7 @@ public class TopologyWriter implements TransactionChainListener {
     private YangInstanceIdentifier topologyIdentifier;
     private YangInstanceIdentifier nodeIdentifier;
     private YangInstanceIdentifier linkIdentifier;
-    private Queue<TransactionOperation> preparedOperations;
+    private ShutdownableQueue preparedOperations;
     private ThreadPoolExecutor pool;
 
     private static final AtomicIntegerFieldUpdater<TopologyWriter> WRITE_SCHEDULED_UPDATER =
@@ -87,7 +87,7 @@ public class TopologyWriter implements TransactionChainListener {
                 .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, topologyId).build();
         nodeIdentifier = YangInstanceIdentifier.builder(topologyIdentifier).node(Node.QNAME).build();
         linkIdentifier = YangInstanceIdentifier.builder(topologyIdentifier).node(Link.QNAME).build();
-        preparedOperations = new ConcurrentLinkedQueue<>();
+        preparedOperations = new ShutdownableQueue();
         pool = new ScheduledThreadPoolExecutor(EXECUTOR_POOL_THREADS);
     }
 
@@ -284,15 +284,20 @@ public class TopologyWriter implements TransactionChainListener {
         if (! WRITE_SCHEDULED_UPDATER.compareAndSet(this, 1, 0)) {
             LOGGER.warn("Writer found unscheduled");
         }
+        if (preparedOperations.canShutdown()) {
+            preparedOperations.shutdown();
+        }
         scheduleWrite();
     }
 
     /**
      * Deletes whole overlay {@link Topology}
+     * @return Future that is completed after the overlay topology is removed
      */
-    public void deleteOverlayTopology() {
+    public Future<Boolean> deleteOverlayTopology() {
         preparedOperations.add(new DeleteOperation(topologyIdentifier));
         scheduleWrite();
+        return preparedOperations.signalShutdown();
     }
 
     private YangInstanceIdentifier buildDatastoreIdentifier(String itemId, CorrelationItemEnum correlationItem) {

@@ -8,10 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Future;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
@@ -60,6 +64,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgum
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Picks up information from topology request, engages corresponding
  * listeners, aggregators.
@@ -68,7 +73,7 @@ import org.slf4j.LoggerFactory;
 public class TopologyRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
-    private static final int CLOSE_RESOURCES_SLEEP_TIME = 500;
+    private static final int MAX_DELETION_WAIT_TIME = 1000;
     private DOMDataBroker domDataBroker;
     private Topology topology;
     private PathTranslator translator = new PathTranslator();
@@ -304,11 +309,11 @@ private Filter findFilter(List<Filter> filters, String filterId) {
             listener.close();
         }
         listeners.clear();
-        writer.deleteOverlayTopology();
+        Future<Boolean> deletionFuture = writer.deleteOverlayTopology();
         try {
-            Thread.sleep(CLOSE_RESOURCES_SLEEP_TIME);
-        } catch (InterruptedException e) {
-            LOG.error("An error occurred while Thread.sleep was called: {}", e);
+            deletionFuture.get(MAX_DELETION_WAIT_TIME, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            LOG.error("An error occurred while waiting for delete overlay topology future: {}", e);
         }
         if (transactionChain != null) {
             try {
