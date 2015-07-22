@@ -51,13 +51,16 @@ public class PathTranslator {
         LOGGER.debug("Translating target-field path: " + yangPath);
         DataSchemaContextTree contextTree = schemaHolder.getContextTree();
         QName itemQName = TopologyQNames.buildItemQName(correlationItem);
-        YangInstanceIdentifier itemIdentifier = YangInstanceIdentifier.builder()
+        YangInstanceIdentifier.InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
                 .node(NetworkTopology.QNAME)
                 .node(Topology.QNAME)
-                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, "")
-                .node(itemQName)
-                .nodeWithKey(itemQName,
-                        TopologyQNames.buildItemIdQName(correlationItem), "")
+                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, "");
+        if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
+            itemIdentifierBuilder.node(Node.QNAME)
+                    .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, "");
+        }
+        YangInstanceIdentifier itemIdentifier = itemIdentifierBuilder.node(itemQName)
+                .nodeWithKey(itemQName, TopologyQNames.buildItemIdQName(correlationItem), "")
                 .build();
 
         DataSchemaContextNode<?> contextNode = contextTree.getChild(itemIdentifier);
