@@ -29,6 +29,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
@@ -96,8 +97,14 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         this.underlayTopologyId = underlayTopologyId;
         this.pathIdentifier = pathIdentifier;
         this.correlationItem = correlationItem;
-        this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(correlationItem);
-        this.itemQName = TopologyQNames.buildItemQName(correlationItem);
+        // this needs to be done because for processing TerminationPoints we need to filter Node instead of TP
+        if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
+            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Node);
+            this.itemQName = TopologyQNames.buildItemQName(CorrelationItemEnum.Node);
+        } else {
+            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(correlationItem);
+            this.itemQName = TopologyQNames.buildItemQName(correlationItem);
+        }
         this.itemIdentifier = YangInstanceIdentifier.of(itemQName);
     }
 
@@ -152,7 +159,9 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                     throw new IllegalStateException("item-id was not found in: " + entry.getValue());
                 }
                 UnderlayItem underlayItem = null;
-                if (operator instanceof TopologyAggregator || operator instanceof PreAggregationFiltrator) {
+                if ((operator instanceof TopologyAggregator
+                        && !(operator instanceof TerminationPointAggregator))
+                        || operator instanceof PreAggregationFiltrator) {
                     // AGGREGATION
                     LOGGER.debug("Finding leafnode: {}", pathIdentifier);
                     Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
@@ -168,6 +177,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                     }
                 } else {
                     // FILTRATION
+                    // Termination-point aggregation
                     underlayItem = new UnderlayItem(entry.getValue(), null, underlayTopologyId, itemId,
                             correlationItem);
                 }
