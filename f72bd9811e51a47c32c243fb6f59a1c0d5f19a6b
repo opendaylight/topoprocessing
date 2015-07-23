@@ -1,0 +1,251 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_bf3b3437",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-23T07:16:41Z",
+      "side": 1,
+      "message": "just a suggestion - maybe we can move this step into constructor",
+      "range": {
+        "startLine": 71,
+        "startChar": 4,
+        "endLine": 77,
+        "endChar": 5
+      },
+      "revId": "f72bd9811e51a47c32c243fb6f59a1c0d5f19a6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_3f1724a5",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-23T07:16:41Z",
+      "side": 1,
+      "message": "we know we aggregate termination points only in one topology ... we should use getTopologyStore(String topologyId)",
+      "range": {
+        "startLine": 86,
+        "startChar": 16,
+        "endLine": 87,
+        "endChar": 56
+      },
+      "revId": "f72bd9811e51a47c32c243fb6f59a1c0d5f19a6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_df0dd091",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-23T07:16:41Z",
+      "side": 1,
+      "message": "else continue",
+      "revId": "f72bd9811e51a47c32c243fb6f59a1c0d5f19a6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_ff10cca9",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-23T07:16:41Z",
+      "side": 1,
+      "message": "getTopologyStore(String topologyId)",
+      "range": {
+        "startLine": 107,
+        "startChar": 12,
+        "endLine": 108,
+        "endChar": 52
+      },
+      "revId": "f72bd9811e51a47c32c243fb6f59a1c0d5f19a6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_1f7b48f6",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-23T07:16:41Z",
+      "side": 1,
+      "message": "the original TP mapnode should be stored in leafNode, and here we would use it",
+      "range": {
+        "startLine": 110,
+        "startChar": 24,
+        "endLine": 112,
+        "endChar": 83
+      },
+      "revId": "f72bd9811e51a47c32c243fb6f59a1c0d5f19a6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_df84f0d5",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 115,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-23T07:16:41Z",
+      "side": 1,
+      "message": "we probably want to continue, not break",
+      "range": {
+        "startLine": 115,
+        "startChar": 28,
+        "endLine": 115,
+        "endChar": 33
+      },
+      "revId": "f72bd9811e51a47c32c243fb6f59a1c0d5f19a6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_ff876cd5",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-23T07:16:41Z",
+      "side": 1,
+      "message": "this should happen before the loop",
+      "range": {
+        "startLine": 117,
+        "startChar": 24,
+        "endLine": 118,
+        "endChar": 118
+      },
+      "revId": "f72bd9811e51a47c32c243fb6f59a1c0d5f19a6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_9f6e782e",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-23T07:16:41Z",
+      "side": 1,
+      "message": "again, continue instead of break",
+      "range": {
+        "startLine": 121,
+        "startChar": 28,
+        "endLine": 121,
+        "endChar": 34
+      },
+      "revId": "f72bd9811e51a47c32c243fb6f59a1c0d5f19a6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_5f78e0f1",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-23T07:16:41Z",
+      "side": 1,
+      "message": "this method should probably return aggregated tps, so that we would be able to change original item-node with the aggregated tps",
+      "range": {
+        "startLine": 125,
+        "startChar": 28,
+        "endLine": 125,
+        "endChar": 54
+      },
+      "revId": "f72bd9811e51a47c32c243fb6f59a1c0d5f19a6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_9f275812",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-23T07:16:41Z",
+      "side": 1,
+      "message": "this should be local variable - as we don\u0027t need to store all existing termination points there and we would need to clear it after each item",
+      "range": {
+        "startLine": 146,
+        "startChar": 46,
+        "endLine": 146,
+        "endChar": 66
+      },
+      "revId": "f72bd9811e51a47c32c243fb6f59a1c0d5f19a6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a7fa997_df5b9085",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-07-23T07:16:41Z",
+      "side": 1,
+      "message": "it would be more elegant and readable if we sticked with original method + added correlation-item\ncreateAggregator(Class\u003c? extends AggregationBase\u003e type, CorrelationItemEnum item)",
+      "range": {
+        "startLine": 267,
+        "startChar": 31,
+        "endLine": 267,
+        "endChar": 72
+      },
+      "revId": "f72bd9811e51a47c32c243fb6f59a1c0d5f19a6b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
