@@ -41,6 +41,18 @@ module topology-correlation {
         }
     }
 
+    typedef model {
+        description  "Supported input models";
+        type enumeration {
+            enum network-topology {
+                description "network-topology@2013-10-21.yang";
+            }
+            enum opendaylight-inventory {
+                description "opendaylight-inventory.yang";
+            }
+        }
+    }
+
     identity correlation-base {
         description "Base identity for correlation types";
     }
@@ -141,6 +153,7 @@ module topology-correlation {
                     uses scripting-grouping;
                     list mapping {
                         key "underlay-topology target-field";
+                        uses input-model-grouping;
                         leaf underlay-topology {
                             type string;
                             description "Input topology which will be used for aggregation.";
@@ -167,6 +180,7 @@ module topology-correlation {
                     }
                     list filter {
                         key "filter-type target-field";
+                        uses input-model-grouping;
                         leaf filter-id {
                             type string;
                         }
@@ -193,6 +207,13 @@ module topology-correlation {
             leaf script {
                 type string;
             }
+        }
+    }
+
+    grouping input-model-grouping {
+        leaf input-model {
+            type model;
+            description "Specifies what structures, identifiers and QNames should be used.";
         }
     }
 

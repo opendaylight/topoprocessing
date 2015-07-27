@@ -84,17 +84,13 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
     /**
      * Default constructor
      * @param domDataBroker DOM Data Broker
-     * @param operator processes received notifications (aggregates them)
      * @param underlayTopologyId underlay topology identifier
-     * @param pathIdentifier identifies leaf (node), which aggregation / filtering will be based on
      * @param correlationItem can be either Node or Link or TerminationPoint
      */
-    public UnderlayTopologyListener(DOMDataBroker domDataBroker, TopologyOperator operator, String underlayTopologyId,
-            YangInstanceIdentifier pathIdentifier, CorrelationItemEnum correlationItem) {
+    public UnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
+            CorrelationItemEnum correlationItem) {
         this.domDataBroker = domDataBroker;
-        this.operator = operator;
         this.underlayTopologyId = underlayTopologyId;
-        this.pathIdentifier = pathIdentifier;
         this.correlationItem = correlationItem;
         this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(correlationItem);
         this.itemQName = TopologyQNames.buildItemQName(correlationItem);
@@ -152,22 +148,24 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                     throw new IllegalStateException("item-id was not found in: " + entry.getValue());
                 }
                 UnderlayItem underlayItem = null;
-                if (operator instanceof TopologyAggregator || operator instanceof PreAggregationFiltrator) {
+                if ((operator instanceof TopologyAggregator || operator instanceof PreAggregationFiltrator)
+                        && (pathIdentifier != null)) {
                     // AGGREGATION
+                    LeafNode<?> leafnode = null;
                     LOGGER.debug("Finding leafnode: {}", pathIdentifier);
                     Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
                     if (node.isPresent()) {
                         if (LOGGER.isDebugEnabled()) {
                             LOGGER.debug("Found node: {}", node.get());
                         }
-                        LeafNode<?> leafnode = (LeafNode<?>) node.get();
+                        leafnode = (LeafNode<?>) node.get();
                         underlayItem = new UnderlayItem(entry.getValue(), leafnode, underlayTopologyId, itemId,
                                 correlationItem);
                     } else {
                         continue;
                     }
                 } else {
-                    // FILTRATION
+                    // FILTRATION or opendaylight-inventory model is used - doesn't contain leafNode
                     underlayItem = new UnderlayItem(entry.getValue(), null, underlayTopologyId, itemId,
                             correlationItem);
                 }
@@ -249,5 +247,19 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
             }
         });
         return map;
+    }
+
+    /**
+     * @param operator processes received notifications (aggregates / filters them)
+     */
+    public void setOperator(TopologyOperator operator) {
+        this.operator = operator;
+    }
+
+    /**
+     * @param pathIdentifier identifies leaf (node), which aggregation / filtering will be based on
+     */
+    public void setPathIdentifier(YangInstanceIdentifier pathIdentifier) {
+        this.pathIdentifier = pathIdentifier;
     }
 }
