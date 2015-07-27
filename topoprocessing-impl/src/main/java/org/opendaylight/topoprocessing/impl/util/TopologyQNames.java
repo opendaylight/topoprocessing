@@ -26,6 +26,8 @@ public final class TopologyQNames {
     public static final QName TOPOLOGY_ID_QNAME = QName.create(Topology.QNAME, "topology-id");
     /** Network-topology node-id QName */
     public static final QName NETWORK_NODE_ID_QNAME = QName.create(Node.QNAME, "node-id");
+    /** Opendaylight-inventory node-id QName */
+    public static final QName INVENTORY_NODE_ID_QNAME = QName.create("urn:opendaylight:inventory", "2013-08-19", "id");
     /** Network-topology link-id QName */
     public static final QName NETWORK_LINK_ID_QNAME = QName.create(Link.QNAME, "link-id");
     /** Network-topology tp-id QName */
