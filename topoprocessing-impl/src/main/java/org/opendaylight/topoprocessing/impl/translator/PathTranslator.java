@@ -8,15 +8,15 @@
 
 package org.opendaylight.topoprocessing.impl.translator;
 
+import com.google.common.base.Splitter;
 import java.util.Iterator;
-
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
-import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.util.DataSchemaContextNode;
@@ -25,8 +25,6 @@ import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Splitter;
 
 /**
  * @author martin.uhlir
@@ -42,32 +40,46 @@ public class PathTranslator {
      * @param yangPath path to target item
      * @param correlationItem   Type of Correlation Item
      * @param schemaHolder      Provides access to SchemaContext
+     * @param inputModel specifies which base path will be used for yangPath lookup
      * @return {@link YangInstanceIdentifier} leading to target item
      * @throws IllegalArgumentException if yangPath is in incorrect format
      * @throws IllegalStateException if required module is not loaded
      */
     public YangInstanceIdentifier translate(String yangPath, CorrelationItemEnum correlationItem,
-            GlobalSchemaContextHolder schemaHolder) {
+            GlobalSchemaContextHolder schemaHolder, Model inputModel) {
         LOGGER.debug("Translating target-field path: " + yangPath);
         DataSchemaContextTree contextTree = schemaHolder.getContextTree();
         QName itemQName = TopologyQNames.buildItemQName(correlationItem);
-        YangInstanceIdentifier itemIdentifier = YangInstanceIdentifier.builder()
-                .node(NetworkTopology.QNAME)
-                .node(Topology.QNAME)
-                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, "")
-                .node(itemQName)
-                .nodeWithKey(itemQName,
-                        TopologyQNames.buildItemIdQName(correlationItem), "")
-                .build();
-
+        YangInstanceIdentifier itemIdentifier = null;
+        if (Model.NetworkTopology.equals(inputModel)) {
+            itemIdentifier = YangInstanceIdentifier.builder()
+                    .node(NetworkTopology.QNAME)
+                    .node(Topology.QNAME)
+                    .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, "")
+                    .node(itemQName)
+                    .nodeWithKey(itemQName,
+                            TopologyQNames.buildItemIdQName(correlationItem), "")
+                    .build();
+        } else {
+            itemIdentifier = YangInstanceIdentifier.builder()
+                    .node(Nodes.QNAME)
+                    .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME)
+                    .nodeWithKey(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME,
+                            QName.create("urn:opendaylight:inventory", "2013-08-19", "id"), "")
+                    .build();
+        }
         DataSchemaContextNode<?> contextNode = contextTree.getChild(itemIdentifier);
+        LOGGER.debug("prvy contextNode: " + contextNode);
         Iterable<String> pathArguments = splitYangPath(yangPath);
         Iterator<String> iterator = pathArguments.iterator();
         YangInstanceIdentifier targetIdentifier = YangInstanceIdentifier.builder().build();
         while (iterator.hasNext()) {
             String currentId = iterator.next();
+            LOGGER.debug("currentId: " + currentId);
             QName currentQname = parseQname(schemaHolder.getSchemaContext(), currentId);
+            LOGGER.debug("currentQname: " + currentQname);
             contextNode = contextNode.getChild(currentQname);
+            LOGGER.debug("contextNode: " + contextNode);
             while (contextNode.isMixin()) {
                 targetIdentifier = YangInstanceIdentifier.create(targetIdentifier.getPathArguments())
                         .node(contextNode.getIdentifier());
