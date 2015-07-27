@@ -8,10 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+
+import org.opendaylight.topoprocessing.impl.listener.InventoryListener;
+import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
@@ -178,10 +182,36 @@ public class TopologyRequestHandler {
         for (Filter filter : filtration.getFilter()) {
             filtrator.initializeStore(underlayTopologyId, false);
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
-                    correlation.getCorrelationItem(), schemaHolder);
+                    correlation.getCorrelationItem(), schemaHolder, filter.getInputModel());
             addFiltrator(filtrator, filter, pathIdentifier);
-            UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, filtrator,
-                    underlayTopologyId, null, correlationItem);
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, underlayTopologyId,
+                    correlationItem);
+            NotificationInterConnector connector = null;
+            if (filter.getInputModel().equals(Model.OpendaylightInventory)
+                    && correlationItem.equals(CorrelationItemEnum.Node)) {
+                connector = new NotificationInterConnector(underlayTopologyId, correlationItem);
+                connector.initializeStore(underlayTopologyId, false);
+                listener.setOperator(connector);
+                InventoryListener invListener = new InventoryListener(underlayTopologyId);
+                invListener.setOperator(connector);
+                invListener.setPathIdentifier(pathIdentifier);
+                YangInstanceIdentifier invId = YangInstanceIdentifier.of(Nodes.QNAME)
+                        .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME);
+                ListenerRegistration<DOMDataChangeListener> invListenerRegistration;
+                if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
+                    invListenerRegistration = domDataBroker.registerDataChangeListener(
+                            LogicalDatastoreType.OPERATIONAL, invId, invListener, DataChangeScope.SUBTREE);
+                } else {
+                    invListenerRegistration = domDataBroker.registerDataChangeListener(
+                            LogicalDatastoreType.CONFIGURATION, invId, invListener, DataChangeScope.SUBTREE);
+                }
+                listeners.add(invListenerRegistration);
+            }
+            if (connector == null) {
+                listener.setOperator(filtrator);
+            } else {
+                connector.setOperator(filtrator);
+            }
             InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier itemIdentifier = buildListenerIdentifier(topologyIdentifier, correlationItem);
@@ -218,8 +248,30 @@ public class TopologyRequestHandler {
             String underlayTopologyId = mapping.getUnderlayTopology();
             aggregator.initializeStore(underlayTopologyId, mapping.isAggregateInside());
             YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
-                    correlationItem, schemaHolder);
-            UnderlayTopologyListener listener = null;
+                    correlationItem, schemaHolder, mapping.getInputModel());
+            UnderlayTopologyListener listener =
+                    new UnderlayTopologyListener(domDataBroker, underlayTopologyId, correlationItem);
+            NotificationInterConnector connector = null;
+            if (mapping.getInputModel().equals(Model.OpendaylightInventory)
+                    && correlationItem.equals(CorrelationItemEnum.Node)) {
+                connector = new NotificationInterConnector(underlayTopologyId, correlationItem);
+                connector.initializeStore(underlayTopologyId, false);
+                listener.setOperator(connector);
+                InventoryListener invListener = new InventoryListener(underlayTopologyId);
+                invListener.setOperator(connector);
+                invListener.setPathIdentifier(pathIdentifier);
+                YangInstanceIdentifier invId = YangInstanceIdentifier.of(Nodes.QNAME)
+                        .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME);
+                ListenerRegistration<DOMDataChangeListener> invListenerRegistration;
+                if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
+                    invListenerRegistration = domDataBroker.registerDataChangeListener(
+                            LogicalDatastoreType.OPERATIONAL, invId, invListener, DataChangeScope.SUBTREE);
+                } else {
+                    invListenerRegistration = domDataBroker.registerDataChangeListener(
+                            LogicalDatastoreType.CONFIGURATION, invId, invListener, DataChangeScope.SUBTREE);
+                }
+                listeners.add(invListenerRegistration);
+            }
             if (filtration && mapping.getApplyFilters() != null) {
                 PreAggregationFiltrator filtrator = new PreAggregationFiltrator();
                 filtrator.initializeStore(underlayTopologyId, false);
@@ -227,19 +279,28 @@ public class TopologyRequestHandler {
                 for (String filterId : mapping.getApplyFilters()) {
                     Filter filter = findFilter(correlation.getFiltration().getFilter(), filterId);
                     YangInstanceIdentifier filterPath = translator.translate(filter.getTargetField().getValue(),
-                            correlationItem, schemaHolder);
+                            correlationItem, schemaHolder, mapping.getInputModel());
                     addFiltrator(filtrator, filter, filterPath);
                 }
-                listener = new UnderlayTopologyListener(domDataBroker, filtrator, underlayTopologyId,
-                        pathIdentifier, correlationItem);
+                if (connector == null) {
+                    listener.setOperator(filtrator);
+                } else {
+                    connector.setOperator(filtrator);
+                }
             } else {
-                listener = new UnderlayTopologyListener(domDataBroker, aggregator, underlayTopologyId,
-                        pathIdentifier, correlationItem);
+                if (connector == null) {
+                    listener.setOperator(aggregator);
+                } else {
+                    connector.setOperator(aggregator);
+                }
             }
             InstanceIdentifierBuilder topologyIdentifier = createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier itemIdentifier = buildListenerIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
             ListenerRegistration<DOMDataChangeListener> listenerRegistration;
+            if (connector == null) {
+                listener.setPathIdentifier(pathIdentifier);
+            }
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
                 listenerRegistration = domDataBroker.registerDataChangeListener(
                         LogicalDatastoreType.OPERATIONAL, itemIdentifier, listener, DataChangeScope.SUBTREE);
@@ -253,19 +314,14 @@ public class TopologyRequestHandler {
         return aggregator;
     }
 
-/**
- * @param filters 
- * @param filterId
- * @return
- */
-private Filter findFilter(List<Filter> filters, String filterId) {
-    for (Filter filter : filters) {
-        if (filterId.equals(filter.getFilterId())) {
-            return filter;
+    private Filter findFilter(List<Filter> filters, String filterId) {
+        for (Filter filter : filters) {
+            if (filterId.equals(filter.getFilterId())) {
+                return filter;
+            }
         }
+        return null;
     }
-    return null;
-}
 
     private TopologyAggregator createAggregator(Class<? extends AggregationBase> type) {
         if (Equality.class.equals(type)) {
