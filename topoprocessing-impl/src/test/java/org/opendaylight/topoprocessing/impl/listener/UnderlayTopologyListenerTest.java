@@ -73,8 +73,10 @@ public class UnderlayTopologyListenerTest {
 
         YangInstanceIdentifier pathIdentifier = YangInstanceIdentifier.of(ipAddressQname);
         TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
-        UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, mockOperator, TOPOLOGY_ID,
-                pathIdentifier, CorrelationItemEnum.Node);
+        UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, TOPOLOGY_ID,
+                CorrelationItemEnum.Node);
+        listener.setOperator(mockOperator);
+        listener.setPathIdentifier(pathIdentifier);
         listener.readExistingData(YangInstanceIdentifier.builder().build(), DatastoreType.OPERATIONAL);
 
         Map<YangInstanceIdentifier, UnderlayItem> createdEntries = new HashMap<>();
@@ -111,8 +113,10 @@ public class UnderlayTopologyListenerTest {
         mapCreated.put(nodeYiid, nodeValue);
 
         TopologyFiltrator mockOperator = Mockito.mock(TopologyFiltrator.class);
-        UnderlayTopologyListener listener = new UnderlayTopologyListener(
-                domDataBroker, mockOperator, TOPOLOGY_ID, nodeYiid, CorrelationItemEnum.Node);
+        UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, TOPOLOGY_ID,
+                CorrelationItemEnum.Node);
+        listener.setOperator(mockOperator);
+        listener.setPathIdentifier(nodeYiid);
         listener.readExistingData(YangInstanceIdentifier.builder().build(), DatastoreType.OPERATIONAL);
         Map<YangInstanceIdentifier, UnderlayItem> createdEntries = new HashMap<>();
         UnderlayItem physicalNode = new UnderlayItem(nodeValue, null, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
@@ -148,8 +152,10 @@ public class UnderlayTopologyListenerTest {
         mapCreated.put(nodeYiid, nodeValue);
 
         TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
-        UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, mockOperator, TOPOLOGY_ID,
-                nodeYiid, CorrelationItemEnum.Node);
+        UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, TOPOLOGY_ID,
+                CorrelationItemEnum.Node);
+        listener.setOperator(mockOperator);
+        listener.setPathIdentifier(nodeYiid);
         listener.readExistingData(YangInstanceIdentifier.builder().build(), DatastoreType.OPERATIONAL);
 
         Mockito.when(mockChange.getCreatedData()).thenReturn(mapCreated);
@@ -160,8 +166,9 @@ public class UnderlayTopologyListenerTest {
     public void testReadExistingData() {
         DOMDataBroker domDataBrokerLocal = Mockito.mock(DOMDataBroker.class);
         UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBrokerLocal,
-                Mockito.mock(TopologyOperator.class), TOPOLOGY_ID, YangInstanceIdentifier.builder().build(),
-                CorrelationItemEnum.Node);
+                TOPOLOGY_ID, CorrelationItemEnum.Node);
+        listener.setOperator(Mockito.mock(TopologyOperator.class));
+        listener.setPathIdentifier(YangInstanceIdentifier.builder().build());
         YangInstanceIdentifier path = YangInstanceIdentifier.builder().build();
         DOMDataReadOnlyTransaction readTransaction = Mockito.mock(DOMDataReadOnlyTransaction.class);
         Mockito.when(domDataBrokerLocal.newReadOnlyTransaction()).thenReturn(readTransaction);
