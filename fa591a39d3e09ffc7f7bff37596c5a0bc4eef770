@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a7fa997_13dfbc0e",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-07-28T14:50:59Z",
+      "side": 1,
+      "message": "This is both unreliable and wasteful.\n\nWriter implementation should be changed from current \"preparedOperations and scheduleWrite\" to something with shutdown flag (to ignore further .add calls) and a method giving Future to .get to confirm the the queue is empty.\nThen synchronous delete transaction will be safe, allowing the final transactionChain.close()",
+      "range": {
+        "startLine": 252,
+        "startChar": 12,
+        "endLine": 252,
+        "endChar": 25
+      },
+      "revId": "fa591a39d3e09ffc7f7bff37596c5a0bc4eef770",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
