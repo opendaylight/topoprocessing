@@ -139,7 +139,7 @@ public class UnderlayTopologyListenerTest {
         Mockito.verify(mockOperator).processRemovedChanges(Matchers.refEq(identifiers), Matchers.eq(TOPOLOGY_ID));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testIncorrectNode() {
         String topoId = "node:1";
         YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.of(Node.QNAME);
@@ -154,6 +154,8 @@ public class UnderlayTopologyListenerTest {
 
         Mockito.when(mockChange.getCreatedData()).thenReturn(mapCreated);
         listener.onDataChanged(mockChange);
+        Mockito.verify(mockOperator, Mockito.times(0)).processCreatedChanges(
+                (Map<YangInstanceIdentifier, UnderlayItem>) Mockito.any(), Matchers.eq(TOPOLOGY_ID));
     }
 
     @Test

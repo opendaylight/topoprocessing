@@ -149,7 +149,7 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
                     LeafNode<?> itemIdLeafNode = (LeafNode<?>) itemWithItemId.get();
                     itemId = itemIdLeafNode.getValue().toString();
                 } else {
-                    throw new IllegalStateException("item-id was not found in: " + entry.getValue());
+                    continue;
                 }
                 UnderlayItem underlayItem = null;
                 if (operator instanceof TopologyAggregator || operator instanceof PreAggregationFiltrator) {
