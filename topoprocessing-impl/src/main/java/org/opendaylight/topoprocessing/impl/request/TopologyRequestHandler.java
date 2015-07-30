@@ -134,13 +134,13 @@ public class TopologyRequestHandler {
         Preconditions.checkNotNull(topology, "Received topology can't be null");
         this.topology = topology;
         String overlayTopologyId = topology.getTopologyId().getValue();
-        writer = new TopologyWriter(overlayTopologyId);
+        YangInstanceIdentifier topologyIdentifier = createTopologyIdentifier(overlayTopologyId).build();
+        writer = new TopologyWriter(topologyIdentifier);
         transactionChain = domDataBroker.createTransactionChain(writer);
         writer.setTransactionChain(transactionChain);
-        TopologyManager topologyManager = new TopologyManager(rpcServices, schemaHolder,
-                createTopologyIdentifier(overlayTopologyId).build());
+        TopologyManager topologyManager = new TopologyManager(rpcServices, schemaHolder, topologyIdentifier);
         topologyManager.setWriter(writer);
-        writer.initOverlayTopology();
+        writer.initOverlayTopology(overlayTopologyId);
         try {
             LOG.debug("Processing correlation configuration");
             CorrelationAugment augmentation = topology.getAugmentation(CorrelationAugment.class);

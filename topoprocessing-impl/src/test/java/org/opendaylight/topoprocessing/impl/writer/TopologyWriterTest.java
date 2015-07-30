@@ -46,7 +46,7 @@ public class TopologyWriterTest {
      */
     @Before
     public void setUp() {
-        topologyWriter = new TopologyWriter(TOPOLOGY_ID);
+        topologyWriter = new TopologyWriter(topologyIdentifier);
         topologyWriter.setTransactionChain(transactionChain);
     }
 
@@ -58,7 +58,7 @@ public class TopologyWriterTest {
     public void testInitOverlayTopology() {
         Mockito.when(transactionChain.newWriteOnlyTransaction()).thenReturn(transaction);
         Mockito.when(transaction.submit()).thenReturn(submit);
-        topologyWriter.initOverlayTopology();
+        topologyWriter.initOverlayTopology(TOPOLOGY_ID);
 
         MapEntryNode topologyMapEntryNode = ImmutableNodes
                 .mapEntry(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY_ID);

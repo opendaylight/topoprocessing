@@ -11,17 +11,12 @@ package org.opendaylight.topoprocessing.impl.writer;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
@@ -29,7 +24,6 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
-import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -56,7 +50,6 @@ public class TopologyWriter implements TransactionChainListener {
     protected static final Logger LOGGER = LoggerFactory.getLogger(TopologyWriter.class);
     private static final int MAXIMUM_OPERATIONS = 50;
     private static final int EXECUTOR_POOL_THREADS = 1;
-    private String topologyId;
     private OverlayItemTranslator translator;
     private DOMTransactionChain transactionChain;
     private YangInstanceIdentifier topologyIdentifier;
@@ -78,13 +71,11 @@ public class TopologyWriter implements TransactionChainListener {
 
     /**
      * Default constructor
-     * @param topologyId topologyId of overlay topology
+     * @param topologyIdentifier identifies overlay topology
      */
-    public TopologyWriter(String topologyId) {
-        this.topologyId = topologyId;
+    public TopologyWriter(YangInstanceIdentifier topologyIdentifier) {
         translator = new OverlayItemTranslator();
-        topologyIdentifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, topologyId).build();
+        this.topologyIdentifier = topologyIdentifier;
         nodeIdentifier = YangInstanceIdentifier.builder(topologyIdentifier).node(Node.QNAME).build();
         linkIdentifier = YangInstanceIdentifier.builder(topologyIdentifier).node(Link.QNAME).build();
         preparedOperations = new ConcurrentLinkedQueue<>();
@@ -92,99 +83,19 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * Updates existing data in operational DataStore
-     * @param dataToUpdate data to be updated
-     */
-    public void updateData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> dataToUpdate) {
-        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
-        Iterator<Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator =
-                dataToUpdate.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry = iterator.next();
-            transaction.merge(LogicalDatastoreType.OPERATIONAL, entry.getKey(), entry.getValue());
-        }
-        CheckedFuture<Void,TransactionCommitFailedException> commitFuture = transaction.submit();
-        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(Void empty) {
-                LOGGER.debug("Data updated successfully");
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                LOGGER.warn("Failed to update transaction data");
-            }
-        });
-    }
-
-    /**
-     * Writes / creates new data in operational DataStore
-     * @param dataToCreate data to be created
-     */
-    public void writeCreatedData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> dataToCreate) {
-        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
-        Iterator<Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator =
-                dataToCreate.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry = iterator.next();
-            transaction.put(LogicalDatastoreType.OPERATIONAL, entry.getKey(), entry.getValue());
-        }
-        CheckedFuture<Void,TransactionCommitFailedException> commitFuture = transaction.submit();
-        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(Void empty) {
-                LOGGER.debug("Data written successfully");
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                LOGGER.warn("Failed to write new transaction data");
-            }
-        });
-    }
-
-    /**
-     * Removed specified data from operational DataStore
-     * @param dataToRemove data to be removed
-     */
-    public void deleteData(Set<YangInstanceIdentifier> dataToRemove) {
-        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
-        Iterator<YangInstanceIdentifier> iterator = dataToRemove.iterator();
-        while (iterator.hasNext()) {
-            transaction.delete(LogicalDatastoreType.OPERATIONAL, iterator.next());
-        }
-        CheckedFuture<Void,TransactionCommitFailedException> commitFuture = transaction.submit();
-        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(Void empty) {
-                LOGGER.debug("Data successfully removed");
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                LOGGER.warn("Failed to remove transaction data");
-            }
-        });
-    }
-
-    /**
      * Writes empty overlay topology with provided topologyId. Also writes empty {@link Link}
      * and {@link Node} mapnode.
+     * @param topologyId overlay topology id
      */
-    public void initOverlayTopology() {
+    public void initOverlayTopology(String topologyId) {
         MapEntryNode topologyMapEntryNode = ImmutableNodes
                 .mapEntry(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, topologyId);
-
         MapNode nodeMapNode = ImmutableNodes.mapNodeBuilder(Node.QNAME).build();
-        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder(topologyIdentifier)
-                .node(Node.QNAME).build();
         MapNode linkMapNode = ImmutableNodes.mapNodeBuilder(Link.QNAME).build();
-        YangInstanceIdentifier linkYiid = YangInstanceIdentifier.builder(topologyIdentifier)
-                .node(Link.QNAME).build();
 
         preparedOperations.add(new PutOperation(topologyIdentifier, topologyMapEntryNode));
-        preparedOperations.add(new PutOperation(nodeYiid, nodeMapNode));
-        preparedOperations.add(new PutOperation(linkYiid, linkMapNode));
+        preparedOperations.add(new PutOperation(nodeIdentifier, nodeMapNode));
+        preparedOperations.add(new PutOperation(linkIdentifier, linkMapNode));
         scheduleWrite();
     }
 
@@ -215,7 +126,6 @@ public class TopologyWriter implements TransactionChainListener {
         return itemWithItemIdIdentifier;
     }
 
-    
     @Override
     public void onTransactionChainFailed(TransactionChain<?, ?> chain, AsyncTransaction<?, ?> transaction,
             Throwable cause) {
