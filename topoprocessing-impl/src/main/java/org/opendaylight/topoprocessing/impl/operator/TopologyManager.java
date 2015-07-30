@@ -121,8 +121,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     public void removeOverlayItem(OverlayItem overlayItemIdentifier) {
         OverlayItemWrapper foundWrapper = null;
         for (OverlayItemWrapper wrapper : getWrappersList(overlayItemIdentifier.getCorrelationItem())) {
-            if (wrapper.getOverlayItems().contains(overlayItemIdentifier)) {
-                wrapper.getOverlayItems().remove(overlayItemIdentifier);
+            if (wrapper.getOverlayItems().remove(overlayItemIdentifier)) {
                 foundWrapper = wrapper;
                 break;
             }
