@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a7ca5a3_3b9ebf57",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/structure/ShutdownableQueue.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-07-30T14:42:42Z",
+      "side": 1,
+      "message": "Is this thread-safe? Even if acceptNewEntries were volatile, this thread may be pre-empted just before the .add(), so we can have addition happen considerably later then shutdown was signalled.",
+      "range": {
+        "startLine": 42,
+        "startChar": 11,
+        "endLine": 42,
+        "endChar": 31
+      },
+      "revId": "a2c49cfdd1eaf75bc91bffeb201aa78d141cf4bd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a7ca5a3_1b99836e",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-07-30T14:42:42Z",
+      "side": 1,
+      "message": "It would be better to explicitly return here, to avoid the following scheduleWrite() call.",
+      "range": {
+        "startLine": 288,
+        "startChar": 41,
+        "endLine": 288,
+        "endChar": 42
+      },
+      "revId": "a2c49cfdd1eaf75bc91bffeb201aa78d141cf4bd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a7ca5a3_dba22b9a",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-07-30T14:42:42Z",
+      "side": 1,
+      "message": "Other threads may still be adding operations to the queue here. That could lead to the same \"parent was deleted\" exceptions we are trying to avoid.",
+      "range": {
+        "startLine": 298,
+        "startChar": 71,
+        "endLine": 298,
+        "endChar": 72
+      },
+      "revId": "a2c49cfdd1eaf75bc91bffeb201aa78d141cf4bd",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
