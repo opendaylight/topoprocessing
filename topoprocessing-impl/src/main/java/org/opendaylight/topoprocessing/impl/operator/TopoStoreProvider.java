@@ -9,9 +9,8 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
+import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -52,7 +51,7 @@ public abstract class  TopoStoreProvider {
             }
         }
         topologyStores.add(new TopologyStore(underlayTopologyId, aggregateInside,
-                new HashMap<YangInstanceIdentifier, UnderlayItem>()));
+                new ConcurrentHashMap<YangInstanceIdentifier, UnderlayItem>()));
     }
 
     /**
