@@ -59,21 +59,22 @@ public class TopologyManagerTest {
     private static final String NODE_ID2 = "pcep:2";
     private static final String NODE_ID3 = "pcep:3";
 
-    @Mock private RpcServices mockRpcServices;
-    @Mock private GlobalSchemaContextHolder mockSchemaHolder;
+//    @Mock private RpcServices mockRpcServices;
+//    @Mock private GlobalSchemaContextHolder mockSchemaHolder;
     @Mock private NormalizedNode<?,?> mockNormalizedNode1;
-    @Mock private DOMRpcService mockDOMRpcService;
-    @Mock private ListenerRegistration<DOMRpcAvailabilityListener> mockListenerRegistration;
+//    @Mock private DOMRpcService mockDOMRpcService;
+//    @Mock private ListenerRegistration<DOMRpcAvailabilityListener> mockListenerRegistration;
     @Mock private TopologyWriter writer;
-    @Mock private SchemaContext mockSchemaContext;
-    @Mock private DOMRpcProviderService mockDomRpcProviderService;
-    @Mock private DOMRpcImplementationRegistration<DOMRpcImplementation> mockDomRpcImplementationRegistration;
+    @Mock private RpcRepublisher republisher;
+//    @Mock private SchemaContext mockSchemaContext;
+//    @Mock private DOMRpcProviderService mockDomRpcProviderService;
+//    @Mock private DOMRpcImplementationRegistration<DOMRpcImplementation> mockDomRpcImplementationRegistration;
 
-    @Mock private DOMRpcImplementation mockDomRpcImplementation;
-    @Mock private DOMRpcIdentifier mockDomRpcIdentifier;
+//    @Mock private DOMRpcImplementation mockDomRpcImplementation;
+//    @Mock private DOMRpcIdentifier mockDomRpcIdentifier;
     TopologyManager manager;
-    private YangInstanceIdentifier identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-            .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY1).build();
+//    private YangInstanceIdentifier identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+//            .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY1).build();
     private OverlayItem logicalNode;
     private OverlayItem logicalNode2;
 
@@ -82,11 +83,7 @@ public class TopologyManagerTest {
      */
     @Before
     public void setUp() {
-        Mockito.when(mockRpcServices.getRpcService()).thenReturn(mockDOMRpcService);
-        Mockito.when(mockRpcServices.getRpcService().registerRpcListener((DOMRpcAvailabilityListener)any()))
-            .thenReturn(mockListenerRegistration);
-        manager = new TopologyManager(mockRpcServices, mockSchemaHolder, identifier);
-        manager.setWriter(writer);
+        manager = new TopologyManager(writer, republisher);
     }
 
     @Test(expected=NullPointerException.class)
@@ -250,40 +247,40 @@ public class TopologyManagerTest {
         Mockito.verify(writer, Mockito.times(3)).writeItem((OverlayItemWrapper) any(), (CorrelationItemEnum) any());
     }
 
-    /**
-     * If there is RPC registered on underlay's topology node,
-     * it shall be republished onto the overlay's topology node.
-     */
-    @Test
-    public void testRpcRepublishing() {
-        Mockito.when(mockSchemaHolder.getSchemaContext()).thenReturn(mockSchemaContext);
-        Mockito.when(mockRpcServices.getRpcProviderService()).thenReturn(mockDomRpcProviderService);
-        Mockito.when(mockRpcServices.getRpcProviderService().registerRpcImplementation(
-                (DOMRpcImplementation) any(),(DOMRpcIdentifier) any()))
-                .thenReturn(mockDomRpcImplementationRegistration);
-
-        YangInstanceIdentifier contextReference = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY1)
-                .node(Node.QNAME)
-                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID1)
-                .build();
-
-        SchemaPath schemaPath = SchemaPath.create(true, TopologyQNames.NETWORK_NODE_ID_QNAME);
-        DOMRpcIdentifier domRpcIdentifier = DOMRpcIdentifier.create(schemaPath, contextReference);
-        Collection<DOMRpcIdentifier> rpcs = new ArrayList<>();
-        rpcs.add(domRpcIdentifier);
-        manager.onRpcAvailable(rpcs);
-
-        List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
-        physicalNodes.add(physicalNode);
-        logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
-
-        manager.addOverlayItem(logicalNode);
-
-        Mockito.verify(mockDomRpcProviderService, Mockito.times(1))
-            .registerRpcImplementation((DOMRpcImplementation) any(),(Set<DOMRpcIdentifier>) any());
-    }
+//    /**
+//     * If there is RPC registered on underlay's topology node,
+//     * it shall be republished onto the overlay's topology node.
+//     */
+//    @Test
+//    public void testRpcRepublishing() {
+//        Mockito.when(mockSchemaHolder.getSchemaContext()).thenReturn(mockSchemaContext);
+//        Mockito.when(mockRpcServices.getRpcProviderService()).thenReturn(mockDomRpcProviderService);
+//        Mockito.when(mockRpcServices.getRpcProviderService().registerRpcImplementation(
+//                (DOMRpcImplementation) any(),(DOMRpcIdentifier) any()))
+//                .thenReturn(mockDomRpcImplementationRegistration);
+//
+//        YangInstanceIdentifier contextReference = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+//                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY1)
+//                .node(Node.QNAME)
+//                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID1)
+//                .build();
+//
+//        SchemaPath schemaPath = SchemaPath.create(true, TopologyQNames.NETWORK_NODE_ID_QNAME);
+//        DOMRpcIdentifier domRpcIdentifier = DOMRpcIdentifier.create(schemaPath, contextReference);
+//        Collection<DOMRpcIdentifier> rpcs = new ArrayList<>();
+//        rpcs.add(domRpcIdentifier);
+//        manager.onRpcAvailable(rpcs);
+//
+//        List<UnderlayItem> physicalNodes = new ArrayList<>();
+//        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+//        physicalNodes.add(physicalNode);
+//        logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
+//
+//        manager.addOverlayItem(logicalNode);
+//
+//        Mockito.verify(mockDomRpcProviderService, Mockito.times(1))
+//            .registerRpcImplementation((DOMRpcImplementation) any(),(Set<DOMRpcIdentifier>) any());
+//    }
 
     @Test
     public void updateLogicalNode() {

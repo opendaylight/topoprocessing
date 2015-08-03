@@ -8,10 +8,11 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
+import org.opendaylight.topoprocessing.impl.operator.RpcRepublisher;
+
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
@@ -138,8 +139,9 @@ public class TopologyRequestHandler {
         writer = new TopologyWriter(topologyIdentifier);
         transactionChain = domDataBroker.createTransactionChain(writer);
         writer.setTransactionChain(transactionChain);
-        TopologyManager topologyManager = new TopologyManager(rpcServices, schemaHolder, topologyIdentifier);
-        topologyManager.setWriter(writer);
+        RpcRepublisher republisher = new RpcRepublisher(rpcServices, topologyIdentifier, schemaHolder);
+        rpcServices.getRpcService().registerRpcListener(republisher);
+        TopologyManager topologyManager = new TopologyManager(writer, republisher);
         writer.initOverlayTopology(overlayTopologyId);
         try {
             LOG.debug("Processing correlation configuration");

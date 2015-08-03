@@ -7,26 +7,13 @@
  */
 package org.opendaylight.topoprocessing.impl.operator;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-
-import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
-import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
-import org.opendaylight.topoprocessing.impl.rpc.OverlayRpcImplementation;
-import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
-import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
-import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yangtools.yang.common.QName;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * @author martin.uhlir
  *
  */
-public class TopologyManager implements DOMRpcAvailabilityListener {
+public class TopologyManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyManager.class);
 
@@ -42,23 +29,16 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     private List<OverlayItemWrapper> nodeWrappers = new ArrayList<>();
     private List<OverlayItemWrapper> linkWrappers = new ArrayList<>();
     private TopologyWriter writer;
-    private RpcServices rpcServices;
-    private Collection<DOMRpcIdentifier> availableRpcs;
-    private YangInstanceIdentifier topologyIdentifier;
-    private GlobalSchemaContextHolder schemaHolder;
+    private RpcRepublisher republisher;
 
     /**
-     * @param rpcServices used for rpc republishing
-     * @param schemaHolder access to SchemaContext
-     * @param topologyIdentifier topology identifier
+     * Default constructor
+     * @param writer writes data into the operational datastore
+     * @param republisher republishes rpcs
      */
-    public TopologyManager(RpcServices rpcServices, GlobalSchemaContextHolder schemaHolder,
-            YangInstanceIdentifier topologyIdentifier) {
-        this.rpcServices = rpcServices;
-        this.schemaHolder = schemaHolder;
-        this.topologyIdentifier = topologyIdentifier;
-        availableRpcs = new HashSet<>();
-        this.rpcServices.getRpcService().registerRpcListener(this);
+    public TopologyManager(TopologyWriter writer, RpcRepublisher republisher) {
+        this.writer = writer;
+        this.republisher = republisher;
     }
 
     /**
@@ -138,59 +118,13 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     }
 
     /**
-     * @param writer writes into the operational datastore
-     */
-    public void setWriter(TopologyWriter writer) {
-        this.writer = writer;
-    }
-
-    @Override
-    public void onRpcAvailable(Collection<DOMRpcIdentifier> rpcs) {
-        availableRpcs.addAll(rpcs);
-    }
-
-    @Override
-    public void onRpcUnavailable(Collection<DOMRpcIdentifier> rpcs) {
-        availableRpcs.removeAll(rpcs);
-    }
-
-    /**
-     * Gathers RPCs for all {@link UnderlayItem}s present in the {@link OverlayItem} and registers them under
-     * {@link OverlayItemWrapper} Id
-     * @param wrapper wraps LogicalNode and contains id for republished rpc
-     * @param overlayItem Which contains UnderlayItems with RPCs
+     * Calls {@link RpcRepublisher} to republish present rpcs
+     * @param wrapper contains id for republished rpc
+     * @param overlayItem contains UnderlayItems with RPCs
      */
     private void registerOverlayRpcs(OverlayItemWrapper wrapper, OverlayItem overlayItem) {
         LOGGER.trace("Registering overlay RPCs");
-        QName itemQName = TopologyQNames.buildItemQName(overlayItem.getCorrelationItem());
-        QName itemIdQName = TopologyQNames.buildItemIdQName(overlayItem.getCorrelationItem());
-        YangInstanceIdentifier contextIdentifier = YangInstanceIdentifier.builder(topologyIdentifier)
-                .node(itemQName)
-                .nodeWithKey(itemQName, itemIdQName, wrapper.getId()).build();
-        YangInstanceIdentifier nodeEntryIdentifier;
-        for (UnderlayItem item : overlayItem.getUnderlayItems()) {
-            List<DOMRpcIdentifier> underlayRpcs = new ArrayList<>();
-            nodeEntryIdentifier = YangInstanceIdentifier.builder(topologyIdentifier)
-                    .node(itemQName)
-                    .nodeWithKey(itemQName, itemIdQName, item.getItemId()).build();
-            for (Iterator<DOMRpcIdentifier> iterator = availableRpcs.iterator(); iterator.hasNext();) {
-                DOMRpcIdentifier rpcIdentifier = iterator.next();
-                if (rpcIdentifier.getContextReference().equals(nodeEntryIdentifier)) {
-                    underlayRpcs.add(rpcIdentifier);
-                }
-            }
-            OverlayRpcImplementation overlayImplementation =
-                    new OverlayRpcImplementation(rpcServices.getRpcService(), schemaHolder.getSchemaContext(),
-                            nodeEntryIdentifier);
-            Set<DOMRpcIdentifier> overlayRpcIdentifiers = new HashSet<>();
-            for (DOMRpcIdentifier underlayRpcIdentifier : underlayRpcs) {
-                overlayRpcIdentifiers.add(DOMRpcIdentifier.create(underlayRpcIdentifier.getType(), contextIdentifier));
-            }
-            if (!overlayRpcIdentifiers.isEmpty()) {
-                rpcServices.getRpcProviderService()
-                    .registerRpcImplementation(overlayImplementation, overlayRpcIdentifiers);
-            }
-        }
+        republisher.registerRpcs(wrapper, overlayItem);
     }
 
     private List<OverlayItemWrapper> getWrappersList(CorrelationItemEnum correlationItem) {
