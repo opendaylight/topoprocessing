@@ -86,7 +86,9 @@ public class NotificationInterConnector extends TopoStoreProvider implements Top
                     items.put(key, createdEntry.getValue());
                 }
             }
-            operator.processCreatedChanges(combinedEntries, topologyId);
+            if (! combinedEntries.isEmpty()) {
+                operator.processCreatedChanges(combinedEntries, topologyId);
+            }
         }
     }
 
@@ -131,7 +133,9 @@ public class NotificationInterConnector extends TopoStoreProvider implements Top
                     }
                 }
             }
-            operator.processUpdatedChanges(combinedEntries, topologyId);
+            if (! combinedEntries.isEmpty()) {
+                operator.processUpdatedChanges(combinedEntries, topologyId);
+            }
         }
     }
 
@@ -153,7 +157,9 @@ public class NotificationInterConnector extends TopoStoreProvider implements Top
                     presentIdentifiers.add(removalIdentifier);
                 }
             }
-            operator.processRemovedChanges(presentIdentifiers, topologyId);
+            if (! presentIdentifiers.isEmpty()) {
+                operator.processRemovedChanges(presentIdentifiers, topologyId);
+            }
         }
     }
 
