@@ -465,7 +465,6 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                     if (tailNodeId.getValue().equals(destNodeId.getValue()) &&
                             tailTpId.getValue().equals(destTpId.getValue())) {
                         rightLinkReverse = link;
-                        break;
                     }
                 }
                 if (bidirFlag && rightLink != null && rightLinkReverse != null)
