@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a7ca5a3_68877e10",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-06T08:13:51Z",
+      "side": 1,
+      "message": "please move this field to other TerminationPointAggregator fields for better code readability",
+      "range": {
+        "startLine": 77,
+        "startChar": 4,
+        "endLine": 77,
+        "endChar": 99
+      },
+      "revId": "1f4a02598dafcb51dfd944390fa756c9d76692f9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a7ca5a3_48b082dd",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-06T08:13:51Z",
+      "side": 1,
+      "message": "here we should probably also check if targetField is the same",
+      "range": {
+        "startLine": 190,
+        "startChar": 24,
+        "endLine": 195,
+        "endChar": 25
+      },
+      "revId": "1f4a02598dafcb51dfd944390fa756c9d76692f9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a7ca5a3_28c74647",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/PathTranslator.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-06T08:13:51Z",
+      "side": 1,
+      "message": "missing else probably",
+      "range": {
+        "startLine": 62,
+        "startChar": 8,
+        "endLine": 64,
+        "endChar": 25
+      },
+      "revId": "1f4a02598dafcb51dfd944390fa756c9d76692f9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
