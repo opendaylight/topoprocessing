@@ -548,6 +548,140 @@ public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
         deleteTopology(LogicalDatastoreType.OPERATIONAL);
     }
 
+    @Test(timeout = 10000)
+    public void testCopyTopology() throws Exception {
+        createTopology(LogicalDatastoreType.CONFIGURATION);
+        builder.copyTopology(LogicalDatastoreType.CONFIGURATION, mlmtTopologyInstanceId,
+                LogicalDatastoreType.OPERATIONAL);
+
+        synchronized (waitObject) {
+            waitObject.wait(5000);
+        }
+
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyInstanceId).get();
+        assertNotNull(optional);
+        assertTrue("mlmt:1 topology not present", optional.isPresent());
+        Topology rxTopology = optional.get();
+        TopologyId checkTopologyId = rxTopology.getTopologyId();
+
+        assertEquals(checkTopologyId.getValue().toString(), mlmtTopologyId.getValue().toString());
+    }
+
+    @Test(timeout = 10000)
+    public void testCopyNode() throws Exception {
+        String nodeName = "node:A";
+
+        createTopology(LogicalDatastoreType.CONFIGURATION);
+        createTopology(LogicalDatastoreType.OPERATIONAL);
+        createNode(LogicalDatastoreType.CONFIGURATION, MLMT1, nodeName);
+
+        NodeId nodeId = new NodeId(nodeName);
+        NodeKey nodeKey = new NodeKey(nodeId);
+        InstanceIdentifier<Node> nodeInstanceIid = mlmtTopologyInstanceId.child(Node.class, nodeKey);
+
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<Node> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, nodeInstanceIid).get();
+        assertNotNull(optional);
+        assertTrue("Node not present in configuration datastore", optional.isPresent());
+        Node rxNode = optional.get();
+
+        builder.copyNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyInstanceId,
+                new TopologyId(MLMT1), rxNode);
+
+        synchronized (waitObject) {
+            waitObject.wait(5000);
+        }
+
+        rTx = dataBroker.newReadOnlyTransaction();
+        optional = rTx.read(LogicalDatastoreType.OPERATIONAL, nodeInstanceIid).get();
+        assertNotNull(optional);
+        assertTrue("Node not present in operational datastore", optional.isPresent());
+        rxNode = optional.get();
+        String checkNodeName = rxNode.getNodeId().getValue();
+
+        assertEquals(checkNodeName, nodeName);
+    }
+
+    @Test(timeout = 10000)
+    public void testCopyTp() throws Exception {
+        String nodeName = "node:A";
+        String tpName = "tp:1";
+
+        createTopology(LogicalDatastoreType.CONFIGURATION);
+        createTopology(LogicalDatastoreType.OPERATIONAL);
+        createNode(LogicalDatastoreType.CONFIGURATION, MLMT1, nodeName);
+        createNode(LogicalDatastoreType.OPERATIONAL, MLMT1, nodeName);
+        createTp(LogicalDatastoreType.CONFIGURATION, MLMT1, nodeName, tpName);
+
+        NodeId nodeId = new NodeId(nodeName);
+        NodeKey nodeKey = new NodeKey(nodeId);
+        TpId tpId = new TpId(tpName);
+        TerminationPointKey tpKey = new TerminationPointKey(tpId);
+        InstanceIdentifier<TerminationPoint> tpInstanceIid = mlmtTopologyInstanceId.child(Node.class, nodeKey)
+                .child(TerminationPoint.class, tpKey);
+
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<TerminationPoint> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, tpInstanceIid).get();
+        assertNotNull(optional);
+        assertTrue("Node not present in configuration datastore", optional.isPresent());
+        TerminationPoint rxTp = optional.get();
+
+        builder.copyTp(LogicalDatastoreType.OPERATIONAL, mlmtTopologyInstanceId,
+               nodeKey, rxTp);
+
+        synchronized (waitObject) {
+            waitObject.wait(5000);
+        }
+
+        rTx = dataBroker.newReadOnlyTransaction();
+        optional = rTx.read(LogicalDatastoreType.OPERATIONAL, tpInstanceIid).get();
+        assertNotNull(optional);
+        assertTrue("Node not present in operational datastore", optional.isPresent());
+        rxTp = optional.get();
+        String checkTpName = rxTp.getTpId().getValue();
+
+        assertEquals(checkTpName, tpName);
+    }
+
+    @Test(timeout = 10000)
+    public void testCopyLink() throws Exception {
+        String sourceNodeName = "node:1";
+        String sourceTpName = "tp:1";
+        String destNodeName = "node:2";
+        String destTpName = "tp:2";
+
+        createTopology(LogicalDatastoreType.CONFIGURATION);
+        createTopology(LogicalDatastoreType.OPERATIONAL);
+        createLink(LogicalDatastoreType.CONFIGURATION, MLMT1, sourceNodeName, sourceTpName, destNodeName, destTpName);
+        String linkName = buildLinkName(sourceNodeName, sourceTpName, destNodeName, destTpName);
+
+        LinkId linkId = new LinkId(linkName);
+        LinkKey linkKey = new LinkKey(linkId);
+        InstanceIdentifier<Link> linkInstanceIid = mlmtTopologyInstanceId.child(Link.class, linkKey);
+
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<Link> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, linkInstanceIid).get();
+        assertNotNull(optional);
+        assertTrue("Link not present in configuration datastore", optional.isPresent());
+        Link rxLink = optional.get();
+
+        builder.copyLink(LogicalDatastoreType.OPERATIONAL, mlmtTopologyInstanceId, rxLink);
+
+        synchronized (waitObject) {
+            waitObject.wait(5000);
+        }
+
+        rTx = dataBroker.newReadOnlyTransaction();
+        optional = rTx.read(LogicalDatastoreType.OPERATIONAL, linkInstanceIid).get();
+        assertNotNull(optional);
+        assertTrue("Link not present in operational datastore", optional.isPresent());
+        rxLink = optional.get();
+        String checkLinkName = rxLink.getLinkId().getValue();
+
+        assertEquals(checkLinkName, linkName);
+    }
+
     @After
     public void clear() {
         try {
