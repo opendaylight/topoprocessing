@@ -242,10 +242,10 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
         LinkKey tail2HeadLinkKey = null;
         if (bidirFlag) {
-            linkBuilder = parser.swapSourceDestination(linkBuilder);
-            tail2HeadLinkKey = linkBuilder.getKey();
+            LinkBuilder linkBuilderSwapped = parser.swapSourceDestination(linkBuilder);
+            tail2HeadLinkKey = linkBuilderSwapped.getKey();
             linkInstanceId = destTopologyId.child(Link.class, tail2HeadLinkKey);
-            transaction.merge(LogicalDatastoreType.OPERATIONAL, linkInstanceId, linkBuilder.build());
+            transaction.merge(LogicalDatastoreType.OPERATIONAL, linkInstanceId, linkBuilderSwapped.build());
         }
 
         forwardingAdjacencyProvider.onLinkCreated(LogicalDatastoreType.OPERATIONAL, destTopologyId,
@@ -273,10 +273,8 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
         FaEndPoint headEnd = parser.parseHeadEnd(input);
         NodeId headNodeId = parser.parseNodeId(headEnd);
-        TpId headEndTpId = parser.parseTpId(headEnd);
         TerminationPointBuilder tpBuilder = parser.parseTerminationPointBuilder(headEnd);
         NodeKey headNodeKey = new NodeKey(headNodeId);
-        TerminationPointKey headTpKey = tpBuilder.getKey();
 
         createTp(transaction, outFaId, headNodeKey, tpBuilder);
 
@@ -423,8 +421,9 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                         headTpId.getValue().equals(destTpId.getValue())) {
                     leftLink = link;
                 }
-                if (!bidirFlag && leftLink != null)
+                if (!bidirFlag && leftLink != null) {
                     break;
+                }
                 if (bidirFlag) {
                     NodeId sourceNodeId = link.getSource().getSourceNode();
                     TpId sourceTpId = link.getSource().getSourceTp();
@@ -433,8 +432,9 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                         leftLinkReverse = link;
                     }
                 }
-                if (bidirFlag && leftLink != null && leftLinkReverse != null)
+                if (bidirFlag && leftLink != null && leftLinkReverse != null) {
                     break;
+                }
             }
         }
         if (bidirFlag == true && leftLinkReverse == null) {
@@ -457,8 +457,9 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                         tailTpId.getValue().equals(sourceTpId.getValue())) {
                     rightLink = link;
                 }
-                if (!bidirFlag && rightLink != null)
+                if (!bidirFlag && rightLink != null) {
                     break;
+                }
                 if (bidirFlag == true) {
                     NodeId destNodeId = link.getDestination().getDestNode();
                     TpId destTpId = link.getDestination().getDestTp();
@@ -467,8 +468,9 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                         rightLinkReverse = link;
                     }
                 }
-                if (bidirFlag && rightLink != null && rightLinkReverse != null)
+                if (bidirFlag && rightLink != null && rightLinkReverse != null) {
                     break;
+                }
             }
         }
 
@@ -578,7 +580,6 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
         FaEndPoint headEnd = parser.parseHeadEnd(input);
         NodeId headNodeId = parser.parseNodeId(headEnd);
-        TpId headEndTpId = parser.parseTpId(headEnd);
         TerminationPointBuilder tpBuilder = parser.parseTerminationPointBuilder(headEnd);
         InstanceIdentifier<TerminationPoint> tpInstanceId = destTopologyId
                 .child(Node.class, new NodeKey(headNodeId))
@@ -588,7 +589,6 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
         FaEndPoint tailEnd = parser.parseTailEnd(input);
         NodeId tailNodeId = parser.parseNodeId(tailEnd);
-        TpId tailEndTpId = parser.parseTpId(tailEnd);
         tpBuilder = parser.parseTerminationPointBuilder(tailEnd);
         tpInstanceId = destTopologyId.child(Node.class, new NodeKey(tailNodeId))
                 .child(TerminationPoint.class, tpBuilder.getKey());

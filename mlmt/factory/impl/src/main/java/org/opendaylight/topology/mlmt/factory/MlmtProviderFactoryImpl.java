@@ -91,8 +91,9 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
     @Override
     public MlmtConsequentAction consequentAction(TopologyTypes topologyType) {
         MtTopologyType mtTopologyType = topologyType.getAugmentation(MtTopologyType.class);
-        if (mtTopologyType != null)
+        if (mtTopologyType != null) {
             return MlmtConsequentAction.COPY;
+        }
 
         return MlmtConsequentAction.BUILD;
     }

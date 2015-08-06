@@ -45,7 +45,6 @@ import org.opendaylight.topology.multilayer.MultilayerAttributesParser;
 public class MultilayerAttributesParserImpl implements MultilayerAttributesParser {
 
     private static Logger log;
-    private static final String FA_ID_PREFIX = "fa/";
     private static final String FA_ID_UNIDIR = "unidir/";
     private static final String FA_ID_BIDIR = "bidir/";
     private static final String FA_SUBID_FIRSTLEG = "0";
