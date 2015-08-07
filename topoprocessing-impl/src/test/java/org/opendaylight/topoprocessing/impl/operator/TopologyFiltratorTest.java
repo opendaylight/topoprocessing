@@ -18,6 +18,7 @@ import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestNodeCreator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 
 /**
  * @author matus.marko
@@ -65,7 +66,7 @@ public class TopologyFiltratorTest {
         Map<YangInstanceIdentifier, UnderlayItem> map = new HashMap<>();
 
         // create 3 nodes
-        Mockito.when(mockFiltrator.isFiltered((UnderlayItem) Matchers.any())).thenReturn(false);
+        Mockito.when(mockFiltrator.isFiltered((NormalizedNode) Matchers.any())).thenReturn(false);
         filtrator.processCreatedChanges(threeNodesSameTopologyNodeEntry, TOPOLOGY_NAME);
         Mockito.verify(mockTopologyManager, Mockito.times(3)).addOverlayItem((OverlayItem) Matchers.any());
 
@@ -92,7 +93,7 @@ public class TopologyFiltratorTest {
         map.put(creator.createNodeIdYiid(nodeId), new UnderlayItem(
                 creator.createMapEntryNodeWithIpAddress(nodeId, "192.168.1.14"), null, TOPOLOGY_NAME, nodeId,
                 CorrelationItemEnum.Node));
-        Mockito.when(mockFiltrator.isFiltered((UnderlayItem) Matchers.any())).thenReturn(true);
+        Mockito.when(mockFiltrator.isFiltered((NormalizedNode) Matchers.any())).thenReturn(true);
         filtrator.processUpdatedChanges(map, TOPOLOGY_NAME);
         Mockito.verify(mockTopologyManager, Mockito.times(1)).removeOverlayItem((OverlayItem) Matchers.any());
 

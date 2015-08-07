@@ -9,7 +9,6 @@
 package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
-import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -41,8 +40,8 @@ public class RangeStringFiltrator implements Filtrator {
     }
 
     @Override
-    public boolean isFiltered(UnderlayItem node) {
-        Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node.getItem(), pathIdentifier);
+    public boolean isFiltered(NormalizedNode<?, ?> node) {
+        Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node, pathIdentifier);
         if (leafNode.isPresent()) {
             String value = (String) ((LeafNode) leafNode.get()).getValue();
             if (0 <= value.compareTo(this.min) && 0 >= value.compareTo(this.max)) {
@@ -50,7 +49,7 @@ public class RangeStringFiltrator implements Filtrator {
             }
         }
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Node with value {} was filtered out", node.getItem());
+            LOG.debug("Node with value {} was filtered out", node);
         }
         return true;
     }

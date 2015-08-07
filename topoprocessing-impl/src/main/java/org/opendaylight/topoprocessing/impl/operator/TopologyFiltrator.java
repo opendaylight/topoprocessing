@@ -12,6 +12,7 @@ import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,14 +29,14 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyFiltrator.class);
 
     private List<Filtrator> filtrators = new ArrayList<>();
-    private TopologyManager manager;
+    protected TopologyManager manager;
 
     @Override
     public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, String topologyId) {
         LOGGER.trace("Processing createdChanges");
         for (Map.Entry<YangInstanceIdentifier, UnderlayItem> itemEntry : createdEntries.entrySet()) {
             UnderlayItem newItemValue = itemEntry.getValue();
-            if (passedFiltration(newItemValue)) {
+            if (passedFiltration(newItemValue.getItem())) {
                 getTopologyStore(topologyId).getUnderlayItems().put(itemEntry.getKey(), newItemValue);
                 OverlayItem overlayItem = wrapUnderlayItem(newItemValue);
                 manager.addOverlayItem(overlayItem);
@@ -51,7 +52,7 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
             UnderlayItem oldItem = getTopologyStore(topologyId).getUnderlayItems().get(mapEntry.getKey());
             if (null == oldItem) {
                 // updatedItem is not present yet
-                if (passedFiltration(updatedItem)) {
+                if (passedFiltration(updatedItem.getItem())) {
                     // passed through filtrator
                     getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
                     manager.addOverlayItem(wrapUnderlayItem(updatedItem));
@@ -59,7 +60,7 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
                 // else do nothing
             } else {
                 // updatedItem exists already
-                if (passedFiltration(updatedItem)) {
+                if (passedFiltration(updatedItem.getItem())) {
                     // passed through filtrator
                     getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
                     OverlayItem overlayItem = oldItem.getOverlayItem();
@@ -100,16 +101,16 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
         filtrators.add(filter);
     }
 
-    protected boolean passedFiltration(UnderlayItem underlayItem) {
+    protected boolean passedFiltration(NormalizedNode<?, ?> node) {
         for (Filtrator filtrator : filtrators) {
-            if (filtrator.isFiltered(underlayItem)) {
+            if (filtrator.isFiltered(node)) {
                 return false;
             }
         }
         return true;
     }
 
-    private OverlayItem wrapUnderlayItem(UnderlayItem underlayItem) {
+    protected OverlayItem wrapUnderlayItem(UnderlayItem underlayItem) {
         List<UnderlayItem> underlayItems = Collections.singletonList(underlayItem);
         OverlayItem overlayItem = new OverlayItem(underlayItems, underlayItem.getCorrelationItem());
         underlayItem.setOverlayItem(overlayItem);
