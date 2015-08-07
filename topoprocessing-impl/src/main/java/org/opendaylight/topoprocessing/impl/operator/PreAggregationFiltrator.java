@@ -23,14 +23,14 @@ import org.slf4j.LoggerFactory;
 public class PreAggregationFiltrator extends TopologyFiltrator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PreAggregationFiltrator.class);
-    private TopologyAggregator aggregator;
+    protected TopologyAggregator aggregator;
 
     @Override
     public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, String topologyId) {
         LOGGER.trace("Processing createdChanges");
         for (Map.Entry<YangInstanceIdentifier, UnderlayItem> itemEntry : createdEntries.entrySet()) {
             UnderlayItem newItem = itemEntry.getValue();
-            if (passedFiltration(newItem)) {
+            if (passedFiltration(newItem.getItem())) {
                 getTopologyStore(topologyId).getUnderlayItems().put(itemEntry.getKey(), newItem);
                 aggregator.processCreatedChanges(Collections.singletonMap(itemEntry.getKey(), newItem),
                         topologyId);
@@ -46,7 +46,7 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
             UnderlayItem olditem = getTopologyStore(topologyId).getUnderlayItems().get(mapEntry.getKey());
             if (null == olditem) {
                 // updateditem is not present yet
-                if (passedFiltration(updatedItem)) {
+                if (passedFiltration(updatedItem.getItem())) {
                     // passed through filtrator
                     getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
                     aggregator.processCreatedChanges(Collections.singletonMap(mapEntry.getKey(), updatedItem),
@@ -55,7 +55,7 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
                 // else do nothing
             } else {
                 // updateditem exists already
-                if (passedFiltration(updatedItem)) {
+                if (passedFiltration(updatedItem.getItem())) {
                     // passed through filtrator
                     getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
                     aggregator.processUpdatedChanges(Collections.singletonMap(mapEntry.getKey(), updatedItem),
