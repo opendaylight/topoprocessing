@@ -13,7 +13,6 @@ import java.net.UnknownHostException;
 import java.util.BitSet;
 
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
-import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpPrefix;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
@@ -49,9 +48,9 @@ public class Ipv6AddressFiltrator implements Filtrator {
     }
 
     @Override
-    public boolean isFiltered(UnderlayItem node) {
+    public boolean isFiltered(NormalizedNode<?, ?> node) {
         try {
-            Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node.getItem(), pathIdentifier);
+            Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node, pathIdentifier);
             if (leafNode.isPresent()) {
                 byte[] address = InetAddress.getByName((String) ((LeafNode) leafNode.get()).getValue()).getAddress();
                 BitSet bitSet = BitSet.valueOf(address);
@@ -61,7 +60,7 @@ public class Ipv6AddressFiltrator implements Filtrator {
                 }
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Node with value {} was filtered out", node.getItem());
+                LOG.debug("Node with value {} was filtered out", node);
             }
         } catch (UnknownHostException e) {
             LOG.error("Wrong format of IP address: {}", e);

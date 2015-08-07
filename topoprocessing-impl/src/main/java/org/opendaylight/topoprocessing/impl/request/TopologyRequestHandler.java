@@ -8,6 +8,18 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
+import com.sun.xml.internal.ws.api.message.AddressingUtils;
+import org.opendaylight.topoprocessing.impl.operator.*;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationOnly;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationAggregation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.Filtration;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.Aggregation;
 import com.google.common.base.Preconditions;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -162,7 +174,12 @@ public class TopologyRequestHandler {
         CorrelationItemEnum correlationItem = correlation.getCorrelationItem();
         Filtration filtration = correlation.getFiltration();
         String underlayTopologyId = filtration.getUnderlayTopology();
-        TopologyFiltrator filtrator = new TopologyFiltrator();
+        TopologyFiltrator filtrator;
+        if (correlationItem.equals(CorrelationItemEnum.TerminationPoint)) {
+            filtrator = new TerminationPointsFiltrator();
+        } else {
+            filtrator = new TopologyFiltrator();
+        }
         for (Filter filter : filtration.getFilter()) {
             filtrator.initializeStore(underlayTopologyId, false);
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),

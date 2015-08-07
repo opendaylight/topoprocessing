@@ -9,6 +9,7 @@
 package org.opendaylight.topoprocessing.api.filtration;
 
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 
 /**
  * @author matus.marko
@@ -20,5 +21,5 @@ public interface Filtrator {
      * @param item {@link UnderlayItem} to be filtered
      * @return true if item was filtered out false otherwise
      */
-    boolean isFiltered(UnderlayItem item);
+    boolean isFiltered(NormalizedNode<?, ?> item);
 }
