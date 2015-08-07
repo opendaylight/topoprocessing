@@ -2,21 +2,19 @@ package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestNodeCreator;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpPrefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 
 /**
  * @author matus.marko
  */
 public class Ipv4AddressFiltratorTest {
 
-    private static final String TOPOLOGY_ID = "mytopo:1";
     private static final String NODE_ID = "mynode:1";
 
     private static final QName ROOT_QNAME = Node.QNAME;
@@ -123,13 +121,11 @@ public class Ipv4AddressFiltratorTest {
         IpPrefix ipPrefix = new IpPrefix(Ipv4Prefix.getDefaultInstance("192.168.1.0/24"));
         Ipv4AddressFiltrator nodeIpv4Filtrator = new Ipv4AddressFiltrator(ipPrefix, path);
 
-        boolean filtered = nodeIpv4Filtrator.isFiltered(new UnderlayItem(
-                creator.createMapEntryNode(NODE_ID), null, TOPOLOGY_ID, NODE_ID, CorrelationItemEnum.Node));
+        boolean filtered = nodeIpv4Filtrator.isFiltered(creator.createMapEntryNode(NODE_ID));
         Assert.assertTrue("Node sholud not pass the filtrator", filtered);
     }
 
-    protected UnderlayItem createPhysicalNode(String ipAddress) {
-        return new UnderlayItem(creator.createMapEntryNodeWithIpAddress(NODE_ID, ipAddress), null, TOPOLOGY_ID, NODE_ID,
-                CorrelationItemEnum.Node);
+    protected MapEntryNode createPhysicalNode(String ipAddress) {
+        return creator.createMapEntryNodeWithIpAddress(NODE_ID, ipAddress);
     }
 }
