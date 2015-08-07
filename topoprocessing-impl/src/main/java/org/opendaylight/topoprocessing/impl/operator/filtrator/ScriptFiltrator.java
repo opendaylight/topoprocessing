@@ -16,7 +16,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
-import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.Scripting;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -53,15 +52,15 @@ public class ScriptFiltrator implements Filtrator {
     }
 
     @Override
-    public boolean isFiltered(UnderlayItem item) {
+    public boolean isFiltered(NormalizedNode<?, ?> node) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Item received: {}", item);
+            LOGGER.debug("Item received: {}", node);
         }
-        Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(item.getItem(), pathIdentifier);
-        if (node.isPresent()) {
+        Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node, pathIdentifier);
+        if (leafNode.isPresent()) {
             ScriptResult filterOut = new ScriptResult();
             engine.put("filterOut", filterOut);
-            engine.put("node", node.get());
+            engine.put("node", leafNode.get());
             try {
                 engine.eval(script);
                 LOGGER.debug("Item filtered out: {}", filterOut.getResult());
@@ -71,7 +70,7 @@ public class ScriptFiltrator implements Filtrator {
             }
         }
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Item with value {} was filtered out", item.getItem());
+            LOGGER.debug("Item with value {} was filtered out", node);
         }
         return true;
     }

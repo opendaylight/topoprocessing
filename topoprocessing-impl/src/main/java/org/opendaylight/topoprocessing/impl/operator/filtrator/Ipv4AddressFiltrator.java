@@ -12,7 +12,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
-import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpPrefix;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
@@ -48,9 +47,9 @@ public class Ipv4AddressFiltrator implements Filtrator {
     }
 
     @Override
-    public boolean isFiltered(UnderlayItem underlayItem) {
+    public boolean isFiltered(NormalizedNode<?, ?> node) {
         try {
-            Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(underlayItem.getItem(), pathIdentifier);
+            Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node, pathIdentifier);
             if (leafNode.isPresent()) {
                 int value = ipToInt((String) ((LeafNode) leafNode.get()).getValue());
                 if (maskedValue == (value & mask)) {
@@ -58,7 +57,7 @@ public class Ipv4AddressFiltrator implements Filtrator {
                 }
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Item with value {} was filtered out", underlayItem.getItem());
+                LOG.debug("Item with value {} was filtered out", node);
             }
         } catch (UnknownHostException e) {
             LOG.error("Wrong format of IP address: {}", e);
