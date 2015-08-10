@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_dd945f46",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/PathTranslator.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 3585
+      },
+      "writtenOn": "2015-08-10T07:34:16Z",
+      "side": 1,
+      "message": "It would more transparent to create a static field from this",
+      "range": {
+        "startLine": 68,
+        "startChar": 28,
+        "endLine": 68,
+        "endChar": 90
+      },
+      "revId": "6d3cfa8ac825359e7504b35d28198afa350ec8c3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
