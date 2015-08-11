@@ -199,7 +199,7 @@ public class TopologyRequestHandlerTest {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         AggregationBuilder aggBuilder = new AggregationBuilder();
         aggBuilder.setAggregationType(Equality.class);
-        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null, 
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
                 aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
@@ -371,7 +371,6 @@ public class TopologyRequestHandlerTest {
         handler.processDeletionRequest();
         Mockito.verify(mockDOMDataChangeListener, Mockito.times(1)).close();
         Assert.assertEquals(0, handler.getListeners().size());
-        Mockito.verify(handler.getTransactionChain(), Mockito.times(1)).close();
     }
 
     @Test
