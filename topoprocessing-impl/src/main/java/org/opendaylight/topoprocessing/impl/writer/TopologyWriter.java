@@ -17,9 +17,11 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import org.omg.CORBA.CurrentOperations;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
@@ -29,6 +31,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
+import org.opendaylight.topoprocessing.impl.util.IgnoreAddQueue;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -215,7 +218,7 @@ public class TopologyWriter implements TransactionChainListener {
         return itemWithItemIdIdentifier;
     }
 
-    
+
     @Override
     public void onTransactionChainFailed(TransactionChain<?, ?> chain, AsyncTransaction<?, ?> transaction,
             Throwable cause) {
@@ -263,9 +266,17 @@ public class TopologyWriter implements TransactionChainListener {
         LOGGER.trace("Writing prepared operations.");
         DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
         int operation = 0;
+        boolean shutdown = false;
         while ((operation < MAXIMUM_OPERATIONS) && (preparedOperations.peek() != null)) {
-            preparedOperations.poll().addOperationIntoTransaction(transaction);
+            TransactionOperation currentOperation = preparedOperations.poll();
+            currentOperation.addOperationIntoTransaction(transaction);
             operation++;
+            if(currentOperation instanceof ShutdownOperation) {
+                preparedOperations.clear();
+                preparedOperations = new IgnoreAddQueue<TransactionOperation>();
+                shutdown = true;
+                break;
+            }
         }
         LOGGER.debug("Submitting {} prepared operations.", operation);
         CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
@@ -281,17 +292,35 @@ public class TopologyWriter implements TransactionChainListener {
             }
         });
 
-        if (! WRITE_SCHEDULED_UPDATER.compareAndSet(this, 1, 0)) {
-            LOGGER.warn("Writer found unscheduled");
+        if(shutdown) {
+            if(! submit.isDone()) {
+                try {
+                    submit.get();
+                } catch (Exception e) {
+                    LOGGER.error("An error occurred while waiting for transaction submit: {}", submit, e);
+                }
+            }
+            LOGGER.trace("Shutting down writer");
+            try {
+                transactionChain.close();
+            } catch (Exception e) {
+                LOGGER.error("An error occurred while closing transaction chain: {}", transactionChain, e);
+            }
+            pool.shutdownNow();
+        } else{
+            if (! WRITE_SCHEDULED_UPDATER.compareAndSet(this, 1, 0)) {
+                LOGGER.warn("Writer found unscheduled");
+            }
+            scheduleWrite();
         }
-        scheduleWrite();
     }
 
     /**
-     * Deletes whole overlay {@link Topology}
+     * Signals that allocated resources should be released
      */
-    public void deleteOverlayTopology() {
-        preparedOperations.add(new DeleteOperation(topologyIdentifier));
+    public void tearDown() {
+        LOGGER.trace("Tear down signaled.");
+        preparedOperations.add(new ShutdownOperation(topologyIdentifier));
         scheduleWrite();
     }
 
