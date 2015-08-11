@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_de4532b4",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-08-11T13:35:03Z",
+      "side": 1,
+      "message": "Tabs should be replaced by spaces. Maybe even verify job should be more sensitive to checkstyle violations.",
+      "range": {
+        "startLine": 280,
+        "startChar": 8,
+        "endLine": 280,
+        "endChar": 9
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_9e17baa3",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 282,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-08-11T13:35:03Z",
+      "side": 1,
+      "message": "Again, write() is called by writeTask from inside of pool, so I am not sure if execution is guaranteed to proceed to next lines at all.\n\nBut maybe setting some local flag here and shutting down later in this function could work.",
+      "range": {
+        "startLine": 282,
+        "startChar": 10,
+        "endLine": 282,
+        "endChar": 29
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_1e23aa06",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-08-11T13:35:03Z",
+      "side": 1,
+      "message": "Unneeded indentation change.",
+      "range": {
+        "startLine": 284,
+        "startChar": 3,
+        "endLine": 284,
+        "endChar": 4
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_fe258e0a",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 285,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-08-11T13:35:03Z",
+      "side": 1,
+      "message": "This explicitly avoids the transaction.submit call below, so ShutdownOperation will not be applied.\n\nBut idea of breaking out from operation loop here is good.",
+      "range": {
+        "startLine": 285,
+        "startChar": 4,
+        "endLine": 285,
+        "endChar": 11
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_7e797efb",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-08-11T13:35:03Z",
+      "side": 1,
+      "message": "Here I would place \"if\" to check shutdown status, replacing scheduleWrite with tearDownFuture.set followed by pool.shutdown instead.\n\nP.S.: On second thought, I would place such \"if\" just before line 303 to make sure no other writeTask is started in the meantime.",
+      "range": {
+        "startLine": 306,
+        "startChar": 8,
+        "endLine": 306,
+        "endChar": 24
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
