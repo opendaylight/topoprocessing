@@ -8,6 +8,11 @@
 
 package org.opendaylight.topoprocessing.impl.writer;
 
+import java.util.concurrent.Future;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+import com.google.common.util.concurrent.SettableFuture;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -19,6 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
@@ -67,7 +73,9 @@ public class TopologyWriter implements TransactionChainListener {
 
     private static final AtomicIntegerFieldUpdater<TopologyWriter> WRITE_SCHEDULED_UPDATER =
             AtomicIntegerFieldUpdater.newUpdater(TopologyWriter.class, "writeScheduled");
+    private static final int MAX_DELETE_TOPOLOGY_WAIT_TIME = 1000;
     private volatile int writeScheduled = 0;
+    private boolean shutdownInitiated = false;
 
     private final Runnable writeTask = new Runnable() {
         @Override
@@ -193,9 +201,11 @@ public class TopologyWriter implements TransactionChainListener {
      * @param itemType item type
      */
     public void writeItem(final OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
-        NormalizedNode<?, ?> node = translator.translate(wrapper);
-        preparedOperations.add(new PutOperation(createItemIdentifier(wrapper, itemType), node));
-        scheduleWrite();
+        if (! shutdownInitiated) {
+            NormalizedNode<?, ?> node = translator.translate(wrapper);
+            preparedOperations.add(new PutOperation(createItemIdentifier(wrapper, itemType), node));
+            scheduleWrite();
+        }
     }
 
     /**
@@ -203,8 +213,10 @@ public class TopologyWriter implements TransactionChainListener {
      * @param itemType item type
      */
     public void deleteItem(final OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
-        preparedOperations.add(new DeleteOperation(createItemIdentifier(wrapper, itemType)));
-        scheduleWrite();
+        if (! shutdownInitiated) {
+            preparedOperations.add(new DeleteOperation(createItemIdentifier(wrapper, itemType)));
+            scheduleWrite();
+        }
     }
 
     private YangInstanceIdentifier createItemIdentifier(OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
@@ -215,11 +227,10 @@ public class TopologyWriter implements TransactionChainListener {
         return itemWithItemIdIdentifier;
     }
 
-    
+
     @Override
     public void onTransactionChainFailed(TransactionChain<?, ?> chain, AsyncTransaction<?, ?> transaction,
-            Throwable cause) {
-        LOGGER.warn("Unexpected transaction failure in transaction {}", transaction.getIdentifier(), cause);
+            Throwable cause) { LOGGER.warn("Unexpected transaction failure in transaction {}", transaction.getIdentifier(), cause);
     }
 
     @Override
@@ -263,9 +274,16 @@ public class TopologyWriter implements TransactionChainListener {
         LOGGER.trace("Writing prepared operations.");
         DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
         int operation = 0;
+        boolean shutdown = false;
         while ((operation < MAXIMUM_OPERATIONS) && (preparedOperations.peek() != null)) {
-            preparedOperations.poll().addOperationIntoTransaction(transaction);
+            TransactionOperation currentOperation = preparedOperations.poll();
+            currentOperation.addOperationIntoTransaction(transaction);
             operation++;
+            if(currentOperation instanceof ShutdownOperation) {
+                preparedOperations.clear();
+                shutdown = true;
+                break;
+            }
         }
         LOGGER.debug("Submitting {} prepared operations.", operation);
         CheckedFuture<Void,TransactionCommitFailedException> submit = transaction.submit();
@@ -281,17 +299,30 @@ public class TopologyWriter implements TransactionChainListener {
             }
         });
 
-        if (! WRITE_SCHEDULED_UPDATER.compareAndSet(this, 1, 0)) {
-            LOGGER.warn("Writer found unscheduled");
+        if(shutdown) {
+            LOGGER.trace("Shutting down writer");
+            try {
+                transactionChain.close();
+            } catch (Exception e) {
+                LOGGER.error("An error occurred while closing transaction chain: {}", transactionChain, e);
+            }
+            pool.shutdown();
+        } else{
+            if (! WRITE_SCHEDULED_UPDATER.compareAndSet(this, 1, 0)) {
+                LOGGER.warn("Writer found unscheduled");
+            }
+            scheduleWrite();
         }
-        scheduleWrite();
     }
 
     /**
-     * Deletes whole overlay {@link Topology}
+     * Signals that allocated resources should be released
+     * @return tear down finished future
      */
-    public void deleteOverlayTopology() {
-        preparedOperations.add(new DeleteOperation(topologyIdentifier));
+    public void tearDown() {
+        LOGGER.trace("Tear down signaled.");
+        shutdownInitiated = true;
+        preparedOperations.add(new ShutdownOperation(topologyIdentifier));
         scheduleWrite();
     }
 
