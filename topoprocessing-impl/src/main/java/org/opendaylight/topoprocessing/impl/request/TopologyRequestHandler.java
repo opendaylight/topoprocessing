@@ -18,7 +18,15 @@ import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.listener.InventoryListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
-import org.opendaylight.topoprocessing.impl.operator.*;
+import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
+import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
+import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
+import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
+import org.opendaylight.topoprocessing.impl.operator.UnificationAggregator;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
@@ -56,7 +64,6 @@ import java.util.Map;
 public class TopologyRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
-    private static final int CLOSE_RESOURCES_SLEEP_TIME = 500;
     private DOMDataBroker domDataBroker;
     private Topology topology;
     private PathTranslator translator = new PathTranslator();
@@ -351,19 +358,7 @@ public class TopologyRequestHandler {
             listener.close();
         }
         listeners.clear();
-        writer.deleteOverlayTopology();
-        try {
-            Thread.sleep(CLOSE_RESOURCES_SLEEP_TIME);
-        } catch (InterruptedException e) {
-            LOG.error("An error occurred while Thread.sleep was called: {}", e);
-        }
-        if (transactionChain != null) {
-            try {
-                transactionChain.close();
-            } catch (Exception e) {
-                LOG.error("An error occurred while closing transaction chain: {}", transactionChain, e);
-            }
-        }
+        writer.tearDown();
     }
 
     /**
