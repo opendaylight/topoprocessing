@@ -2,6 +2,98 @@
   "comments": [
     {
       "key": {
+        "uuid": "3a79b1b5_bef15697",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 391,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-11T13:43:13Z",
+      "side": 1,
+      "message": "close transactionChain in TopologyWriter",
+      "range": {
+        "startLine": 385,
+        "startChar": 8,
+        "endLine": 391,
+        "endChar": 9
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_9e09fa97",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/ShutdownOperation.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-11T13:43:13Z",
+      "side": 1,
+      "message": "deleting overlay topology (as part of releasing allocated resources)",
+      "range": {
+        "startLine": 18,
+        "startChar": 44,
+        "endLine": 18,
+        "endChar": 86
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_5e036273",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/ShutdownOperation.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-11T13:43:13Z",
+      "side": 1,
+      "message": "please state your name here, you are author of this change",
+      "range": {
+        "startLine": 19,
+        "startChar": 11,
+        "endLine": 19,
+        "endChar": 26
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_7e2bbeeb",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-11T13:43:13Z",
+      "side": 1,
+      "message": "why did you change poll() method to peek() ? Actual operation could be stored in local variable and then checked in next if",
+      "range": {
+        "startLine": 279,
+        "startChar": 31,
+        "endLine": 279,
+        "endChar": 37
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_de4532b4",
         "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
         "patchSetId": 3
@@ -18,6 +110,29 @@
         "startChar": 8,
         "endLine": 280,
         "endChar": 9
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_3e354646",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-11T13:43:13Z",
+      "side": 1,
+      "message": "here we should use instanceOf",
+      "range": {
+        "startLine": 280,
+        "startChar": 12,
+        "endLine": 280,
+        "endChar": 80
       },
       "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
@@ -71,6 +186,52 @@
     },
     {
       "key": {
+        "uuid": "3a79b1b5_9e657a47",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-11T13:43:13Z",
+      "side": 1,
+      "message": "please fix excessive indentation and replace tabs with 4 spaces (probably do this in your IDE)",
+      "range": {
+        "startLine": 281,
+        "startChar": 1,
+        "endLine": 284,
+        "endChar": 3
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_be763605",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-11T13:43:13Z",
+      "side": 1,
+      "message": "writer is already shut down at this moment",
+      "range": {
+        "startLine": 284,
+        "startChar": 4,
+        "endLine": 284,
+        "endChar": 41
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_fe258e0a",
         "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
         "patchSetId": 3
@@ -94,6 +255,29 @@
     },
     {
       "key": {
+        "uuid": "3a79b1b5_5e5fe272",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 285,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-11T13:43:13Z",
+      "side": 1,
+      "message": "we can\u0027t return here, otherwise no operation would be submitted. We need to break instead",
+      "range": {
+        "startLine": 285,
+        "startChar": 4,
+        "endLine": 285,
+        "endChar": 10
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_7e797efb",
         "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
         "patchSetId": 3
@@ -110,6 +294,29 @@
         "startChar": 8,
         "endLine": 306,
         "endChar": 24
+      },
+      "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_1ef5ea82",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 313,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-11T13:43:13Z",
+      "side": 1,
+      "message": "change this method to return void",
+      "range": {
+        "startLine": 313,
+        "startChar": 11,
+        "endLine": 313,
+        "endChar": 26
       },
       "revId": "ef54ff955c0fc8e46512dd3874a920b25e22251c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
