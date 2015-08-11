@@ -1,15 +1,19 @@
 package org.opendaylight.topoprocessing.impl.writer;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
+import org.opendaylight.topoprocessing.impl.util.IgnoreAddQueue;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -23,6 +27,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 
 import com.google.common.util.concurrent.CheckedFuture;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * @author matus.marko
@@ -40,6 +45,8 @@ public class TopologyWriterTest {
     @Mock private DOMDataWriteTransaction transaction;
     @Mock private CheckedFuture<Void,TransactionCommitFailedException> submit;
     @Mock private DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?> topologyTypes;
+    @Mock private ThreadPoolExecutor pool;
+;
 
     /**
      * Initializes writer
@@ -97,5 +104,28 @@ public class TopologyWriterTest {
         }
         Mockito.verify(transaction).put(LogicalDatastoreType.OPERATIONAL, topologyTypesYiid, topologyTypes);
         Mockito.verify(transaction).submit();
+    }
+
+    /**
+     * Tests if writer release resources correctly
+     */
+    @Test
+    public void testTearDown() {
+        Mockito.when(transactionChain.newWriteOnlyTransaction()).thenReturn(transaction);
+        Mockito.when(transaction.submit()).thenReturn(submit);
+        Mockito.doAnswer(new Answer<Void>(){
+            public Void answer(InvocationOnMock invocation) {
+                topologyWriter.write();
+                return null;
+            }
+        }).when(pool).execute((Runnable) Mockito.any());
+
+        Mockito.doNothing().when(pool).shutdown();
+        topologyWriter.setPool(pool);
+        topologyWriter.tearDown();
+
+        Assert.assertTrue(topologyWriter.getPreparedOperations() instanceof IgnoreAddQueue<?>);
+        Mockito.verify(topologyWriter.getPool(), Mockito.times(1)).shutdown();
+        Mockito.verify(transactionChain, Mockito.times(1)).close();
     }
 }
