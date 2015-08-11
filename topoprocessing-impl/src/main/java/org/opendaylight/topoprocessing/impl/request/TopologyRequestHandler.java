@@ -56,7 +56,6 @@ import java.util.Map;
 public class TopologyRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
-    private static final int CLOSE_RESOURCES_SLEEP_TIME = 500;
     private DOMDataBroker domDataBroker;
     private Topology topology;
     private PathTranslator translator = new PathTranslator();
@@ -351,19 +350,7 @@ public class TopologyRequestHandler {
             listener.close();
         }
         listeners.clear();
-        writer.deleteOverlayTopology();
-        try {
-            Thread.sleep(CLOSE_RESOURCES_SLEEP_TIME);
-        } catch (InterruptedException e) {
-            LOG.error("An error occurred while Thread.sleep was called: {}", e);
-        }
-        if (transactionChain != null) {
-            try {
-                transactionChain.close();
-            } catch (Exception e) {
-                LOG.error("An error occurred while closing transaction chain: {}", transactionChain, e);
-            }
-        }
+        writer.tearDown();
     }
 
     /**
