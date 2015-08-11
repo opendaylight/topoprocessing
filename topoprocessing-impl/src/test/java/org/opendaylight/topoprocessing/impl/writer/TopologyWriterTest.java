@@ -40,6 +40,7 @@ public class TopologyWriterTest {
     @Mock private DOMDataWriteTransaction transaction;
     @Mock private CheckedFuture<Void,TransactionCommitFailedException> submit;
     @Mock private DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?> topologyTypes;
+;
 
     /**
      * Initializes writer
@@ -97,5 +98,24 @@ public class TopologyWriterTest {
         }
         Mockito.verify(transaction).put(LogicalDatastoreType.OPERATIONAL, topologyTypesYiid, topologyTypes);
         Mockito.verify(transaction).submit();
+    }
+
+    /**
+     * Tests if writer release resources correctly
+     */
+    @Test
+    public void testTearDown() {
+        Mockito.when(transactionChain.newWriteOnlyTransaction()).thenReturn(transaction);
+        Mockito.when(transaction.submit()).thenReturn(submit);
+        topologyWriter.tearDown();
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            throw new IllegalStateException("Exception while waiting on thread pool to process transaction");
+        }
+        Mockito.verify(transaction).delete(LogicalDatastoreType.OPERATIONAL, topologyIdentifier);
+        Mockito.verify(transaction).submit();
+        Mockito.verify(transactionChain, Mockito.times(1)).close();
     }
 }
