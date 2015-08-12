@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_3eab068b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-12T09:25:50Z",
+      "side": 1,
+      "message": "please simplify this condition to: pathIdentifier !\u003d null ... as it covers all cases mentioned in original if + possibly add some explanatory comment",
+      "range": {
+        "startLine": 158,
+        "startChar": 15,
+        "endLine": 161,
+        "endChar": 54
+      },
+      "revId": "bcf13d8ea5c011c80baeb5ac403dab584489104a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
