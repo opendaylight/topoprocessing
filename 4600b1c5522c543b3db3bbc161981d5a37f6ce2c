@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_6a1458f5",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-08-12T10:51:33Z",
+      "side": 1,
+      "message": "Just before this, I would add something like:\npreparedOperations \u003d sinkholeQueue;\n\nI am not Java expert, but I believe there is a thread-safe Queue (mock) implementation that ignores additions and says queue is always empty, sinkholeQueue would be an instance of such class (possibly a static singleton).\n\nWithout that we risk that current preparedOperations will get few more additions after .clear (from other threads, before shutdownInitiated propagates there) and I see no reliable mechanism for those operations to be garbage-collected.",
+      "range": {
+        "startLine": 309,
+        "startChar": 12,
+        "endLine": 309,
+        "endChar": 17
+      },
+      "revId": "4600b1c5522c543b3db3bbc161981d5a37f6ce2c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
