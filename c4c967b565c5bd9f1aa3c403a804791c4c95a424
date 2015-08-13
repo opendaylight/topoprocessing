@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_e0c40761",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-13T07:33:13Z",
+      "side": 1,
+      "message": "we should store underlayItem in topostore, so that we would know what to do when processUpdatedChanges is called",
+      "revId": "c4c967b565c5bd9f1aa3c403a804791c4c95a424",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_80a193ab",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-13T07:33:13Z",
+      "side": 1,
+      "message": "here we should differentiate what will happen based on underlayItem presence in topostore\nUsing only addOverlayItem we will introduce duplicities",
+      "range": {
+        "startLine": 55,
+        "startChar": 12,
+        "endLine": 63,
+        "endChar": 48
+      },
+      "revId": "c4c967b565c5bd9f1aa3c403a804791c4c95a424",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_20cbdf73",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-13T07:33:13Z",
+      "side": 1,
+      "message": "we should include TerminationPointPreAggregationFiltrator here",
+      "range": {
+        "startLine": 272,
+        "startChar": 12,
+        "endLine": 281,
+        "endChar": 17
+      },
+      "revId": "c4c967b565c5bd9f1aa3c403a804791c4c95a424",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
