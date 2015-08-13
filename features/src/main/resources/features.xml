@@ -51,4 +51,8 @@
     <feature name='odl-topoprocessing-i2rs' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: I2RS Model">
         <feature version='${project.version}'>odl-topoprocessing-framework</feature>
     </feature>
+    <feature name='odl-topoprocessing-link-computation' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Link computation">
+        <feature version='${project.version}'>odl-topoprocessing-framework</feature>
+        <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-link-computation/${project.version}</bundle>
+    </feature>
 </features>
