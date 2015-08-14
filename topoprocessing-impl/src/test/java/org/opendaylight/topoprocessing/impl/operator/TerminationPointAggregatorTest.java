@@ -135,6 +135,7 @@ public class TerminationPointAggregatorTest {
         aggregator = new TerminationPointAggregator();
         aggregator.setTargetField(targetField);
         aggregator.setTopologyManager(topoManager);
+        aggregator.setTopoStoreProvider(new TopoStoreProvider());
         aggregator.initializeStore(TOPOLOGY_NAME, false);
     }
 

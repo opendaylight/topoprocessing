@@ -32,19 +32,28 @@ import com.google.common.base.Preconditions;
  * @author matus.marko
  * @author martin.uhlir
  */
-public abstract class TopologyAggregator extends TopoStoreProvider implements TopologyOperator {
+public abstract class TopologyAggregator implements TopologyOperator {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyAggregator.class);
     protected TopologyManager topologyManager;
     private ScriptEngine scriptEngine;
     private String script;
+    private TopoStoreProvider topoStoreProvider;
 
-    /**
+    public TopoStoreProvider getTopoStoreProvider() {
+		return topoStoreProvider;
+	}
+
+	/**
      * @param topologyManager handles aggregated nodes from all correlations
      */
     @Override
     public void setTopologyManager(TopologyManager topologyManager) {
         this.topologyManager = topologyManager;
+    }
+    
+    public void setTopoStoreProvider(TopoStoreProvider topoStoreProvider) {
+    	this.topoStoreProvider = topoStoreProvider;
     }
 
     @Override
@@ -53,7 +62,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
         LOG.trace("Processing createdChanges");
         if (createdEntries != null) {
             for (Entry<YangInstanceIdentifier, UnderlayItem> createdEntry : createdEntries.entrySet()) {
-                for (TopologyStore ts : getTopologyStores()) {
+                for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
                     if (ts.getId().equals(topologyId)) {
                         ts.getUnderlayItems().put(createdEntry.getKey(), createdEntry.getValue());
                     }
@@ -69,7 +78,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
      * @param newItem - new underlay item on which the correlation is created
      */
     private void checkForPossibleAggregation(UnderlayItem newItem, String topologyId) {
-        for (TopologyStore ts : getTopologyStores()) {
+        for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
             if ((! ts.getId().equals(topologyId)) || ts.isAggregateInside()) {
                 for (Entry<YangInstanceIdentifier, UnderlayItem> topoStoreEntry : ts.getUnderlayItems().entrySet()) {
                     UnderlayItem topoStoreItem = topoStoreEntry.getValue();
@@ -137,7 +146,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
     @Override
     public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId) {
         LOG.trace("Processing removedChanges");
-        for (TopologyStore ts : getTopologyStores()) {
+        for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
             if (ts.getId().equals(topologyId)) {
                 Map<YangInstanceIdentifier, UnderlayItem> underlayItems = ts.getUnderlayItems();
                 if (identifiers != null) {
@@ -179,7 +188,7 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
         LOG.trace("Processing updatedChanges");
         if (updatedEntries != null) {
             for (Entry<YangInstanceIdentifier, UnderlayItem> updatedEntry : updatedEntries.entrySet()) {
-                for (TopologyStore ts : getTopologyStores()) {
+                for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
                     if (ts.getId().equals(topologyId)) {
                         LOG.debug("Updating overlay item");
                         UnderlayItem underlayItem = ts.getUnderlayItems().get(updatedEntry.getKey());
@@ -226,5 +235,9 @@ public abstract class TopologyAggregator extends TopoStoreProvider implements To
                 scripting.getLanguage());
         script = scripting.getScript();
         LOG.debug("Next script will be used for custom aggregation: {}", script);
+    }
+    
+    public void initializeStore(String underlayTopologyId, boolean aggregateInside) {
+    	topoStoreProvider.initializeStore(underlayTopologyId, aggregateInside);
     }
 }

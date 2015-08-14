@@ -82,6 +82,7 @@ public class UnificationAggregatorTest {
     public void setUp() {
         // initialize and set up topology stores
         aggregator = new UnificationAggregator();
+        aggregator.setTopoStoreProvider(new TopoStoreProvider());
         aggregator.initializeStore(TOPO1, false);
         aggregator.initializeStore(TOPO2, false);
         aggregator.initializeStore(TOPO3, false);
@@ -122,11 +123,11 @@ public class UnificationAggregatorTest {
 
         aggregator.processCreatedChanges(physicalNodes1, TOPO2);
 
-        Assert.assertEquals(0, aggregator.getTopologyStore(TOPO1).getUnderlayItems().size());
+        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
         // checks that two nodes have been correctly added into topology TOPO2
-        Assert.assertEquals(2, aggregator.getTopologyStore(TOPO2).getUnderlayItems().size());
-        Assert.assertEquals(0, aggregator.getTopologyStore(TOPO3).getUnderlayItems().size());
-        Assert.assertEquals(0, aggregator.getTopologyStore(TOPO4).getUnderlayItems().size());
+        Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
+        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO3).getUnderlayItems().size());
+        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO4).getUnderlayItems().size());
 
         // addLogicalNode method has been called twice
         Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) Mockito.any());
@@ -145,11 +146,11 @@ public class UnificationAggregatorTest {
 
         aggregator.processCreatedChanges(physicalNodes2, TOPO3);
 
-        Assert.assertEquals(0, aggregator.getTopologyStore(TOPO1).getUnderlayItems().size());
-        Assert.assertEquals(2, aggregator.getTopologyStore(TOPO2).getUnderlayItems().size());
+        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
+        Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
         // checks that one node has been correctly added into topology TOPO3
-        Assert.assertEquals(1, aggregator.getTopologyStore(TOPO3).getUnderlayItems().size());
-        Assert.assertEquals(0, aggregator.getTopologyStore(TOPO4).getUnderlayItems().size());
+        Assert.assertEquals(1, aggregator.getTopoStoreProvider().getTopologyStore(TOPO3).getUnderlayItems().size());
+        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO4).getUnderlayItems().size());
 
         Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) Mockito.any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) Mockito.any());
@@ -177,11 +178,11 @@ public class UnificationAggregatorTest {
         remove1.add(leafYiid23);
         aggregator.processRemovedChanges(remove1, TOPO3);
 
-        Assert.assertEquals(0, aggregator.getTopologyStore(TOPO1).getUnderlayItems().size());
-        Assert.assertEquals(2, aggregator.getTopologyStore(TOPO2).getUnderlayItems().size());
+        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
+        Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
         // no physical nodes in topology store TOPO3 (=get(2))
-        Assert.assertEquals(0, aggregator.getTopologyStore(TOPO3).getUnderlayItems().size());
-        Assert.assertEquals(0, aggregator.getTopologyStore(TOPO4).getUnderlayItems().size());
+        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO3).getUnderlayItems().size());
+        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO4).getUnderlayItems().size());
 
         Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) Mockito.any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) Mockito.any());
@@ -194,7 +195,7 @@ public class UnificationAggregatorTest {
         aggregator.processRemovedChanges(remove2, TOPO2);
 
         // one physical node left in topology store TOPO2 (=get(1))
-        Assert.assertEquals(1, aggregator.getTopologyStore(TOPO2).getUnderlayItems().size());
+        Assert.assertEquals(1, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
 
         Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) Mockito.any());
         // one logical node has been removed

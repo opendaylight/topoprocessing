@@ -31,7 +31,7 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
         for (Map.Entry<YangInstanceIdentifier, UnderlayItem> itemEntry : createdEntries.entrySet()) {
             UnderlayItem newItem = itemEntry.getValue();
             if (passedFiltration(newItem)) {
-                getTopologyStore(topologyId).getUnderlayItems().put(itemEntry.getKey(), newItem);
+                super.getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(itemEntry.getKey(), newItem);
                 aggregator.processCreatedChanges(Collections.singletonMap(itemEntry.getKey(), newItem),
                         topologyId);
             }
@@ -43,12 +43,12 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
         LOGGER.trace("Processing updatedChanges");
         for (Map.Entry<YangInstanceIdentifier, UnderlayItem> mapEntry : updatedEntries.entrySet()) {
             UnderlayItem updatedItem = mapEntry.getValue();
-            UnderlayItem olditem = getTopologyStore(topologyId).getUnderlayItems().get(mapEntry.getKey());
+            UnderlayItem olditem = super.getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().get(mapEntry.getKey());
             if (null == olditem) {
                 // updateditem is not present yet
                 if (passedFiltration(updatedItem)) {
                     // passed through filtrator
-                    getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
+                	super.getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
                     aggregator.processCreatedChanges(Collections.singletonMap(mapEntry.getKey(), updatedItem),
                             topologyId);
                 }
@@ -57,12 +57,12 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
                 // updateditem exists already
                 if (passedFiltration(updatedItem)) {
                     // passed through filtrator
-                    getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
+                	super.getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
                     aggregator.processUpdatedChanges(Collections.singletonMap(mapEntry.getKey(), updatedItem),
                             topologyId);
                 } else {
                     // filtered out
-                    getTopologyStore(topologyId).getUnderlayItems().remove(mapEntry.getKey());
+                	super.getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().remove(mapEntry.getKey());
                     aggregator.processRemovedChanges(Collections.singletonList(mapEntry.getKey()), topologyId);
                 }
             }
@@ -73,7 +73,7 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
     public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
         LOGGER.trace("Processing removedChanges");
         for (YangInstanceIdentifier itemIdentifier : identifiers) {
-            UnderlayItem item = getTopologyStore(topologyId).getUnderlayItems().remove(itemIdentifier);
+            UnderlayItem item = super.getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().remove(itemIdentifier);
             if (null != item) {
                 aggregator.processRemovedChanges(Collections.singletonList(itemIdentifier), topologyId);
             }
