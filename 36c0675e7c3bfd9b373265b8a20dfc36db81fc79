@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_1a772bd6",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-14T15:12:22Z",
+      "side": 1,
+      "message": "here we should differentiate what will happen based on underlayItem presence in topostore\nUsing only addOverlayItem we will introduce duplicities",
+      "range": {
+        "startLine": 65,
+        "startChar": 12,
+        "endLine": 72,
+        "endChar": 48
+      },
+      "revId": "36c0675e7c3bfd9b373265b8a20dfc36db81fc79",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_7a72dfe6",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-14T15:12:22Z",
+      "side": 1,
+      "message": "filterTerminationPoints",
+      "range": {
+        "startLine": 76,
+        "startChar": 33,
+        "endLine": 76,
+        "endChar": 43
+      },
+      "revId": "36c0675e7c3bfd9b373265b8a20dfc36db81fc79",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
