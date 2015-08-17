@@ -1,0 +1,441 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_2dc5105b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "This takes advantage of the fact, that two TopologyOperators can share their data (UnderlayItem-s). This results in lower memory demands",
+      "range": {
+        "startLine": 9,
+        "startChar": 47,
+        "endLine": 11,
+        "endChar": 35
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_6d1d480f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NotificationInterConnector.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "remove this method as it is unnecessary - we can test directly on TopostoreProvider",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 2
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_8d26a467",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NotificationInterConnector.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "this step should be done in TopologyRequestHandler, which handles and initiates structures for new topology",
+      "range": {
+        "startLine": 59,
+        "startChar": 8,
+        "endLine": 59,
+        "endChar": 69
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_ad2b602f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NotificationInterConnector.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "please remove this log",
+      "range": {
+        "startLine": 67,
+        "startChar": 12,
+        "endLine": 67,
+        "endChar": 62
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_4d208c49",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NotificationInterConnector.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "remove this method as it is unnecessary - we set TopostoreProvider in constructor",
+      "range": {
+        "startLine": 185,
+        "startChar": 0,
+        "endLine": 187,
+        "endChar": 5
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_ade28001",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/PreAggregationFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "do we need to call super.*",
+      "range": {
+        "startLine": 38,
+        "startChar": 16,
+        "endLine": 38,
+        "endChar": 22
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_edbf18cf",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/PreAggregationFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "as PreAggregationFiltrator only prepares data for \"final\" processing, it doesn\u0027t put data into topostore, it only checks if there are already some specific data present, so that the filtrator knows how to delegate received data",
+      "range": {
+        "startLine": 38,
+        "startChar": 92,
+        "endLine": 38,
+        "endChar": 126
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_4de72c13",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/PreAggregationFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "do we need to call super.* + please check also other occurences",
+      "range": {
+        "startLine": 50,
+        "startChar": 35,
+        "endLine": 50,
+        "endChar": 41
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_8db464f3",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/PreAggregationFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "as PreAggregationFiltrator only prepares data for \"final\" processing, it doesn\u0027t put data into topostore, it only checks if there are already some specific data present, so that the filtrator knows how to delegate received data",
+      "range": {
+        "startLine": 55,
+        "startChar": 93,
+        "endLine": 55,
+        "endChar": 129
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_adb920eb",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/PreAggregationFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "as PreAggregationFiltrator only prepares data for \"final\" processing, it doesn\u0027t put data into topostore, it only checks if there are already some specific data present, so that the filtrator knows how to delegate received data",
+      "range": {
+        "startLine": 64,
+        "startChar": 93,
+        "endLine": 64,
+        "endChar": 124
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_4dce4c85",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/PreAggregationFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "as PreAggregationFiltrator only prepares data for \"final\" processing, it doesn\u0027t put / delete data into topostore, it only checks if there are already some specific data present, so that the filtrator knows how to delegate received data",
+      "range": {
+        "startLine": 69,
+        "startChar": 86,
+        "endLine": 69,
+        "endChar": 120
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_6dcb0873",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/PreAggregationFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "as PreAggregationFiltrator only prepares data for \"final\" processing, it doesn\u0027t put data into topostore, it only checks if there are already some specific data present, so that the filtrator knows how to delegate received data",
+      "range": {
+        "startLine": 80,
+        "startChar": 107,
+        "endLine": 80,
+        "endChar": 132
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_6de4680d",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "do we need to call super.* ? + other occurences",
+      "range": {
+        "startLine": 100,
+        "startChar": 16,
+        "endLine": 100,
+        "endChar": 22
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_0df134cd",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyAggregator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "can be changed to protected ?",
+      "range": {
+        "startLine": 47,
+        "startChar": 4,
+        "endLine": 47,
+        "endChar": 10
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_0d1a9417",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "can we change this access modifier to protected ?",
+      "range": {
+        "startLine": 38,
+        "startChar": 4,
+        "endLine": 38,
+        "endChar": 10
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_cd2c9c4d",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "incorrect indentation",
+      "range": {
+        "startLine": 66,
+        "startChar": 16,
+        "endLine": 66,
+        "endChar": 17
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_ed3158a3",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "incorrect indentation",
+      "range": {
+        "startLine": 74,
+        "startChar": 16,
+        "endLine": 74,
+        "endChar": 17
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_2dee70ed",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 177,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "we should initialize this topostoreProvider with some topostore",
+      "range": {
+        "startLine": 177,
+        "startChar": 94,
+        "endLine": 177,
+        "endChar": 118
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_cdba5ce1",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:12:36Z",
+      "side": 1,
+      "message": "again, we should initialize this provider with topostore here",
+      "range": {
+        "startLine": 243,
+        "startChar": 96,
+        "endLine": 243,
+        "endChar": 119
+      },
+      "revId": "1d22140a220f2bcd3c040edb9a0dfd01c0370447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
