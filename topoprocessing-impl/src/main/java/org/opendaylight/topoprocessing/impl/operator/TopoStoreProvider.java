@@ -11,7 +11,6 @@ package org.opendaylight.topoprocessing.impl.operator;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -22,7 +21,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 public class  TopoStoreProvider {
 
     private List<TopologyStore> topologyStores;
-    
+
     public TopoStoreProvider () {
         topologyStores= new ArrayList<>();
     }

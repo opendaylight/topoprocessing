@@ -129,7 +129,15 @@ module topology-correlation {
 
     augment "/topo:network-topology/topo:topology" {
         ext:augment-identifier "correlation-augment";
+        uses correlations-grouping;
+    }
+    
+    grouping correlations-grouping {
         container correlations {
+            leaf output-model {
+                type model;
+                description "Desired model for output from correlation.";
+            }
             list correlation {
                 key correlation-id;
                 leaf correlation-id {
