@@ -29,10 +29,11 @@ import org.slf4j.LoggerFactory;
  * @author michal.polkorab
  *
  */
-public class NotificationInterConnector extends TopoStoreProvider implements TopologyOperator {
+public class NotificationInterConnector implements TopologyOperator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(NotificationInterConnector.class);
     private TopologyOperator operator;
+    private TopoStoreProvider topoStoreProvider;
     private CorrelationItemEnum itemType;
     private Map<YangInstanceIdentifier, YangInstanceIdentifier> topoToInvIds = new HashMap<>();
     private static final QName INVENTORY_NODE_REF_QNAME =
@@ -43,9 +44,10 @@ public class NotificationInterConnector extends TopoStoreProvider implements Top
      * @param underlayTopologyId underlay topology id
      * @param itemType item type
      */
-    public NotificationInterConnector(String underlayTopologyId, CorrelationItemEnum itemType) {
+    public NotificationInterConnector(String underlayTopologyId, CorrelationItemEnum itemType,
+    		TopoStoreProvider topoStoreProvider) {
         this.itemType = itemType;
-        initializeStore(underlayTopologyId, false);
+        this.topoStoreProvider = topoStoreProvider;
     }
 
     @Override
@@ -53,7 +55,7 @@ public class NotificationInterConnector extends TopoStoreProvider implements Top
             String topologyId) {
         if (createdEntries != null) {
             LOGGER.trace("Processing created changes");
-            Map<YangInstanceIdentifier, UnderlayItem> items = getTopologyStore(topologyId).getUnderlayItems();
+            Map<YangInstanceIdentifier, UnderlayItem> items = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems();
             Map<YangInstanceIdentifier, UnderlayItem> combinedEntries = new HashMap<>();
             for (Entry<YangInstanceIdentifier, UnderlayItem> createdEntry : createdEntries.entrySet()) {
                 YangInstanceIdentifier key = null;
@@ -97,7 +99,7 @@ public class NotificationInterConnector extends TopoStoreProvider implements Top
             String topologyId) {
         if (updatedEntries != null) {
             LOGGER.trace("Processing updated changes");
-            Map<YangInstanceIdentifier, UnderlayItem> items = getTopologyStore(topologyId).getUnderlayItems();
+            Map<YangInstanceIdentifier, UnderlayItem> items = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems();
             Map<YangInstanceIdentifier, UnderlayItem> combinedEntries = new HashMap<>();
             for (Entry<YangInstanceIdentifier, UnderlayItem> updatedEntry : updatedEntries.entrySet()) {
                 YangInstanceIdentifier key = null;
@@ -144,7 +146,7 @@ public class NotificationInterConnector extends TopoStoreProvider implements Top
         if (identifiers != null) {
             LOGGER.trace("Processing removed changes");
             List<YangInstanceIdentifier> presentIdentifiers = new ArrayList<>();
-            Map<YangInstanceIdentifier, UnderlayItem> underlayItems = getTopologyStore(topologyId).getUnderlayItems();
+            Map<YangInstanceIdentifier, UnderlayItem> underlayItems = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems();
             for (YangInstanceIdentifier identifier : identifiers) {
                 YangInstanceIdentifier removalIdentifier = identifier;
                 YangInstanceIdentifier checkedIdentifier = topoToInvIds.remove(identifier);
@@ -210,5 +212,4 @@ public class NotificationInterConnector extends TopoStoreProvider implements Top
         }
         return oldItem;
     }
-
 }

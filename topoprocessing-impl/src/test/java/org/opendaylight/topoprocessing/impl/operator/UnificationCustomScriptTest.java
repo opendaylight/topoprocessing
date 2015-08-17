@@ -49,6 +49,7 @@ public class UnificationCustomScriptTest {
     private TopologyAggregator aggregator;
     private YangInstanceIdentifier leafYiid21, leafYiid22, leafYiid23;
     private CorrelationItemEnum nodeItem = CorrelationItemEnum.Node;
+    private TopoStoreProvider topoStoreProvider;
 
     @Mock
     private NormalizedNode<?,?> mockNormalizedNode1, mockNormalizedNode2;
@@ -60,9 +61,10 @@ public class UnificationCustomScriptTest {
     @Before
     public void setUp() {
         // initialize and set up topology stores
-        aggregator = new UnificationAggregator();
-        aggregator.initializeStore(TOPO1, false);
-        aggregator.initializeStore(TOPO2, false);
+    	topoStoreProvider = new TopoStoreProvider();
+        aggregator = new UnificationAggregator(topoStoreProvider);
+        topoStoreProvider.initializeStore(TOPO1, false);
+        topoStoreProvider.initializeStore(TOPO2, false);
         String script = "if (originalItem.getLeafNode().getValue() === newItem.getLeafNode().getValue()) {"
                 + "    aggregable.setResult(true);"
                 + "} else {"
@@ -97,9 +99,9 @@ public class UnificationCustomScriptTest {
 
         aggregator.processCreatedChanges(UnderlayItems1, TOPO1);
 
-        Assert.assertEquals(2, aggregator.getTopologyStore(TOPO1).getUnderlayItems().size());
+        Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
         // checks that two nodes have been correctly added into topology TOPO2
-        Assert.assertEquals(0, aggregator.getTopologyStore(TOPO2).getUnderlayItems().size());
+        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
 
         // addLogicalNode method has been called twice
         Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) Mockito.any());
@@ -118,8 +120,8 @@ public class UnificationCustomScriptTest {
 
         aggregator.processCreatedChanges(UnderlayItems2, TOPO2);
 
-        Assert.assertEquals(2, aggregator.getTopologyStore(TOPO1).getUnderlayItems().size());
-        Assert.assertEquals(1, aggregator.getTopologyStore(TOPO2).getUnderlayItems().size());
+        Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
+        Assert.assertEquals(1, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
 
         Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) Mockito.any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) Mockito.any());
@@ -132,7 +134,7 @@ public class UnificationCustomScriptTest {
      */
     @Test(expected=NullPointerException.class)
     public void testIncorrectCreation() {
-        aggregator = new UnificationAggregator();
+        aggregator = new UnificationAggregator(topoStoreProvider);
         String script = "println(\"hello\")";
         ScriptingBuilder scriptingBuilder = new ScriptingBuilder();
         scriptingBuilder.setLanguage("abcTest");
