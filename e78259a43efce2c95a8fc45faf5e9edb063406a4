@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_cdb6dcdc",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:32:12Z",
+      "side": 1,
+      "message": "please extract this value to constant",
+      "range": {
+        "startLine": 297,
+        "startChar": 31,
+        "endLine": 297,
+        "endChar": 34
+      },
+      "revId": "e78259a43efce2c95a8fc45faf5e9edb063406a4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
