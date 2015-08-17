@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_ede2b8d4",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T11:41:22Z",
+      "side": 1,
+      "message": "this won\u0027t work, as we just created completely new overlayItem which can\u0027t be updated (first it must be added). Instead of creating new overlayItem, we must appropriately set old overlayItem with new UnderlayItem",
+      "range": {
+        "startLine": 65,
+        "startChar": 12,
+        "endLine": 66,
+        "endChar": 51
+      },
+      "revId": "09db6d901c04c1212818b09fbfc997f3a48f6c21",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
