@@ -45,11 +45,4 @@ public interface TopologyOperator {
      */
     void setTopologyManager(TopologyManager topologyManager);
 
-    /**
-     * Initialize Topology store with given Topology Id
-     * @param underlayTopologyId Topology Id
-     * @param aggregateInside true if aggregation should happen even inside
-     *        the same topology
-     */
-    void initializeStore(String underlayTopologyId, boolean aggregateInside);
 }

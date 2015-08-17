@@ -76,14 +76,15 @@ public class EqualityAggregatorTest {
     @Before
     public void setUp() throws Exception {
         // initialize and set up topology stores
-        aggregator = new EqualityAggregator();
-        aggregator.initializeStore(TOPO1, AGGREGATE_INSIDE);
-        aggregator.initializeStore(TOPO2, AGGREGATE_INSIDE);
-        aggregator.initializeStore(TOPO3, AGGREGATE_INSIDE);
-        aggregator.initializeStore(TOPO4, AGGREGATE_INSIDE);
+        TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
+        aggregator = new EqualityAggregator(topoStoreProvider);
+        topoStoreProvider.initializeStore(TOPO1, AGGREGATE_INSIDE);
+        topoStoreProvider.initializeStore(TOPO2, AGGREGATE_INSIDE);
+        topoStoreProvider.initializeStore(TOPO3, AGGREGATE_INSIDE);
+        topoStoreProvider.initializeStore(TOPO4, AGGREGATE_INSIDE);
 
-        TopologyStore topo1 = aggregator.getTopologyStore(TOPO1);
-        TopologyStore topo2 = aggregator.getTopologyStore(TOPO2);
+        TopologyStore topo1 = aggregator.getTopoStoreProvider().getTopologyStore(TOPO1);
+        TopologyStore topo2 = aggregator.getTopoStoreProvider().getTopologyStore(TOPO2);
 
         // fill topology stores
         testNodeCreator = new TestNodeCreator();
@@ -157,13 +158,13 @@ public class EqualityAggregatorTest {
         aggregator.processCreatedChanges(physicalNodes2, TOPO3);
 
         // one physical node in topology store TOPO1
-        Assert.assertEquals(1, aggregator.getTopologyStore(TOPO1).getUnderlayItems().size());
+        Assert.assertEquals(1, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
         // three physical nodes in topology store TOPO2
-        Assert.assertEquals(3, aggregator.getTopologyStore(TOPO2).getUnderlayItems().size());
+        Assert.assertEquals(3, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
         // one physical node in topology store TOPO3
-        Assert.assertEquals(1, aggregator.getTopologyStore(TOPO3).getUnderlayItems().size());
+        Assert.assertEquals(1, aggregator.getTopoStoreProvider().getTopologyStore(TOPO3).getUnderlayItems().size());
         // no physical node in topology store TOPO4
-        Assert.assertEquals(0, aggregator.getTopologyStore(TOPO4).getUnderlayItems().size());
+        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO4).getUnderlayItems().size());
 
         Mockito.verify(mockManager, Mockito.times(1)).addOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) any());
@@ -202,7 +203,7 @@ public class EqualityAggregatorTest {
         aggregator.processRemovedChanges(remove1, TOPO1);
 
         // no physical nodes in topology store TOPO1
-        Assert.assertEquals(0, aggregator.getTopologyStore(TOPO1).getUnderlayItems().size());
+        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
 
         Mockito.verify(mockManager, Mockito.times(1)).addOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) any());
@@ -215,7 +216,7 @@ public class EqualityAggregatorTest {
         aggregator.processRemovedChanges(remove2, TOPO2);
 
         // two physical nodes in topology store TOPO2
-        Assert.assertEquals(2, aggregator.getTopologyStore(TOPO2).getUnderlayItems().size());
+        Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
 
         Mockito.verify(mockManager, Mockito.times(1)).addOverlayItem((OverlayItem) any());
         // one logical node has been removed
@@ -376,8 +377,8 @@ public class EqualityAggregatorTest {
     @Test
     public void test() throws Exception {
         boolean aggregateInside = true;
-        aggregator.initializeStore(TOPO5, aggregateInside);
-        aggregator.initializeStore(TOPO6, aggregateInside);
+        aggregator.getTopoStoreProvider().initializeStore(TOPO5, aggregateInside);
+        aggregator.getTopoStoreProvider().initializeStore(TOPO6, aggregateInside);
 
         YangInstanceIdentifier leafYiid51 = testNodeCreator.createNodeIdYiid("51");
         LeafNode<String> leafNode51 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.5");
