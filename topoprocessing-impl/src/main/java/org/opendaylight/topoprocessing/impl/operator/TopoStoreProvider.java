@@ -19,9 +19,13 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 /**
  * @author matus.marko
  */
-public abstract class  TopoStoreProvider {
+public class  TopoStoreProvider {
 
-    private List<TopologyStore> topologyStores = new ArrayList<>();
+    private List<TopologyStore> topologyStores;
+    
+    public TopoStoreProvider () {
+    	topologyStores= new ArrayList<>();
+    }
 
     /**
      * @param topologyId Topology Identifier

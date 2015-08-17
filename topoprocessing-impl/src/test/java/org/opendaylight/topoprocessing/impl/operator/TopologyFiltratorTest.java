@@ -54,8 +54,9 @@ public class TopologyFiltratorTest {
 
     @Before
     public void setUp() {
-        filtrator = new TopologyFiltrator();
-        filtrator.initializeStore(TOPOLOGY_NAME, false);
+        TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
+        filtrator = new TopologyFiltrator(topoStoreProvider);
+        topoStoreProvider.initializeStore(TOPOLOGY_NAME, false);
         filtrator.addFilter(mockFiltrator);
         filtrator.setTopologyManager(mockTopologyManager);
     }

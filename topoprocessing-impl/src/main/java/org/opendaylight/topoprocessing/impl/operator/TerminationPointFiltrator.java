@@ -30,6 +30,10 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TerminationPointFiltrator.class);
 
+    public TerminationPointFiltrator(TopoStoreProvider topoStoreProvider) {
+        super(topoStoreProvider);
+    }
+
     @Override
     public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, String topologyId) {
         LOGGER.trace("Processing createdChanges");
@@ -42,7 +46,7 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
                 node = filterTerminationPoints(node, (MapNode) tpMapNodeOpt.get());
                 underlayItem.setItem(node);
             }
-            getTopologyStore(topologyId).getUnderlayItems().put(itemEntry.getKey(), underlayItem);
+            getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(itemEntry.getKey(), underlayItem);
             OverlayItem overlayItem = wrapUnderlayItem(underlayItem);
             manager.addOverlayItem(overlayItem);
         }
@@ -51,7 +55,8 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
     @Override
     public void processUpdatedChanges(Map<YangInstanceIdentifier, UnderlayItem> updatedEntries, String topologyId) {
         LOGGER.trace("Processing updatedChanges");
-        Map<YangInstanceIdentifier, UnderlayItem> oldUnderlayItems = getTopologyStore(topologyId).getUnderlayItems();
+        Map<YangInstanceIdentifier, UnderlayItem> oldUnderlayItems =
+                getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems();
         for (Map.Entry<YangInstanceIdentifier, UnderlayItem> itemEntry : updatedEntries.entrySet()) {
             OverlayItem overlayItem;
             UnderlayItem newUnderlayItem = itemEntry.getValue();

@@ -53,12 +53,14 @@ public class NotificationInterConnectorTest {
     @Mock private TopologyOperator operator;
     private NotificationInterConnector connector;
     private TestNodeCreator creator = new TestNodeCreator();
+    private TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
 
     /** Sets up NotificationInterConnector */
     @Before
     public void setUp() {
         operator = Mockito.mock(TopologyOperator.class);
-        connector = new NotificationInterConnector(TOPOLOGY_ID, CorrelationItemEnum.Node);
+        connector = new NotificationInterConnector(TOPOLOGY_ID, CorrelationItemEnum.Node,topoStoreProvider);
+        topoStoreProvider.initializeStore(TOPOLOGY_ID, false);
         connector.setOperator(operator);
     }
 
@@ -173,7 +175,7 @@ public class NotificationInterConnectorTest {
         Mockito.verify(operator, Mockito.times(1)).processRemovedChanges(
                 Matchers.eq(Collections.singletonList(invNodeId)), Matchers.eq(TOPOLOGY_ID));
         Assert.assertNull("Item should have been removed",
-                connector.getTopologyStore(TOPOLOGY_ID).getUnderlayItems().get(invNodeId));
+                topoStoreProvider.getTopologyStore(TOPOLOGY_ID).getUnderlayItems().get(invNodeId));
 
         // remove with topology identifier
         String node2 = "node:2";
@@ -201,7 +203,7 @@ public class NotificationInterConnectorTest {
         Mockito.verify(operator, Mockito.times(1)).processRemovedChanges(
                 Matchers.eq(Collections.singletonList(invNodeId)), Matchers.eq(TOPOLOGY_ID));
         Assert.assertNull("Item should have been removed",
-                connector.getTopologyStore(TOPOLOGY_ID).getUnderlayItems().get(invNodeId));
+                topoStoreProvider.getTopologyStore(TOPOLOGY_ID).getUnderlayItems().get(invNodeId));
 
         // remove with inventory identifier
         identifiers = new ArrayList<>();
@@ -226,7 +228,7 @@ public class NotificationInterConnectorTest {
         connector.processUpdatedChanges(entries, TOPOLOGY_ID);
 
         // create expected result
-        UnderlayItem item = connector.getTopologyStore(TOPOLOGY_ID).getUnderlayItems().get(invNodeId);
+        UnderlayItem item = topoStoreProvider.getTopologyStore(TOPOLOGY_ID).getUnderlayItems().get(invNodeId);
         UnderlayItem comparationItem = new UnderlayItem(item.getItem(), leafNode, TOPOLOGY_ID, item.getItemId(),
                 CorrelationItemEnum.Node);
         Map<YangInstanceIdentifier, UnderlayItem> expectedItems = new HashMap<>();
