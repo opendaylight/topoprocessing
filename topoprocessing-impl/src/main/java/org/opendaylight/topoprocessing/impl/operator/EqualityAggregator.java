@@ -17,6 +17,10 @@ public class EqualityAggregator extends TopologyAggregator {
     private static final int UNDERLAY_ITEMS_IN_OVERLAY_ITEM = 2;
     private static final boolean WRAP_SINGLE_UNDERLAY_ITEM = false;
 
+    public EqualityAggregator(TopoStoreProvider topoStoreProvider) {
+    	super(topoStoreProvider);
+    }
+    
     @Override
     protected int getMinUnderlayItems() {
         return UNDERLAY_ITEMS_IN_OVERLAY_ITEM;

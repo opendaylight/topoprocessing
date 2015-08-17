@@ -40,6 +40,10 @@ public class TerminationPointAggregator extends UnificationAggregator {
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
     private Map<YangInstanceIdentifier, List<TemporaryTerminationPoint>> tpStore = new HashMap<>();
 
+    public TerminationPointAggregator(TopoStoreProvider topoStoreProvider) {
+    	super(topoStoreProvider);
+    }
+    
     private class TemporaryTerminationPoint {
         private NormalizedNode<?, ?> targetField;
         private String tpId;
@@ -93,7 +97,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
             for (Map.Entry<YangInstanceIdentifier, UnderlayItem> createdEntry : createdEntries.entrySet()) {
                 UnderlayItem underlayItem = createdEntry.getValue();
                 // save underlayItem to local datastore
-                getTopologyStore(topologyId).getUnderlayItems().put(createdEntry.getKey(), underlayItem);
+                super.getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(createdEntry.getKey(), underlayItem);
                 // find TerminationPoint Map in underlayItem
                 NormalizedNode<?, ?> newNode = underlayItem.getItem();
                 Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(newNode,
@@ -120,7 +124,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
     public void processUpdatedChanges(Map<YangInstanceIdentifier, UnderlayItem> updatedEntries, String topologyId) {
         LOG.trace("Processing updatedChanges");
         if (updatedEntries != null) {
-            TopologyStore ts = getTopologyStore(topologyId);
+            TopologyStore ts = super.getTopoStoreProvider().getTopologyStore(topologyId);
             for (Map.Entry<YangInstanceIdentifier, UnderlayItem> updatedEntry : updatedEntries.entrySet()) {
                 List<TemporaryTerminationPoint> nodeTps = tpStore.get(updatedEntry.getKey());
                 // load underlay item by given key

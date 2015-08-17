@@ -23,20 +23,30 @@ import java.util.Map;
 /**
  * @author matus.marko
  */
-public class TopologyFiltrator extends TopoStoreProvider implements TopologyOperator {
+public class TopologyFiltrator implements TopologyOperator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyFiltrator.class);
 
     private List<Filtrator> filtrators = new ArrayList<>();
     private TopologyManager manager;
+    private TopoStoreProvider topoStoreProvider;
 
-    @Override
+    public TopologyFiltrator(TopoStoreProvider topoStoreProvider) {
+    	this.topoStoreProvider = topoStoreProvider;
+    }
+    
+    public TopoStoreProvider getTopoStoreProvider() {
+		return topoStoreProvider;
+	}
+    
+
+	@Override
     public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, String topologyId) {
         LOGGER.trace("Processing createdChanges");
         for (Map.Entry<YangInstanceIdentifier, UnderlayItem> itemEntry : createdEntries.entrySet()) {
             UnderlayItem newItemValue = itemEntry.getValue();
             if (passedFiltration(newItemValue)) {
-                getTopologyStore(topologyId).getUnderlayItems().put(itemEntry.getKey(), newItemValue);
+            	topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(itemEntry.getKey(), newItemValue);
                 OverlayItem overlayItem = wrapUnderlayItem(newItemValue);
                 manager.addOverlayItem(overlayItem);
             }
@@ -48,12 +58,12 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
         LOGGER.trace("Processing updatedChanges");
         for (Map.Entry<YangInstanceIdentifier, UnderlayItem> mapEntry : updatedEntries.entrySet()) {
             UnderlayItem updatedItem = mapEntry.getValue();
-            UnderlayItem oldItem = getTopologyStore(topologyId).getUnderlayItems().get(mapEntry.getKey());
+            UnderlayItem oldItem = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().get(mapEntry.getKey());
             if (null == oldItem) {
                 // updatedItem is not present yet
                 if (passedFiltration(updatedItem)) {
                     // passed through filtrator
-                    getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
+                	topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
                     manager.addOverlayItem(wrapUnderlayItem(updatedItem));
                 }
                 // else do nothing
@@ -61,7 +71,7 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
                 // updatedItem exists already
                 if (passedFiltration(updatedItem)) {
                     // passed through filtrator
-                    getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
+                	topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
                     OverlayItem overlayItem = oldItem.getOverlayItem();
                     updatedItem.setOverlayItem(overlayItem);
                     overlayItem.setUnderlayItems(Collections.singletonList(updatedItem));
@@ -69,7 +79,7 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
                 } else {
                     // filtered out
                     OverlayItem oldOverlayItem = oldItem.getOverlayItem();
-                    getTopologyStore(topologyId).getUnderlayItems().remove(mapEntry.getKey());
+                    topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().remove(mapEntry.getKey());
                     manager.removeOverlayItem(oldOverlayItem);
                 }
             }
@@ -80,7 +90,7 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
     public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
         LOGGER.trace("Processing removedChanges");
         for (YangInstanceIdentifier itemIdentifier : identifiers) {
-            UnderlayItem underlayItem = getTopologyStore(topologyId).getUnderlayItems().remove(itemIdentifier);
+            UnderlayItem underlayItem = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().remove(itemIdentifier);
             if (null != underlayItem) {
                 manager.removeOverlayItem(underlayItem.getOverlayItem());
             }
@@ -91,7 +101,7 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
     public void setTopologyManager(TopologyManager topologyManager) {
         this.manager = topologyManager;
     }
-
+    
     /**
      * Add new filtrator
      * @param filter Node Ip Filtrator
@@ -115,5 +125,4 @@ public class TopologyFiltrator extends TopoStoreProvider implements TopologyOper
         underlayItem.setOverlayItem(overlayItem);
         return overlayItem;
     }
-
 }

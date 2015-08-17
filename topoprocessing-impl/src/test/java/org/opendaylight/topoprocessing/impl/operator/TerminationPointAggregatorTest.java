@@ -12,6 +12,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
+import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
@@ -132,10 +133,11 @@ public class TerminationPointAggregatorTest {
                 .withChild(ImmutableNodes.leafNode(IP_ADDRESS_QNAME, ip5)).build();
 
         // aggregator
-        aggregator = new TerminationPointAggregator();
+        TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
+        aggregator = new TerminationPointAggregator(topoStoreProvider);
         aggregator.setTargetField(targetField);
         aggregator.setTopologyManager(topoManager);
-        aggregator.initializeStore(TOPOLOGY_NAME, false);
+        aggregator.getTopoStoreProvider().initializeStore(TOPOLOGY_NAME, false);
     }
 
     /**

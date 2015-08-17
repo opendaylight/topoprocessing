@@ -162,19 +162,19 @@ public class TopologyRequestHandler {
         CorrelationItemEnum correlationItem = correlation.getCorrelationItem();
         Filtration filtration = correlation.getFiltration();
         String underlayTopologyId = filtration.getUnderlayTopology();
-        TopologyFiltrator filtrator = new TopologyFiltrator();
+        TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
+        TopologyFiltrator filtrator = new TopologyFiltrator(topoStoreProvider);
+        topoStoreProvider.initializeStore(underlayTopologyId, false);
         for (Filter filter : filtration.getFilter()) {
-            filtrator.initializeStore(underlayTopologyId, false);
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
-                    correlation.getCorrelationItem(), schemaHolder, filter.getInputModel());
+            correlation.getCorrelationItem(), schemaHolder, filter.getInputModel());
             addFiltrator(filtrator, filter, pathIdentifier);
             UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, underlayTopologyId,
                     correlationItem);
             NotificationInterConnector connector = null;
             if (filter.getInputModel().equals(Model.OpendaylightInventory)
                     && correlationItem.equals(CorrelationItemEnum.Node)) {
-                connector = new NotificationInterConnector(underlayTopologyId, correlationItem);
-                connector.initializeStore(underlayTopologyId, false);
+                connector = new NotificationInterConnector(underlayTopologyId, correlationItem,new TopoStoreProvider());
                 listener.setOperator(connector);
                 InventoryListener invListener = new InventoryListener(underlayTopologyId);
                 invListener.setOperator(connector);
@@ -224,13 +224,15 @@ public class TopologyRequestHandler {
     private TopologyAggregator initAggregation(Correlation correlation, boolean filtration) {
         CorrelationItemEnum correlationItem = correlation.getCorrelationItem();
         Aggregation aggregation = correlation.getAggregation();
-        TopologyAggregator aggregator = createAggregator(aggregation.getAggregationType(), correlationItem);
+        TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
+        TopologyAggregator aggregator = createAggregator(aggregation.getAggregationType(),
+        		correlationItem, topoStoreProvider);
         if (aggregation.getScripting() != null) {
             aggregator.initCustomAggregation(aggregation.getScripting());
         }
         for (Mapping mapping : aggregation.getMapping()) {
             String underlayTopologyId = mapping.getUnderlayTopology();
-            aggregator.initializeStore(underlayTopologyId, mapping.isAggregateInside());
+            topoStoreProvider.initializeStore(underlayTopologyId, mapping.isAggregateInside());
             YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
                     correlationItem, schemaHolder, mapping.getInputModel());
             UnderlayTopologyListener listener =
@@ -238,8 +240,7 @@ public class TopologyRequestHandler {
             NotificationInterConnector connector = null;
             if (mapping.getInputModel().equals(Model.OpendaylightInventory)
                    && correlationItem.equals(CorrelationItemEnum.Node)) {
-                connector = new NotificationInterConnector(underlayTopologyId, correlationItem);
-                connector.initializeStore(underlayTopologyId, false);
+                connector = new NotificationInterConnector(underlayTopologyId, correlationItem, new TopoStoreProvider());
                 listener.setOperator(connector);
                 InventoryListener invListener = new InventoryListener(underlayTopologyId);
                 invListener.setOperator(connector);
@@ -260,8 +261,7 @@ public class TopologyRequestHandler {
                 ((TerminationPointAggregator) aggregator).setTargetField(pathIdentifier);
             }
             if (filtration && mapping.getApplyFilters() != null) {
-                PreAggregationFiltrator filtrator = new PreAggregationFiltrator();
-                filtrator.initializeStore(underlayTopologyId, false);
+                PreAggregationFiltrator filtrator = new PreAggregationFiltrator(topoStoreProvider);
                 filtrator.setTopologyAggregator(aggregator);
                 for (String filterId : mapping.getApplyFilters()) {
                     Filter filter = findFilter(correlation.getFiltration().getFilter(), filterId);
@@ -310,14 +310,15 @@ public class TopologyRequestHandler {
         return null;
     }
 
-    private TopologyAggregator createAggregator(Class<? extends AggregationBase> type, CorrelationItemEnum item) {
+    private TopologyAggregator createAggregator(Class<? extends AggregationBase> type, CorrelationItemEnum item,
+    		TopoStoreProvider topoStoreProvider) {
         TopologyAggregator aggregator;
         if (CorrelationItemEnum.TerminationPoint.equals(item)) {
-            aggregator = new TerminationPointAggregator();
+            aggregator = new TerminationPointAggregator(topoStoreProvider);
         } else if (Equality.class.equals(type)) {
-            aggregator = new EqualityAggregator();
+            aggregator = new EqualityAggregator(topoStoreProvider);
         } else if (Unification.class.equals(type)) {
-            aggregator = new UnificationAggregator();
+            aggregator = new UnificationAggregator(topoStoreProvider);
         } else {
             throw new IllegalArgumentException("Unsupported correlation type received: " + type);
         }
