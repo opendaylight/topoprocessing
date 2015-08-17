@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_2de4303a",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/ShutdownOperation.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T08:46:46Z",
+      "side": 1,
+      "message": "Stores information that will be used for deleting overlay topology (as part of releasing allocated resources)",
+      "range": {
+        "startLine": 18,
+        "startChar": 3,
+        "endLine": 18,
+        "endChar": 71
+      },
+      "revId": "8234bf3c9be23e92a24db9178227b4f3a629460c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_8d41c40d",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T08:46:46Z",
+      "side": 1,
+      "message": "please limit methods for testing purposes to maximum, we probably don\u0027t need any of these methods, as we can test transactionChain.close() and overlay topology removal without them",
+      "range": {
+        "startLine": 95,
+        "startChar": 0,
+        "endLine": 117,
+        "endChar": 5
+      },
+      "revId": "8234bf3c9be23e92a24db9178227b4f3a629460c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_cdd01c56",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T08:46:46Z",
+      "side": 1,
+      "message": "put highlighted command on next line please.",
+      "range": {
+        "startLine": 246,
+        "startChar": 30,
+        "endLine": 246,
+        "endChar": 131
+      },
+      "revId": "8234bf3c9be23e92a24db9178227b4f3a629460c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_2dbbd00f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 322,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T08:46:46Z",
+      "side": 1,
+      "message": "here we should check if the \"submit\" future isDone(). If yes, we can shutdown the transactionChain, else we must wait and then shutdown the transactionChain",
+      "range": {
+        "startLine": 317,
+        "startChar": 12,
+        "endLine": 322,
+        "endChar": 13
+      },
+      "revId": "8234bf3c9be23e92a24db9178227b4f3a629460c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_0dbe1400",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriter.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 323,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T08:46:46Z",
+      "side": 1,
+      "message": "we can call shutdownNow() here",
+      "range": {
+        "startLine": 323,
+        "startChar": 12,
+        "endLine": 323,
+        "endChar": 27
+      },
+      "revId": "8234bf3c9be23e92a24db9178227b4f3a629460c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_ed3cf895",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriterTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-17T08:46:46Z",
+      "side": 1,
+      "message": "we should test teardown() method in similar manner that we test the other TopologyWriter methods ... first call the method and then check if the correct action was taken on the datastore\n\nwe can also check if the transactionChain was closed",
+      "range": {
+        "startLine": 114,
+        "startChar": 8,
+        "endLine": 129,
+        "endChar": 67
+      },
+      "revId": "8234bf3c9be23e92a24db9178227b4f3a629460c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
