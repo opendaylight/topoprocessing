@@ -12,7 +12,7 @@ import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.operator.filtrator.ScriptFiltrator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.ScriptingAugment;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.filtration.Filter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.Filter;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
