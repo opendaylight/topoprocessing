@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_c3046b80",
+        "filename": "topoprocessing-api/src/main/yang/topology-correlation.yang",
+        "patchSetId": 3
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-18T07:03:44Z",
+      "side": 1,
+      "message": "please replace tabs with spaces - and use correct indentation (4 spaces)",
+      "range": {
+        "startLine": 137,
+        "startChar": 8,
+        "endLine": 140,
+        "endChar": 9
+      },
+      "revId": "d58d4c3b61079047437384b7fc0bed17ac00f43a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
