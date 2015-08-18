@@ -43,7 +43,8 @@ public class TerminationPointPreAggregationFiltratorTest {
             .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID).build();
 
     @Mock private Filtrator filter;
-    private TestAggregator aggregator = new TestAggregator();
+    private TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
+    private TestAggregator aggregator = new TestAggregator(topoStoreProvider);
     private UnderlayItem underlayItemInput;
     private UnderlayItem underlayItemOutput;
     private MapEntryNode nodeValueInput;
@@ -52,6 +53,10 @@ public class TerminationPointPreAggregationFiltratorTest {
     class TestAggregator extends TerminationPointAggregator {
 
         private MapEntryNode output;
+
+        public TestAggregator(TopoStoreProvider topoStoreProvider) {
+            super(topoStoreProvider);
+        }
 
         public void setOutput(MapEntryNode output) {
             this.output = output;
@@ -72,8 +77,8 @@ public class TerminationPointPreAggregationFiltratorTest {
 
     @Before
     public void setUp() {
-        filtrator = new TerminationPointPreAggregationFiltrator();
-        filtrator.initializeStore(TOPOLOGY_ID, false);
+        filtrator = new TerminationPointPreAggregationFiltrator(topoStoreProvider);
+        topoStoreProvider.initializeStore(TOPOLOGY_ID, false);
         filtrator.addFilter(filter);
         filtrator.setTopologyAggregator(aggregator);
 

@@ -33,6 +33,10 @@ public class TerminationPointPreAggregationFiltrator extends PreAggregationFiltr
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TerminationPointPreAggregationFiltrator.class);
 
+    public TerminationPointPreAggregationFiltrator(TopoStoreProvider topoStoreProvider) {
+        super(topoStoreProvider);
+    }
+    
     @Override
     public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, String topologyId) {
         LOGGER.trace("Processing createdChanges");

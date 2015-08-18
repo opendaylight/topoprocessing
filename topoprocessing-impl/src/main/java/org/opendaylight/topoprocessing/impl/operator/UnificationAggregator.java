@@ -18,6 +18,10 @@ public class UnificationAggregator extends TopologyAggregator {
     private static final int UNDERLAY_ITEMS_IN_OVERLAY_ITEM = 1;
     private static final boolean WRAP_SINGLE_UNDERLAY_ITEM = true;
 
+    public UnificationAggregator(TopoStoreProvider topoStoreProvider) {
+        super(topoStoreProvider);
+    }
+    
     @Override
     protected int getMinUnderlayItems() {
         return UNDERLAY_ITEMS_IN_OVERLAY_ITEM;
@@ -27,5 +31,4 @@ public class UnificationAggregator extends TopologyAggregator {
     protected boolean wrapSingleItem() {
         return WRAP_SINGLE_UNDERLAY_ITEM;
     }
-
 }

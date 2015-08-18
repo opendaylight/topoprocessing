@@ -15,6 +15,7 @@ import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.rev150209.TopoProcessingProviderServiceInterface;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
@@ -71,9 +72,9 @@ public class TerminationPointFiltratorTest {
     public void setUp() {
         Mockito.when(rpcServicesMock.getRpcService()).thenReturn(domRpcServiceMock);
         manager = new TestManager();
-
-        filtrator = new TerminationPointFiltrator();
-        filtrator.initializeStore(TOPOLOGY_ID, false);
+        TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
+        filtrator = new TerminationPointFiltrator(topoStoreProvider);
+        topoStoreProvider.initializeStore(TOPOLOGY_ID, false);
         RangeNumberFiltrator filter = new RangeNumberFiltrator(MIN, MAX, path);
         filtrator.addFilter(filter);
         filtrator.setTopologyManager(manager);
