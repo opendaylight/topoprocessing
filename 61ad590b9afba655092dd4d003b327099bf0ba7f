@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_a63a9d34",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriterTest.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 2046
+      },
+      "writtenOn": "2015-08-18T13:37:29Z",
+      "side": 1,
+      "message": "Does the unit test really need to wait this long for tearDown() to finish its job, considering that almost everything is mocked? It feels to me like a waste of build time. (Also applies to lines 95 and 74.)",
+      "range": {
+        "startLine": 113,
+        "startChar": 25,
+        "endLine": 113,
+        "endChar": 28
+      },
+      "revId": "61ad590b9afba655092dd4d003b327099bf0ba7f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
