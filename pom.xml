@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- vi: set et smarttab sw=4 tabstop=4: -->
-<!--
+<!-- vi: set et smarttab sw=4 tabstop=4: --><!--
  Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
 
  This program and the accompanying materials are made available under the
  terms of the Eclipse Public License v1.0 which accompanies this distribution,
  and is available at http://www.eclipse.org/legal/epl-v10.html
 -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.opendaylight.topoprocessing</groupId>
@@ -30,7 +30,10 @@
         <module>topoprocessing-api</module>
         <module>topoprocessing-artifacts</module>
         <module>topoprocessing-config</module>
+        <module>topoprocessing-i2rs</module>
         <module>topoprocessing-impl</module>
+        <module>topoprocessing-inventory</module>
+        <module>topoprocessing-nt</module>
         <module>topoprocessing-spi</module>
     </modules>
 </project>
