@@ -22,6 +22,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>topoprocessing-nt</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>topoprocessing-spi</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -30,7 +35,14 @@
                 <artifactId>topoprocessing-config</artifactId>
                 <version>${project.version}</version>
                 <type>xml</type>
-                <classifier>config</classifier>
+                <classifier>config-framework</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>topoprocessing-config</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>config-nt</classifier>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
