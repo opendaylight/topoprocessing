@@ -8,8 +8,6 @@
 
 package org.opendaylight.topoprocessing.impl.listener;
 
-import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,8 +27,6 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
-import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
-import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
@@ -62,7 +58,7 @@ import com.google.common.util.concurrent.Futures;
  * Listens on underlay topology changes
  * @author matus.marko
  */
-public class UnderlayTopologyListener implements DOMDataChangeListener {
+public abstract class UnderlayTopologyListener implements DOMDataChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UnderlayTopologyListener.class);
     private final DOMDataBroker domDataBroker;
@@ -271,4 +267,17 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
     public void setPathIdentifier(YangInstanceIdentifier pathIdentifier) {
         this.pathIdentifier = pathIdentifier;
     }
+    
+    public DOMDataBroker getDomDataBroker() {
+        return domDataBroker;
+    }
+
+    public String getUnderlayTopologyId() {
+        return underlayTopologyId;
+    }
+
+    public CorrelationItemEnum getCorrelationItem() {
+        return correlationItem;
+    }
+
 }

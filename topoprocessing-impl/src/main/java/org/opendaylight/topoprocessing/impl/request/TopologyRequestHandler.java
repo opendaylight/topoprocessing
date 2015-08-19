@@ -29,6 +29,7 @@ import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.listener.InventoryListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
+import org.opendaylight.topoprocessing.impl.modelAdapters.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
 import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
 import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
@@ -47,6 +48,7 @@ import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.*;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.Correlations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.aggregation.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.correlations.correlation.filtration.Filter;
@@ -67,20 +69,20 @@ import java.util.Map;
  * listeners, aggregators.
  * @author michal.polkorab
  */
-public class TopologyRequestHandler {
+public abstract class TopologyRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
     private DOMDataBroker domDataBroker;
-    private Topology topology;
     private PathTranslator translator = new PathTranslator();
-    private List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
-
+    protected List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+    private String topologyId;
     private GlobalSchemaContextHolder schemaHolder;
     private RpcServices rpcServices;
     private DOMTransactionChain transactionChain;
     private TopologyWriter writer;
-    private DatastoreType datastoreType;
+    protected DatastoreType datastoreType;
     private Map<Class<? extends FilterBase>, FiltratorFactory> filtrators;
+    private ModelAdapter modelAdapter;
 
     /**
      * Default constructor
@@ -89,10 +91,11 @@ public class TopologyRequestHandler {
      * @param rpcServices   rpc services needed for rpc republishing
      */
     public TopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder,
-            RpcServices rpcServices) {
+            RpcServices rpcServices, ModelAdapter modelAdapter) {
         this.domDataBroker = domDataBroker;
         this.schemaHolder = schemaHolder;
         this.rpcServices = rpcServices;
+        this.modelAdapter = modelAdapter;
     }
 
     /**
@@ -130,11 +133,10 @@ public class TopologyRequestHandler {
     /**
      * @param topology overlay topology request
      */
-    public void processNewRequest(Topology topology) {
+    public void processNewRequest(Correlations correlations, String overlayTopologyId) {
         LOG.debug("Processing overlay topology creation request");
-        Preconditions.checkNotNull(topology, "Received topology can't be null");
-        this.topology = topology;
-        String overlayTopologyId = topology.getTopologyId().getValue();
+        Preconditions.checkNotNull(correlations, "Received correlations can't be null");
+        this.topologyId = overlayTopologyId;
         writer = new TopologyWriter(overlayTopologyId);
         transactionChain = domDataBroker.createTransactionChain(writer);
         writer.setTransactionChain(transactionChain);
@@ -144,9 +146,8 @@ public class TopologyRequestHandler {
         writer.initOverlayTopology();
         try {
             LOG.debug("Processing correlation configuration");
-            CorrelationAugment augmentation = topology.getAugmentation(CorrelationAugment.class);
-            List<Correlation> correlations = augmentation.getCorrelations().getCorrelation();
-            for (Correlation correlation : correlations) {
+            List<Correlation> correlationList = correlations.getCorrelation();
+            for (Correlation correlation : correlationList) {
                 TopologyOperator operator = null;
                 if (FiltrationAggregation.class.equals(correlation.getType())) {
                     operator = initAggregation(correlation, true);
@@ -187,35 +188,9 @@ public class TopologyRequestHandler {
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
             correlation.getCorrelationItem(), schemaHolder, filter.getInputModel());
             addFiltrator(filtrator, filter, pathIdentifier);
-            UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, underlayTopologyId,
+            UnderlayTopologyListener listener = modelAdapter.createUnderlayTopologyListener(domDataBroker, underlayTopologyId,
                     correlationItem);
-            NotificationInterConnector connector = null;
-            if (filter.getInputModel().equals(Model.OpendaylightInventory)
-                    && correlationItem.equals(CorrelationItemEnum.Node)) {
-                TopoStoreProvider connTopoStoreProvider = new TopoStoreProvider();
-                connector = new NotificationInterConnector(underlayTopologyId, correlationItem,connTopoStoreProvider);
-                connTopoStoreProvider.initializeStore(underlayTopologyId, false);
-                listener.setOperator(connector);
-                InventoryListener invListener = new InventoryListener(underlayTopologyId);
-                invListener.setOperator(connector);
-                invListener.setPathIdentifier(pathIdentifier);
-                YangInstanceIdentifier invId = YangInstanceIdentifier.of(Nodes.QNAME)
-                        .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME);
-                ListenerRegistration<DOMDataChangeListener> invListenerRegistration;
-                if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                    invListenerRegistration = domDataBroker.registerDataChangeListener(
-                            LogicalDatastoreType.OPERATIONAL, invId, invListener, DataChangeScope.SUBTREE);
-                } else {
-                    invListenerRegistration = domDataBroker.registerDataChangeListener(
-                            LogicalDatastoreType.CONFIGURATION, invId, invListener, DataChangeScope.SUBTREE);
-                }
-                listeners.add(invListenerRegistration);
-            }
-            if (connector == null) {
-                listener.setOperator(filtrator);
-            } else {
-                connector.setOperator(filtrator);
-            }
+            modelInitFiltration(filtrator, listener, pathIdentifier);
             InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier itemIdentifier = buildListenerIdentifier(topologyIdentifier, correlationItem);
@@ -256,34 +231,13 @@ public class TopologyRequestHandler {
             YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
                     correlationItem, schemaHolder, mapping.getInputModel());
             UnderlayTopologyListener listener =
-                    new UnderlayTopologyListener(domDataBroker, underlayTopologyId, correlationItem);
-            NotificationInterConnector connector = null;
-            if (mapping.getInputModel().equals(Model.OpendaylightInventory)
-                   && correlationItem.equals(CorrelationItemEnum.Node)) {
-                TopoStoreProvider connTopoStoreProvider = new TopoStoreProvider();
-                connector = new NotificationInterConnector(underlayTopologyId, correlationItem,connTopoStoreProvider);
-                connTopoStoreProvider.initializeStore(underlayTopologyId, false);
-                listener.setOperator(connector);
-                InventoryListener invListener = new InventoryListener(underlayTopologyId);
-                invListener.setOperator(connector);
-                invListener.setPathIdentifier(pathIdentifier);
-                YangInstanceIdentifier invId = YangInstanceIdentifier.of(Nodes.QNAME)
-                        .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME);
-                ListenerRegistration<DOMDataChangeListener> invListenerRegistration;
-                if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                    invListenerRegistration = domDataBroker.registerDataChangeListener(
-                            LogicalDatastoreType.OPERATIONAL, invId, invListener, DataChangeScope.SUBTREE);
-                } else {
-                    invListenerRegistration = domDataBroker.registerDataChangeListener(
-                            LogicalDatastoreType.CONFIGURATION, invId, invListener, DataChangeScope.SUBTREE);
-                }
-                listeners.add(invListenerRegistration);
-            }
+                    modelAdapter.createUnderlayTopologyListener(domDataBroker, underlayTopologyId, correlationItem);
             if (aggregator instanceof TerminationPointAggregator) {
                 ((TerminationPointAggregator) aggregator).setTargetField(pathIdentifier);
             }
+            PreAggregationFiltrator filtrator= null;
             if (filtration && mapping.getApplyFilters() != null) {
-                PreAggregationFiltrator filtrator = new PreAggregationFiltrator(topoStoreProvider);
+                filtrator = new PreAggregationFiltrator(topoStoreProvider);
                 filtrator.setTopologyAggregator(aggregator);
                 for (String filterId : mapping.getApplyFilters()) {
                     Filter filter = findFilter(correlation.getFiltration().getFilter(), filterId);
@@ -291,25 +245,14 @@ public class TopologyRequestHandler {
                             correlationItem, schemaHolder, mapping.getInputModel());
                     addFiltrator(filtrator, filter, filterPath);
                 }
-                if (connector == null) {
-                    listener.setOperator(filtrator);
-                } else {
-                    connector.setOperator(filtrator);
-                }
-            } else {
-                if (connector == null) {
-                    listener.setOperator(aggregator);
-                } else {
-                    connector.setOperator(aggregator);
-                }
             }
+            modelInitAggregation(aggregator, listener, mapping, pathIdentifier, filtrator);
+            
             InstanceIdentifierBuilder topologyIdentifier = createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier itemIdentifier = buildListenerIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
             ListenerRegistration<DOMDataChangeListener> listenerRegistration;
-            if (connector == null) {
-                listener.setPathIdentifier(pathIdentifier);
-            }
+            
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
                 listenerRegistration = domDataBroker.registerDataChangeListener(
                         LogicalDatastoreType.OPERATIONAL, itemIdentifier, listener, DataChangeScope.SUBTREE);
@@ -354,12 +297,20 @@ public class TopologyRequestHandler {
         return identifier;
     }
 
+    
+    
     /**
      * @return ID of topology that is handled by this {@link TopologyRequestHandler}
      */
     public String getTopologyId() {
-        return topology.getTopologyId().toString();
+        return this.topologyId;
     }
+
+    protected abstract void modelInitFiltration(TopologyFiltrator filtrator, UnderlayTopologyListener listener,
+            YangInstanceIdentifier pathIdentifier);
+    
+    protected abstract void modelInitAggregation(TopologyAggregator aggregator, UnderlayTopologyListener listener, Mapping mapping,
+            YangInstanceIdentifier pathIdentifier, PreAggregationFiltrator filtrator);
 
     /**
      * Closes all registered listeners and providers
