@@ -1,5 +1,7 @@
 package org.opendaylight.topoprocessing.impl.request;
 
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
+
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractCheckedFuture;
 import java.util.ArrayList;
@@ -65,6 +67,7 @@ public class TopologyRequestListenerTest {
     @Mock private DOMDataWriteTransaction mockTransaction;
     @Mock private UserDefinedFilter userDefinedFilter;
     @Mock private FiltratorFactory userDefinedFiltratorFactory;
+    private PingPongDataBroker pingpongBroker;
 
     private class UserDefinedFilter extends FilterBase
     {
@@ -73,7 +76,8 @@ public class TopologyRequestListenerTest {
 
     @Before
     public void setUp() {
-        listener = new TopologyRequestListener(mockBroker, mockNodeSerializer, mockSchemaHolder, mockRpcServices);
+        pingpongBroker = new PingPongDataBroker(mockBroker);
+        listener = new TopologyRequestListener(pingpongBroker, mockNodeSerializer, mockSchemaHolder, mockRpcServices);
         listener.setDatastoreType(DatastoreType.OPERATIONAL);
 
         Mockito.when(mockRpcServices.getRpcService()).thenReturn(Mockito.mock(DOMRpcService.class));
