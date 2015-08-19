@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
@@ -36,7 +37,7 @@ public class NTTopologyRequestListener extends TopologyRequestListener{
 
     private HashSet<QName> hashSet;
 
-    public NTTopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
+    public NTTopologyRequestListener(PingPongDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
             GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, Map<Model, ModelAdapter> modelAdapters) {
         super(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
         hashSet = new HashSet<>();

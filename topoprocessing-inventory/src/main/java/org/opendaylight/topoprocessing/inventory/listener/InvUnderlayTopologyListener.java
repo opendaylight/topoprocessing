@@ -13,10 +13,10 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.listener.InventoryListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
@@ -42,7 +42,7 @@ import com.google.common.collect.Maps;
  */
 public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
 
-    public InvUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
+    public InvUnderlayTopologyListener(PingPongDataBroker domDataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         super(domDataBroker, underlayTopologyId, correlationItem);
     }
@@ -67,7 +67,7 @@ public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
     }
 
     public void registerUnderlayTopologyListener(DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataChangeListener>> listeners){
+            ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners){
         if (correlationItem.equals(CorrelationItemEnum.Node)) {
             TopoStoreProvider connTopoStoreProvider = new TopoStoreProvider();
             NotificationInterConnector connector = new NotificationInterConnector(underlayTopologyId,
@@ -79,13 +79,13 @@ public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
             invListener.setPathIdentifier(pathIdentifier);
             YangInstanceIdentifier invId = YangInstanceIdentifier.of(Nodes.QNAME)
                     .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME);
-            ListenerRegistration<DOMDataChangeListener> invListenerRegistration;
+            ListenerRegistration<DOMDataTreeChangeListener> invListenerRegistration;
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                invListenerRegistration = domDataBroker.registerDataChangeListener(
-                        LogicalDatastoreType.OPERATIONAL, invId, invListener, DataChangeScope.SUBTREE);
+                DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, invId);
+                invListenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) invListener);
             } else {
-                invListenerRegistration = domDataBroker.registerDataChangeListener(
-                        LogicalDatastoreType.CONFIGURATION, invId, invListener, DataChangeScope.SUBTREE);
+                DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, invId);
+                invListenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) invListener);
             }
             connector.setOperator(operator);
             listeners.add(invListenerRegistration);

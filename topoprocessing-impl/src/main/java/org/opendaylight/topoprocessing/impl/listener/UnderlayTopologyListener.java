@@ -14,21 +14,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -38,27 +30,23 @@ import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNode;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
 
 
 /**
  * Listens on underlay topology changes
  * @author matus.marko
  */
-public abstract class UnderlayTopologyListener implements DOMDataChangeListener {
+public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UnderlayTopologyListener.class);
-    protected final DOMDataBroker domDataBroker;
-    private volatile CountDownLatch lastLatch;
-    private AtomicReferenceFieldUpdater<UnderlayTopologyListener, CountDownLatch> updater =
-            AtomicReferenceFieldUpdater.newUpdater(UnderlayTopologyListener.class, CountDownLatch.class, "lastLatch");
+    protected final PingPongDataBroker dataBroker;
 
     public enum RequestAction {
         CREATE, UPDATE, DELETE
@@ -74,13 +62,13 @@ public abstract class UnderlayTopologyListener implements DOMDataChangeListener 
 
     /**
      * Default constructor
-     * @param domDataBroker DOM Data Broker
+     * @param dataBroker DOM Data Broker
      * @param underlayTopologyId underlay topology identifier
      * @param correlationItem can be either Node or Link or TerminationPoint
      */
-    public UnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
+    public UnderlayTopologyListener(PingPongDataBroker dataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
-        this.domDataBroker = domDataBroker;
+        this.dataBroker = dataBroker;
         this.underlayTopologyId = underlayTopologyId;
         this.correlationItem = correlationItem;
         // this needs to be done because for processing TerminationPoints we need to filter Node instead of TP
@@ -95,139 +83,100 @@ public abstract class UnderlayTopologyListener implements DOMDataChangeListener 
     }
 
     @Override
-    public void onDataChanged(AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
+    public void onDataTreeChanged(Collection<DataTreeCandidate> dataTreeCandidates) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("DataChangeEvent received: {}", change);
+            LOGGER.debug("OnDataTreeChanged event, with data tree candidates: {}", dataTreeCandidates);
         }
-        CountDownLatch latch = new CountDownLatch(1);
-        CountDownLatch waitLatch = updater.getAndSet(this, latch);
-        Preconditions.checkNotNull(waitLatch, "Read data first");
-        if (0 != waitLatch.getCount()) {
-            try {
-                waitLatch.await();
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Exception while waiting for the latch", e);
+        Iterator<DataTreeCandidate> iterator = dataTreeCandidates.iterator();
+        while (iterator.hasNext()) {
+            DataTreeCandidate dataTreeCandidate = iterator.next();
+            Iterator<DataTreeCandidateNode> iteratorChildNodes = dataTreeCandidate.getRootNode().getChildNodes().iterator();
+            while (iteratorChildNodes.hasNext()) {
+                DataTreeCandidateNode dataTreeCandidateNode = iteratorChildNodes.next();
+                ModificationType modificationType = dataTreeCandidateNode.getModificationType();
+                if (modificationType.equals(ModificationType.WRITE)
+                        || modificationType.equals(ModificationType.SUBTREE_MODIFIED) ) {
+                    if (dataTreeCandidateNode.getDataAfter().isPresent()) {
+                        proceedChangeRequest(itemIdentifier.node(dataTreeCandidateNode.getIdentifier()),
+                                dataTreeCandidateNode.getDataAfter(),
+                                modificationType);
+                     }
+                } else if (modificationType.equals(ModificationType.DELETE)) {
+                    proceedDeletionRequest(dataTreeCandidateNode.getIdentifier());
+                } else if (modificationType.equals(ModificationType.UNMODIFIED)) {
+                    continue;
+                }
             }
         }
-        if (! change.getCreatedData().isEmpty()) {
-            LOGGER.debug("Processing createdData");
-            this.proceedChangeRequest(change.getCreatedData(), RequestAction.CREATE);
-        }
-        if (! change.getUpdatedData().isEmpty()) {
-            LOGGER.debug("Processing updatedData");
-            this.proceedChangeRequest(change.getUpdatedData(), RequestAction.UPDATE);
-        }
-        if (! change.getRemovedPaths().isEmpty()) {
-            LOGGER.debug("Processing removedData");
-            this.proceedDeletionRequest(change.getRemovedPaths());
-        }
-        LOGGER.debug("DataChangeEvent processed");
-        latch.countDown();
+        LOGGER.debug("DataTreeChanged event processed");
     }
 
-    private void proceedChangeRequest(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map,
-            RequestAction requestAction) {
+    /**
+     * @param identifier
+     * @param dataAfter
+     * @param modificationType
+     */
+    private void proceedChangeRequest(YangInstanceIdentifier identifier,
+            Optional<NormalizedNode<?, ?>> dataAfter, ModificationType modificationType) {
         Map<YangInstanceIdentifier, UnderlayItem> resultEntries = new HashMap<>();
-        Iterator<Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator = map.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry = iterator.next();
-            if (entry.getValue() instanceof MapEntryNode && entry.getValue().getNodeType().equals(itemQName)) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Processing entry: {}", entry.getValue());
-                }
-                Optional<NormalizedNode<?,?>> itemWithItemId =
-                        NormalizedNodes.findNode(entry.getValue(), relativeItemIdIdentifier);
-                String itemId;
-                if (itemWithItemId.isPresent()) {
-                    LeafNode<?> itemIdLeafNode = (LeafNode<?>) itemWithItemId.get();
-                    itemId = itemIdLeafNode.getValue().toString();
-                } else {
-                    throw new IllegalStateException("item-id was not found in: " + entry.getValue());
-                }
-                UnderlayItem underlayItem = null;
-                // in case that operator is instance of TopologyAggregator or PreAggregationFiltrator
-                // but not TerminationPointAggregator
-                if (pathIdentifier != null) {
-                    // AGGREGATION
-                    LeafNode<?> leafnode = null;
-                    LOGGER.debug("Finding leafnode: {}", pathIdentifier);
-                    Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
-                    if (node.isPresent()) {
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("Found node: {}", node.get());
-                        }
-                        leafnode = (LeafNode<?>) node.get();
-                        underlayItem = new UnderlayItem(entry.getValue(), leafnode, underlayTopologyId, itemId,
-                                correlationItem);
-                    } else {
-                        continue;
-                    }
-                } else {
-                    // FILTRATION or opendaylight-inventory model is used - doesn't contain leafNode
-                    // or Termination-point aggregation
-                    underlayItem = new UnderlayItem(entry.getValue(), null, underlayTopologyId, itemId,
-                            correlationItem);
-                }
-                resultEntries.put(entry.getKey(), underlayItem);
-                LOGGER.debug("underlayItem created");
+        NormalizedNode<?, ?> entry = dataAfter.get();
+        if ((entry instanceof MapEntryNode) && entry.getNodeType().equals(itemQName)) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Processing entry: {}", entry);
             }
+            Optional<NormalizedNode<?,?>> itemWithItemId =
+                    NormalizedNodes.findNode(entry, relativeItemIdIdentifier);
+            String itemId;
+            if (itemWithItemId.isPresent()) {
+                LeafNode<?> itemIdLeafNode = (LeafNode<?>) itemWithItemId.get();
+                itemId = itemIdLeafNode.getValue().toString();
+            } else {
+                throw new IllegalStateException("item-id was not found in: " + entry);
+            }
+            UnderlayItem underlayItem = null;
+            // in case that operator is instance of TopologyAggregator or PreAggregationFiltrator
+            // but not TerminationPointAggregator
+            if (pathIdentifier != null) {
+                // AGGREGATION
+                LeafNode<?> leafnode = null;
+                LOGGER.debug("Finding leafnode: {}", pathIdentifier);
+                Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry, pathIdentifier);
+                if (node.isPresent()) {
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Found node: {}", node.get());
+                    }
+                    leafnode = (LeafNode<?>) node.get();
+                    underlayItem = new UnderlayItem(entry, leafnode, underlayTopologyId, itemId,
+                            correlationItem);
+                } else {
+                    return;
+                }
+            } else {
+                // FILTRATION or opendaylight-inventory model is used - doesn't contain leafNode
+                // or Termination-point aggregation
+                underlayItem = new UnderlayItem(entry, null, underlayTopologyId, itemId,
+                        correlationItem);
+            }
+            resultEntries.put(identifier, underlayItem);
+            LOGGER.debug("underlayItem created");
         }
         if (! resultEntries.isEmpty()) {
-            if (requestAction == RequestAction.CREATE) {
+            if (modificationType == ModificationType.WRITE) {
                 operator.processCreatedChanges(resultEntries, underlayTopologyId);
-            } else if (requestAction == RequestAction.UPDATE) {
+            } else if (modificationType == ModificationType.SUBTREE_MODIFIED) {
                 operator.processUpdatedChanges(resultEntries, underlayTopologyId);
             }
         }
     }
 
-    private void proceedDeletionRequest(Set<YangInstanceIdentifier> set) {
+    private void proceedDeletionRequest(PathArgument pathArgument) {
         List<YangInstanceIdentifier> identifiers = new ArrayList<>();
-        Iterator<YangInstanceIdentifier> iterator = set.iterator();
-        while (iterator.hasNext()) {
-            YangInstanceIdentifier identifierOperational = iterator.next();
-            PathArgument lastPathArgument = identifierOperational.getLastPathArgument();
-            if (! (lastPathArgument instanceof AugmentationIdentifier)
-                    && lastPathArgument.getNodeType().equals(itemQName)
-                    && ! lastPathArgument.equals(itemIdentifier.getLastPathArgument())) {
-                identifiers.add(identifierOperational);
-            }
+        if (! (pathArgument instanceof AugmentationIdentifier)
+                && pathArgument.getNodeType().equals(itemQName)
+                && ! pathArgument.equals(itemIdentifier.getLastPathArgument())) {
+            identifiers.add(itemIdentifier.node(pathArgument));
         }
         operator.processRemovedChanges(identifiers, underlayTopologyId);
-    }
-    /**
-     * Reads data that were written before overlay topology request was received
-     * @param path path to existing data
-     * @param datastoreType datastore to read from (operational, configuration)
-     */
-    public void readExistingData(YangInstanceIdentifier path, DatastoreType datastoreType) {
-        LOGGER.trace("Reading existing data from dataStore");
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        updater.getAndSet(this, countDownLatch);
-        DOMDataReadOnlyTransaction transaction = domDataBroker.newReadOnlyTransaction();
-        LogicalDatastoreType logicalDatastoreType = (DatastoreType.CONFIGURATION == datastoreType) ?
-                LogicalDatastoreType.CONFIGURATION : LogicalDatastoreType.OPERATIONAL;
-        CheckedFuture<Optional<NormalizedNode<?, ?>>, ReadFailedException> future =
-                transaction.read(logicalDatastoreType, path);
-        Futures.addCallback(future, new FutureCallback<Optional<NormalizedNode<?, ?>>>() {
-            @Override
-            public void onSuccess(Optional<NormalizedNode<?, ?>> result) {
-                if (result.isPresent()) {
-                    LOGGER.debug("Existing data read");
-                    Collection<NormalizedNode<?, ?>> value =
-                            (Collection<NormalizedNode<?, ?>>) result.get().getValue();
-                    proceedChangeRequest(listToMap(value.iterator(), underlayTopologyId), RequestAction.CREATE);
-                } else {
-                    LOGGER.debug("No data present. Proceeding with notifications.");
-                }
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-                LOGGER.warn("DataStore read failed - no existing data were read");
-            }
-        });
-        countDownLatch.countDown();
     }
 
     protected abstract Map<YangInstanceIdentifier, NormalizedNode<?, ?>> listToMap(

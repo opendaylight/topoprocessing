@@ -10,8 +10,8 @@ package org.opendaylight.topoprocessing.inventory.adapter;
 import java.util.List;
 import java.util.Map;
 
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
@@ -36,17 +36,17 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 public class InvModelAdapter implements ModelAdapter {
 
     @Override
-    public UnderlayTopologyListener registerUnderlayTopologyListener(DOMDataBroker domDataBroker,
+    public UnderlayTopologyListener registerUnderlayTopologyListener(PingPongDataBroker dataBroker,
             String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataChangeListener>> listeners) {
+            ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners) {
 
-        InvUnderlayTopologyListener listener = new InvUnderlayTopologyListener(domDataBroker, underlayTopologyId, correlationItem);
+        InvUnderlayTopologyListener listener = new InvUnderlayTopologyListener(dataBroker, underlayTopologyId, correlationItem);
         listener.registerUnderlayTopologyListener(datastoreType,operator,listeners);
         return listener;
     }
 
     @Override
-    public TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
+    public TopologyRequestListener createTopologyRequestListener(PingPongDataBroker dataBroker,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices, Map<Model, ModelAdapter> modelAdapters) {
         return new InvTopologyRequestListener(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);

@@ -17,6 +17,7 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataCh
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
@@ -45,7 +46,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopoProcessingProviderImpl.class);
 
-    private DOMDataBroker dataBroker;
+    private PingPongDataBroker dataBroker;
     private List<ListenerRegistration<DOMDataChangeListener>> topologyRequestListenerRegistrations;
     private SchemaService schemaService;
     private ListenerRegistration<SchemaContextListener> schemaContextListenerRegistration;
@@ -55,6 +56,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private RpcServices rpcServices;
     private List<TopologyRequestListener> listeners;
     private DatastoreType dataStoreType;
+
 
     /**
      * @param schemaService     provides schema context for lookup in models
@@ -75,7 +77,14 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         Preconditions.checkNotNull(rpcServices.getRpcProviderService(), "RpcProviderService can't be null");
         Preconditions.checkNotNull(datastoreType, "DatastoreType can't be null");
         this.schemaService = schemaService;
-        this.dataBroker = dataBroker;
+        if (dataBroker instanceof PingPongDataBroker) {
+            this.dataBroker = (PingPongDataBroker) dataBroker;
+        } else {
+            throw new IllegalArgumentException("Name of dom-data-broker is different than expected pingpong-broker"
+                    + "(in 01-md-sal.xml)");
+        }
+
+//        this.dataBroker = dataBroker;
         this.nodeSerializer = nodeSerializer;
         this.rpcServices = rpcServices;
         this.dataStoreType = datastoreType;
