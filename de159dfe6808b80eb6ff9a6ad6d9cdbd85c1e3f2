@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_12038710",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-19T13:36:57Z",
+      "side": 1,
+      "message": "please push other modules configuration into separate commits",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 34
+      },
+      "revId": "de159dfe6808b80eb6ff9a6ad6d9cdbd85c1e3f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_7212fb63",
+        "filename": "topoprocessing-config/src/main/resources/81-topoprocessing-nt-config.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-19T13:36:57Z",
+      "side": 1,
+      "message": "please update copyright header",
+      "range": {
+        "startLine": 2,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 69
+      },
+      "revId": "de159dfe6808b80eb6ff9a6ad6d9cdbd85c1e3f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_320c8342",
+        "filename": "topoprocessing-config/src/main/resources/81-topoprocessing-nt-config.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-19T13:36:57Z",
+      "side": 1,
+      "message": "add empty line",
+      "revId": "de159dfe6808b80eb6ff9a6ad6d9cdbd85c1e3f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_d80e9134",
+        "filename": "topoprocessing-nt/src/main/yang/topoprocessing-nt-provider-impl.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-19T13:36:57Z",
+      "side": 1,
+      "message": "here we should use some short prefix name, like nt-provider or so ... it applies only to this file so no worries",
+      "range": {
+        "startLine": 12,
+        "startChar": 12,
+        "endLine": 12,
+        "endChar": 43
+      },
+      "revId": "de159dfe6808b80eb6ff9a6ad6d9cdbd85c1e3f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
