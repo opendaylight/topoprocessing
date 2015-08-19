@@ -8,7 +8,7 @@
 
 package org.opendaylight.topoprocessing.impl.writer;
 
-import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
+import org.opendaylight.mdsal.dom.api.DOMDataWriteTransaction;
 
 /**
  * @author michal.polkorab

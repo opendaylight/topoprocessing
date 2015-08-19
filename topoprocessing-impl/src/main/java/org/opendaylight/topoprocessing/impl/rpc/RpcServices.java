@@ -8,8 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.rpc;
 
-import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
-import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
+import org.opendaylight.mdsal.dom.api.DOMRpcProviderService;
+import org.opendaylight.mdsal.dom.api.DOMRpcService;
 
 /**
  * Stores {@link DOMRpcService} and {@link DOMRpcProviderService} for RPC republishing operations

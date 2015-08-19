@@ -11,8 +11,9 @@ package org.opendaylight.topoprocessing.impl.adapter;
 import java.util.List;
 import java.util.Map;
 
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.mdsal.dom.api.DOMDataBroker;
+import org.opendaylight.mdsal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.mdsal.dom.broker.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
@@ -32,7 +33,7 @@ public interface ModelAdapter {
 
     /**
      * Create model specific UnderlayTopologyListener
-     * @param domDataBroker         DOM Data Broker
+     * @param dataBroker            PingPong Data Broker
      * @param underlayTopologyId    underlay topology identifier
      * @param correlationItem       can be either Node or Link or TerminationPoint
      * @param datastoreType         type of data store
@@ -40,9 +41,9 @@ public interface ModelAdapter {
      * @param listeners             list of registered change listeners
      * @return new instance of model specific UnderlayTopologyListener
      */
-    UnderlayTopologyListener registerUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
+    UnderlayTopologyListener registerUnderlayTopologyListener(PingPongDataBroker dataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem, DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataChangeListener>> listeners, YangInstanceIdentifier pathIdentifier);
+            ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners, YangInstanceIdentifier pathIdentifier);
 
     /**
      * Create model specific TopologyRequestListener

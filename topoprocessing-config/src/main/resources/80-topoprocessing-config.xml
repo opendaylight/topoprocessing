@@ -26,6 +26,8 @@
                     <dom-data-broker>
                         <type xmlns:dom="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom">dom:dom-async-data-broker</type>
                         <name>pingpong-broker</name>
+                        <!-- this value is used because of DataTreeService; if it is changed, it needs to be handled in
+                            TopologyRequestHandler and UnderlayTopologyListener -->
                         <!-- <name>inmemory-data-broker</name> -->
                     </dom-data-broker>
                     <binding-normalized-node-serializer>
