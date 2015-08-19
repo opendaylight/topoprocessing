@@ -8,10 +8,14 @@
 
 package org.opendaylight.topoprocessing.nt.provider;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.net.URI;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -25,11 +29,14 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
+import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.provider.TopoProcessingProviderImpl;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
+import org.opendaylight.topoprocessing.nt.adapter.NTModelAdapter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -78,12 +85,16 @@ public class NTTopoProcessingProviderImplTest {
         }
     }
 
-    @Test
-    public void testStartup() throws Exception {
+    @Before
+    public void setUp() {
         Mockito.when(rpcServices.getRpcService()).thenReturn(Mockito.mock(DOMRpcService.class));
         Mockito.when(rpcServices.getRpcProviderService()).thenReturn(Mockito.mock(DOMRpcProviderService.class));
         SchemaContextTmp schemaContext = new SchemaContextTmp();
         Mockito.when(schemaService.getGlobalContext()).thenReturn(schemaContext);
+    }
+
+    @Test
+    public void testStartup() throws Exception {
         Mockito.when(schemaService.registerSchemaContextListener((SchemaContextListener) Matchers.any()))
                 .thenReturn(schemaContextListenerRegistration);
         Mockito.when(dataBroker.registerDataChangeListener((LogicalDatastoreType) Matchers.any(),
@@ -108,4 +119,17 @@ public class NTTopoProcessingProviderImplTest {
         Mockito.verify(schemaContextListenerRegistration).close();
         Mockito.verify(topologyRequestListenerRegistration).close();
     }
+
+    @Test
+    public void testRegisterModelAdapter() {
+        topoProcessingProvider = new TopoProcessingProviderImpl(
+                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
+        topoProcessingProvider.registerModelAdapter(Model.NetworkTopology, new NTModelAdapter());
+        Map<Model, ModelAdapter> modelAdapters = topoProcessingProvider.getModelAdapters();
+        
+        assertEquals(1, modelAdapters.size());
+        assertTrue(modelAdapters.keySet().contains(Model.NetworkTopology));
+        assertEquals(modelAdapters.values().iterator().next().getClass(), NTModelAdapter.class);
+    }
+
 }

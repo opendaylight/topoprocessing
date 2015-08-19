@@ -28,6 +28,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
@@ -83,7 +84,9 @@ public class NTTopologyRequestListenerTest {
     @Mock private DOMDataWriteTransaction mockTransaction;
     @Mock private UserDefinedFilter userDefinedFilter;
     @Mock private FiltratorFactory userDefinedFiltratorFactory;
+
     private Map<Model, ModelAdapter> modelAdapters = new HashMap<>();
+    private PingPongDataBroker pingPongBroker;
 
     private class UserDefinedFilter extends FilterBase
     {
@@ -92,8 +95,9 @@ public class NTTopologyRequestListenerTest {
 
     @Before
     public void setUp() {
+        pingPongBroker = new PingPongDataBroker(mockBroker);
         modelAdapters.put(Model.NetworkTopology, new NTModelAdapter());
-        listener = new NTTopologyRequestListener(mockBroker, mockNodeSerializer, mockSchemaHolder, mockRpcServices, modelAdapters);
+        listener = new NTTopologyRequestListener(pingPongBroker, mockNodeSerializer, mockSchemaHolder, mockRpcServices, modelAdapters);
         listener.setDatastoreType(DatastoreType.OPERATIONAL);
 
         Mockito.when(mockRpcServices.getRpcService()).thenReturn(Mockito.mock(DOMRpcService.class));
