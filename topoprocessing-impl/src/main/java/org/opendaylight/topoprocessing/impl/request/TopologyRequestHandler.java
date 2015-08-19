@@ -9,14 +9,19 @@
 package org.opendaylight.topoprocessing.impl.request;
 
 import com.google.common.base.Preconditions;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.listener.InventoryListener;
@@ -74,10 +79,10 @@ import org.slf4j.LoggerFactory;
 public class TopologyRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
-    private DOMDataBroker domDataBroker;
+    private PingPongDataBroker pingPongDataBroker;
     private Topology topology;
     private PathTranslator translator = new PathTranslator();
-    private List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+    private List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
 
     private GlobalSchemaContextHolder schemaHolder;
     private RpcServices rpcServices;
@@ -94,7 +99,12 @@ public class TopologyRequestHandler {
      */
     public TopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices) {
-        this.domDataBroker = domDataBroker;
+        if (domDataBroker instanceof PingPongDataBroker) {
+            this.pingPongDataBroker = (PingPongDataBroker) domDataBroker;
+        } else {
+            throw new IllegalArgumentException("Name of dom-data-broker is different than expected pingpong-broker"
+                    + "(in 01-md-sal.xml)");
+        }
         this.schemaHolder = schemaHolder;
         this.rpcServices = rpcServices;
     }
@@ -111,7 +121,7 @@ public class TopologyRequestHandler {
      * Only for testing purposes
      * @param listeners Sets UnderlayTopologyListener registrations
      */
-    public void setListeners(List<ListenerRegistration<DOMDataChangeListener>> listeners) {
+    public void setListeners(List<ListenerRegistration<DOMDataTreeChangeListener>> listeners) {
         this.listeners = listeners;
     }
 
@@ -119,7 +129,7 @@ public class TopologyRequestHandler {
      * Only for testing purposes
      * @return UnderlayTopologyListener registrations
      */
-    public List<ListenerRegistration<DOMDataChangeListener>> getListeners() {
+    public List<ListenerRegistration<DOMDataTreeChangeListener>> getListeners() {
         return listeners;
     }
 
@@ -140,7 +150,7 @@ public class TopologyRequestHandler {
         this.topology = topology;
         String overlayTopologyId = topology.getTopologyId().getValue();
         writer = new TopologyWriter(overlayTopologyId);
-        transactionChain = domDataBroker.createTransactionChain(writer);
+        transactionChain = pingPongDataBroker.createTransactionChain(writer);
         writer.setTransactionChain(transactionChain);
         TopologyManager topologyManager = new TopologyManager(rpcServices, schemaHolder,
                 createTopologyIdentifier(overlayTopologyId).build());
@@ -191,7 +201,7 @@ public class TopologyRequestHandler {
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
             correlation.getCorrelationItem(), schemaHolder, filter.getInputModel());
             addFiltrator(filtrator, filter, pathIdentifier);
-            UnderlayTopologyListener listener = new UnderlayTopologyListener(domDataBroker, underlayTopologyId,
+            UnderlayTopologyListener listener = new UnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
                     correlationItem);
             NotificationInterConnector connector = null;
             if (filter.getInputModel().equals(Model.OpendaylightInventory)
@@ -205,13 +215,14 @@ public class TopologyRequestHandler {
                 invListener.setPathIdentifier(pathIdentifier);
                 YangInstanceIdentifier invId = YangInstanceIdentifier.of(Nodes.QNAME)
                         .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME);
-                ListenerRegistration<DOMDataChangeListener> invListenerRegistration;
+                ListenerRegistration<DOMDataTreeChangeListener> invListenerRegistration = null;
                 if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                    invListenerRegistration = domDataBroker.registerDataChangeListener(
-                            LogicalDatastoreType.OPERATIONAL, invId, invListener, DataChangeScope.SUBTREE);
+                    DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, invId);
+                    pingPongDataBroker.registerDataTreeChangeListener(treeId, invListener);
+
                 } else {
-                    invListenerRegistration = domDataBroker.registerDataChangeListener(
-                            LogicalDatastoreType.CONFIGURATION, invId, invListener, DataChangeScope.SUBTREE);
+                    DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, invId);
+                    pingPongDataBroker.registerDataTreeChangeListener(treeId, invListener);
                 }
                 listeners.add(invListenerRegistration);
             }
@@ -224,15 +235,14 @@ public class TopologyRequestHandler {
                     createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier itemIdentifier = buildListenerIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering filtering underlay topology listener for topology: {}", underlayTopologyId);
-            ListenerRegistration<DOMDataChangeListener> listenerRegistration;
+            ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration = null;
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                listenerRegistration = domDataBroker.registerDataChangeListener(
-                        LogicalDatastoreType.OPERATIONAL, itemIdentifier, listener, DataChangeScope.SUBTREE);
+                DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
+                pingPongDataBroker.registerDataTreeChangeListener(treeId, listener);
             } else {
-                listenerRegistration = domDataBroker.registerDataChangeListener(
-                        LogicalDatastoreType.CONFIGURATION, itemIdentifier, listener, DataChangeScope.SUBTREE);
+                DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
+                pingPongDataBroker.registerDataTreeChangeListener(treeId, listener);
             }
-            listener.readExistingData(itemIdentifier, datastoreType);
             listeners.add(listenerRegistration);
         }
         return filtrator;
@@ -260,7 +270,7 @@ public class TopologyRequestHandler {
             YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
                     correlationItem, schemaHolder, mapping.getInputModel());
             UnderlayTopologyListener listener =
-                    new UnderlayTopologyListener(domDataBroker, underlayTopologyId, correlationItem);
+                    new UnderlayTopologyListener(pingPongDataBroker, underlayTopologyId, correlationItem);
             NotificationInterConnector connector = null;
             if (mapping.getInputModel().equals(Model.OpendaylightInventory)
                    && correlationItem.equals(CorrelationItemEnum.Node)) {
@@ -273,13 +283,14 @@ public class TopologyRequestHandler {
                 invListener.setPathIdentifier(pathIdentifier);
                 YangInstanceIdentifier invId = YangInstanceIdentifier.of(Nodes.QNAME)
                         .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME);
-                ListenerRegistration<DOMDataChangeListener> invListenerRegistration;
+                ListenerRegistration<DOMDataTreeChangeListener> invListenerRegistration = null;
                 if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                    invListenerRegistration = domDataBroker.registerDataChangeListener(
-                            LogicalDatastoreType.OPERATIONAL, invId, invListener, DataChangeScope.SUBTREE);
+                    DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, invId);
+                    pingPongDataBroker.registerDataTreeChangeListener(treeId, invListener);
+                    
                 } else {
-                    invListenerRegistration = domDataBroker.registerDataChangeListener(
-                            LogicalDatastoreType.CONFIGURATION, invId, invListener, DataChangeScope.SUBTREE);
+                    DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, invId);
+                    pingPongDataBroker.registerDataTreeChangeListener(treeId, invListener);
                 }
                 listeners.add(invListenerRegistration);
             }
@@ -310,18 +321,17 @@ public class TopologyRequestHandler {
             InstanceIdentifierBuilder topologyIdentifier = createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier itemIdentifier = buildListenerIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
-            ListenerRegistration<DOMDataChangeListener> listenerRegistration;
+            ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration = null;
             if (connector == null) {
                 listener.setPathIdentifier(pathIdentifier);
             }
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                listenerRegistration = domDataBroker.registerDataChangeListener(
-                        LogicalDatastoreType.OPERATIONAL, itemIdentifier, listener, DataChangeScope.SUBTREE);
+                DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
+                pingPongDataBroker.registerDataTreeChangeListener(treeId, listener);
             } else {
-                listenerRegistration = domDataBroker.registerDataChangeListener(
-                        LogicalDatastoreType.CONFIGURATION, itemIdentifier, listener, DataChangeScope.SUBTREE);
+                DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
+                pingPongDataBroker.registerDataTreeChangeListener(treeId, listener);
             }
-            listener.readExistingData(itemIdentifier, datastoreType);
             listeners.add(listenerRegistration);
         }
         return aggregator;
@@ -374,7 +384,7 @@ public class TopologyRequestHandler {
     }
 
     private void closeOperatingResources() {
-        for (ListenerRegistration<DOMDataChangeListener> listener : listeners) {
+        for (ListenerRegistration<DOMDataTreeChangeListener> listener : listeners) {
             listener.close();
         }
         listeners.clear();
