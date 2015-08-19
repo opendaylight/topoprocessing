@@ -24,6 +24,6 @@ public class TopoProcessingProviderNT implements AutoCloseable {
 
     public void startup(TopoProcessingProvider topoProvider) {
         LOGGER.info("TopoprocessingProviderNT startup");
-        topoProvider.registerModelAdapter( NetworkTopologyModel.class, new NTModelAdapter());
+        topoProvider.registerModelAdapter(NetworkTopologyModel.class, new NTModelAdapter());
     }
 }
