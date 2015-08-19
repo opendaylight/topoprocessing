@@ -80,9 +80,9 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         this.rpcServices = rpcServices;
         this.dataStoreType = datastoreType;
         schemaHolder = new GlobalSchemaContextHolder(schemaService.getGlobalContext());
-        listeners = new ArrayList<TopologyRequestListener>();
-        topologyRequestListenerRegistrations = new ArrayList<ListenerRegistration<DOMDataChangeListener>>();
-        modelAdapters = new HashMap<Model, ModelAdapter>();
+        listeners = new ArrayList<>();
+        topologyRequestListenerRegistrations = new ArrayList<>();
+        modelAdapters = new HashMap<>();
     }
 
     @Override
@@ -138,4 +138,5 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                         InstanceIdentifiers.TOPOLOGY_IDENTIFIER, listener, DataChangeScope.ONE));
     }
+
 }

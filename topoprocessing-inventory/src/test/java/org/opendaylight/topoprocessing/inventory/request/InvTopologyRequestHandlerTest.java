@@ -32,14 +32,19 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
+import org.opendaylight.topoprocessing.impl.testUtilities.TestingDOMDataBroker;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
@@ -105,6 +110,8 @@ public class InvTopologyRequestHandlerTest {
     private Topology topology;
     private TopologyRequestHandler handler;
     private InstanceIdentifier<?> identifier = InstanceIdentifier.create(Topology.class);
+    private PingPongDataBroker pingPongDataBroker;
+    private TestingBroker testingBroker;
 
     private abstract class UnknownCorrelationBase extends CorrelationBase {
         //
@@ -116,6 +123,8 @@ public class InvTopologyRequestHandlerTest {
         Mockito.when(mockRpcServices.getRpcService()).thenReturn(mockDOMRpcService);
         Mockito.when(mockRpcServices.getRpcService().registerRpcListener((DOMRpcAvailabilityListener) any()))
             .thenReturn(mockDOMRpcAvailabilityListener);
+        testingBroker = new TestingBroker();
+        pingPongDataBroker = new PingPongDataBroker(testingBroker);
         // initialize mockito transaction chain and writer
         Mockito.when(mockDomDataBroker.createTransactionChain((TransactionChainListener) any()))
             .thenReturn(mockDomTransactionChain);
@@ -133,7 +142,7 @@ public class InvTopologyRequestHandlerTest {
     public void testTopologyWithoutAugmentation() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
@@ -154,7 +163,7 @@ public class InvTopologyRequestHandlerTest {
         correlationAugmentBuilder.setCorrelations(cBuilder.build());
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
@@ -184,7 +193,7 @@ public class InvTopologyRequestHandlerTest {
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
@@ -196,7 +205,7 @@ public class InvTopologyRequestHandlerTest {
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
@@ -208,7 +217,7 @@ public class InvTopologyRequestHandlerTest {
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
@@ -220,7 +229,7 @@ public class InvTopologyRequestHandlerTest {
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
@@ -234,7 +243,7 @@ public class InvTopologyRequestHandlerTest {
                 aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
@@ -256,7 +265,7 @@ public class InvTopologyRequestHandlerTest {
                 aggBuilder.build(), null);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
 
         Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
@@ -285,7 +294,7 @@ public class InvTopologyRequestHandlerTest {
         Map<Model, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(Model.OpendaylightInventory, new InvModelAdapter());
         // CONFIGURATION listener registration
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(DatastoreType.CONFIGURATION);
@@ -293,7 +302,7 @@ public class InvTopologyRequestHandlerTest {
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
-        List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+        List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
         Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.CONFIGURATION),
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
@@ -302,7 +311,7 @@ public class InvTopologyRequestHandlerTest {
         handler.processNewRequest();
         Assert.assertEquals(2, listeners.size());
         // OPERATIONAL listener registration
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(DatastoreType.OPERATIONAL);
@@ -339,7 +348,7 @@ public class InvTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Model, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(Model.OpendaylightInventory, new InvModelAdapter());
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(DatastoreType.OPERATIONAL);
@@ -347,7 +356,7 @@ public class InvTopologyRequestHandlerTest {
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
-        List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+        List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
         Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.OPERATIONAL),
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
@@ -381,7 +390,7 @@ public class InvTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Model, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(Model.OpendaylightInventory, new InvModelAdapter());
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(DatastoreType.OPERATIONAL);
@@ -390,7 +399,7 @@ public class InvTopologyRequestHandlerTest {
         Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
-        List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+        List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
         Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.OPERATIONAL),
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
@@ -399,7 +408,7 @@ public class InvTopologyRequestHandlerTest {
         handler.processNewRequest();
         Assert.assertEquals(2, listeners.size());
         // test registration CONFIGURATION listener registration
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(DatastoreType.CONFIGURATION);
@@ -422,7 +431,7 @@ public class InvTopologyRequestHandlerTest {
         testUnificationCase();
 
         handler.processDeletionRequest();
-        Mockito.verify(mockDOMDataChangeListener, Mockito.times(2)).close();
+        Assert.assertTrue("Listener wasn't closed", testingBroker.getListenerClosed());
         Assert.assertEquals(0, handler.getListeners().size());
     }
 
@@ -438,14 +447,14 @@ public class InvTopologyRequestHandlerTest {
                 aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new InvTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setDatastoreType(DatastoreType.CONFIGURATION);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
-        List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+        List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
         Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.CONFIGURATION),
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
@@ -469,5 +478,36 @@ public class InvTopologyRequestHandlerTest {
         Mockito.doThrow(new TransactionChainClosedException("The chain has been closed"))
             .when(mockDomTransactionChain).close();
         testDeletionWithEmptyListener();
+    }
+
+    private class TestingBroker extends TestingDOMDataBroker implements DOMDataTreeChangeService {
+
+        private boolean listenerClosed = false;
+
+        /**
+         * Constructor
+         */
+        public TestingBroker() {
+            //
+        }
+
+        public boolean getListenerClosed() {
+            return listenerClosed;
+        }
+
+        @Override
+        public <L extends DOMDataTreeChangeListener> ListenerRegistration<L> registerDataTreeChangeListener(
+                DOMDataTreeIdentifier treeId, L listener) {
+            return new ListenerRegistration<L>() {
+                @Override
+                public L getInstance() {
+                    return null;
+                }
+                @Override
+                public void close() {
+                    listenerClosed = true;
+                }
+            };
+        }
     }
 }

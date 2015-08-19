@@ -8,10 +8,14 @@
 
 package org.opendaylight.topoprocessing.inventory.provider;
 
+import static org.junit.Assert.*;
+
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -20,16 +24,27 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataBrokerExtension;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataReadWriteTransaction;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
+import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
+import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.provider.TopoProcessingProviderImpl;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
+import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
+import org.opendaylight.topoprocessing.inventory.adapter.InvModelAdapter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -54,6 +69,8 @@ public class InvTopoProcessingProviderImplTest {
     @Mock private RpcServices rpcServices;
     @Mock private ListenerRegistration<SchemaContextListener> schemaContextListenerRegistration;
     @Mock private ListenerRegistration<DOMDataChangeListener> topologyRequestListenerRegistration;
+    @Mock private InvModelAdapter mockInvModelAdapter;
+    @Mock private TopologyRequestListener mockTopoRequestListener;
 
     private class SchemaContextTmp extends AbstractSchemaContext {
 
@@ -78,12 +95,16 @@ public class InvTopoProcessingProviderImplTest {
         }
     }
 
-    @Test
-    public void testStartup() throws Exception {
+    @Before
+    public void setUp() {
         Mockito.when(rpcServices.getRpcService()).thenReturn(Mockito.mock(DOMRpcService.class));
         Mockito.when(rpcServices.getRpcProviderService()).thenReturn(Mockito.mock(DOMRpcProviderService.class));
         SchemaContextTmp schemaContext = new SchemaContextTmp();
         Mockito.when(schemaService.getGlobalContext()).thenReturn(schemaContext);
+    }
+
+    @Test
+    public void testStartup() throws Exception {
         Mockito.when(schemaService.registerSchemaContextListener((SchemaContextListener) Matchers.any()))
                 .thenReturn(schemaContextListenerRegistration);
         Mockito.when(dataBroker.registerDataChangeListener((LogicalDatastoreType) Matchers.any(),
@@ -94,8 +115,8 @@ public class InvTopoProcessingProviderImplTest {
         topoProcessingProvider = new TopoProcessingProviderImpl(
                 schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
         topoProcessingProvider.startup();
-        TopoProcessingProviderInv InvProvider = new TopoProcessingProviderInv();
-        InvProvider.startup(topoProcessingProvider);
+        TopoProcessingProviderInv invProvider = new TopoProcessingProviderInv();
+        invProvider.startup(topoProcessingProvider);
         Mockito.verify(schemaService).registerSchemaContextListener((SchemaContextListener) Matchers.any());
         Mockito.verify(dataBroker).registerDataChangeListener(
                 Matchers.eq(LogicalDatastoreType.CONFIGURATION),
@@ -108,4 +129,25 @@ public class InvTopoProcessingProviderImplTest {
         Mockito.verify(schemaContextListenerRegistration).close();
         Mockito.verify(topologyRequestListenerRegistration).close();
     }
+
+    @Test
+    public void testRegisterModelAdapter() {
+        Mockito.when(mockInvModelAdapter.createTopologyRequestListener((DOMDataBroker) Matchers.any(),
+                (BindingNormalizedNodeSerializer) Matchers.any(),
+                (GlobalSchemaContextHolder) Matchers.any(),
+                (RpcServices) Matchers.any(),
+                (Map<Model, ModelAdapter>) Matchers.any())).thenReturn(mockTopoRequestListener);
+        topoProcessingProvider = new TopoProcessingProviderImpl(
+                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
+        topoProcessingProvider.registerModelAdapter(Model.OpendaylightInventory, mockInvModelAdapter);
+        
+        Map<Model, ModelAdapter> expectedModelAdapters = new HashMap<>();
+        expectedModelAdapters.put(Model.OpendaylightInventory, mockInvModelAdapter);
+        Mockito.verify(mockInvModelAdapter).createTopologyRequestListener((DOMDataBroker) Matchers.any(),
+                (BindingNormalizedNodeSerializer) Matchers.any(),
+                (GlobalSchemaContextHolder) Matchers.any(),
+                (RpcServices) Matchers.any(),
+                Matchers.eq(expectedModelAdapters));
+    }
+
 }
