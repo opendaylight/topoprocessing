@@ -56,6 +56,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private List<TopologyRequestListener> listeners;
     private DatastoreType dataStoreType;
 
+
     /**
      * @param schemaService     provides schema context for lookup in models
      * @param dataBroker        access to data store
@@ -69,7 +70,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
             DatastoreType datastoreType) {
         LOGGER.trace("Creating TopoProcessingProvider");
         Preconditions.checkNotNull(schemaService, "SchemaService can't be null");
-        Preconditions.checkNotNull(dataBroker, "DOMDataBroker can't be null");
+        Preconditions.checkNotNull(dataBroker, "DataBroker can't be null");
         Preconditions.checkNotNull(nodeSerializer, "BindingNormalizedNodeSerializer can't be null");
         Preconditions.checkNotNull(rpcServices.getRpcService(), "RpcService can't be null");
         Preconditions.checkNotNull(rpcServices.getRpcProviderService(), "RpcProviderService can't be null");
@@ -80,9 +81,9 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         this.rpcServices = rpcServices;
         this.dataStoreType = datastoreType;
         schemaHolder = new GlobalSchemaContextHolder(schemaService.getGlobalContext());
-        listeners = new ArrayList<TopologyRequestListener>();
-        topologyRequestListenerRegistrations = new ArrayList<ListenerRegistration<DOMDataChangeListener>>();
-        modelAdapters = new HashMap<Model, ModelAdapter>();
+        listeners = new ArrayList<>();
+        topologyRequestListenerRegistrations = new ArrayList<>();
+        modelAdapters = new HashMap<>();
     }
 
     @Override
@@ -138,4 +139,10 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                         InstanceIdentifiers.TOPOLOGY_IDENTIFIER, listener, DataChangeScope.ONE));
     }
+
+    /** for testing purpose only */
+    public Map<Model, ModelAdapter> getModelAdapters() {
+        return modelAdapters;
+    }
+
 }
