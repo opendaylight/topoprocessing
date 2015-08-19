@@ -21,7 +21,8 @@
   <name>topoprocessing-config</name>
 
   <properties>
-      <configfile>80-topoprocessing-config.xml</configfile>
+      <configframework>80-topoprocessing-config.xml</configframework>
+      <confignt>81-topoprocessing-nt-config.xml</confignt>
   </properties>
 
   <build>
@@ -31,7 +32,7 @@
         <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>attach-artifacts</id>
+            <id>attach-framework-artifacts</id>
             <goals>
               <goal>attach-artifact</goal>
             </goals>
@@ -39,9 +40,25 @@
             <configuration>
               <artifacts>
                 <artifact>
-                  <file>${project.build.directory}/classes/${configfile}</file>
+                  <file>${project.build.directory}/classes/${configframework}</file>
                   <type>xml</type>
-                  <classifier>config</classifier>
+                  <classifier>config-framework</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-nt-artifacts</id>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/classes/${confignt}</file>
+                  <type>xml</type>
+                  <classifier>config-nt</classifier>
                 </artifact>
               </artifacts>
             </configuration>
