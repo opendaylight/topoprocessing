@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
@@ -37,11 +38,11 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 public class InvModelAdapter implements ModelAdapter {
 
     @Override
-    public UnderlayTopologyListener registerUnderlayTopologyListener(DOMDataBroker domDataBroker,
+    public UnderlayTopologyListener registerUnderlayTopologyListener(PingPongDataBroker dataBroker,
             String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataChangeListener>> listeners, YangInstanceIdentifier pathIdentifier) {
+            ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners, YangInstanceIdentifier pathIdentifier) {
 
-        InvUnderlayTopologyListener listener = new InvUnderlayTopologyListener(domDataBroker, underlayTopologyId, correlationItem);
+        InvUnderlayTopologyListener listener = new InvUnderlayTopologyListener(dataBroker, underlayTopologyId, correlationItem);
         listener.registerUnderlayTopologyListener(datastoreType,operator,listeners,pathIdentifier);
         return listener;
     }
