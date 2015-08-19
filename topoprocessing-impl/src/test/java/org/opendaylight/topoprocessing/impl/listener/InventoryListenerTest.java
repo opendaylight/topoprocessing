@@ -11,10 +11,13 @@ package org.opendaylight.topoprocessing.impl.listener;
 import static org.mockito.Matchers.any;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -25,15 +28,23 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
+import org.opendaylight.topoprocessing.impl.testUtilities.TestDataTreeCandidateNode;
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNode;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
+
+import com.google.common.base.Optional;
 
 /**
  * @author michal.polkorab
@@ -46,6 +57,14 @@ public class InventoryListenerTest {
 
     @Mock private AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> mockChange;
     @Mock private DOMDataBroker domDataBroker;
+
+    @Mock private Collection<DataTreeCandidate> mockCollection;
+    @Mock private Iterator<DataTreeCandidate> mockIteratorCandidate;
+    @Mock private DataTreeCandidate mockDataTreeCandidate;
+    @Mock private DataTreeCandidateNode mockDataTreeCandidateNode;
+    @Mock private Collection<DataTreeCandidateNode> mockDataTreeCandidateNodeCollection;
+    @Mock private Iterator<DataTreeCandidateNode> mockDataTreeCandidateNodeIterator;
+
     private InventoryListener listener = new InventoryListener(TOPOLOGY_ID);
     private QName leafQname = QName.create(Node.QNAME, "leaf-node");
     private QName nodeIdQname = QName.create(Node.QNAME, "id");
@@ -70,25 +89,52 @@ public class InventoryListenerTest {
         Map<YangInstanceIdentifier, UnderlayItem> createdEntries = new HashMap<>();
         UnderlayItem physicalNode = new UnderlayItem(testNode, leafNodeValue, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
         createdEntries.put(nodeYiid, physicalNode);
+        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
+        TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
 
         // create
-        Mockito.when(mockChange.getCreatedData()).thenReturn(mapCreated);
-        listener.onDataChanged(mockChange);
+        setUpMocks(rootNode);
+        rootNode.setModificationType(ModificationType.WRITE);
+        Optional<NormalizedNode<?, ?>> dataAfter = Optional.<NormalizedNode<?, ?>>fromNullable(testNode);
+        rootNode.setDataAfter(dataAfter);
+        rootNode.setIdentifier(nodePathArgument);
+        listener.onDataTreeChanged(mockCollection);
         Mockito.verify(mockOperator).processCreatedChanges(Matchers.refEq(createdEntries), Matchers.eq(TOPOLOGY_ID));
 
         // update
-        Mockito.when(mockChange.getUpdatedData()).thenReturn(mapCreated);
-        listener.onDataChanged(mockChange);
+        resetMocks();
+        setUpMocks(rootNode);
+        rootNode.setModificationType(ModificationType.SUBTREE_MODIFIED);
+        listener.onDataTreeChanged(mockCollection);
         Mockito.verify(mockOperator).processUpdatedChanges(Matchers.refEq(createdEntries), Matchers.eq(TOPOLOGY_ID));
 
         // delete
+        resetMocks();
+        setUpMocks(rootNode);
+        rootNode.setModificationType(ModificationType.DELETE);
+        rootNode.setIdentifier(nodePathArgument);
         YangInstanceIdentifier nodeIdYiid = YangInstanceIdentifier.builder().node(Nodes.QNAME)
                 .node(Node.QNAME).nodeWithKey(Node.QNAME, nodeIdQname, nodeName).build();
-        Mockito.when(mockChange.getRemovedPaths()).thenReturn(Collections.singleton(nodeIdYiid));
-        listener.onDataChanged(mockChange);
+        listener.onDataTreeChanged(mockCollection);
         ArrayList<YangInstanceIdentifier> identifiers = new ArrayList<>();
         identifiers.add(nodeIdYiid);
         Mockito.verify(mockOperator).processRemovedChanges(Matchers.refEq(identifiers), Matchers.eq(TOPOLOGY_ID));
+    }
+
+    private void setUpMocks(TestDataTreeCandidateNode rootNode) {
+        Mockito.when(mockCollection.iterator()).thenReturn(mockIteratorCandidate);
+        Mockito.when(mockIteratorCandidate.hasNext()).thenReturn(true, false);
+        Mockito.when(mockIteratorCandidate.next()).thenReturn(mockDataTreeCandidate);
+        Mockito.when(mockDataTreeCandidate.getRootNode()).thenReturn(mockDataTreeCandidateNode);
+        Mockito.when(mockDataTreeCandidateNode.getChildNodes()).thenReturn(mockDataTreeCandidateNodeCollection);
+        Mockito.when(mockDataTreeCandidateNodeCollection.iterator()).thenReturn(mockDataTreeCandidateNodeIterator);
+        Mockito.when(mockDataTreeCandidateNodeIterator.hasNext()).thenReturn(true, false);
+        Mockito.when(mockDataTreeCandidateNodeIterator.next()).thenReturn(rootNode);
+    }
+
+    private void resetMocks() {
+        Mockito.reset(mockCollection, mockIteratorCandidate, mockDataTreeCandidate, mockDataTreeCandidateNode,
+                mockDataTreeCandidateNodeCollection, mockDataTreeCandidateNodeIterator);
     }
 
     /** Missing specified LeafNode - no action should be taken */
@@ -104,31 +150,16 @@ public class InventoryListenerTest {
         TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
         listener.setOperator(mockOperator);
         listener.setPathIdentifier(pathIdentifier);
+        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, leafQname);
+        TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
 
-        Mockito.when(mockChange.getCreatedData()).thenReturn(mapCreated);
-        listener.onDataChanged(mockChange);
+        setUpMocks(rootNode);
+        rootNode.setModificationType(ModificationType.WRITE);
+        rootNode.setIdentifier(nodePathArgument);
+        Optional<NormalizedNode<?, ?>> dataAfter = Optional.<NormalizedNode<?, ?>>fromNullable(testNode);
+        rootNode.setDataAfter(dataAfter);
+        listener.onDataTreeChanged(mockCollection);
         Mockito.verify(mockOperator, Mockito.times(0)).processCreatedChanges(
                 (Map<YangInstanceIdentifier, UnderlayItem>) any(), Matchers.eq(TOPOLOGY_ID));
     }
-
-    /** Verifies that no operations happen when received changes are empty */
-    @Test
-    public void testEmptyChanges() {
-        HashMap<YangInstanceIdentifier, NormalizedNode<?, ?>> emptyMap = new HashMap<>();
-        Mockito.when(mockChange.getCreatedData()).thenReturn(emptyMap);
-        Mockito.when(mockChange.getUpdatedData()).thenReturn(emptyMap);
-        Mockito.when(mockChange.getRemovedPaths()).thenReturn(Collections.<YangInstanceIdentifier> emptySet());
-        YangInstanceIdentifier pathIdentifier = YangInstanceIdentifier.of(leafQname);
-        listener.setPathIdentifier(pathIdentifier);
-        TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
-        listener.setOperator(mockOperator);
-        listener.onDataChanged(mockChange);
-        Mockito.verify(mockOperator, Mockito.times(0)).processCreatedChanges(
-                (Map<YangInstanceIdentifier, UnderlayItem>) any(), Matchers.eq(TOPOLOGY_ID));
-        Mockito.verify(mockOperator, Mockito.times(0)).processUpdatedChanges(
-                (Map<YangInstanceIdentifier, UnderlayItem>) any(), Matchers.eq(TOPOLOGY_ID));
-        Mockito.verify(mockOperator, Mockito.times(0)).processRemovedChanges((List<YangInstanceIdentifier>) any(),
-                (String) any());
-    }
-
 }

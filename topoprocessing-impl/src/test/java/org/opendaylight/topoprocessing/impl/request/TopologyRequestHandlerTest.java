@@ -10,9 +10,9 @@ package org.opendaylight.topoprocessing.impl.request;
 
 import static org.mockito.Matchers.any;
 
-import com.google.common.util.concurrent.CheckedFuture;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +29,7 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
@@ -71,6 +72,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
+
+import com.google.common.util.concurrent.CheckedFuture;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyRequestHandlerTest {
@@ -263,7 +266,7 @@ public class TopologyRequestHandlerTest {
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
-        List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+        List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
         Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.CONFIGURATION),
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
@@ -311,7 +314,7 @@ public class TopologyRequestHandlerTest {
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
-        List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+        List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
         Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.OPERATIONAL),
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
@@ -349,7 +352,7 @@ public class TopologyRequestHandlerTest {
         Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
-        List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+        List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
         Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.OPERATIONAL),
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
@@ -400,7 +403,7 @@ public class TopologyRequestHandlerTest {
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
-        List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+        List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
         Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.CONFIGURATION),
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
