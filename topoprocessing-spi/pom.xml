@@ -46,7 +46,7 @@
               <configuration>
                 <instructions>
                     <Export-Package>
-                      org.opendaylight.topoprocessing.spi*,
+                      org.opendaylight.topoprocessing.spi.*,
                       org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.*
                     </Export-Package>
                 </instructions>
