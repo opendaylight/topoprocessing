@@ -20,11 +20,11 @@ public class TopoProcessingProviderInv implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        LOGGER.info("TopoprocessingNTProvider close");
+        LOGGER.info("TopoprocessingProviderInv close");
     }
 
     public void startup(TopoProcessingProvider topoProvider) {
-        LOGGER.info("TopoprocessingNTProvider startup");
-        topoProvider.registerModelAdapter( OpendaylightInventoryModel.class, new InvModelAdapter());
+        LOGGER.info("TopoprocessingProviderInv startup");
+        topoProvider.registerModelAdapter(OpendaylightInventoryModel.class, new InvModelAdapter());
     }
 }
