@@ -13,10 +13,10 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.listener.InventoryListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
@@ -42,32 +42,13 @@ import com.google.common.collect.Maps;
  */
 public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
 
-    public InvUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
+    public InvUnderlayTopologyListener(PingPongDataBroker domDataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         super(domDataBroker, underlayTopologyId, correlationItem);
     }
 
-    @Override
-    protected Map<YangInstanceIdentifier, NormalizedNode<?, ?>> listToMap(Iterator<NormalizedNode<?, ?>> nodes,
-            final String underlayTopologyId) {
-        Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map = Maps.uniqueIndex(nodes,
-                new Function<NormalizedNode<?, ?>, YangInstanceIdentifier>() {
-            @Nullable
-            @Override
-            public YangInstanceIdentifier apply(NormalizedNode<?, ?> node) {
-                return YangInstanceIdentifier
-                        .builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-                        .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, underlayTopologyId)
-                        .node(Node.QNAME)
-                        .node(node.getIdentifier())
-                        .build();
-            }
-        });
-        return map;
-    }
-
     public void registerUnderlayTopologyListener(DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataChangeListener>> listeners, YangInstanceIdentifier invPathIdentifier){
+            ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners, YangInstanceIdentifier invPathIdentifier){
         if (correlationItem.equals(CorrelationItemEnum.Node)) {
             TopoStoreProvider connTopoStoreProvider = new TopoStoreProvider();
             NotificationInterConnector connector = new NotificationInterConnector(underlayTopologyId,
@@ -79,14 +60,14 @@ public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
             invListener.setPathIdentifier(invPathIdentifier);
             YangInstanceIdentifier invId = YangInstanceIdentifier.of(Nodes.QNAME)
                     .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME);
-            ListenerRegistration<DOMDataChangeListener> invListenerRegistration;
+            DOMDataTreeIdentifier treeId;
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                invListenerRegistration = domDataBroker.registerDataChangeListener(
-                        LogicalDatastoreType.OPERATIONAL, invId, invListener, DataChangeScope.SUBTREE);
+                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, invId);
             } else {
-                invListenerRegistration = domDataBroker.registerDataChangeListener(
-                        LogicalDatastoreType.CONFIGURATION, invId, invListener, DataChangeScope.SUBTREE);
+                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, invId);
             }
+            ListenerRegistration<DOMDataTreeChangeListener> invListenerRegistration =
+                    dataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) invListener);
             connector.setOperator(operator);
             listeners.add(invListenerRegistration);
         } else {

@@ -11,6 +11,7 @@ package org.opendaylight.topoprocessing.impl.rpc;
 import java.util.Collection;
 
 import com.google.common.util.concurrent.Futures;
+
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcException;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcImplementation;

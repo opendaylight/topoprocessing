@@ -12,7 +12,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
@@ -30,30 +30,11 @@ import com.google.common.collect.Maps;
  * @author matej.perina
  *
  */
-public class NTUnderlayTopologyListener extends UnderlayTopologyListener{
+public class NTUnderlayTopologyListener extends UnderlayTopologyListener {
 
-    public NTUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
+    public NTUnderlayTopologyListener(PingPongDataBroker domDataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         super(domDataBroker, underlayTopologyId, correlationItem);
-    }
-
-    @Override
-    protected Map<YangInstanceIdentifier, NormalizedNode<?, ?>> listToMap(Iterator<NormalizedNode<?, ?>> nodes,
-            final String underlayTopologyId) {
-        Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map = Maps.uniqueIndex(nodes,
-                new Function<NormalizedNode<?, ?>, YangInstanceIdentifier>() {
-            @Nullable
-            @Override
-            public YangInstanceIdentifier apply(NormalizedNode<?, ?> node) {
-                return YangInstanceIdentifier
-                        .builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-                        .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, underlayTopologyId)
-                        .node(Node.QNAME)
-                        .node(node.getIdentifier())
-                        .build();
-            }
-        });
-        return map;
     }
 
     public void registerTopologyOperator(TopologyOperator operator){
