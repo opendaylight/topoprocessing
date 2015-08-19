@@ -138,4 +138,5 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                         InstanceIdentifiers.TOPOLOGY_IDENTIFIER, listener, DataChangeScope.ONE));
     }
+
 }
