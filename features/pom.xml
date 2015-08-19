@@ -163,6 +163,12 @@
             <type>xml</type>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>topoprocessing-config</artifactId>
+            <classifier>config-i2rs</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.controller.model</groupId>
             <artifactId>model-topology</artifactId>
         </dependency>
