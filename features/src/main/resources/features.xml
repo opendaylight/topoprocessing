@@ -50,5 +50,6 @@
     </feature>
     <feature name='odl-topoprocessing-i2rs' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: I2RS Model">
         <feature version='${project.version}'>odl-topoprocessing-framework</feature>
+        <configfile finalname="etc/opendaylight/karaf/81-topoprocessing-i2rs-config.xml">mvn:org.opendaylight.topoprocessing/topoprocessing-config/${project.version}/xml/config</configfile>
     </feature>
 </features>
