@@ -10,9 +10,9 @@ package org.opendaylight.topoprocessing.impl.request;
 
 import static org.mockito.Matchers.any;
 
-import com.google.common.util.concurrent.CheckedFuture;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,10 +29,14 @@ import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFaile
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongTransactionChain;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
@@ -72,6 +76,8 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 
+import com.google.common.util.concurrent.CheckedFuture;
+
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyRequestHandlerTest {
 
@@ -88,10 +94,13 @@ public class TopologyRequestHandlerTest {
     @Mock private CheckedFuture<Void, TransactionCommitFailedException> domCheckedFuture;
     @Mock private SchemaContext mockGlobalSchemaContext;
     @Mock private ListenerRegistration<DOMDataChangeListener> mockDOMDataChangeListener;
+    @Mock private TransactionChainListener listener;
 
     private YangInstanceIdentifier pathIdentifier;
     private Topology topology;
     private TopologyRequestHandler handler;
+
+    private PingPongDataBroker pingPongDataBroker;
 
     private abstract class UnknownCorrelationBase extends CorrelationBase {
         //
@@ -99,26 +108,27 @@ public class TopologyRequestHandlerTest {
 
     @Before
     public void setUp() {
-        // initialize mockito RPC service call
-        Mockito.when(mockRpcServices.getRpcService()).thenReturn(mockDOMRpcService);
-        Mockito.when(mockRpcServices.getRpcService().registerRpcListener((DOMRpcAvailabilityListener) any()))
-            .thenReturn(mockDOMRpcAvailabilityListener);
-        // initialize mockito transaction chain and writer
-        Mockito.when(mockDomDataBroker.createTransactionChain((TransactionChainListener) any()))
-            .thenReturn(mockDomTransactionChain);
-        Mockito.when(mockDomTransactionChain.newWriteOnlyTransaction()).thenReturn(mockDomDataWriteTransaction);
-        Mockito.when(mockDomDataWriteTransaction.submit()).thenReturn(domCheckedFuture);
-        // initialize read-only transaction for pre-loading datastore
-        DOMDataReadOnlyTransaction mockTransaction = Mockito.mock(DOMDataReadOnlyTransaction.class);
-        Mockito.when(mockDomDataBroker.newReadOnlyTransaction()).thenReturn(mockTransaction);
-        CheckedFuture mockReadFuture = Mockito.mock(CheckedFuture.class);
-        Mockito.when(mockTransaction.read((LogicalDatastoreType) Matchers.any(),
-                (YangInstanceIdentifier) Matchers.any())).thenReturn(mockReadFuture);
+      // initialize mockito RPC service call
+      Mockito.when(mockRpcServices.getRpcService()).thenReturn(mockDOMRpcService);
+      Mockito.when(mockRpcServices.getRpcService().registerRpcListener((DOMRpcAvailabilityListener) any()))
+          .thenReturn(mockDOMRpcAvailabilityListener);
+      pingPongDataBroker = new PingPongDataBroker(mockDomDataBroker);
+      
+      Mockito.when(mockDomDataBroker.createTransactionChain((TransactionChainListener) any()))
+          .thenReturn(mockDomTransactionChain);
+      Mockito.when(mockDomTransactionChain.newWriteOnlyTransaction()).thenReturn(mockDomDataWriteTransaction);
+      Mockito.when(mockDomDataWriteTransaction.submit()).thenReturn(domCheckedFuture);
+      // initialize read-only transaction for pre-loading datastore
+      DOMDataReadOnlyTransaction mockTransaction = Mockito.mock(DOMDataReadOnlyTransaction.class);
+      Mockito.when(pingPongDataBroker.newReadOnlyTransaction()).thenReturn(mockTransaction);
+      CheckedFuture mockReadFuture = Mockito.mock(CheckedFuture.class);
+      Mockito.when(mockTransaction.read((LogicalDatastoreType) Matchers.any(),
+              (YangInstanceIdentifier) Matchers.any())).thenReturn(mockReadFuture);
     }
 
     @Test (expected=NullPointerException.class)
     public void testProcessNewRequestWithNullParameter() {
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new TopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices);
         handler.processNewRequest(null);
     }
 
@@ -126,7 +136,7 @@ public class TopologyRequestHandlerTest {
     public void testTopologyWithoutAugmentation() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
 
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new TopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices);
         handler.processNewRequest(topoBuilder.build());
     }
 
@@ -142,7 +152,7 @@ public class TopologyRequestHandlerTest {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = new CorrelationAugmentBuilder();
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new TopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices);
         handler.processNewRequest(topoBuilder.build());
     }
 
@@ -169,7 +179,7 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new TopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices);
         handler.processNewRequest(topoBuilder.build());
     }
 
@@ -179,7 +189,7 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker,
+        handler = new TopologyRequestHandler(pingPongDataBroker,
                 mockSchemaHolder, mockRpcServices);
         handler.processNewRequest(topoBuilder.build());
     }
@@ -190,7 +200,7 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(FiltrationOnly.class, null,
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new TopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices);
         handler.processNewRequest(topoBuilder.build());
     }
 
@@ -200,7 +210,7 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(UnknownCorrelationBase.class, null,
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new TopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices);
         handler.processNewRequest(topoBuilder.build());
     }
 
@@ -212,7 +222,7 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
                 aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new TopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices);
         handler.processNewRequest(topoBuilder.build());
     }
 
@@ -232,7 +242,7 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
                 aggBuilder.build(), null);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new TopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices);
 
         Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
@@ -257,13 +267,13 @@ public class TopologyRequestHandlerTest {
                 aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         // CONFIGURATION listener registration
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new TopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices);
         handler.setDatastoreType(DatastoreType.CONFIGURATION);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
-        List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+        List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
         Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.CONFIGURATION),
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
@@ -272,7 +282,7 @@ public class TopologyRequestHandlerTest {
         handler.processNewRequest(topoBuilder.build());
         Assert.assertEquals(1, listeners.size());
         // OPERATIONAL listener registration
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new TopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices);
         handler.setDatastoreType(DatastoreType.OPERATIONAL);
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
@@ -304,14 +314,14 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null, aggBuilder.build(),
                 CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker,
+        handler = new TopologyRequestHandler(pingPongDataBroker,
                 mockSchemaHolder, mockRpcServices);
         handler.setDatastoreType(DatastoreType.OPERATIONAL);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
-        List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+        List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
         Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.OPERATIONAL),
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
@@ -342,14 +352,14 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(FiltrationOnly.class,
                 fBuilder.build(), null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new TopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices);
         handler.setDatastoreType(DatastoreType.OPERATIONAL);
         handler.setFiltrators(DefaultFiltrators.getDefaultFiltrators());
         pathIdentifier = InstanceIdentifiers.NODE_IDENTIFIER;
         Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
-        List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+        List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
         Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.OPERATIONAL),
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
@@ -358,7 +368,7 @@ public class TopologyRequestHandlerTest {
         handler.processNewRequest(topoBuilder.build());
         Assert.assertEquals(1, listeners.size());
         // test registration CONFIGURATION listener registration
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new TopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices);
         handler.setDatastoreType(DatastoreType.CONFIGURATION);
         handler.setFiltrators(DefaultFiltrators.getDefaultFiltrators());
         pathIdentifier = InstanceIdentifiers.NODE_IDENTIFIER;
@@ -394,13 +404,13 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
                 aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new TopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices);
         handler.setDatastoreType(DatastoreType.CONFIGURATION);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
-        List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
+        List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
         Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.CONFIGURATION),
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
