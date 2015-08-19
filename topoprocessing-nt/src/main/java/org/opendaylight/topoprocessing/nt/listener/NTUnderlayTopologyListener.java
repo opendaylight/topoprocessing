@@ -12,7 +12,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
@@ -30,9 +30,9 @@ import com.google.common.collect.Maps;
  * @author matej.perina
  *
  */
-public class NTUnderlayTopologyListener extends UnderlayTopologyListener{
+public class NTUnderlayTopologyListener extends UnderlayTopologyListener {
 
-    public NTUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
+    public NTUnderlayTopologyListener(PingPongDataBroker domDataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         super(domDataBroker, underlayTopologyId, correlationItem);
     }
