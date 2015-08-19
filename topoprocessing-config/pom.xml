@@ -22,6 +22,7 @@
 
   <properties>
       <configfile>80-topoprocessing-config.xml</configfile>
+      <configfile>81-topoprocessing-nt-config.xml</configfile>
   </properties>
 
   <build>

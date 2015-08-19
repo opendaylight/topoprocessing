@@ -142,6 +142,10 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>topoprocessing-nt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>topoprocessing-config</artifactId>
             <classifier>config</classifier>
             <type>xml</type>
