@@ -32,6 +32,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>topoprocessing-i2rs</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>topoprocessing-spi</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -55,6 +60,13 @@
                 <version>${project.version}</version>
                 <type>xml</type>
                 <classifier>config-inventory</classifier>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>topoprocessing-config</artifactId>
+                <version>${project.version}</version>
+                <type>xml</type>
+                <classifier>config-i2rs</classifier>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
