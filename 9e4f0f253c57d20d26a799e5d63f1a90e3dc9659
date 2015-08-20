@@ -111,6 +111,75 @@
     },
     {
       "key": {
+        "uuid": "3a79b1b5_3ee52da8",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T09:07:57Z",
+      "side": 1,
+      "message": "we could probably change this method to .registerUnderlayTopologyListener / .initializeUnderlayTopologyListener - it would register created listener and set operators as needed",
+      "range": {
+        "startLine": 186,
+        "startChar": 61,
+        "endLine": 186,
+        "endChar": 91
+      },
+      "revId": "9e4f0f253c57d20d26a799e5d63f1a90e3dc9659",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_7e540554",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T09:07:57Z",
+      "side": 1,
+      "message": "I believe that this method is unnecessary, as it is common for all models",
+      "range": {
+        "startLine": 188,
+        "startChar": 12,
+        "endLine": 188,
+        "endChar": 69
+      },
+      "revId": "9e4f0f253c57d20d26a799e5d63f1a90e3dc9659",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_9e51e164",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T09:07:57Z",
+      "side": 1,
+      "message": "I believe that this method is unnecessary, as it is common for all models",
+      "range": {
+        "startLine": 244,
+        "startChar": 12,
+        "endLine": 245,
+        "endChar": 12
+      },
+      "revId": "9e4f0f253c57d20d26a799e5d63f1a90e3dc9659",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_9e6a4119",
         "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/LinkTranslator.java",
         "patchSetId": 1
