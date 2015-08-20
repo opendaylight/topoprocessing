@@ -8,6 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
+import org.opendaylight.topoprocessing.impl.modelAdapters.ModelAdapter;
+import org.opendaylight.topoprocessing.impl.modelAdapters.NetworkTopology.NTTopologyRequestHandler;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
 
 import java.util.HashMap;
@@ -24,6 +26,7 @@ import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.network.topology.topology.Correlations;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
@@ -44,7 +47,7 @@ import com.google.common.base.Optional;
  *
  * @author michal.polkorab
  */
-public class TopologyRequestListener implements DOMDataChangeListener {
+public abstract class TopologyRequestListener implements DOMDataChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyRequestListener.class);
 
@@ -56,6 +59,7 @@ public class TopologyRequestListener implements DOMDataChangeListener {
     private RpcServices rpcServices;
     private DatastoreType datastoreType;
     private Map<Class<? extends FilterBase>, FiltratorFactory> filtrators;
+    private ModelAdapter modelAdapter;
 
     /**
      * Default constructor
@@ -65,11 +69,12 @@ public class TopologyRequestListener implements DOMDataChangeListener {
      * @param rpcServices       rpcServices for rpc republishing
      */
     public TopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
-            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices) {
+            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, ModelAdapter modelAdapter) {
         this.dataBroker = dataBroker;
         this.nodeSerializer = nodeSerializer;
         this.schemaHolder = schemaHolder;
         this.rpcServices = rpcServices;
+        this.modelAdapter = modelAdapter;
         this.filtrators = DefaultFiltrators.getDefaultFiltrators();
         LOGGER.trace("Topology Request Listener created");
     }
@@ -91,16 +96,17 @@ public class TopologyRequestListener implements DOMDataChangeListener {
         for (Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : map.entrySet()) {
             YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
             NormalizedNode<?, ?> normalizedNode = entry.getValue();
-            if (normalizedNode instanceof MapEntryNode && normalizedNode.getNodeType().equals(Topology.QNAME)) {
-                Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode =
+            if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)){
+                Map.Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode =
                         nodeSerializer.fromNormalizedNode(identifier, normalizedNode);
-                Topology topology = (Topology) fromNormalizedNode.getValue();
-                if (topology.getAugmentation(CorrelationAugment.class) != null) {
+                String topologyId = getTopologyId(fromNormalizedNode);
+                Correlations correlations = getCorrelations(fromNormalizedNode);
+                if (correlations != null){
                     TopologyRequestHandler requestHandler =
-                            new TopologyRequestHandler(dataBroker, schemaHolder, rpcServices);
+                            createTopologyRequestHandler(dataBroker, schemaHolder, rpcServices, modelAdapter);
                     requestHandler.setDatastoreType(datastoreType);
                     requestHandler.setFiltrators(filtrators);
-                    requestHandler.processNewRequest(topology);
+                    requestHandler.processNewRequest(correlations, topologyId);
                     topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
 
                     Optional<DataContainerChild<? extends PathArgument, ?>> topologyTypes =
@@ -123,6 +129,15 @@ public class TopologyRequestListener implements DOMDataChangeListener {
         }
     }
 
+    protected abstract boolean isTopology(NormalizedNode<?,?> normalizeNode);
+    
+    protected abstract String getTopologyId(Map.Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
+    
+    protected abstract Correlations getCorrelations(Map.Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
+    
+    protected abstract TopologyRequestHandler createTopologyRequestHandler(DOMDataBroker dataBroker,
+            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, ModelAdapter modelAdapter);
+    
     /**
      * @param datastoreType defines whether to use CONFIGURATION or OPERATIONAL Datastore
      */
