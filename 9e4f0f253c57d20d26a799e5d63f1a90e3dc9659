@@ -1,0 +1,182 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_1e663152",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/modelAdapters/ModelAdapter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T08:15:10Z",
+      "side": 1,
+      "message": "OverlayItemTranslator",
+      "range": {
+        "startLine": 46,
+        "startChar": 29,
+        "endLine": 46,
+        "endChar": 52
+      },
+      "revId": "9e4f0f253c57d20d26a799e5d63f1a90e3dc9659",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_be5a9d81",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/modelAdapters/ModelAdapter.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T08:15:10Z",
+      "side": 1,
+      "message": "OverlayItemTranslator",
+      "range": {
+        "startLine": 47,
+        "startChar": 46,
+        "endLine": 47,
+        "endChar": 69
+      },
+      "revId": "9e4f0f253c57d20d26a799e5d63f1a90e3dc9659",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_3e776d04",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T08:15:10Z",
+      "side": 1,
+      "message": "as described in TopologyRequestListener https://git.opendaylight.org/gerrit/#/c/25424/2\n\nmodelAdapter parameter should be replaced by \"DataObject topology\"",
+      "range": {
+        "startLine": 89,
+        "startChar": 37,
+        "endLine": 89,
+        "endChar": 62
+      },
+      "revId": "9e4f0f253c57d20d26a799e5d63f1a90e3dc9659",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_5e74a9fc",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T08:15:10Z",
+      "side": 1,
+      "message": "the topology DataObject should be stored and topologyId extracted, we could possibly even move first block from processNewRequest here (Writer, Manager, ... initilization)",
+      "revId": "9e4f0f253c57d20d26a799e5d63f1a90e3dc9659",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_fe601537",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T08:15:10Z",
+      "side": 1,
+      "message": "method can work without parameters, it can directly get them from handler\u0027s fields",
+      "range": {
+        "startLine": 131,
+        "startChar": 34,
+        "endLine": 131,
+        "endChar": 85
+      },
+      "revId": "9e4f0f253c57d20d26a799e5d63f1a90e3dc9659",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_9e6a4119",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/LinkTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T08:15:10Z",
+      "side": 1,
+      "message": "this could be rather changed to interface - as this class doesn\u0027t provide any common functionality",
+      "range": {
+        "startLine": 18,
+        "startChar": 7,
+        "endLine": 18,
+        "endChar": 21
+      },
+      "revId": "9e4f0f253c57d20d26a799e5d63f1a90e3dc9659",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_7e6de531",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/NodeTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T08:15:10Z",
+      "side": 1,
+      "message": "this could be rather changed to interface - as this class doesn\u0027t provide any common functionality",
+      "range": {
+        "startLine": 17,
+        "startChar": 7,
+        "endLine": 17,
+        "endChar": 21
+      },
+      "revId": "9e4f0f253c57d20d26a799e5d63f1a90e3dc9659",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_5e1d89bc",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/PathTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T08:15:10Z",
+      "side": 1,
+      "message": "this part could be hardcoded, because the model will change only very unlikely and it might be confusing / useless to create 3 different PathTranslators\n\nYou got the idea right, createBaseIdentifier() should create correct identifier based on inputModel and correlationItem",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 108,
+        "endChar": 9
+      },
+      "revId": "9e4f0f253c57d20d26a799e5d63f1a90e3dc9659",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
