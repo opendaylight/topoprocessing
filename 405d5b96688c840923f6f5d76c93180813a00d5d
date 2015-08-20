@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_de1199ad",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/modelAdapters/NetworkTopology/NTTopologyRequestListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T07:48:46Z",
+      "side": 1,
+      "message": "please remove empty line ... no need - it doesn\u0027t separate funtionalities / blocks",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 8
+      },
+      "revId": "405d5b96688c840923f6f5d76c93180813a00d5d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_3e49add0",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T07:48:46Z",
+      "side": 1,
+      "message": "this translation can occur once we know that we are processing TopologyRequest ... few lines below",
+      "range": {
+        "startLine": 100,
+        "startChar": 16,
+        "endLine": 101,
+        "endChar": 86
+      },
+      "revId": "405d5b96688c840923f6f5d76c93180813a00d5d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_3ef20d9b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T07:48:46Z",
+      "side": 1,
+      "message": "we don\u0027t need topologyId here, it can be extracted from DataObject in TopologyRequestHandler",
+      "range": {
+        "startLine": 102,
+        "startChar": 16,
+        "endLine": 102,
+        "endChar": 70
+      },
+      "revId": "405d5b96688c840923f6f5d76c93180813a00d5d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_de3af935",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T07:48:46Z",
+      "side": 1,
+      "message": "topologyRequest() - method which checks if there is correlation augmentation present",
+      "range": {
+        "startLine": 104,
+        "startChar": 20,
+        "endLine": 104,
+        "endChar": 40
+      },
+      "revId": "405d5b96688c840923f6f5d76c93180813a00d5d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_7e3f2526",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T07:48:46Z",
+      "side": 1,
+      "message": "we can rather send fromNormalizedNode DataObject here and set model Adapterin next step",
+      "range": {
+        "startLine": 106,
+        "startChar": 96,
+        "endLine": 106,
+        "endChar": 108
+      },
+      "revId": "405d5b96688c840923f6f5d76c93180813a00d5d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_9e3c8131",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T07:48:46Z",
+      "side": 1,
+      "message": "can be left without parameters - the original topologyt DataObject will be stored in Handler\u0027s field and picked up in this method",
+      "range": {
+        "startLine": 109,
+        "startChar": 53,
+        "endLine": 109,
+        "endChar": 77
+      },
+      "revId": "405d5b96688c840923f6f5d76c93180813a00d5d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_5e46e9c0",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T07:48:46Z",
+      "side": 1,
+      "message": "we don\u0027t need this methods here:\ntopologyId will be extracted in Handler, same as correlations",
+      "range": {
+        "startLine": 134,
+        "startChar": 0,
+        "endLine": 136,
+        "endChar": 116
+      },
+      "revId": "405d5b96688c840923f6f5d76c93180813a00d5d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_fe1255b3",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-20T07:48:46Z",
+      "side": 1,
+      "message": "please try to avoid these spaces in empty lines",
+      "range": {
+        "startLine": 140,
+        "startChar": 0,
+        "endLine": 140,
+        "endChar": 4
+      },
+      "revId": "405d5b96688c840923f6f5d76c93180813a00d5d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
