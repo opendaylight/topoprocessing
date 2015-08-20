@@ -9,11 +9,14 @@
 package org.opendaylight.topoprocessing.impl.translator;
 
 import com.google.common.base.Splitter;
+
+import org.opendaylight.topoprocessing.impl.modelAdapters.ModelAdapter;
+import org.opendaylight.topoprocessing.impl.modelAdapters.Inventory.InvModelAdapter;
+import org.opendaylight.topoprocessing.impl.modelAdapters.NetworkTopology.NTModelAdapter;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -48,12 +51,12 @@ public class PathTranslator {
      * @throws IllegalStateException if required module is not loaded
      */
     public YangInstanceIdentifier translate(String yangPath, CorrelationItemEnum correlationItem,
-            GlobalSchemaContextHolder schemaHolder, Model inputModel) {
+            GlobalSchemaContextHolder schemaHolder, ModelAdapter modelAdapter) {
         LOGGER.debug("Translating target-field path: " + yangPath);
         DataSchemaContextTree contextTree = schemaHolder.getContextTree();
         QName itemQName = TopologyQNames.buildItemQName(correlationItem);
         YangInstanceIdentifier itemIdentifier = null;
-        itemIdentifier = createBaseIdentifier(correlationItem, inputModel,
+        itemIdentifier = createBaseIdentifier(correlationItem, modelAdapter,
                 itemQName);
         DataSchemaContextNode<?> contextNode = contextTree.getChild(itemIdentifier);
         Iterable<String> pathArguments = splitYangPath(yangPath);
@@ -75,11 +78,11 @@ public class PathTranslator {
         return targetIdentifier;
     }
 
-    private YangInstanceIdentifier createBaseIdentifier(CorrelationItemEnum correlationItem, Model inputModel,
+    private YangInstanceIdentifier createBaseIdentifier(CorrelationItemEnum correlationItem, ModelAdapter modelAdapter,
             QName itemQName) {
         YangInstanceIdentifier itemIdentifier;
         // if inputModel == null, than use network-topology model as default 
-        if (Model.OpendaylightInventory.equals(inputModel)) {
+        if (modelAdapter instanceof InvModelAdapter) {
             itemIdentifier = YangInstanceIdentifier.builder()
                     .node(Nodes.QNAME)
                     .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME)
@@ -87,16 +90,21 @@ public class PathTranslator {
                             TopologyQNames.INVENTORY_NODE_ID_QNAME, "")
                     .build();
         } else {
-            YangInstanceIdentifier.InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
-                    .node(NetworkTopology.QNAME)
-                    .node(Topology.QNAME)
-                    .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, "");
-            if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
-                itemIdentifierBuilder.node(Node.QNAME)
+            if(modelAdapter instanceof NTModelAdapter){
+                YangInstanceIdentifier.InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
+                        .node(NetworkTopology.QNAME)
+                        .node(Topology.QNAME)
+                        .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, "");
+                if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
+                    itemIdentifierBuilder.node(Node.QNAME)
                         .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, "");
+                }
+                itemIdentifier = itemIdentifierBuilder.node(itemQName)
+                        .nodeWithKey(itemQName, TopologyQNames.buildItemIdQName(correlationItem), "").build();
+            } else {
+                //TODO I2RS identifier
+                itemIdentifier = null;
             }
-            itemIdentifier = itemIdentifierBuilder.node(itemQName)
-                    .nodeWithKey(itemQName, TopologyQNames.buildItemIdQName(correlationItem), "").build();
         }
         return itemIdentifier;
     }
