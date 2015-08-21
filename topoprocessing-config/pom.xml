@@ -23,6 +23,7 @@
   <properties>
       <configframework>80-topoprocessing-config.xml</configframework>
       <confignt>81-topoprocessing-nt-config.xml</confignt>
+      <configinventory>81-topoprocessing-inventory-config.xml</configinventory>
   </properties>
 
   <build>
@@ -59,6 +60,22 @@
                   <file>${project.build.directory}/classes/${confignt}</file>
                   <type>xml</type>
                   <classifier>config-nt</classifier>
+                </artifact>
+              </artifacts>
+            </configuration>
+          </execution>
+          <execution>
+            <id>attach-inventory-artifacts</id>
+            <goals>
+              <goal>attach-artifact</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/classes/${configinventory}</file>
+                  <type>xml</type>
+                  <classifier>config-inventory</classifier>
                 </artifact>
               </artifacts>
             </configuration>
