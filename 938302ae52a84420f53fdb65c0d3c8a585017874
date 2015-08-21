@@ -1,0 +1,130 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_07902442",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/modelAdapters/NetworkTopology/NTModelAdapter.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T11:38:09Z",
+      "side": 1,
+      "message": "please remove empty line",
+      "revId": "938302ae52a84420f53fdb65c0d3c8a585017874",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_c7822c00",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/provider/TopoProcessingProviderImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T11:38:09Z",
+      "side": 1,
+      "message": "please {} brackets and use correct indentation",
+      "range": {
+        "startLine": 97,
+        "startChar": 8,
+        "endLine": 97,
+        "endChar": 52
+      },
+      "revId": "938302ae52a84420f53fdb65c0d3c8a585017874",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_e787280e",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/provider/TopoProcessingProviderImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T11:38:09Z",
+      "side": 1,
+      "message": "add ModelAdapter modelAdapter",
+      "revId": "938302ae52a84420f53fdb65c0d3c8a585017874",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_877c3422",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/provider/TopoProcessingProviderImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T11:38:09Z",
+      "side": 1,
+      "message": "idea is correct, but it will be the other way around\n\nTopoprocessingProvider doesn\u0027t know about any extensions to the framework, instead, the specific model bundles know about their parents. So in this use case we will provide (inject) modelAdapters that will be stored in map",
+      "range": {
+        "startLine": 118,
+        "startChar": 8,
+        "endLine": 126,
+        "endChar": 9
+      },
+      "revId": "938302ae52a84420f53fdb65c0d3c8a585017874",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_6773184e",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/provider/TopoProcessingProviderImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T11:38:09Z",
+      "side": 1,
+      "message": "modelAdapters can be set by setter - we should try to avoid complex methods (with many parameters)",
+      "range": {
+        "startLine": 129,
+        "startChar": 59,
+        "endLine": 129,
+        "endChar": 72
+      },
+      "revId": "938302ae52a84420f53fdb65c0d3c8a585017874",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_47761c40",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/provider/TopoProcessingProviderImpl.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T11:38:09Z",
+      "side": 1,
+      "message": "this can be extracted into separate method",
+      "range": {
+        "startLine": 128,
+        "startChar": 8,
+        "endLine": 135,
+        "endChar": 97
+      },
+      "revId": "938302ae52a84420f53fdb65c0d3c8a585017874",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
