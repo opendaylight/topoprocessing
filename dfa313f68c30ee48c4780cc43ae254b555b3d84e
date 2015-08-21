@@ -1,0 +1,251 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_9241d03b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T13:19:52Z",
+      "side": 1,
+      "message": "UnderlayTopologyListener",
+      "range": {
+        "startLine": 7,
+        "startChar": 10,
+        "endLine": 7,
+        "endChar": 18
+      },
+      "revId": "dfa313f68c30ee48c4780cc43ae254b555b3d84e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_524b3859",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T13:19:52Z",
+      "side": 1,
+      "message": "changed from DOMDataChangeListener to DOMDataTreeChangeListener",
+      "range": {
+        "startLine": 9,
+        "startChar": 2,
+        "endLine": 9,
+        "endChar": 60
+      },
+      "revId": "dfa313f68c30ee48c4780cc43ae254b555b3d84e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_327a3c89",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T13:19:52Z",
+      "side": 1,
+      "message": "please also state that the single item maps and lists will be removed in next commit, where the TopologyOperator interface will change",
+      "revId": "dfa313f68c30ee48c4780cc43ae254b555b3d84e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_872514c4",
+        "filename": "topoprocessing-config/src/main/resources/80-topoprocessing-config.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T13:19:52Z",
+      "side": 1,
+      "message": "a ... only typo",
+      "range": {
+        "startLine": 29,
+        "startChar": 51,
+        "endLine": 29,
+        "endChar": 52
+      },
+      "revId": "dfa313f68c30ee48c4780cc43ae254b555b3d84e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_472ffca1",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/InventoryListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T13:19:52Z",
+      "side": 1,
+      "message": "please rename to something more common / telling",
+      "range": {
+        "startLine": 64,
+        "startChar": 64,
+        "endLine": 64,
+        "endChar": 68
+      },
+      "revId": "dfa313f68c30ee48c4780cc43ae254b555b3d84e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_d220a89d",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/InventoryListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T13:19:52Z",
+      "side": 1,
+      "message": "we can check if getDataAfter().isPresent() ... and only if it is true continue with processing",
+      "range": {
+        "startLine": 74,
+        "startChar": 20,
+        "endLine": 76,
+        "endChar": 46
+      },
+      "revId": "dfa313f68c30ee48c4780cc43ae254b555b3d84e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_f225a4ab",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/InventoryListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T13:19:52Z",
+      "side": 1,
+      "message": "you can rename this to node",
+      "range": {
+        "startLine": 87,
+        "startChar": 43,
+        "endLine": 87,
+        "endChar": 52
+      },
+      "revId": "dfa313f68c30ee48c4780cc43ae254b555b3d84e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_b2372ce3",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T13:19:52Z",
+      "side": 1,
+      "message": "you can remove readDataBefore() methods / mechanism ... as this should be provided by DomDataTreeListener",
+      "range": {
+        "startLine": 102,
+        "startChar": 0,
+        "endLine": 111,
+        "endChar": 9
+      },
+      "revId": "dfa313f68c30ee48c4780cc43ae254b555b3d84e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_523498dd",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T13:19:52Z",
+      "side": 1,
+      "message": "we can check if getDataAfter().isPresent()",
+      "range": {
+        "startLine": 122,
+        "startChar": 20,
+        "endLine": 124,
+        "endChar": 46
+      },
+      "revId": "dfa313f68c30ee48c4780cc43ae254b555b3d84e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_32531c19",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T13:19:52Z",
+      "side": 1,
+      "message": "no need for javadoc if the method is private - or if we don\u0027t provide some meaningful explanation",
+      "range": {
+        "startLine": 135,
+        "startChar": 0,
+        "endLine": 139,
+        "endChar": 7
+      },
+      "revId": "dfa313f68c30ee48c4780cc43ae254b555b3d84e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_526258d9",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T13:19:52Z",
+      "side": 1,
+      "message": "Received dom-data-broker instance is different than expected. Expected: pingpong-broker actual: + domDataBroker",
+      "range": {
+        "startLine": 105,
+        "startChar": 48,
+        "endLine": 105,
+        "endChar": 71
+      },
+      "revId": "dfa313f68c30ee48c4780cc43ae254b555b3d84e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
