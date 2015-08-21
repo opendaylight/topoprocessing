@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_c76eacc9",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/modelAdapters/NetworkTopology/NTTopologyRequestListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-21T07:49:51Z",
+      "side": 1,
+      "message": "Qname creation is quite expensive operation, please save it in some field. You can use TopologyQnames class, as this Qname will be the same for each model\n\nYou can also initialize the hashSet in NTTopologyRequestListener constructor.",
+      "range": {
+        "startLine": 47,
+        "startChar": 20,
+        "endLine": 47,
+        "endChar": 110
+      },
+      "revId": "a6b27921b3c0077d4f4a7e57314785dd121d50ac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
