@@ -40,6 +40,9 @@ public final class TopologyQNames {
     public static final QName LINK_REF = QName.create(Link.QNAME, "link-ref");
     /** Network-topology termination-point tp-ref */
     public static final QName TP_REF = QName.create(TerminationPoint.QNAME, "tp-ref");
+    /**Network topology correlation augment**/
+    public static final QName TOPOLOGY_CORRELATION_AUGMENT =
+            QName.create("urn:opendaylight:topology:correlation", "2015-01-21", "correlation-augment");
 
     private TopologyQNames() {
         throw new UnsupportedOperationException("TopologyQNames can't be instantiated.");

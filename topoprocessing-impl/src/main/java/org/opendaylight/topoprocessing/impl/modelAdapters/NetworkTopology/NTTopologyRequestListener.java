@@ -1,0 +1,63 @@
+/*
+ * Copyright (c) 2015 Pantheon Technologies s.r.o. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.opendaylight.topoprocessing.impl.modelAdapters.NetworkTopology;
+
+import java.util.HashSet;
+import java.util.Map;
+
+import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.topoprocessing.impl.modelAdapters.ModelAdapter;
+import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
+import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
+import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
+import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
+import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.QName;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
+
+/**
+ * @author matej.perina
+ */
+public class NTTopologyRequestListener extends TopologyRequestListener{
+
+
+    private HashSet<QName> hashSet;
+
+    public NTTopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
+            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, ModelAdapter modelAdapter) {
+        super(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapter);
+        hashSet = new HashSet<>();
+    }
+
+    @Override
+    protected boolean isTopology(NormalizedNode<?, ?> normalizedNode) {
+
+        return normalizedNode.getNodeType().equals(Topology.QNAME);
+    }
+
+    @Override
+    protected boolean isTopologyRequest(NormalizedNode <?,?> normalizedNode) {
+        hashSet.add(TopologyQNames.TOPOLOGY_CORRELATION_AUGMENT);
+        return NormalizedNodes.findNode(normalizedNode, new AugmentationIdentifier(hashSet)).isPresent();
+    }
+
+    @Override
+    protected TopologyRequestHandler createTopologyRequestHandler(DOMDataBroker dataBroker,
+            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
+            Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {
+
+        return new NTTopologyRequestHandler(dataBroker, schemaHolder, rpcServices, fromNormalizedNode);
+    }
+
+}
