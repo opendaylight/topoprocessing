@@ -8,7 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.translator;
 
-import com.google.common.base.Splitter;
+import java.util.Iterator;
+
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -26,7 +27,7 @@ import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
+import com.google.common.base.Splitter;
 
 /**
  * @author martin.uhlir
@@ -78,7 +79,7 @@ public class PathTranslator {
     private YangInstanceIdentifier createBaseIdentifier(CorrelationItemEnum correlationItem, Model inputModel,
             QName itemQName) {
         YangInstanceIdentifier itemIdentifier;
-        // if inputModel == null, than use network-topology model as default 
+        // if inputModel == null, than use network-topology model as default
         if (Model.OpendaylightInventory.equals(inputModel)) {
             itemIdentifier = YangInstanceIdentifier.builder()
                     .node(Nodes.QNAME)
@@ -86,7 +87,7 @@ public class PathTranslator {
                     .nodeWithKey(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME,
                             TopologyQNames.INVENTORY_NODE_ID_QNAME, "")
                     .build();
-        } else {
+        } else if (Model.NetworkTopology.equals(inputModel)){
             YangInstanceIdentifier.InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
                     .node(NetworkTopology.QNAME)
                     .node(Topology.QNAME)
@@ -97,7 +98,9 @@ public class PathTranslator {
             }
             itemIdentifier = itemIdentifierBuilder.node(itemQName)
                     .nodeWithKey(itemQName, TopologyQNames.buildItemIdQName(correlationItem), "").build();
-        }
+        } else /*if (Model.I2RS.equals(inputModel))*/ {
+            itemIdentifier = null;
+    }
         return itemIdentifier;
     }
 

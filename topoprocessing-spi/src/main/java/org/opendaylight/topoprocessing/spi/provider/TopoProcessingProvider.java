@@ -10,6 +10,7 @@ package org.opendaylight.topoprocessing.spi.provider;
 
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 
 /**
  * @author michal.polkorab
@@ -34,4 +35,10 @@ public interface TopoProcessingProvider extends AutoCloseable {
      * @param filterType - key of filtrator to be unregistered - represented by modeled identity
      */
     void unregisterFiltratorFactory(Class<? extends FilterBase> filterType);
+
+    /**
+     * Registers specific ModelAdaper
+     * @param model - defines topology model
+     */
+    void registerModelAdapter(Model model);
 }
