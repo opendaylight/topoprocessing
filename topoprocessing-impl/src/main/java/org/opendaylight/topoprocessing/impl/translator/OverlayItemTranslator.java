@@ -19,9 +19,13 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
  */
 public class OverlayItemTranslator {
 
-    NodeTranslator nodeTranslator = new NodeTranslator();
-    LinkTranslator linkTranslator = new LinkTranslator();
+    NodeTranslator nodeTranslator;
+    LinkTranslator linkTranslator;
 
+    public OverlayItemTranslator(NodeTranslator nodeTranslator, LinkTranslator linkTranslator){
+        this.nodeTranslator = nodeTranslator;
+        this.linkTranslator = linkTranslator;
+    }
     /**
      * Convert LogicalNode to Node
      * @param wrapper LogicalNodeWrapper object
