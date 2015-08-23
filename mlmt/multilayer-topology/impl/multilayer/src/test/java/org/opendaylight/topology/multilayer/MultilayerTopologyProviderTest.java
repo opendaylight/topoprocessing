@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topology.multitechnology;
+package org.opendaylight.topology.multilayer;
 
 import com.google.common.base.Optional;
 
@@ -72,7 +72,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MlTopologyType;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
-import org.opendaylight.topology.mlmt.parser.MultilayerAttributesParserImpl;
 import org.opendaylight.topology.multilayer.MultilayerTopologyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,7 +179,7 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
 
     @Before
     public void setUp() throws Exception {
-        MultilayerAttributesParserImpl parser = new MultilayerAttributesParserImpl();
+        MultilayerAttributesParserTest parser = new MultilayerAttributesParserTest();
         parser.init(LOG);
         processor = new MlmtOperationProcessor(dataBroker);
         thread = new Thread(processor);
