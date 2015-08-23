@@ -4,7 +4,7 @@
   <parent>
      <groupId>org.opendaylight.topoprocessing</groupId>
      <artifactId>topoprocessing-parent</artifactId>
-     <version>0.0.2-SNAPSHOT</version>
+     <version>0.0.2-Lithium-SR1</version>
   </parent>
 
   <artifactId>forwarding</artifactId>
@@ -15,7 +15,7 @@
   </modules>
 
   <properties>
-      <openflowplugin.version>0.1.1-SNAPSHOT</openflowplugin.version>
+      <openflowplugin.version>0.1.1-Lithium-SR1</openflowplugin.version>
   </properties>
 
 </project>
