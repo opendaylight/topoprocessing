@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_841d0712",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-24T08:58:22Z",
+      "side": 1,
+      "message": "please move project tag on new line",
+      "revId": "a4c379f4f340ce374a82192ce496c3232e57f7f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_6420eb49",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-24T08:58:22Z",
+      "side": 1,
+      "message": "please keep alphabethical order",
+      "range": {
+        "startLine": 36,
+        "startChar": 8,
+        "endLine": 36,
+        "endChar": 46
+      },
+      "revId": "a4c379f4f340ce374a82192ce496c3232e57f7f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_e4d39b36",
+        "filename": "topoprocessing-common/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-24T08:58:22Z",
+      "side": 1,
+      "message": "please remove dependency on impl",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 21
+      },
+      "revId": "a4c379f4f340ce374a82192ce496c3232e57f7f2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
