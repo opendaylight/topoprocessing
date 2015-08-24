@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.topoprocessing.common.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;

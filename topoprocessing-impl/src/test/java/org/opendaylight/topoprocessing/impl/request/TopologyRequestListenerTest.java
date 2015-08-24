@@ -22,6 +22,8 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
+import org.opendaylight.topoprocessing.common.request.TopologyRequestHandler;
+import org.opendaylight.topoprocessing.common.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
