@@ -29,11 +29,12 @@
         <module>parent</module>
         <module>topoprocessing-api</module>
         <module>topoprocessing-artifacts</module>
+        <module>topoprocessing-common</module>
         <module>topoprocessing-config</module>
         <module>topoprocessing-i2rs</module>
         <module>topoprocessing-impl</module>
         <module>topoprocessing-inventory</module>
         <module>topoprocessing-nt</module>
         <module>topoprocessing-spi</module>
-    </modules>
+  </modules>
 </project>
