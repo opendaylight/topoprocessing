@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_84c74745",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/LinkTranslator.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-24T10:37:43Z",
+      "side": 1,
+      "message": "we don\u0027t have to explicitly state that methods in interface are abstract, this is done by default",
+      "range": {
+        "startLine": 25,
+        "startChar": 11,
+        "endLine": 25,
+        "endChar": 19
+      },
+      "revId": "d674bfdd5b743e4f9adb9c371ba8482f3f207c60",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_a4e7e3e3",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/NodeTranslator.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-24T10:37:43Z",
+      "side": 1,
+      "message": "same as in LinkTranslator ... we can skip abstract here",
+      "range": {
+        "startLine": 24,
+        "startChar": 11,
+        "endLine": 24,
+        "endChar": 19
+      },
+      "revId": "d674bfdd5b743e4f9adb9c371ba8482f3f207c60",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
