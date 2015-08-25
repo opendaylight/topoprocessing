@@ -1,12 +1,11 @@
-package org.opendaylight.topoprocessing.impl.request;
+package org.opendaylight.topoprocessing.nt.request;
 
-import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.AbstractCheckedFuture;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,13 +21,17 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
+import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
+import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
+import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.Correlations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -47,11 +50,14 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.AbstractCheckedFuture;
+
 /**
  * @author matus.marko
  */
 @RunWith(MockitoJUnitRunner.class)
-public class TopologyRequestListenerTest {
+public class NTTopologyRequestListenerTest {
 
     private TopologyRequestListener listener;
     private static final String TOPO_NAME = "mytopo:1";
@@ -65,6 +71,7 @@ public class TopologyRequestListenerTest {
     @Mock private DOMDataWriteTransaction mockTransaction;
     @Mock private UserDefinedFilter userDefinedFilter;
     @Mock private FiltratorFactory userDefinedFiltratorFactory;
+    @Mock private Map<Model,ModelAdapter> mockModelAdapters;
 
     private class UserDefinedFilter extends FilterBase
     {
@@ -73,7 +80,7 @@ public class TopologyRequestListenerTest {
 
     @Before
     public void setUp() {
-        listener = new TopologyRequestListener(mockBroker, mockNodeSerializer, mockSchemaHolder, mockRpcServices);
+        listener = new NTTopologyRequestListener(mockBroker, mockNodeSerializer, mockSchemaHolder, mockRpcServices, mockModelAdapters);
         listener.setDatastoreType(DatastoreType.OPERATIONAL);
 
         Mockito.when(mockRpcServices.getRpcService()).thenReturn(Mockito.mock(DOMRpcService.class));
