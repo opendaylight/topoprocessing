@@ -6,13 +6,14 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.impl.request;
+package org.opendaylight.topoprocessing.nt.request;
 
 import static org.mockito.Matchers.any;
 
-import com.google.common.util.concurrent.CheckedFuture;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
+import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
@@ -69,11 +71,16 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.CheckedFuture;
+
 @RunWith(MockitoJUnitRunner.class)
-public class TopologyRequestHandlerTest {
+public class NTTopologyRequestHandlerTest {
 
     private static final String TOPO1 = "TOPO1";
 
@@ -88,10 +95,12 @@ public class TopologyRequestHandlerTest {
     @Mock private CheckedFuture<Void, TransactionCommitFailedException> domCheckedFuture;
     @Mock private SchemaContext mockGlobalSchemaContext;
     @Mock private ListenerRegistration<DOMDataChangeListener> mockDOMDataChangeListener;
+    @Mock private Map.Entry<InstanceIdentifier<?>,DataObject> mockFromNormalizedNode;
 
     private YangInstanceIdentifier pathIdentifier;
     private Topology topology;
     private TopologyRequestHandler handler;
+    private InstanceIdentifier<?> identifier = InstanceIdentifier.create(Topology.class);
 
     private abstract class UnknownCorrelationBase extends CorrelationBase {
         //
@@ -117,17 +126,12 @@ public class TopologyRequestHandlerTest {
     }
 
     @Test (expected=NullPointerException.class)
-    public void testProcessNewRequestWithNullParameter() {
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
-        handler.processNewRequest(null);
-    }
-
-    @Test (expected=IllegalStateException.class)
     public void testTopologyWithoutAugmentation() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
 
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
-        handler.processNewRequest(topoBuilder.build());
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, (DataObject) topoBuilder.build()));
+        handler.processNewRequest();
     }
 
     private static TopologyBuilder createTopologyBuilder(String topologyName) {
@@ -142,8 +146,9 @@ public class TopologyRequestHandlerTest {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = new CorrelationAugmentBuilder();
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
-        handler.processNewRequest(topoBuilder.build());
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, topoBuilder.build()));
+        handler.processNewRequest();
     }
 
     private static CorrelationAugmentBuilder createCorrelation(Class<? extends CorrelationBase> correlationBase,
@@ -169,8 +174,9 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
-        handler.processNewRequest(topoBuilder.build());
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, topoBuilder.build()));
+        handler.processNewRequest();
     }
 
     @Test (expected=IllegalStateException.class)
@@ -179,9 +185,9 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker,
-                mockSchemaHolder, mockRpcServices);
-        handler.processNewRequest(topoBuilder.build());
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, topoBuilder.build()));
+        handler.processNewRequest();
     }
 
     @Test (expected=IllegalStateException.class)
@@ -190,8 +196,9 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(FiltrationOnly.class, null,
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
-        handler.processNewRequest(topoBuilder.build());
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, topoBuilder.build()));
+        handler.processNewRequest();
     }
 
     @Test (expected=IllegalStateException.class)
@@ -200,8 +207,9 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(UnknownCorrelationBase.class, null,
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
-        handler.processNewRequest(topoBuilder.build());
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, topoBuilder.build()));
+        handler.processNewRequest();
     }
 
     @Test (expected=IllegalStateException.class)
@@ -212,8 +220,9 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
                 aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
-        handler.processNewRequest(topoBuilder.build());
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, topoBuilder.build()));
+        handler.processNewRequest();
     }
 
     @Test (expected=IllegalStateException.class)
@@ -232,12 +241,13 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
                 aggBuilder.build(), null);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, topoBuilder.build()));
 
         Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
-        handler.processNewRequest(topoBuilder.build());
+        handler.processNewRequest();
     }
 
     @Test
@@ -257,7 +267,8 @@ public class TopologyRequestHandlerTest {
                 aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         // CONFIGURATION listener registration
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, topoBuilder.build()));
         handler.setDatastoreType(DatastoreType.CONFIGURATION);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
@@ -269,10 +280,11 @@ public class TopologyRequestHandlerTest {
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
                 Mockito.eq(DataChangeScope.SUBTREE)))
                 .thenReturn(mockDOMDataChangeListener);
-        handler.processNewRequest(topoBuilder.build());
+        handler.processNewRequest();
         Assert.assertEquals(1, listeners.size());
         // OPERATIONAL listener registration
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, topoBuilder.build()));
         handler.setDatastoreType(DatastoreType.OPERATIONAL);
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
@@ -283,7 +295,7 @@ public class TopologyRequestHandlerTest {
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
                 Mockito.eq(DataChangeScope.SUBTREE)))
                 .thenReturn(mockDOMDataChangeListener);
-        handler.processNewRequest(topoBuilder.build());
+        handler.processNewRequest();
         Assert.assertEquals(1, listeners.size());
     }
 
@@ -304,8 +316,8 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null, aggBuilder.build(),
                 CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker,
-                mockSchemaHolder, mockRpcServices);
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, topoBuilder.build()));
         handler.setDatastoreType(DatastoreType.OPERATIONAL);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
@@ -317,7 +329,7 @@ public class TopologyRequestHandlerTest {
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
                 Mockito.eq(DataChangeScope.SUBTREE)))
                 .thenReturn(mockDOMDataChangeListener);
-        handler.processNewRequest(topoBuilder.build());
+        handler.processNewRequest();
         Assert.assertEquals(1, listeners.size());
     }
 
@@ -342,7 +354,8 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(FiltrationOnly.class,
                 fBuilder.build(), null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, topoBuilder.build()));
         handler.setDatastoreType(DatastoreType.OPERATIONAL);
         handler.setFiltrators(DefaultFiltrators.getDefaultFiltrators());
         pathIdentifier = InstanceIdentifiers.NODE_IDENTIFIER;
@@ -355,10 +368,11 @@ public class TopologyRequestHandlerTest {
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
                 Mockito.eq(DataChangeScope.SUBTREE)))
                 .thenReturn(mockDOMDataChangeListener);
-        handler.processNewRequest(topoBuilder.build());
+        handler.processNewRequest();
         Assert.assertEquals(1, listeners.size());
         // test registration CONFIGURATION listener registration
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, topoBuilder.build()));
         handler.setDatastoreType(DatastoreType.CONFIGURATION);
         handler.setFiltrators(DefaultFiltrators.getDefaultFiltrators());
         pathIdentifier = InstanceIdentifiers.NODE_IDENTIFIER;
@@ -370,7 +384,7 @@ public class TopologyRequestHandlerTest {
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
                 Mockito.eq(DataChangeScope.SUBTREE)))
                 .thenReturn(mockDOMDataChangeListener);
-        handler.processNewRequest(topoBuilder.build());
+        handler.processNewRequest();
         Assert.assertEquals(2, listeners.size());
     }
 
@@ -394,7 +408,8 @@ public class TopologyRequestHandlerTest {
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
                 aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
-        handler = new TopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices);
+        handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
+                Maps.immutableEntry(identifier, topoBuilder.build()));
         handler.setDatastoreType(DatastoreType.CONFIGURATION);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
@@ -406,7 +421,7 @@ public class TopologyRequestHandlerTest {
                 (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
                 Mockito.eq(DataChangeScope.SUBTREE)))
                 .thenReturn(mockDOMDataChangeListener);
-        handler.processNewRequest(topoBuilder.build());
+        handler.processNewRequest();
         Assert.assertEquals(0, listeners.size());
         // process deletion request
         handler.processDeletionRequest();

@@ -6,15 +6,16 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.nt;
+package org.opendaylight.topoprocessing.inventory.provider;
 
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TopoProcessingNTProvider implements AutoCloseable {
+public class TopoProcessingProviderInv implements AutoCloseable {
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(TopoProcessingNTProvider.class);
+            .getLogger(TopoProcessingProviderInv.class);
+
     @Override
     public void close() throws Exception {
         LOGGER.info("TopoprocessingNTProvider close");
