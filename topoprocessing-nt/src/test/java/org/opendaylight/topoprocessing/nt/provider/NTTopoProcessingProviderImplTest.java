@@ -1,8 +1,9 @@
-package org.opendaylight.topoprocessing.impl.provider;
+package org.opendaylight.topoprocessing.nt.provider;
 
-import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
+import java.net.URI;
+import java.util.Map;
+import java.util.Set;
 
-import com.google.common.collect.SetMultimap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -16,6 +17,8 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
+import org.opendaylight.topoprocessing.impl.provider.TopoProcessingProviderImpl;
+import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
@@ -26,15 +29,14 @@ import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.ModuleIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 import org.opendaylight.yangtools.yang.model.util.AbstractSchemaContext;
-import java.net.URI;
-import java.util.Map;
-import java.util.Set;
+
+import com.google.common.collect.SetMultimap;
 
 /**
  * @author matus.marko
  */
 @RunWith(MockitoJUnitRunner.class)
-public class TopoProcessingProviderImplTest {
+public class NTTopoProcessingProviderImplTest {
 
     private TopoProcessingProviderImpl topoProcessingProvider;
 
@@ -67,7 +69,7 @@ public class TopoProcessingProviderImplTest {
             return null;
         }
     }
-    
+
     @Test
     public void testStartup() throws Exception {
         Mockito.when(rpcServices.getRpcService()).thenReturn(Mockito.mock(DOMRpcService.class));
@@ -84,13 +86,14 @@ public class TopoProcessingProviderImplTest {
         topoProcessingProvider = new TopoProcessingProviderImpl(
                 schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
         topoProcessingProvider.startup();
+        TopoProcessingProviderNT NTProvider = new TopoProcessingProviderNT();
+        NTProvider.startup(topoProcessingProvider);
         Mockito.verify(schemaService).registerSchemaContextListener((SchemaContextListener) Matchers.any());
         Mockito.verify(dataBroker).registerDataChangeListener(
                 Matchers.eq(LogicalDatastoreType.CONFIGURATION),
                 Matchers.eq(InstanceIdentifiers.TOPOLOGY_IDENTIFIER),
                 Matchers.any(TopologyRequestListener.class),
                 Matchers.eq(DataChangeScope.ONE));
-
 
         // close
         topoProcessingProvider.close();

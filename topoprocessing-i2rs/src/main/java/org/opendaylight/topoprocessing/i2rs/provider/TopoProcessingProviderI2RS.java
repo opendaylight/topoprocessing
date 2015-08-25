@@ -6,22 +6,24 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.inventory;
+package org.opendaylight.topoprocessing.i2rs.provider;
 
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TopoProcessingInventoryProvider implements AutoCloseable {
+public class TopoProcessingProviderI2RS implements AutoCloseable {
+
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(TopoProcessingInventoryProvider.class);
+            .getLogger(TopoProcessingProviderI2RS.class);
 
     @Override
     public void close() throws Exception {
-        LOGGER.info("TopoprocessingNTProvider close");
+        LOGGER.info("TopoprocessingI2rsProvider close");
     }
 
     public void startup(TopoProcessingProvider topoProvider) {
-        LOGGER.info("TopoprocessingNTProvider startup");
+        LOGGER.info("TopoprocessingI2rsProvider startup");
     }
+
 }
