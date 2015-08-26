@@ -36,6 +36,7 @@ import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -85,7 +86,7 @@ public class TopologyManagerTest {
         Mockito.when(mockRpcServices.getRpcService()).thenReturn(mockDOMRpcService);
         Mockito.when(mockRpcServices.getRpcService().registerRpcListener((DOMRpcAvailabilityListener)any()))
             .thenReturn(mockListenerRegistration);
-        manager = new TopologyManager(mockRpcServices, mockSchemaHolder, identifier);
+        manager = new TopologyManager(mockRpcServices, mockSchemaHolder, identifier, Model.NetworkTopology);
         manager.setWriter(writer);
     }
 

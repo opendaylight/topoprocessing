@@ -12,6 +12,7 @@ import org.junit.Assert;
 
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
@@ -26,11 +27,12 @@ public class InstanceIdentifiersTest {
     @Test
     public void testRelativeItemIdIdentifier() {
         Assert.assertEquals("Wrong identifiers", YangInstanceIdentifier.of(TopologyQNames.NETWORK_NODE_ID_QNAME),
-                        InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Node));
+                        InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Node, Model.NetworkTopology));
         Assert.assertEquals("Wrong identifiers", YangInstanceIdentifier.of(TopologyQNames.NETWORK_LINK_ID_QNAME),
-                        InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Link));
+                        InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Link, Model.NetworkTopology));
         Assert.assertEquals("Wrong identifiers", YangInstanceIdentifier.of(TopologyQNames.NETWORK_TP_ID_QNAME),
-                        InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.TerminationPoint));
+                        InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.TerminationPoint,
+                                Model.NetworkTopology));
     }
 
 }

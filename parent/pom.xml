@@ -45,6 +45,7 @@
         <yang.jmx.generator.plugin>0.4.0-SNAPSHOT</yang.jmx.generator.plugin>
         <config.version>0.4.0-SNAPSHOT</config.version>
         <mdsal.version>1.3.0-SNAPSHOT</mdsal.version>
+        <i2rs.version>1.0.0-SNAPSHOT</i2rs.version>
         <protocol-framework.version>0.7.0-SNAPSHOT</protocol-framework.version>
         <features.test.version>1.6.0-SNAPSHOT</features.test.version>
         <!-- TODO - bump openflowplugin version once its version is bumped --> 
@@ -72,6 +73,11 @@
                 <version>${mdsal.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.opendaylight.controller.model</groupId>
+                <artifactId>i2rs-yang-network-topo</artifactId>
+                <version>${i2rs.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.opendaylight.controller</groupId>

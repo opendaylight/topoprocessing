@@ -150,7 +150,7 @@ public abstract class TopologyRequestHandler {
         transactionChain = domDataBroker.createTransactionChain(writer);
         writer.setTransactionChain(transactionChain);
         topologyManager = new TopologyManager(rpcServices, schemaHolder,
-                createTopologyIdentifier(topologyId).build());
+                createTopologyIdentifier(topologyId).build(), outputModel);
         topologyManager.setWriter(writer);
         writer.initOverlayTopology();
 

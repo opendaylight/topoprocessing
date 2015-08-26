@@ -11,7 +11,7 @@ package org.opendaylight.topoprocessing.impl.util;
 import static org.junit.Assert.*;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
@@ -33,10 +33,12 @@ public class TopologyQNamesTest {
      */
     @Test
     public void testItemIdQNames() {
-        assertEquals("Wrong QName", NODE_ID_QNAME, TopologyQNames.buildItemIdQName(CorrelationItemEnum.Node));
-        assertEquals("Wrong QName", LINK_ID_QNAME, TopologyQNames.buildItemIdQName(CorrelationItemEnum.Link));
+        assertEquals("Wrong QName", NODE_ID_QNAME, TopologyQNames.buildItemIdQName(CorrelationItemEnum.Node,
+                Model.NetworkTopology));
+        assertEquals("Wrong QName", LINK_ID_QNAME, TopologyQNames.buildItemIdQName(CorrelationItemEnum.Link,
+                Model.NetworkTopology));
         assertEquals("Wrong QName", TP_ID_QNAME,
-                TopologyQNames.buildItemIdQName(CorrelationItemEnum.TerminationPoint));
+                TopologyQNames.buildItemIdQName(CorrelationItemEnum.TerminationPoint, Model.NetworkTopology));
     }
 
     /**
@@ -44,9 +46,11 @@ public class TopologyQNamesTest {
      */
     @Test
     public void testItemQNames() {
-        assertEquals("Wrong QName", Node.QNAME, TopologyQNames.buildItemQName(CorrelationItemEnum.Node));
-        assertEquals("Wrong QName", Link.QNAME, TopologyQNames.buildItemQName(CorrelationItemEnum.Link));
+        assertEquals("Wrong QName", Node.QNAME, TopologyQNames.buildItemQName(CorrelationItemEnum.Node,
+                Model.NetworkTopology));
+        assertEquals("Wrong QName", Link.QNAME, TopologyQNames.buildItemQName(CorrelationItemEnum.Link,
+                Model.NetworkTopology));
         assertEquals("Wrong QName", TerminationPoint.QNAME,
-                TopologyQNames.buildItemQName(CorrelationItemEnum.TerminationPoint));
+                TopologyQNames.buildItemQName(CorrelationItemEnum.TerminationPoint, Model.NetworkTopology));
     }
 }
