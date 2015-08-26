@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_518ec52f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-26T10:06:59Z",
+      "side": 1,
+      "message": "we probably don\u0027t need these methods - because mentioned fields are of protected type",
+      "range": {
+        "startLine": 248,
+        "startChar": 0,
+        "endLine": 259,
+        "endChar": 5
+      },
+      "revId": "b332c9175c4f83b98368530fb1b0eb16a59acf6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_11884d1e",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/provider/TopoProcessingProviderImpl.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-26T10:06:59Z",
+      "side": 1,
+      "message": "please use correct indentation",
+      "range": {
+        "startLine": 122,
+        "startChar": 8,
+        "endLine": 124,
+        "endChar": 49
+      },
+      "revId": "b332c9175c4f83b98368530fb1b0eb16a59acf6d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
