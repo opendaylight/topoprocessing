@@ -9,9 +9,12 @@ package org.opendaylight.topoprocessing.i2rs.adapter;
 
 import java.util.List;
 import java.util.Map;
-
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.topoprocessing.i2rs.listener.I2RSUnderlayTopologyListener;
+import org.opendaylight.topoprocessing.i2rs.request.I2RSTopologyRequestListener;
+import org.opendaylight.topoprocessing.i2rs.translator.I2RSLinkTranslator;
+import org.opendaylight.topoprocessing.i2rs.translator.I2RSNodeTranslator;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
@@ -25,34 +28,32 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 
-/** *
+/**
  * @author matej.perina
  */
 
 public class I2RSModelAdapter implements ModelAdapter {
 
     @Override
+    public UnderlayTopologyListener registerUnderlayTopologyListener(DOMDataBroker domDataBroker,
+            String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType,
+            TopologyOperator operator, List<ListenerRegistration<DOMDataChangeListener>> listeners) {
+
+        I2RSUnderlayTopologyListener listener = new I2RSUnderlayTopologyListener(domDataBroker, underlayTopologyId, correlationItem);
+        listener.setOperator(operator);
+        return listener;
+    }
+
+    @Override
     public TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices, Map<Model, ModelAdapter> modelAdapters) {
-        // TODO Auto-generated method stub
-        return null;
+
+        return new I2RSTopologyRequestListener(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
     }
 
     @Override
     public OverlayItemTranslator createOverlayItemTranslator() {
-        // TODO Auto-generated method stub
-        return null;
+        return new OverlayItemTranslator(new I2RSNodeTranslator(),new I2RSLinkTranslator());
     }
-
-    @Override
-    public UnderlayTopologyListener registerUnderlayTopologyListener(DOMDataBroker domDataBroker,
-            String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType,
-            TopologyOperator operator, List<ListenerRegistration<DOMDataChangeListener>> listeners) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
-
 }
