@@ -245,4 +245,17 @@ public abstract class UnderlayTopologyListener implements DOMDataChangeListener 
     public void setPathIdentifier(YangInstanceIdentifier pathIdentifier) {
         this.pathIdentifier = pathIdentifier;
     }
+
+    public DOMDataBroker getDomDataBroker() {
+        return domDataBroker;
+    }
+
+    public String getUnderlayTopologyId() {
+        return underlayTopologyId;
+    }
+
+    public CorrelationItemEnum getCorrelationItem() {
+        return correlationItem;
+    }
+
 }

@@ -22,6 +22,29 @@ import org.opendaylight.yangtools.yang.common.QName;
  */
 public final class TopologyQNames {
 
+    /** I2RS model network-id QName */
+    public static final QName I2RS_NETWORK_ID_QNAME = QName.create(
+            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+            .network.rev150608.Network.QNAME, "network-id");
+    /** I2RS model supporting-node network-ref */
+    public static final QName I2RS_NETWORK_REF = QName.create(
+            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+            .network.rev150608.network.node.SupportingNode.QNAME, "network-ref");
+    /** I2RS model supporting-node node-ref */
+    public static final QName I2RS_NODE_REF = QName.create(
+            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+            .network.rev150608.network.node.SupportingNode.QNAME, "node-ref");
+    public static final QName I2RS_NODE_ID_QNAME = QName.create(
+            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+            .network.rev150608.network.Node.QNAME, "node-id");
+    /** I2RS model link-ref QName */
+    public static final QName I2RS_LINK_REF = QName.create(
+            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+            .network.topology.rev150608.network.Link.QNAME , "link-ref");
+    /** I2RS model link-id QName */
+    public static final QName I2RS_NETWORK_LINK_ID_QNAME = QName.create(
+            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+            .network.topology.rev150608.network.Link.QNAME , "link-id");
     /** Network-topology topology-id QName */
     public static final QName TOPOLOGY_ID_QNAME = QName.create(Topology.QNAME, "topology-id");
     /** Network-topology node-id QName */

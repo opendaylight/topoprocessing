@@ -12,6 +12,7 @@ import java.util.Iterator;
 
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
@@ -98,9 +99,21 @@ public class PathTranslator {
             }
             itemIdentifier = itemIdentifierBuilder.node(itemQName)
                     .nodeWithKey(itemQName, TopologyQNames.buildItemIdQName(correlationItem), "").build();
-        } else /*if (Model.I2RS.equals(inputModel))*/ {
+        } else if (Model.I2RS.equals(inputModel)) {
+            YangInstanceIdentifier.InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
+                    .node(Network.QNAME)
+                    .nodeWithKey(Network.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, "");
+            if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
+                itemIdentifierBuilder.node(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+                        .network.rev150608.network.Node.QNAME)
+                        .nodeWithKey(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+                                .network.rev150608.network.Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, "");
+            }
+            itemIdentifier = itemIdentifierBuilder.node(itemQName)
+                    .nodeWithKey(itemQName, TopologyQNames.buildItemIdQName(correlationItem), "").build();
+        } else {
             itemIdentifier = null;
-    }
+        }
         return itemIdentifier;
     }
 

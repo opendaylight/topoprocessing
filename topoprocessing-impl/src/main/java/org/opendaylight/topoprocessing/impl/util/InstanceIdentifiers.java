@@ -8,6 +8,7 @@
 
 package org.opendaylight.topoprocessing.impl.util;
 
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -21,6 +22,9 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public final class InstanceIdentifiers {
 
+    /** I2RS model {@link Network} (MapNode) identifier */
+    public static final YangInstanceIdentifier I2RS_NETWORK_IDENTIFIER =
+            YangInstanceIdentifier.of(Network.QNAME);
     /** Network-topology {@link Topology} (MapNode) identifier */
     public static final YangInstanceIdentifier TOPOLOGY_IDENTIFIER =
             YangInstanceIdentifier.of(NetworkTopology.QNAME).node(Topology.QNAME);
@@ -30,11 +34,11 @@ public final class InstanceIdentifiers {
     /** Network-topology {@link Node} (MapNode) identifier */
     public static final YangInstanceIdentifier NODE_IDENTIFIER = YangInstanceIdentifier.builder(TOPOLOGY_IDENTIFIER)
             .node(Node.QNAME).build();
-    private static final YangInstanceIdentifier RELATIVE_NODE_ID_IDENTIFIER = 
+    private static final YangInstanceIdentifier RELATIVE_NODE_ID_IDENTIFIER =
                         YangInstanceIdentifier.of(TopologyQNames.NETWORK_NODE_ID_QNAME);
-    private static final YangInstanceIdentifier RELATIVE_LINK_ID_IDENTIFIER = 
+    private static final YangInstanceIdentifier RELATIVE_LINK_ID_IDENTIFIER =
                         YangInstanceIdentifier.of(TopologyQNames.NETWORK_LINK_ID_QNAME);
-    private static final YangInstanceIdentifier RELATIVE_TP_ID_IDENTIFIER = 
+    private static final YangInstanceIdentifier RELATIVE_TP_ID_IDENTIFIER =
                         YangInstanceIdentifier.of(TopologyQNames.NETWORK_TP_ID_QNAME);
 
     private InstanceIdentifiers() {
