@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
@@ -113,7 +114,34 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
     }
 
     @Test(timeout = 10000)
+    public void testPutConfigurationImmediateCommit() throws Exception {
+        assertNotNull(processor);
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
+                transaction.put(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class), nb.build());
+            }
+
+            @Override
+             public boolean isCommitNow() { return true; }
+        });
+
+        synchronized (waitObject) {
+            waitObject.wait(5000);
+        }
+
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class)).get();
+        assertNotNull(optional);
+        assertTrue("MlmtOperationProcessorTest.testPutConfiguration: Configuration network topology not present", optional.isPresent());
+        NetworkTopology rxNetworkTopology = optional.get();
+        assertNotNull(rxNetworkTopology);
+    }
+
+    @Test(timeout = 10000)
     public void testPutOperational() throws Exception {
+        assertNotNull(processor);
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
@@ -135,7 +163,34 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
     }
 
     @Test(timeout = 10000)
+    public void testPutOperationalImmediateCommit() throws Exception {
+        assertNotNull(processor);
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
+                transaction.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), nb.build());
+            }
+
+            @Override
+             public boolean isCommitNow() { return true; }
+        });
+
+        synchronized (waitObject) {
+            waitObject.wait(5000);
+        }
+
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class)).get();
+        assertNotNull(optional);
+        assertTrue("MlmtOperationProcessorTest.testPutOperational: Operational network topology not present", optional.isPresent());
+        NetworkTopology rxNetworkTopology = optional.get();
+        assertNotNull(rxNetworkTopology);
+    }
+
+    @Test(timeout = 10000)
     public void testMergeConfiguration() throws Exception {
+        assertNotNull(processor);
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
@@ -157,7 +212,34 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
     }
 
     @Test(timeout = 10000)
+    public void testMergeConfigurationImmediateCommit() throws Exception {
+        assertNotNull(processor);
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
+                transaction.merge(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class), nb.build());
+            }
+
+            @Override
+            public boolean isCommitNow() { return true; }
+        });
+
+        synchronized (waitObject) {
+            waitObject.wait(5000);
+        }
+
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class)).get();
+        assertNotNull(optional);
+        assertTrue("MlmtOperationProcessorTest.testMergeOperational: Operational network topology not present", optional.isPresent());
+        NetworkTopology rxTopology = optional.get();
+        assertNotNull(rxTopology);
+    }
+
+    @Test(timeout = 10000)
     public void testMergeOperational() throws Exception {
+        assertNotNull(processor);
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
@@ -176,6 +258,59 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
         assertTrue("MlmtOperationProcessorTest.testMergeOperational: Operational network topology not present", optional.isPresent());
         NetworkTopology rxTopology = optional.get();
         assertNotNull(rxTopology);
+    }
+
+    @Test(timeout = 10000)
+    public void testMergeOperationalImmediateCommit() throws Exception {
+        assertNotNull(processor);
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
+                transaction.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), nb.build());
+            }
+
+            @Override
+            public boolean isCommitNow() { return true; }
+        });
+
+        synchronized (waitObject) {
+            waitObject.wait(5000);
+        }
+
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class)).get();
+        assertNotNull(optional);
+        assertTrue("MlmtOperationProcessorTest.testMergeOperational: Operational network topology not present", optional.isPresent());
+        NetworkTopology rxTopology = optional.get();
+        assertNotNull(rxTopology);
+    }
+
+    @Test(timeout = 10000)
+    public void testRun() throws Exception {
+        MlmtOperationProcessor locProcessor = new MlmtOperationProcessor(dataBroker);
+        assertNotNull(locProcessor);
+        Thread locThread = new Thread(locProcessor);
+        assertNotNull(locThread);
+        locThread.setDaemon(true);
+        locThread.setName("MlmtOperationProcessorTest");
+        locThread.start();
+        Thread.sleep(1000);
+        locThread.stop();
+        assertNotNull(locProcessor);
+    }
+
+    @Test(timeout = 10000)
+    public void testTransactionChain() throws Exception {
+        BindingTransactionChain transactionChain = this.dataBroker.createTransactionChain(processor);
+        processor.onTransactionChainSuccessful(transactionChain);
+        assertNotNull(processor);
+    }
+
+    @Test(timeout = 10000)
+    public void testClose() throws Exception {
+        processor.close();
+        assertNotNull(processor);
     }
 
     @After

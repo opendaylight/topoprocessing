@@ -51,7 +51,7 @@ public final class MlmtOperationProcessor implements AutoCloseable, Runnable, Tr
         }
     }
 
-    void submit(final ReadWriteTransaction tx) throws Exception {
+    private void submit(final ReadWriteTransaction tx) throws Exception {
         boolean retrying = false;
         int retry = 0;
         do {
