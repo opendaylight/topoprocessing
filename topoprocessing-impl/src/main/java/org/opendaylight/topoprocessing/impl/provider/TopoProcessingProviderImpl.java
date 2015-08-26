@@ -8,20 +8,27 @@
 
 package org.opendaylight.topoprocessing.impl.provider;
 
-import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
-import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
+import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
+import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.GlobalSchemaContextListener;
+import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
@@ -39,11 +46,15 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private static final Logger LOGGER = LoggerFactory.getLogger(TopoProcessingProviderImpl.class);
 
     private DOMDataBroker dataBroker;
-    private ListenerRegistration<DOMDataChangeListener> topologyRequestListenerRegistration;
+    private List<ListenerRegistration<DOMDataChangeListener>> topologyRequestListenerRegistrations;
     private SchemaService schemaService;
     private ListenerRegistration<SchemaContextListener> schemaContextListenerRegistration;
     private GlobalSchemaContextHolder schemaHolder;
-    private TopologyRequestListener topologyRequestListener;
+    private Map<Model, ModelAdapter> modelAdapters;
+    private BindingNormalizedNodeSerializer nodeSerializer;
+    private RpcServices rpcServices;
+    private List<TopologyRequestListener> listeners;
+    private DatastoreType dataStoreType;
 
     /**
      * @param schemaService     provides schema context for lookup in models
@@ -65,41 +76,66 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         Preconditions.checkNotNull(datastoreType, "DatastoreType can't be null");
         this.schemaService = schemaService;
         this.dataBroker = dataBroker;
+        this.nodeSerializer = nodeSerializer;
+        this.rpcServices = rpcServices;
+        this.dataStoreType = datastoreType;
         schemaHolder = new GlobalSchemaContextHolder(schemaService.getGlobalContext());
-        topologyRequestListener = new TopologyRequestListener(dataBroker, nodeSerializer, schemaHolder, rpcServices);
-        topologyRequestListener.setDatastoreType(datastoreType);
+        listeners = new ArrayList<TopologyRequestListener>();
+        topologyRequestListenerRegistrations = new ArrayList<ListenerRegistration<DOMDataChangeListener>>();
+        modelAdapters = new HashMap<Model, ModelAdapter>();
     }
 
     @Override
     public void startup() {
         schemaContextListenerRegistration =
                 schemaService.registerSchemaContextListener(new GlobalSchemaContextListener(schemaHolder));
-        registerTopologyRequestListener();
     }
 
     @Override
     public void close() throws Exception {
         LOGGER.trace("TopoProcessingProvider - close()");
         schemaContextListenerRegistration.close();
-        topologyRequestListenerRegistration.close();
-    }
-
-    private void registerTopologyRequestListener() {
-        LOGGER.debug("Registering Topology Request Listener");
-        topologyRequestListenerRegistration =
-                dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                        InstanceIdentifiers.TOPOLOGY_IDENTIFIER, topologyRequestListener, DataChangeScope.ONE);
+        for (ListenerRegistration<DOMDataChangeListener> topologyRequestListenerRegistration :
+                topologyRequestListenerRegistrations) {
+            topologyRequestListenerRegistration.close();
+        }
     }
 
     @Override
     public void registerFiltratorFactory(Class<? extends FilterBase> filterType,
             FiltratorFactory filtratorFactory) {
-        topologyRequestListener.registerFiltrator(filterType, filtratorFactory);
+        for(TopologyRequestListener listener : listeners) {
+            listener.registerFiltrator(filterType, filtratorFactory);
+        }
     }
 
     @Override
     public void unregisterFiltratorFactory(Class<? extends FilterBase> filterType) {
-        topologyRequestListener.unregisterFiltrator(filterType);
+        for(TopologyRequestListener listener : listeners) {
+            listener.unregisterFiltrator(filterType);
+        }
     }
 
+    @Override
+    public void registerModelAdapter(Model model, Object modelAdapter) {
+        if(modelAdapter instanceof ModelAdapter) {
+            ModelAdapter adapter = (ModelAdapter) modelAdapter;
+            modelAdapters.put(model, adapter);
+            registerTopologyRequestListener(adapter);
+        }
+        else {
+            throw new IllegalStateException("Incorrect type of ModelAdapter");
+        }
+    }
+
+    private void registerTopologyRequestListener(ModelAdapter modelAdapter) {
+        TopologyRequestListener listener = modelAdapter.createTopologyRequestListener(dataBroker,
+                nodeSerializer, schemaHolder, rpcServices, modelAdapters);
+        listener.setDatastoreType(dataStoreType);
+        listeners.add(listener);
+        LOGGER.debug("Registering Topology Request Listener");
+        topologyRequestListenerRegistrations.add(
+                dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
+                        InstanceIdentifiers.TOPOLOGY_IDENTIFIER, listener, DataChangeScope.ONE));
+    }
 }
