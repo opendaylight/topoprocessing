@@ -1,6 +1,6 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.nt.provider.impl.rev150819;
 
-import org.opendaylight.topoprocessing.nt.TopoProcessingNTProvider;
+import org.opendaylight.topoprocessing.nt.provider.TopoProcessingProviderNT;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 
 public class TopoProcessingNTProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.nt.provider.impl.rev150819.AbstractTopoProcessingNTProviderModule {
@@ -21,7 +21,7 @@ public class TopoProcessingNTProviderModule extends org.opendaylight.yang.gen.v1
     @Override
     public java.lang.AutoCloseable createInstance() {
         TopoProcessingProvider topoProvider = getTopoprocessingProviderDependency();
-        TopoProcessingNTProvider ntProvider = new TopoProcessingNTProvider();
+        TopoProcessingProviderNT ntProvider = new TopoProcessingProviderNT();
         ntProvider.startup(topoProvider);
         return ntProvider;
     }

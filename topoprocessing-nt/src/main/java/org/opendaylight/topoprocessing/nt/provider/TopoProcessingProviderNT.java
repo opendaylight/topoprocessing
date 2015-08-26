@@ -6,21 +6,24 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.nt;
+package org.opendaylight.topoprocessing.nt.provider;
 
+import org.opendaylight.topoprocessing.nt.adapter.NTModelAdapter;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TopoProcessingNTProvider implements AutoCloseable {
+public class TopoProcessingProviderNT implements AutoCloseable {
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(TopoProcessingNTProvider.class);
+            .getLogger(TopoProcessingProviderNT.class);
     @Override
     public void close() throws Exception {
-        LOGGER.info("TopoprocessingNTProvider close");
+        LOGGER.info("TopoprocessingProviderNT close");
     }
 
     public void startup(TopoProcessingProvider topoProvider) {
-        LOGGER.info("TopoprocessingNTProvider startup");
+        LOGGER.info("TopoprocessingProviderNT startup");
+        topoProvider.registerModelAdapter(Model.NetworkTopology, new NTModelAdapter());
     }
 }
