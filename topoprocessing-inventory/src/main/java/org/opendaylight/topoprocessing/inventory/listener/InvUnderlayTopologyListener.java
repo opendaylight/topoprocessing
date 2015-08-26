@@ -27,6 +27,7 @@ import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -45,6 +46,17 @@ public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
     public InvUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         super(domDataBroker, underlayTopologyId, correlationItem);
+        // this needs to be done because for processing TerminationPoints we need to filter Node instead of TP
+        if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
+            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Node,
+                    Model.OpendaylightInventory);
+            this.itemQName = TopologyQNames.buildItemQName(CorrelationItemEnum.Node, Model.OpendaylightInventory);
+        } else {
+            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(correlationItem,
+                    Model.OpendaylightInventory);
+            this.itemQName = TopologyQNames.buildItemQName(correlationItem, Model.OpendaylightInventory);
+        }
+        this.itemIdentifier = YangInstanceIdentifier.of(itemQName);
     }
 
     @Override

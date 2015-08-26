@@ -14,6 +14,7 @@ module topology-correlation {
     import network-topology {prefix topo; revision-date "2013-10-21";}
     import ietf-inet-types {prefix inet;}
     import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import ietf-network {prefix i2rs; revision-date "2015-06-08";}
 
     revision "2015-01-21" {
         description "Topology Processing Framework correlation definition";
@@ -49,6 +50,9 @@ module topology-correlation {
             }
             enum opendaylight-inventory {
                 description "opendaylight-inventory.yang";
+            }
+            enum I2RS {
+                description "ietf-network@2015-06-08.yang";
             }
         }
     }
@@ -131,7 +135,12 @@ module topology-correlation {
         ext:augment-identifier "correlation-augment";
         uses correlations-grouping;
     }
-    
+
+    augment "/i2rs:network" {
+        ext:augment-identifier "i2rs-correlation-augment";
+        uses correlations-grouping;
+    }
+
     grouping correlations-grouping {
         container correlations {
             leaf output-model {

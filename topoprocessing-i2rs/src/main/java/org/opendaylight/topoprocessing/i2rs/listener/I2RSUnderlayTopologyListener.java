@@ -5,46 +5,39 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.topoprocessing.nt.listener;
-
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
-import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
-import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
-import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+package org.opendaylight.topoprocessing.i2rs.listener;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
+import java.util.Iterator;
+import java.util.Map;
+import javax.annotation.Nullable;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
+import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.network.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 
 /**
  * @author matej.perina
- *
  */
-public class NTUnderlayTopologyListener extends UnderlayTopologyListener{
+public class I2RSUnderlayTopologyListener extends UnderlayTopologyListener{
 
-    public NTUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
+    public I2RSUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         super(domDataBroker, underlayTopologyId, correlationItem);
         // this needs to be done because for processing TerminationPoints we need to filter Node instead of TP
         if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
-            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Node,
-                    Model.NetworkTopology);
-            this.itemQName = TopologyQNames.buildItemQName(CorrelationItemEnum.Node, Model.NetworkTopology);
+            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Node, Model.I2RS);
+            this.itemQName = TopologyQNames.buildItemQName(CorrelationItemEnum.Node, Model.I2RS);
         } else {
-            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(correlationItem,
-                    Model.NetworkTopology);
-            this.itemQName = TopologyQNames.buildItemQName(correlationItem, Model.NetworkTopology);
+            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(correlationItem, Model.I2RS);
+            this.itemQName = TopologyQNames.buildItemQName(correlationItem, Model.I2RS);
         }
         this.itemIdentifier = YangInstanceIdentifier.of(itemQName);
     }
@@ -58,8 +51,8 @@ public class NTUnderlayTopologyListener extends UnderlayTopologyListener{
             @Override
             public YangInstanceIdentifier apply(NormalizedNode<?, ?> node) {
                 return YangInstanceIdentifier
-                        .builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-                        .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, underlayTopologyId)
+                        .builder(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER)
+                        .nodeWithKey(Network.QNAME, TopologyQNames.I2RS_NETWORK_ID_QNAME, underlayTopologyId)
                         .node(Node.QNAME)
                         .node(node.getIdentifier())
                         .build();
@@ -67,8 +60,4 @@ public class NTUnderlayTopologyListener extends UnderlayTopologyListener{
         });
         return map;
     }
-
-    public void registerTopologyOperator(TopologyOperator operator){
-        this.setOperator(operator);
-    };
 }

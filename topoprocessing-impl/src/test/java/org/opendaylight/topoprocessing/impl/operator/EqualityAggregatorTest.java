@@ -12,7 +12,6 @@ import static org.mockito.Matchers.any;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -401,7 +400,7 @@ public class EqualityAggregatorTest {
         physicalNodes1 = new HashMap<>();
         physicalNodes1.put(leafYiid52, physicalNode);
         aggregator.processCreatedChanges(physicalNodes1, TOPO5);
-        // logical node have been created over two physical nodes having the same IP partaining to the same topology 
+        // logical node have been created over two physical nodes having the same IP partaining to the same topology
         Mockito.verify(mockManager, Mockito.times(1)).addOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).updateOverlayItem((OverlayItem) any());
