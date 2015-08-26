@@ -6,19 +6,20 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.impl.translator;
+package org.opendaylight.topoprocessing.nt.translator;
 
-import com.google.common.base.Optional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
+import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SupportingLink;
@@ -29,13 +30,15 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 
+import com.google.common.base.Optional;
+
 /**
  * @author michal.polkorab
  *
  */
-public class OverlayItemTranslatorLinkTest {
+public class NTOverlayItemTranslatorLinkTest {
 
-    private OverlayItemTranslator translator = new OverlayItemTranslator();
+    private OverlayItemTranslator translator = new OverlayItemTranslator(new NTNodeTranslator(), new NTLinkTranslator());
     private static final String TOPOLOGY_NAME = "topology:1";
 
     @Mock private NormalizedNode<?, ?> mockNormalizedLink;

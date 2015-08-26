@@ -8,13 +8,13 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import com.google.common.base.Optional;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -24,6 +24,8 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Optional;
 
 /**
  * @author michal.polkorab
@@ -41,8 +43,9 @@ public class NotificationInterConnector implements TopologyOperator {
     private YangInstanceIdentifier INV_NODE_REF_IDENTIFIER = YangInstanceIdentifier.of(INVENTORY_NODE_REF_QNAME);
 
     /**
-     * @param underlayTopologyId underlay topology id
-     * @param itemType item type
+     * @param underlayTopologyId    underlay topology id
+     * @param itemType              item type
+     * @param topoStoreProvider     topology store provider
      */
     public NotificationInterConnector(String underlayTopologyId, CorrelationItemEnum itemType,
             TopoStoreProvider topoStoreProvider) {
@@ -169,7 +172,7 @@ public class NotificationInterConnector implements TopologyOperator {
     public void setTopologyManager(TopologyManager topologyManager) {
         throw new UnsupportedOperationException("NotificationInterConnector can't have TopologyManager set,"
                 + " it uses TopologyOperator instead.");
-        
+
     }
 
     /**

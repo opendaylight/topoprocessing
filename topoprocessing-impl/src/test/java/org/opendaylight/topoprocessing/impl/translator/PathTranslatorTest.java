@@ -8,8 +8,6 @@
 
 package org.opendaylight.topoprocessing.impl.translator;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
@@ -17,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,6 +26,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
