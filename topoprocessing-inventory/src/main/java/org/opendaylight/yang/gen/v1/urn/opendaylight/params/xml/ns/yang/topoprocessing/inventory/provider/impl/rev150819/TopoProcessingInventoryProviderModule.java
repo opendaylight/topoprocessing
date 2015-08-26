@@ -1,6 +1,6 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.inventory.provider.impl.rev150819;
 
-import org.opendaylight.topoprocessing.inventory.TopoProcessingInventoryProvider;
+import org.opendaylight.topoprocessing.inventory.provider.TopoProcessingProviderInv;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 
 public class TopoProcessingInventoryProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.inventory.provider.impl.rev150819.AbstractTopoProcessingInventoryProviderModule {
@@ -21,7 +21,7 @@ public class TopoProcessingInventoryProviderModule extends org.opendaylight.yang
     @Override
     public java.lang.AutoCloseable createInstance() {
         TopoProcessingProvider topoProvider = getTopoprocessingProviderDependency();
-        TopoProcessingInventoryProvider inventoryProvider = new TopoProcessingInventoryProvider();
+        TopoProcessingProviderInv inventoryProvider = new TopoProcessingProviderInv();
         inventoryProvider.startup(topoProvider);
         return inventoryProvider;
     }
