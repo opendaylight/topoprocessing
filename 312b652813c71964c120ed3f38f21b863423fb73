@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_caad3e33",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-08-27T09:34:42Z",
+      "side": 1,
+      "message": "here we don\u0027t specify pathIdentifier as it would be unnecessary operation, since each Filtrator finds its own node itself",
+      "range": {
+        "startLine": 215,
+        "startChar": 12,
+        "endLine": 215,
+        "endChar": 55
+      },
+      "revId": "312b652813c71964c120ed3f38f21b863423fb73",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
