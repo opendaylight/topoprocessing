@@ -1,4 +1,12 @@
-package org.opendaylight.topoprocessing.impl.translator;
+/*
+ * Copyright (c) 2015 Pantheon Technologies s.r.o. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+package org.opendaylight.topoprocessing.nt.translator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +23,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
+import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -36,9 +45,9 @@ import com.google.common.base.Optional;
  * @author matus.marko
  */
 @RunWith(MockitoJUnitRunner.class)
-public class OverlayItemTranslatorNodeTest {
+public class NTOverlayItemTranslatorNodeTest {
 
-    private OverlayItemTranslator translator = new OverlayItemTranslator();
+    private OverlayItemTranslator translator = new OverlayItemTranslator(new NTNodeTranslator(), new NTLinkTranslator());;
     private static final String TOPOLOGY_NAME = "topology:1";
 
     @Mock

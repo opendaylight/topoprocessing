@@ -8,8 +8,6 @@
 
 package org.opendaylight.topoprocessing.impl.listener;
 
-import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,8 +18,6 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
-import javax.annotation.Nullable;
-
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.ReadFailedException;
@@ -29,15 +25,11 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
-import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
-import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
@@ -49,10 +41,8 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -62,10 +52,10 @@ import com.google.common.util.concurrent.Futures;
  * Listens on underlay topology changes
  * @author matus.marko
  */
-public class UnderlayTopologyListener implements DOMDataChangeListener {
+public abstract class UnderlayTopologyListener implements DOMDataChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UnderlayTopologyListener.class);
-    private final DOMDataBroker domDataBroker;
+    protected final DOMDataBroker domDataBroker;
     private volatile CountDownLatch lastLatch;
     private AtomicReferenceFieldUpdater<UnderlayTopologyListener, CountDownLatch> updater =
             AtomicReferenceFieldUpdater.newUpdater(UnderlayTopologyListener.class, CountDownLatch.class, "lastLatch");
@@ -75,12 +65,12 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
     }
 
     private TopologyOperator operator;
-    private YangInstanceIdentifier pathIdentifier;
-    private String underlayTopologyId;
+    protected YangInstanceIdentifier pathIdentifier;
+    protected String underlayTopologyId;
     private YangInstanceIdentifier itemIdentifier;
     private YangInstanceIdentifier relativeItemIdIdentifier;
     private QName itemQName;
-    private CorrelationItemEnum correlationItem;
+    protected CorrelationItemEnum correlationItem;
 
     /**
      * Default constructor
@@ -240,24 +230,8 @@ public class UnderlayTopologyListener implements DOMDataChangeListener {
         countDownLatch.countDown();
     }
 
-    private static Map<YangInstanceIdentifier, NormalizedNode<?, ?>> listToMap(
-            Iterator<NormalizedNode<?, ?>> nodes, final String underlayTopologyId) {
-        Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map = Maps.uniqueIndex(nodes,
-                new Function<NormalizedNode<?, ?>, YangInstanceIdentifier>() {
-            @Nullable
-            @Override
-            public YangInstanceIdentifier apply(NormalizedNode<?, ?> node) {
-                return YangInstanceIdentifier
-                        .builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-                        .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, underlayTopologyId)
-                        .node(Node.QNAME)
-                        .node(node.getIdentifier())
-                        .build();
-            }
-        });
-        return map;
-    }
-
+    protected abstract Map<YangInstanceIdentifier, NormalizedNode<?, ?>> listToMap(
+            Iterator<NormalizedNode<?, ?>> nodes, final String underlayTopologyId);
     /**
      * @param operator processes received notifications (aggregates / filters them)
      */
