@@ -1,0 +1,57 @@
+/*
+ * Copyright (c) 2015 Pantheon Technologies s.r.o. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+module topology-link-computation {
+
+    namespace "urn:opendaylight:topology:link:computation";
+    prefix "link-comp";
+
+    import network-topology {prefix topo; revision-date "2013-10-21";}
+    import ietf-inet-types {prefix inet;}
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import topology-correlation {prefix topo-corr; revision-date "2015-01-21";}
+
+    revision "2015-08-24" {
+        description "Topology Processing Framework - Link-computation module request definition";
+    }
+
+    augment "/topo:network-topology/topo:topology" {
+        ext:augment-identifier "link-computation-augment";
+        uses link-computation-grouping;
+    }
+
+    grouping link-computation-grouping {
+        container link-computation {
+            leaf output-model {
+                type topo-corr:model;
+                description "Desired output model for computed links.";
+            }
+            container node-info {
+                leaf node-topology {
+                    type string;
+                    mandatory true;
+                    description "Topology that contains aggregated nodes.
+                                 This topology will be used for storing computed links.";
+                }
+                uses topo-corr:input-model-grouping;
+            }
+            list link-info {
+                leaf link-topology {
+                    type string;
+                    mandatory true;
+                    description "Topology that contains underlay (base) links.";
+                }
+                leaf aggregated-links {
+                    type boolean;
+                    description "Defines if link computation should be based on supporting-links.";
+                }
+                uses topo-corr:input-model-grouping;
+            }
+        }
+    }
+}
