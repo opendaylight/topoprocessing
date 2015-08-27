@@ -1,5 +1,5 @@
 /*
- * Copyright (c)2015 Ericsson, AB. All rights reserved.
+ * Copyright (c) 2015 Ericsson, AB.  All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -20,8 +20,10 @@ import org.junit.Test;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -335,9 +337,9 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
 
         DestinationBuilder destinationBuilder = new DestinationBuilder();
         nodeId = new NodeId(nodeName2);
-		destinationBuilder.setDestNode(nodeId);
-		tpId = new TpId(tpName2);
-		destinationBuilder.setDestTp(tpId);
+        destinationBuilder.setDestNode(nodeId);
+        tpId = new TpId(tpName2);
+        destinationBuilder.setDestTp(tpId);
         linkBuilder.setDestination(destinationBuilder.build());
         Link link = linkBuilder.build();
 
@@ -406,6 +408,152 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         String supportingLinkStr = rxlLink.get(0).getSupportingLink().get(0).getLinkRef().getValue().toString();
 
         assertEquals(supportingLinkStr, linkName1);
+
+        /*
+         * Update observer methods section
+         */
+        nodeName1 = "node:1";
+        nodeBuilder = new NodeBuilder();
+        nodeId = new NodeId(nodeName1);
+        nodeKey = new NodeKey(nodeId);
+        nodeBuilder.setKey(nodeKey);
+        nodeBuilder.setNodeId(nodeId);
+        wrNode = nodeBuilder.build();
+        observer.onNodeUpdated(LogicalDatastoreType.OPERATIONAL, exampleIid, wrNode);
+
+        synchronized (waitObject) {
+             waitObject.wait(1500);
+        }
+
+        InstanceIdentifier<Node> nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
+        rTx = dataBroker.newReadOnlyTransaction();
+        Optional<Node> optionalNode = rTx.read(LogicalDatastoreType.OPERATIONAL, nodeIid).get();
+        assertNotNull(optionalNode);
+        assertTrue("Operational mlmt:1 topology node ", optionalNode.isPresent());
+
+        tpBuilder = new TerminationPointBuilder();
+        tpName1 = "1:1";
+        tpId = new TpId(tpName1);
+        tpKey = new TerminationPointKey(tpId);
+        tpBuilder.setKey(tpKey);
+        tpBuilder.setTpId(tpId);
+        tp = tpBuilder.build();
+        observer.onTpUpdated(LogicalDatastoreType.OPERATIONAL, exampleIid, nodeKey, tp);
+
+        synchronized (waitObject) {
+             waitObject.wait(1500);
+        }
+
+        nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
+        rTx = dataBroker.newReadOnlyTransaction();
+        optionalNode = rTx.read(LogicalDatastoreType.OPERATIONAL, nodeIid).get();
+        assertNotNull(optionalNode);
+        assertTrue("Operational mlmt:1 topology node ", optionalNode.isPresent());
+        rxlTp1 = rxNode1.getTerminationPoint();
+        assertNotNull(rxlTp1);
+
+        linkBuilder = new LinkBuilder();
+        linkName1 = "link1";
+        linkId = new LinkId(linkName1);
+        linkKey = new LinkKey(linkId);
+        linkBuilder.setKey(linkKey);
+        linkBuilder.setLinkId(linkId);
+        observer.onLinkUpdated(LogicalDatastoreType.OPERATIONAL, exampleIid, link);
+
+        synchronized (waitObject) {
+             waitObject.wait(1500);
+        }
+
+        rTx = dataBroker.newReadOnlyTransaction();
+        InstanceIdentifier<Link> linkIid = mlmtTopologyIid.child(Link.class, linkKey);
+        Optional<Link> rxOptionalLink = rTx.read(LogicalDatastoreType.OPERATIONAL, linkIid).get();
+        assertNotNull(rxOptionalLink);
+        assertTrue("Operational mlmt:1 topology link ", rxOptionalLink.isPresent());
+        Link rxLink = rxOptionalLink.get();
+        String rxLinkStr = rxLink.getLinkId().getValue().toString();
+        assertEquals(rxLinkStr, linkName1);
+
+        /*
+         * Delete observer methods section
+         */
+        observer.onLinkDeleted(LogicalDatastoreType.OPERATIONAL, exampleIid, linkKey);
+
+        synchronized (waitObject) {
+             waitObject.wait(1500);
+        }
+
+        rTx = dataBroker.newReadOnlyTransaction();
+        linkIid = mlmtTopologyIid.child(Link.class, linkKey);
+        rxOptionalLink = rTx.read(LogicalDatastoreType.OPERATIONAL, linkIid).get();
+        assertNotNull(rxOptionalLink);
+        assertFalse("Operational mlmt:1 topology link ", rxOptionalLink.isPresent());
+
+        nodeName1 = "node:1";
+        nodeId = new NodeId(nodeName1);
+        nodeKey = new NodeKey(nodeId);
+        tpName1 = "1:1";
+        tpId = new TpId(tpName1);
+        tpKey = new TerminationPointKey(tpId);
+        observer.onTpDeleted(LogicalDatastoreType.OPERATIONAL, exampleIid, nodeKey, tpKey);
+
+        synchronized (waitObject) {
+             waitObject.wait(1500);
+        }
+
+        nodeName1 = "node:2";
+        nodeId = new NodeId(nodeName1);
+        nodeKey = new NodeKey(nodeId);
+        tpName1 = "2:1";
+        tpId = new TpId(tpName1);
+        tpKey = new TerminationPointKey(tpId);
+        observer.onTpDeleted(LogicalDatastoreType.OPERATIONAL, exampleIid, nodeKey, tpKey);
+
+        synchronized (waitObject) {
+             waitObject.wait(1500);
+        }
+
+        rTx = dataBroker.newReadOnlyTransaction();
+        optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
+        assertNotNull(optional);
+        assertTrue("Operational mlmt:1 topology node ", optional.isPresent());
+        rxTopology = optional.get();
+        assertNotNull(rxTopology);
+
+        rxListNode = rxTopology.getNode();
+        rxNode1 = rxListNode.get(0);
+        rxlTp1 = rxNode1.getTerminationPoint();
+        boolean b = (rxlTp1 == null) | rxlTp1.isEmpty();
+        assertTrue(b);
+
+        nodeName1 = "node:1";
+        nodeId = new NodeId(nodeName1);
+        nodeKey = new NodeKey(nodeId);
+        observer.onNodeDeleted(LogicalDatastoreType.OPERATIONAL, exampleIid, nodeKey);
+
+        synchronized (waitObject) {
+             waitObject.wait(1500);
+        }
+
+        nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
+        rTx = dataBroker.newReadOnlyTransaction();
+        optionalNode = rTx.read(LogicalDatastoreType.OPERATIONAL, nodeIid).get();
+        assertNotNull(optionalNode);
+        assertFalse("Operational mlmt:1 topology node ", optionalNode.isPresent());
+
+        nodeName1 = "node:2";
+        nodeId = new NodeId(nodeName1);
+        nodeKey = new NodeKey(nodeId);
+        observer.onNodeDeleted(LogicalDatastoreType.OPERATIONAL, exampleIid, nodeKey);
+
+        synchronized (waitObject) {
+             waitObject.wait(1500);
+        }
+
+        nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
+        rTx = dataBroker.newReadOnlyTransaction();
+        optionalNode = rTx.read(LogicalDatastoreType.OPERATIONAL, nodeIid).get();
+        assertNotNull(optionalNode);
+        assertFalse("Operational mlmt:1 topology node ", optionalNode.isPresent());
     }
 
     @After
