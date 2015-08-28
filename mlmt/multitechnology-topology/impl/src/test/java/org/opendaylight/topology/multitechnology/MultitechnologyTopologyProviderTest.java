@@ -12,6 +12,7 @@ import com.google.common.base.Optional;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.math.BigDecimal;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -80,6 +81,16 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.Link1;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.igp.link.attributes.IgpLinkAttributesBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.Link1Builder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.PccCapabilities;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.node.attributes.Ipv4LocalAddress;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.node.attributes.Ipv4LocalAddressBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.node.attributes.Ipv6LocalAddress;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.node.attributes.Ipv6LocalAddressBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.link.attributes.UnreservedBandwidth;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.link.attributes.UnreservedBandwidthKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.link.attributes.UnreservedBandwidthBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.link.attributes.SrlgBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.link.attributes.Srlg;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.attribute.Value;
@@ -91,6 +102,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.te
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoLink;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv4Prefix;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Ipv6Prefix;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.node.attributes.Ipv4LocalAddressKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.node.attributes.Ipv4LocalAddressBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.node.attributes.Ipv6LocalAddressKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.node.attributes.Ipv6LocalAddressBuilder;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -269,8 +287,34 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         }
 
         TedBuilder tedBuilder = new TedBuilder();
+
         Ipv4Address ipv4Address = new Ipv4Address("10.0.0.1");
         tedBuilder.setTeRouterIdIpv4(ipv4Address);
+
+        Ipv6Address ipv6Address = new Ipv6Address("2041:0000:130F:0000:0000:07C0:853A:140B");
+        tedBuilder.setTeRouterIdIpv6(ipv6Address);
+
+        Ipv4Prefix ipv4Prefix = new Ipv4Prefix("10.2.1.0/24");
+        Ipv4LocalAddressBuilder ipv4LocalAddressBuilder = new Ipv4LocalAddressBuilder();
+        Ipv4LocalAddressKey ipv4LocalAddressKey = new Ipv4LocalAddressKey(ipv4Prefix);
+        ipv4LocalAddressBuilder.setKey(ipv4LocalAddressKey);
+        ipv4LocalAddressBuilder.setIpv4Prefix(ipv4Prefix);
+        List<Ipv4LocalAddress> lIpv4LocalAddress = new ArrayList<Ipv4LocalAddress>();
+        lIpv4LocalAddress.add(ipv4LocalAddressBuilder.build());
+        tedBuilder.setIpv4LocalAddress(lIpv4LocalAddress);
+
+        Ipv6Prefix ipv6Prefix = new Ipv6Prefix("2001:db8::/32");
+        Ipv6LocalAddressBuilder ipv6LocalAddressBuilder = new Ipv6LocalAddressBuilder();
+        Ipv6LocalAddressKey ipv6LocalAddressKey = new Ipv6LocalAddressKey(ipv6Prefix);
+        ipv6LocalAddressBuilder.setKey(ipv6LocalAddressKey);
+        ipv6LocalAddressBuilder.setIpv6Prefix(ipv6Prefix);
+        List<Ipv6LocalAddress> lIpv6LocalAddress = new ArrayList<Ipv6LocalAddress>();
+        lIpv6LocalAddress.add(ipv6LocalAddressBuilder.build());
+        tedBuilder.setIpv6LocalAddress(lIpv6LocalAddress);
+
+        PccCapabilities pccCapabilities = new PccCapabilities(true, true, true, true, true, true, true, true, true);
+        tedBuilder.setPccCapabilities(pccCapabilities);
+
         IsisNodeAttributesBuilder isisNodeAttributesBuilder = new IsisNodeAttributesBuilder();
         isisNodeAttributesBuilder.setTed(tedBuilder.build());
         IgpNodeAttributes1Builder igpNodeAttributes1Builder = new IgpNodeAttributes1Builder();
@@ -309,6 +353,19 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         MtTedNodeAttributeValue mtTedNodeAttributeValue = value.getAugmentation(MtTedNodeAttributeValue.class);
         assertNotNull(mtTedNodeAttributeValue);
         assertEquals(mtTedNodeAttributeValue.getTeRouterIdIpv4().getValue(), ipv4Address.getValue());
+        assertEquals(mtTedNodeAttributeValue.getTeRouterIdIpv6().getValue(), ipv6Address.getValue());
+
+        List<Ipv4LocalAddress> rxIpv4LocalAddress = mtTedNodeAttributeValue.getIpv4LocalAddress();
+        assertNotNull(rxIpv4LocalAddress);
+        assertFalse(rxIpv4LocalAddress.isEmpty());
+        assertEquals(rxIpv4LocalAddress.get(0).getIpv4Prefix(), ipv4Prefix);
+
+        List<Ipv6LocalAddress> rxIpv6LocalAddress = mtTedNodeAttributeValue.getIpv6LocalAddress();
+        assertNotNull(rxIpv6LocalAddress);
+        assertFalse(rxIpv6LocalAddress.isEmpty());
+        assertEquals(rxIpv6LocalAddress.get(0).getIpv6Prefix(), ipv6Prefix);
+
+        assertEquals(mtTedNodeAttributeValue.getPccCapabilities(), pccCapabilities);
     }
 
     @Test(timeout = 10000)
@@ -405,6 +462,28 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.link.attributes.isis.link.attributes.TedBuilder
                 tedBuilder = new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.link.attributes.isis.link.attributes.TedBuilder();
         tedBuilder.setTeDefaultMetric(teDefaultMetric);
+        java.lang.Long color = 2L;
+        tedBuilder.setColor(color);
+        BigDecimal maxLinkBandwidth = new BigDecimal(1250000);
+        tedBuilder.setMaxLinkBandwidth(maxLinkBandwidth);
+        BigDecimal maxResvLinkBandwidth = new BigDecimal(1000000);
+        tedBuilder.setMaxResvLinkBandwidth(maxResvLinkBandwidth);
+
+        UnreservedBandwidthBuilder unreservedBandwidthBuilder = new UnreservedBandwidthBuilder();
+        int unreservedBandwidthValue = 31250;
+        List<UnreservedBandwidth> lUnreservedBandwidth = new ArrayList<UnreservedBandwidth>();
+        for (java.lang.Short priority=0; priority <=7; priority++) {
+            UnreservedBandwidthKey unreservedBandwidthKey = new UnreservedBandwidthKey(priority);
+            unreservedBandwidthBuilder.setBandwidth(new BigDecimal(unreservedBandwidthValue));
+            lUnreservedBandwidth.add(unreservedBandwidthBuilder.build());
+        }
+        tedBuilder.setUnreservedBandwidth(lUnreservedBandwidth);
+
+        Integer protectionType = 1;
+        SrlgBuilder srlgBuilder = new SrlgBuilder();
+        srlgBuilder.setLinkProtectionType(protectionType);
+        tedBuilder.setSrlg(srlgBuilder.build());
+
         IsisLinkAttributesBuilder isisLinkAttributesBuilder = new IsisLinkAttributesBuilder();
         isisLinkAttributesBuilder.setTed(tedBuilder.build());
         IgpLinkAttributes1Builder igpLinkAttributes1Builder = new IgpLinkAttributes1Builder();
@@ -444,6 +523,15 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         MtTedLinkAttributeValue mtTedLinkAttributeValue = value.getAugmentation(MtTedLinkAttributeValue.class);
         assertNotNull(mtTedLinkAttributeValue);
         assertEquals(mtTedLinkAttributeValue.getTeDefaultMetric(), teDefaultMetric);
+        assertEquals(mtTedLinkAttributeValue.getColor(), color);
+        assertEquals(mtTedLinkAttributeValue.getMaxLinkBandwidth(), maxLinkBandwidth);
+        assertEquals(mtTedLinkAttributeValue.getMaxResvLinkBandwidth(), maxResvLinkBandwidth);
+        List<UnreservedBandwidth> rxList = mtTedLinkAttributeValue.getUnreservedBandwidth();
+        assertNotNull(rxList);
+        assertFalse(rxList.isEmpty());
+        Srlg rxSrlg = mtTedLinkAttributeValue.getSrlg();
+        assertNotNull(rxSrlg);
+        assertEquals(rxSrlg.getLinkProtectionType(),protectionType);
 
         path = "native-l3-igp-metric:1";
         rx = dataBroker.newReadOnlyTransaction();
