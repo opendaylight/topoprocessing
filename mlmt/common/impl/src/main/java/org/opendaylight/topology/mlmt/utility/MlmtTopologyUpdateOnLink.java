@@ -21,7 +21,7 @@ public class MlmtTopologyUpdateOnLink extends MlmtAbstractTopologyUpdate {
     private Link link;
 
     public MlmtTopologyUpdateOnLink(LogicalDatastoreType storeType, InstanceIdentifier<Topology> topologyId, Link link) {
-        super(MlmtTopologyUpdateType.NODE, storeType, topologyId);
+        super(MlmtTopologyUpdateType.LINK, storeType, topologyId);
         this.link = link;
     }
 
