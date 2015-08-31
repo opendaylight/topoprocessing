@@ -44,7 +44,7 @@ public final class InstanceIdentifiers {
     public static final YangInstanceIdentifier I2RS_NETWORK_IDENTIFIER =
             YangInstanceIdentifier.of(Network.QNAME);
     private static final YangInstanceIdentifier I2RS_RELATIVE_NODE_ID_IDENTIFIER =
-                        YangInstanceIdentifier.of(TopologyQNames.I2RS_NETWORK_ID_QNAME);
+                        YangInstanceIdentifier.of(TopologyQNames.I2RS_NODE_ID_QNAME);
     private static final YangInstanceIdentifier I2RS_RELATIVE_LINK_ID_IDENTIFIER =
                         YangInstanceIdentifier.of(TopologyQNames.I2RS_LINK_ID_QNAME);
     private static final YangInstanceIdentifier I2RS_RELATIVE_TP_ID_IDENTIFIER =
