@@ -158,7 +158,11 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
-            <artifactId>topoprocessing-i2rs</artifactId>
+            <artifactId>topoprocessing-inventology</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>topoprocessing-nt</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
@@ -182,6 +186,12 @@
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>topoprocessing-config</artifactId>
             <classifier>config-i2rs</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>topoprocessing-config</artifactId>
+            <classifier>config-inventology</classifier>
             <type>xml</type>
         </dependency>
         <dependency>
