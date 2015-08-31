@@ -26,6 +26,7 @@ import org.junit.AfterClass;
 import org.junit.Ignore;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
@@ -211,12 +212,27 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         rwTx.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), networkTopology);
         assertCommit(rwTx.submit());
 
+        rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.put(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class), networkTopology);
+        assertCommit(rwTx.submit());
+
         dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
+                mlmtTopologyIid, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);
+
+        dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                 mlmtTopologyIid, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);
 
         mlmtTopology = buildMlmtTopology(MLMT);
         rwTx = dataBroker.newWriteOnlyTransaction();
         rwTx.merge(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, mlmtTopology, true);
+        assertCommit(rwTx.submit());
+
+        synchronized (waitObject) {
+            waitObject.wait(1500);
+        }
+
+        rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.merge(LogicalDatastoreType.CONFIGURATION, mlmtTopologyIid, mlmtTopology, true);
         assertCommit(rwTx.submit());
 
         synchronized (waitObject) {
@@ -230,16 +246,23 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         Topology rxTopology = optional.get();
         assertNotNull(rxTopology);
 
+        rTx = dataBroker.newReadOnlyTransaction();
+        optional = rTx.read(LogicalDatastoreType.CONFIGURATION, mlmtTopologyIid).get();
+        assertNotNull(optional);
+        assertTrue("Configuration mlmt:1 topology ", optional.isPresent());
+        rxTopology = optional.get();
+        assertNotNull(rxTopology);
+
         exampleIid = buildTopologyIid(EXAMPLE);
         exampleTopology = buildUnderlayTopology(EXAMPLE);
     }
 
-    private void handleTopologyTest(boolean update) throws Exception {
+    private void handleTopologyTest(LogicalDatastoreType storageType, boolean update) throws Exception {
         if (update) {
-            provider.onTopologyCreated(LogicalDatastoreType.OPERATIONAL, exampleIid, exampleTopology);
-            provider.onTopologyUpdated(LogicalDatastoreType.OPERATIONAL, exampleIid, exampleTopology);
+            provider.onTopologyCreated(storageType, exampleIid, exampleTopology);
+            provider.onTopologyUpdated(storageType, exampleIid, exampleTopology);
         } else {
-            provider.onTopologyCreated(LogicalDatastoreType.OPERATIONAL, exampleIid, exampleTopology);
+            provider.onTopologyCreated(storageType, exampleIid, exampleTopology);
         }
 
         synchronized (waitObject) {
@@ -247,29 +270,35 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         }
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
-        Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
+        Optional<Topology> optional = rTx.read(storageType, mlmtTopologyIid).get();
         assertNotNull(optional);
-        assertTrue("Operational mlmt:1 topology ", optional.isPresent());
+        assertTrue("mlmt:1 topology ", optional.isPresent());
         Topology rxTopology = optional.get();
         assertNotNull(rxTopology);
 
         TopologyTypes topologyTypes = rxTopology.getTopologyTypes();
         MtTopologyType mtTopologyType = topologyTypes.getAugmentation(MtTopologyType.class);
 
-        assertNotNull(mtTopologyType);
+        if (storageType == LogicalDatastoreType.OPERATIONAL) {
+            assertNotNull(mtTopologyType);
+        } else {
+            assertNull(mtTopologyType);
+        }
     }
 
     @Test(timeout = 10000)
     public void onTopologyCreatedTest() throws Exception {
-        handleTopologyTest(false);
+        handleTopologyTest(LogicalDatastoreType.OPERATIONAL, false);
+        handleTopologyTest(LogicalDatastoreType.CONFIGURATION, false);
     }
 
     @Test(timeout = 10000)
     public void onTopologyUpdatedTest() throws Exception {
-        handleTopologyTest(true);
+        handleTopologyTest(LogicalDatastoreType.OPERATIONAL, true);
+        handleTopologyTest(LogicalDatastoreType.CONFIGURATION, true);
     }
 
-    private void handleNodeTest(boolean update) throws Exception {
+    private void handleNodeTest(LogicalDatastoreType storageType, boolean update) throws Exception {
         NodeBuilder nodeBuilder = new NodeBuilder();
         String nodeName = "node:1";
         NodeId nodeId = new NodeId(nodeName);
@@ -279,7 +308,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         InstanceIdentifier<Node> nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
 
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, nodeIid, nodeBuilder.build());
+        rwTx.put(storageType, nodeIid, nodeBuilder.build());
         assertCommit(rwTx.submit());
 
         synchronized (waitObject) {
@@ -326,9 +355,9 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         nodeBuilder.addAugmentation(Node1.class, node1Builder.build());
 
         if (update) {
-            provider.onNodeCreated(LogicalDatastoreType.OPERATIONAL, exampleIid, nodeBuilder.build());
+            provider.onNodeCreated(storageType, exampleIid, nodeBuilder.build());
         } else {
-            provider.onNodeUpdated(LogicalDatastoreType.OPERATIONAL, exampleIid, nodeBuilder.build());
+            provider.onNodeUpdated(storageType, exampleIid, nodeBuilder.build());
         }
 
         synchronized (waitObject) {
@@ -339,46 +368,52 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         final ReadOnlyTransaction rx = dataBroker.newReadOnlyTransaction();
         final Uri uri = new Uri(path);
         final AttributeKey attributeKey = new AttributeKey(uri);
-        final InstanceIdentifier<Attribute> instanceAttributeId = mlmtTopologyIid.child(Node.class, nodeKey).
-                augmentation(MtInfoNode.class).child(Attribute.class, attributeKey);
-        final Optional<Attribute> sourceAttributeObject =
-                rx.read(LogicalDatastoreType.OPERATIONAL, instanceAttributeId).get();
+        final InstanceIdentifier<Attribute> instanceAttributeId = mlmtTopologyIid.child(Node.class, nodeKey)
+                .augmentation(MtInfoNode.class).child(Attribute.class, attributeKey);
+        final Optional<Attribute> sourceAttributeObject = rx.read(storageType, instanceAttributeId).get();
 
-        assertNotNull(sourceAttributeObject);
-        assertTrue(sourceAttributeObject.isPresent());
-        Attribute attribute = sourceAttributeObject.get();
-        assertNotNull(attribute);
-        Value value = attribute.getValue();
-        assertNotNull(value);
-        MtTedNodeAttributeValue mtTedNodeAttributeValue = value.getAugmentation(MtTedNodeAttributeValue.class);
-        assertNotNull(mtTedNodeAttributeValue);
-        assertEquals(mtTedNodeAttributeValue.getTeRouterIdIpv4().getValue(), ipv4Address.getValue());
-        assertEquals(mtTedNodeAttributeValue.getTeRouterIdIpv6().getValue(), ipv6Address.getValue());
+        if (storageType == LogicalDatastoreType.OPERATIONAL) {
+            assertNotNull(sourceAttributeObject);
+            assertTrue(sourceAttributeObject.isPresent());
+            Attribute attribute = sourceAttributeObject.get();
+            assertNotNull(attribute);
+            Value value = attribute.getValue();
+            assertNotNull(value);
+            MtTedNodeAttributeValue mtTedNodeAttributeValue = value.getAugmentation(MtTedNodeAttributeValue.class);
+            assertNotNull(mtTedNodeAttributeValue);
+            assertEquals(mtTedNodeAttributeValue.getTeRouterIdIpv4().getValue(), ipv4Address.getValue());
+            assertEquals(mtTedNodeAttributeValue.getTeRouterIdIpv6().getValue(), ipv6Address.getValue());
 
-        List<Ipv4LocalAddress> rxIpv4LocalAddress = mtTedNodeAttributeValue.getIpv4LocalAddress();
-        assertNotNull(rxIpv4LocalAddress);
-        assertFalse(rxIpv4LocalAddress.isEmpty());
-        assertEquals(rxIpv4LocalAddress.get(0).getIpv4Prefix(), ipv4Prefix);
+            List<Ipv4LocalAddress> rxIpv4LocalAddress = mtTedNodeAttributeValue.getIpv4LocalAddress();
+            assertNotNull(rxIpv4LocalAddress);
+            assertFalse(rxIpv4LocalAddress.isEmpty());
+            assertEquals(rxIpv4LocalAddress.get(0).getIpv4Prefix(), ipv4Prefix);
 
-        List<Ipv6LocalAddress> rxIpv6LocalAddress = mtTedNodeAttributeValue.getIpv6LocalAddress();
-        assertNotNull(rxIpv6LocalAddress);
-        assertFalse(rxIpv6LocalAddress.isEmpty());
-        assertEquals(rxIpv6LocalAddress.get(0).getIpv6Prefix(), ipv6Prefix);
+            List<Ipv6LocalAddress> rxIpv6LocalAddress = mtTedNodeAttributeValue.getIpv6LocalAddress();
+            assertNotNull(rxIpv6LocalAddress);
+            assertFalse(rxIpv6LocalAddress.isEmpty());
+            assertEquals(rxIpv6LocalAddress.get(0).getIpv6Prefix(), ipv6Prefix);
 
-        assertEquals(mtTedNodeAttributeValue.getPccCapabilities(), pccCapabilities);
+            assertEquals(mtTedNodeAttributeValue.getPccCapabilities(), pccCapabilities);
+        } else {
+            assertNotNull(sourceAttributeObject);
+            assertFalse(sourceAttributeObject.isPresent());
+        }
     }
 
     @Test(timeout = 10000)
     public void onNodeCreatedTest() throws Exception {
-        handleNodeTest(false);
+        handleNodeTest(LogicalDatastoreType.OPERATIONAL, false);
+        handleNodeTest(LogicalDatastoreType.CONFIGURATION, false);
     }
 
     @Test(timeout = 10000)
     public void onNodeUpdatedTest() throws Exception {
-        handleNodeTest(false);
+        handleNodeTest(LogicalDatastoreType.OPERATIONAL, true);
+        handleNodeTest(LogicalDatastoreType.CONFIGURATION, true);
     }
 
-    private void handleTpTest(boolean update) throws Exception {
+    private void handleTpTest(LogicalDatastoreType storageType, boolean update) throws Exception {
         NodeBuilder nodeBuilder = new NodeBuilder();
         String nodeName = "node:1";
         NodeId nodeId = new NodeId(nodeName);
@@ -388,7 +423,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         InstanceIdentifier<Node> nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
 
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, nodeIid, nodeBuilder.build());
+        rwTx.put(storageType, nodeIid, nodeBuilder.build());
         assertCommit(rwTx.submit());
 
         synchronized (waitObject) {
@@ -404,7 +439,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
                 .child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
 
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, instanceId, tpBuilder.build());
+        rwTx.put(storageType, instanceId, tpBuilder.build());
         assertCommit(rwTx.submit());
 
         synchronized (waitObject) {
@@ -412,10 +447,10 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         }
 
         if (update) {
-            provider.onTpUpdated(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid,
+            provider.onTpUpdated(storageType, mlmtTopologyIid,
                     nodeKey, tpBuilder.build());
         } else {
-            provider.onTpCreated(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid,
+            provider.onTpCreated(storageType, mlmtTopologyIid,
                     nodeKey, tpBuilder.build());
         }
 
@@ -425,22 +460,22 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
 
         ReadOnlyTransaction rx = dataBroker.newReadOnlyTransaction();
         final Optional<TerminationPoint> sourceAttributeObject =
-                rx.read(LogicalDatastoreType.OPERATIONAL, instanceId).get();
+                rx.read(storageType, instanceId).get();
         assertNotNull(sourceAttributeObject);
         assertTrue(sourceAttributeObject.isPresent());
     }
 
     @Test(timeout = 10000)
     public void onTpCreatedTest() throws Exception {
-        handleTpTest(false);
+        handleTpTest(LogicalDatastoreType.OPERATIONAL, false);
     }
 
     @Test(timeout = 10000)
     public void onTpUpdatedTest() throws Exception {
-        handleTpTest(true);
+        handleTpTest(LogicalDatastoreType.OPERATIONAL, true);
     }
 
-    private void handleLinkTest(boolean update) throws Exception {
+    private void handleLinkTest(LogicalDatastoreType storageType, boolean update) throws Exception {
         LinkBuilder linkBuilder = new LinkBuilder();
         String linkName = "link:1";
         LinkId linkId = new LinkId(linkName);
@@ -450,7 +485,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         InstanceIdentifier<Link> linkIid = mlmtTopologyIid.child(Link.class, linkKey);
 
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, linkIid, linkBuilder.build());
+        rwTx.put(storageType, linkIid, linkBuilder.build());
         assertCommit(rwTx.submit());
 
         synchronized (waitObject) {
@@ -496,9 +531,9 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         linkBuilder.addAugmentation(Link1.class, link1Builder.build());
 
         if (update) {
-            provider.onLinkUpdated(LogicalDatastoreType.OPERATIONAL, exampleIid, linkBuilder.build());
+            provider.onLinkUpdated(storageType, exampleIid, linkBuilder.build());
         } else {
-            provider.onLinkCreated(LogicalDatastoreType.OPERATIONAL, exampleIid, linkBuilder.build());
+            provider.onLinkCreated(storageType, exampleIid, linkBuilder.build());
         }
 
         synchronized (waitObject) {
@@ -512,60 +547,65 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         InstanceIdentifier<Attribute> instanceAttributeId = mlmtTopologyIid.child(Link.class, linkKey)
                 .augmentation(MtInfoLink.class).child(Attribute.class, attributeKey);
         Optional<Attribute> sourceAttributeObject =
-                rx.read(LogicalDatastoreType.OPERATIONAL, instanceAttributeId).get();
+                rx.read(storageType, instanceAttributeId).get();
 
-        assertNotNull(sourceAttributeObject);
-        assertTrue(sourceAttributeObject.isPresent());
-        Attribute attribute = sourceAttributeObject.get();
-        assertNotNull(attribute);
-        Value value = attribute.getValue();
-        assertNotNull(value);
-        MtTedLinkAttributeValue mtTedLinkAttributeValue = value.getAugmentation(MtTedLinkAttributeValue.class);
-        assertNotNull(mtTedLinkAttributeValue);
-        assertEquals(mtTedLinkAttributeValue.getTeDefaultMetric(), teDefaultMetric);
-        assertEquals(mtTedLinkAttributeValue.getColor(), color);
-        assertEquals(mtTedLinkAttributeValue.getMaxLinkBandwidth(), maxLinkBandwidth);
-        assertEquals(mtTedLinkAttributeValue.getMaxResvLinkBandwidth(), maxResvLinkBandwidth);
-        List<UnreservedBandwidth> rxList = mtTedLinkAttributeValue.getUnreservedBandwidth();
-        assertNotNull(rxList);
-        assertFalse(rxList.isEmpty());
-        Srlg rxSrlg = mtTedLinkAttributeValue.getSrlg();
-        assertNotNull(rxSrlg);
-        assertEquals(rxSrlg.getLinkProtectionType(),protectionType);
+        if (storageType == LogicalDatastoreType.OPERATIONAL) {
+            assertNotNull(sourceAttributeObject);
+            assertTrue(sourceAttributeObject.isPresent());
+            Attribute attribute = sourceAttributeObject.get();
+            assertNotNull(attribute);
+            Value value = attribute.getValue();
+            assertNotNull(value);
+            MtTedLinkAttributeValue mtTedLinkAttributeValue = value.getAugmentation(MtTedLinkAttributeValue.class);
+            assertNotNull(mtTedLinkAttributeValue);
+            assertEquals(mtTedLinkAttributeValue.getTeDefaultMetric(), teDefaultMetric);
+            assertEquals(mtTedLinkAttributeValue.getColor(), color);
+            assertEquals(mtTedLinkAttributeValue.getMaxLinkBandwidth(), maxLinkBandwidth);
+            assertEquals(mtTedLinkAttributeValue.getMaxResvLinkBandwidth(), maxResvLinkBandwidth);
+            List<UnreservedBandwidth> rxList = mtTedLinkAttributeValue.getUnreservedBandwidth();
+            assertNotNull(rxList);
+            assertFalse(rxList.isEmpty());
+            Srlg rxSrlg = mtTedLinkAttributeValue.getSrlg();
+            assertNotNull(rxSrlg);
+            assertEquals(rxSrlg.getLinkProtectionType(),protectionType);
 
-        path = "native-l3-igp-metric:1";
-        rx = dataBroker.newReadOnlyTransaction();
-        uri = new Uri(path);
-        attributeKey = new AttributeKey(uri);
-        instanceAttributeId = mlmtTopologyIid.child(Link.class, linkKey)
-                .augmentation(MtInfoLink.class).child(Attribute.class, attributeKey);
-        sourceAttributeObject = rx.read(LogicalDatastoreType.OPERATIONAL, instanceAttributeId).get();
+            path = "native-l3-igp-metric:1";
+            rx = dataBroker.newReadOnlyTransaction();
+            uri = new Uri(path);
+            attributeKey = new AttributeKey(uri);
+            instanceAttributeId = mlmtTopologyIid.child(Link.class, linkKey)
+                    .augmentation(MtInfoLink.class).child(Attribute.class, attributeKey);
+            sourceAttributeObject = rx.read(storageType, instanceAttributeId).get();
 
-        assertNotNull(sourceAttributeObject);
-        assertTrue(sourceAttributeObject.isPresent());
-        attribute = sourceAttributeObject.get();
-        assertNotNull(attribute);
-        value = attribute.getValue();
-        assertNotNull(value);
-        MtLinkMetricAttributeValue mtLinkMetricAttributeValue = value.getAugmentation(MtLinkMetricAttributeValue.class);
-        assertNotNull(mtLinkMetricAttributeValue);
-        assertEquals(mtLinkMetricAttributeValue.getMetric(), metric);
+            assertNotNull(sourceAttributeObject);
+            assertTrue(sourceAttributeObject.isPresent());
+            attribute = sourceAttributeObject.get();
+            assertNotNull(attribute);
+            value = attribute.getValue();
+            assertNotNull(value);
+            MtLinkMetricAttributeValue mtLinkMetricAttributeValue = value.getAugmentation(MtLinkMetricAttributeValue.class);
+            assertNotNull(mtLinkMetricAttributeValue);
+            assertEquals(mtLinkMetricAttributeValue.getMetric(), metric);
+        } else {
+            assertNull(sourceAttributeObject);
+        }
     }
 
     @Ignore
     @Test(timeout = 10000)
     public void onLinkCreatedTest() throws Exception {
-        handleLinkTest(false);
+        handleLinkTest(LogicalDatastoreType.OPERATIONAL, false);
+        handleLinkTest(LogicalDatastoreType.CONFIGURATION, false);
     }
 
     @Ignore
     @Test(timeout = 10000)
     public void onLinkUpdatedTest() throws Exception {
-        handleLinkTest(true);
+        handleLinkTest(LogicalDatastoreType.OPERATIONAL, true);
+        handleLinkTest(LogicalDatastoreType.CONFIGURATION, true);
     }
 
-    @Test(timeout = 10000)
-    public void onTopologyDeleted() throws Exception {
+    private void handleTopologyDeleted(LogicalDatastoreType storageType) throws Exception {
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
         rwTx = dataBroker.newWriteOnlyTransaction();
         rwTx.merge(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, mlmtTopology, true);
@@ -592,7 +632,12 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
     }
 
     @Test(timeout = 10000)
-    public void onNodeDeleted() throws Exception {
+    public void onTopologyDeleted() throws Exception {
+        handleTopologyDeleted(LogicalDatastoreType.OPERATIONAL);
+        handleTopologyDeleted(LogicalDatastoreType.CONFIGURATION);
+    }
+
+    private void handleNodeDeleted(LogicalDatastoreType storageType) throws Exception {
         NodeBuilder nodeBuilder = new NodeBuilder();
         String nodeName = "node:1";
         NodeId nodeId = new NodeId(nodeName);
@@ -602,7 +647,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         InstanceIdentifier<Node> nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
 
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, nodeIid, nodeBuilder.build());
+        rwTx.put(storageType, nodeIid, nodeBuilder.build());
         assertCommit(rwTx.submit());
 
         synchronized (waitObject) {
@@ -610,23 +655,28 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         }
 
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.delete(LogicalDatastoreType.OPERATIONAL, nodeIid);
+        rwTx.delete(storageType, nodeIid);
         assertCommit(rwTx.submit());
 
         synchronized (waitObject) {
             waitObject.wait(1500);
         }
 
-        provider.onNodeDeleted(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, nodeKey);
+        provider.onNodeDeleted(storageType, mlmtTopologyIid, nodeKey);
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
-        Optional<Node> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, nodeIid).get();
+        Optional<Node> optional = rTx.read(storageType, nodeIid).get();
         assertNotNull(optional);
         assertFalse("Operational mlmt:1 topology ", optional.isPresent());
     }
 
     @Test(timeout = 10000)
-    public void onTpDeleted() throws Exception {
+    public void onNodeDeleted() throws Exception {
+        handleNodeDeleted(LogicalDatastoreType.OPERATIONAL);
+        handleNodeDeleted(LogicalDatastoreType.CONFIGURATION);
+    }
+
+    private void handleTpDeleted(LogicalDatastoreType storageType) throws Exception {
         NodeBuilder nodeBuilder = new NodeBuilder();
         String nodeName = "node:1";
         NodeId nodeId = new NodeId(nodeName);
@@ -676,7 +726,12 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
     }
 
     @Test(timeout = 10000)
-    public void onLinkDeleted() throws Exception {
+    public void onTpDeleted() throws Exception {
+        handleTpDeleted(LogicalDatastoreType.OPERATIONAL);
+        handleTpDeleted(LogicalDatastoreType.CONFIGURATION);
+    }
+
+    private void handleLinkDeleted(LogicalDatastoreType storageType) throws Exception {
         LinkBuilder linkBuilder = new LinkBuilder();
         String linkName = "link:1";
         LinkId linkId = new LinkId(linkName);
@@ -707,6 +762,12 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         Optional<Link> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, linkIid).get();
         assertNotNull(optional);
         assertFalse("Operational mlmt:1 topology ", optional.isPresent());
+    }
+
+    @Test(timeout = 10000)
+    public void onLinkDeleted() throws Exception {
+        handleLinkDeleted(LogicalDatastoreType.OPERATIONAL);
+        handleLinkDeleted(LogicalDatastoreType.CONFIGURATION);
     }
 
     @After
