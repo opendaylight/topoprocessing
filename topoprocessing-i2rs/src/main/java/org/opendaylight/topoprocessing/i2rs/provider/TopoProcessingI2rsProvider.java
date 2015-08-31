@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.i2rs;
+package org.opendaylight.topoprocessing.i2rs.provider;
 
 import org.opendaylight.topoprocessing.i2rs.adapter.I2RSModelAdapter;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;

@@ -1,6 +1,6 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.i2rs.provider.impl.rev150819;
 
-import org.opendaylight.topoprocessing.i2rs.TopoProcessingI2rsProvider;
+import org.opendaylight.topoprocessing.i2rs.provider.TopoProcessingI2rsProvider;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 
 public class TopoProcessingI2rsProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.i2rs.provider.impl.rev150819.AbstractTopoProcessingI2rsProviderModule {
