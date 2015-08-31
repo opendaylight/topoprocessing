@@ -20,6 +20,7 @@ import org.junit.AfterClass;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -37,9 +38,21 @@ import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.topology.mlmt.utility.MlmtProviderFactory;
+import org.opendaylight.topology.mlmt.utility.MlmtConsequentAction;
 import org.opendaylight.topology.mlmt.inventory.InventoryTopologyProvider;
 import org.opendaylight.topology.multitechnology.MultitechnologyTopologyProvider;
 import org.opendaylight.topology.multilayer.MultilayerTopologyProvider;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypesBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.multitechnology.topology.type.MultitechnologyTopologyBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.multilayer.topology.type.MultilayerTopologyBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MlTopologyType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MlTopologyTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.forwarding.adjacency.topology.type.ForwardingAdjacencyTopologyBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.FaTopologyType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.FaTopologyTypeBuilder;
+
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -95,7 +108,7 @@ public class MlmtProviderFactoryTest extends AbstractDataBrokerTest {
 
     @Test
     public void testCreateProviderMap() throws Exception {
-		MlmtRpcProviderRegistryMock rpcRegistry = new MlmtRpcProviderRegistryMock();
+        MlmtRpcProviderRegistryMock rpcRegistry = new MlmtRpcProviderRegistryMock();
         Map<String, List<MlmtTopologyProvider>> providerMap = providerFactory.createProvidersMap(
                 rpcRegistry, getDataBroker(), LOG, processor, MLMT1);
 
@@ -121,6 +134,40 @@ public class MlmtProviderFactoryTest extends AbstractDataBrokerTest {
 
         boolean b = bInventoryTopologyProvider & bMultitechnologyTopologyProvider & bMultilayerTopologyProvider;
         assertTrue(b);
+    }
+
+    @Test
+    public void testConsequentAction() throws Exception {
+   final ForwardingAdjacencyTopologyBuilder forwardingAdjacencyTopologyBuilder = new ForwardingAdjacencyTopologyBuilder();
+        TopologyTypesBuilder topologyTypesBuilder = new TopologyTypesBuilder();
+        MlmtConsequentAction consequentAction = this.providerFactory.consequentAction(topologyTypesBuilder.build());
+        assertEquals(consequentAction, MlmtConsequentAction.BUILD);
+
+        final FaTopologyTypeBuilder faTopologyTypeBuilder = new FaTopologyTypeBuilder();
+        faTopologyTypeBuilder.setForwardingAdjacencyTopology(forwardingAdjacencyTopologyBuilder.build());
+
+        final MultilayerTopologyBuilder multilayerTopologyBuilder = new MultilayerTopologyBuilder();
+        multilayerTopologyBuilder.addAugmentation(FaTopologyType.class, faTopologyTypeBuilder.build());
+        final MlTopologyTypeBuilder mlTopologyTypeBuilder = new MlTopologyTypeBuilder();
+        mlTopologyTypeBuilder.setMultilayerTopology(multilayerTopologyBuilder.build());
+
+        final MultitechnologyTopologyBuilder multitechnologyTopologyBuilder = new MultitechnologyTopologyBuilder();
+        multitechnologyTopologyBuilder.addAugmentation(MlTopologyType.class, mlTopologyTypeBuilder.build());
+
+        final MtTopologyTypeBuilder mtTopologyTypeBuilder = new MtTopologyTypeBuilder();
+        mtTopologyTypeBuilder.setMultitechnologyTopology(multitechnologyTopologyBuilder.build());
+
+        MtTopologyType mtTopologyType = mtTopologyTypeBuilder.build();
+        topologyTypesBuilder.addAugmentation(MtTopologyType.class, mtTopologyType);
+
+        consequentAction = this.providerFactory.consequentAction(topologyTypesBuilder.build());
+        assertEquals(consequentAction, MlmtConsequentAction.COPY);
+
+        consequentAction = this.providerFactory.consequentAction(topologyTypesBuilder.build());
+        assertEquals(consequentAction, MlmtConsequentAction.COPY);
+
+        consequentAction = this.providerFactory.consequentAction(topologyTypesBuilder.build());
+        assertEquals(consequentAction, MlmtConsequentAction.COPY);
     }
 
     @After
