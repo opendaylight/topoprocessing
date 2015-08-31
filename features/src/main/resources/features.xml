@@ -58,6 +58,11 @@
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-i2rs/${project.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/81-topoprocessing-i2rs-config.xml">mvn:org.opendaylight.topoprocessing/topoprocessing-config/${project.version}/xml/config-i2rs</configfile>
     </feature>
+    <feature name='odl-topoprocessing-ir' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Inventory Rendering Model">
+        <feature version='${project.version}'>odl-topoprocessing-framework</feature>
+        <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-ir/${project.version}</bundle>
+        <configfile finalname="etc/opendaylight/karaf/81-topoprocessing-ir-config.xml">mvn:org.opendaylight.topoprocessing/topoprocessing-config/${project.version}/xml/config-ir</configfile>
+    </feature>
     <feature name='odl-topoprocessing-link-computation' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Link computation">
         <feature version='${project.version}'>odl-topoprocessing-framework</feature>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-link-computation/${project.version}</bundle>
