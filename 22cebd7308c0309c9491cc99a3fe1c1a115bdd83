@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_11c03e29",
+        "filename": "topoprocessing-api/src/main/yang/topology-correlation.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-02T13:31:54Z",
+      "side": 1,
+      "message": "Base identity used for model differentiation",
+      "range": {
+        "startLine": 45,
+        "startChar": 22,
+        "endLine": 45,
+        "endChar": 44
+      },
+      "revId": "22cebd7308c0309c9491cc99a3fe1c1a115bdd83",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_b1de2a10",
+        "filename": "topoprocessing-api/src/main/yang/topology-correlation.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-02T13:31:54Z",
+      "side": 1,
+      "message": "identity",
+      "range": {
+        "startLine": 58,
+        "startChar": 4,
+        "endLine": 58,
+        "endChar": 11
+      },
+      "revId": "22cebd7308c0309c9491cc99a3fe1c1a115bdd83",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_d1e166d1",
+        "filename": "topoprocessing-api/src/main/yang/topology-correlation.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-02T13:31:54Z",
+      "side": 1,
+      "message": "please use yang standard syntax \"inventory-rendering\" - not cammel case",
+      "range": {
+        "startLine": 58,
+        "startChar": 12,
+        "endLine": 58,
+        "endChar": 30
+      },
+      "revId": "22cebd7308c0309c9491cc99a3fe1c1a115bdd83",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
