@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_11ffdeab",
+        "filename": "topoprocessing-api/src/main/yang/invetory-rendering.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-02T11:30:15Z",
+      "side": 1,
+      "message": "please add -grouping to all groupings, it doesn\u0027t look nice in yang models, but it is much easier to distinguish between different classes with same name",
+      "range": {
+        "startLine": 32,
+        "startChar": 13,
+        "endLine": 32,
+        "endChar": 30
+      },
+      "revId": "2ee69e2d4c3aedcc58e3834e114f64354c2c36ae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_b12dca48",
+        "filename": "topoprocessing-api/src/main/yang/invetory-rendering.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-02T11:30:15Z",
+      "side": 1,
+      "message": "here we could use a subset of fields from flow-node-inventory.yang (openflowplugin project)\n        leaf manufacturer {\n            type string;\n        }\n        leaf hardware {\n            type string;\n        }\n        leaf software {\n            type string;\n        }\n        leaf serial-number {\n            type string;\n        }\n        leaf description {\n            type string;\n        }\n        uses ip-address-grouping;",
+      "range": {
+        "startLine": 34,
+        "startChar": 12,
+        "endLine": 34,
+        "endChar": 79
+      },
+      "revId": "2ee69e2d4c3aedcc58e3834e114f64354c2c36ae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_71273265",
+        "filename": "topoprocessing-api/src/main/yang/invetory-rendering.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-02T11:30:15Z",
+      "side": 1,
+      "message": "here we could use a subset of fields from flow-node-inventory.yang -\u003e flow-node-connector (openflowplugin project)\n        leaf name {\n            type string;\n            description \"Human readable name of the port\";                    \n        }\n        leaf hardware-address {\n            type yang:mac-address;\n            description \"MAC Address of the port\";\n            \n        }\n        leaf current-speed {\n            type uint32;\n            units \"kbps\";\n            description \"Current port bit rate in kbps\";            \n        }\n        \n        leaf maximum-speed {\n            type uint32;\n            units \"kbps\";\n            description \"Max port bit rate in kbps\";            \n        }",
+      "revId": "2ee69e2d4c3aedcc58e3834e114f64354c2c36ae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
