@@ -35,6 +35,7 @@
         <module>topoprocessing-i2rs</module>
         <module>topoprocessing-impl</module>
         <module>topoprocessing-inventory</module>
+        <module>topoprocessing-inventory-rendering</module>
         <module>topoprocessing-nt</module>
         <module>topoprocessing-spi</module>
   </modules>
