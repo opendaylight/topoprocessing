@@ -193,7 +193,7 @@ public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyPro
                 " nodeKey: " + nodeKey.toString() + " terminationPointKey: " + tp.getKey().toString());
         NodeConnectorRef nodeConnectorRefAttributes = parser.parseInventoryNodeConnectorAttributes(tp);
         if (nodeConnectorRefAttributes == null) {
-            log.info("InventoryTopologyProvider.handleTpAttributes: nodeConnectorRefAttributes is null");
+            log.debug("InventoryTopologyProvider.handleTpAttributes: nodeConnectorRefAttributes is null");
             return;
         }
         setNodeConnectorRefTpAttributes(destTopologyId, nodeConnectorRefAttributes, nodeKey, tp.getKey());

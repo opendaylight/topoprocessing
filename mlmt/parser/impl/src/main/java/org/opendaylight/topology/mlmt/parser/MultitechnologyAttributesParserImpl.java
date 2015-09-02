@@ -73,7 +73,7 @@ public class MultitechnologyAttributesParserImpl implements MultitechnologyAttri
 
         final Link1 link1 = link.getAugmentation(Link1.class);
         if (link1 == null) {
-           log.error("MultitechnologyAttributesParserImpl.parseTedLinkAttributes link1 is null");
+           log.info("MultitechnologyAttributesParserImpl.parseTedLinkAttributes link1 is null");
            return null;
         }
         final IgpLinkAttributes igpLinkAttributes = link1.getIgpLinkAttributes();
@@ -102,7 +102,7 @@ public class MultitechnologyAttributesParserImpl implements MultitechnologyAttri
 
         final Link1 link1 = link.getAugmentation(Link1.class);
         if (link1 == null) {
-           log.error("MultitechnologyAttributesParserImpl.parseLinkMetric link1 is null");
+           log.info("MultitechnologyAttributesParserImpl.parseLinkMetric link1 is null");
            return null;
         }
         final IgpLinkAttributes igpLinkAttributes = link1.getIgpLinkAttributes();
