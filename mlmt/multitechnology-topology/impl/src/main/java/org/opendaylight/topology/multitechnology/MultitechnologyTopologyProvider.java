@@ -246,7 +246,7 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
                         mtInfoLinkBuilder.setAttribute(la);
                         final InstanceIdentifier<MtInfoLink> instanceId = targetTopologyId.child(Link.class, linkKey).
                             augmentation(MtInfoLink.class);
-                        transaction.merge(type, instanceId, mtInfoLinkBuilder.build(), true);
+                        transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, mtInfoLinkBuilder.build(), true);
                     }
                 }
             });
@@ -314,7 +314,7 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
                         mtInfoLinkBuilder.setAttribute(la);
                         final InstanceIdentifier<MtInfoLink> instanceId = targetTopologyId.child(Link.class, linkKey)
                                 .augmentation(MtInfoLink.class);
-                        transaction.merge(type, instanceId, mtInfoLinkBuilder.build(), true);
+                        transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, mtInfoLinkBuilder.build(), true);
                     }
                 }
             });
@@ -378,7 +378,7 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
                         mtInfoNodeBuilder.setAttribute(la);
                         final InstanceIdentifier<MtInfoNode> instanceId = targetTopologyId.child(Node.class, nodeKey)
                                 .augmentation(MtInfoNode.class);
-                        transaction.merge(type, instanceId, mtInfoNodeBuilder.build(), true);
+                        transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, mtInfoNodeBuilder.build(), true);
                     }
                 }
             });

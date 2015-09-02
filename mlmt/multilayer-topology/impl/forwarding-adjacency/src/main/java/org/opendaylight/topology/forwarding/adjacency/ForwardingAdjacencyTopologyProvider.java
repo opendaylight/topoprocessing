@@ -108,7 +108,7 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
             public void applyOperation(ReadWriteTransaction transaction) {
                 final InstanceIdentifier<ForwardingAdjacency> instanceId = topologyInstanceId.augmentation(FaTopology.class)
                        .child(ForwardingAdjacency.class, faKey);
-                transaction.merge(type, instanceId, forwardingAdjacencyBuilder.build(), true);
+                transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, forwardingAdjacencyBuilder.build(), true);
             }
         });
     }
@@ -147,7 +147,7 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
             public void applyOperation(ReadWriteTransaction transaction) {
                 final InstanceIdentifier<MlLink> instanceId = topologyInstanceId.child(Link.class, linkKey)
                         .augmentation(MlLink.class);
-                transaction.merge(type, instanceId, mlLinkBuilder.build(), true);
+                transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, mlLinkBuilder.build(), true);
             }
         });
    }
@@ -166,7 +166,7 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
            public void applyOperation(ReadWriteTransaction transaction) {
                final InstanceIdentifier<MlTerminationPoint> instanceId = topologyInstanceId.child(Node.class, nodeKey)
                        .child(TerminationPoint.class, tpKey).augmentation(MlTerminationPoint.class);
-               transaction.merge(type, instanceId, mlTpBuilder.build(), true);
+               transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, mlTpBuilder.build(), true);
            }
        });
     }
@@ -181,7 +181,7 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
             public void applyOperation(ReadWriteTransaction transaction) {
                 final InstanceIdentifier<ForwardingAdjacency> instanceId = topologyInstanceId.augmentation(FaTopology.class)
                        .child(ForwardingAdjacency.class, faKey);
-                transaction.delete(type, instanceId);
+                transaction.delete(LogicalDatastoreType.OPERATIONAL, instanceId);
             }
         });
     }
@@ -194,7 +194,7 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
             public void applyOperation(ReadWriteTransaction transaction) {
                 final InstanceIdentifier<MlLink> instanceId = topologyInstanceId.child(Link.class, linkKey)
                         .augmentation(MlLink.class);
-                transaction.delete(type, instanceId);
+                transaction.delete(LogicalDatastoreType.OPERATIONAL, instanceId);
             }
         });
     }
@@ -207,7 +207,7 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
            public void applyOperation(ReadWriteTransaction transaction) {
                final InstanceIdentifier<MlTerminationPoint> instanceId = topologyInstanceId.child(Node.class, nodeKey)
                        .child(TerminationPoint.class, tpKey).augmentation(MlTerminationPoint.class);
-               transaction.delete(type, instanceId);
+               transaction.delete(LogicalDatastoreType.OPERATIONAL, instanceId);
            }
        });
     }
