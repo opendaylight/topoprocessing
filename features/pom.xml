@@ -37,6 +37,13 @@
             <type>xml</type>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.mdsal.model</groupId>
+            <artifactId>features-mdsal-model</artifactId>
+            <version>${mdsal.model.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>features-config</artifactId>
             <classifier>features</classifier>

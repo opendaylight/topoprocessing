@@ -38,7 +38,7 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.yangtools</groupId>
+      <groupId>org.opendaylight.mdsal</groupId>
       <artifactId>yang-binding</artifactId>
     </dependency>
     <dependency>
@@ -98,7 +98,7 @@
             <version>${yang.jmx.generator.plugin}</version>
           </dependency>
           <dependency>
-            <groupId>org.opendaylight.yangtools</groupId>
+            <groupId>org.opendaylight.mdsal</groupId>
             <artifactId>maven-sal-api-gen-plugin</artifactId>
             <version>${yangtools.version}</version>
             <type>jar</type>
