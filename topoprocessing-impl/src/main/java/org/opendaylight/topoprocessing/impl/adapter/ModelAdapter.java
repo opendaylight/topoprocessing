@@ -54,7 +54,7 @@ public interface ModelAdapter {
      */
     TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
-            Map<Model, ModelAdapter> modelAdapters);
+            Map<Class<? extends Model>, ModelAdapter> modelAdapters);
 
     /**
      * Create model specific OverlayItemTranslator

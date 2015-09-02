@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoproc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventoryModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.Correlations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -83,7 +84,7 @@ public class InvTopologyRequestListenerTest {
     @Mock private DOMDataWriteTransaction mockTransaction;
     @Mock private UserDefinedFilter userDefinedFilter;
     @Mock private FiltratorFactory userDefinedFiltratorFactory;
-    private Map<Model, ModelAdapter> modelAdapters = new HashMap<>();
+    private Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
 
     private class UserDefinedFilter extends FilterBase
     {
@@ -92,7 +93,7 @@ public class InvTopologyRequestListenerTest {
 
     @Before
     public void setUp() {
-        modelAdapters.put(Model.OpendaylightInventory, new InvModelAdapter());
+        modelAdapters.put(OpendaylightInventoryModel.class, new InvModelAdapter());
         listener = new InvTopologyRequestListener(mockBroker, mockNodeSerializer, mockSchemaHolder, mockRpcServices, modelAdapters);
         listener.setDatastoreType(DatastoreType.OPERATIONAL);
 
@@ -117,7 +118,7 @@ public class InvTopologyRequestListenerTest {
         Correlations mockCorrelations = Mockito.mock(Correlations.class);
         Mockito.when(mockCorrelationAugument.getCorrelations()).thenReturn(mockCorrelations);
         Mockito.when(mockCorrelations.getCorrelation()).thenReturn(new ArrayList<Correlation>());
-        Mockito.when(mockCorrelations.getOutputModel()).thenReturn(Model.OpendaylightInventory);
+        Mockito.when(mockCorrelations.getOutputModel()).thenReturn(OpendaylightInventoryModel.class);
         // topology
         TopologyBuilder topoBuilder = new TopologyBuilder();
         TopologyId topoId = TopologyId.getDefaultInstance(TOPO_NAME);
