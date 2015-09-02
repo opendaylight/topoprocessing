@@ -83,7 +83,7 @@ public class NTTopologyRequestListenerTest {
     @Mock private DOMDataWriteTransaction mockTransaction;
     @Mock private UserDefinedFilter userDefinedFilter;
     @Mock private FiltratorFactory userDefinedFiltratorFactory;
-    private Map<Model, ModelAdapter> modelAdapters = new HashMap<>();
+    private Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
 
     private class UserDefinedFilter extends FilterBase
     {
@@ -92,7 +92,7 @@ public class NTTopologyRequestListenerTest {
 
     @Before
     public void setUp() {
-        modelAdapters.put(Model.NetworkTopology, new NTModelAdapter());
+        modelAdapters.put((Class<? extends Model>) NetworkTopology.class, new NTModelAdapter());
         listener = new NTTopologyRequestListener(mockBroker, mockNodeSerializer, mockSchemaHolder, mockRpcServices, modelAdapters);
         listener.setDatastoreType(DatastoreType.OPERATIONAL);
 
@@ -117,7 +117,7 @@ public class NTTopologyRequestListenerTest {
         Correlations mockCorrelations = Mockito.mock(Correlations.class);
         Mockito.when(mockCorrelationAugument.getCorrelations()).thenReturn(mockCorrelations);
         Mockito.when(mockCorrelations.getCorrelation()).thenReturn(new ArrayList<Correlation>());
-        Mockito.when(mockCorrelations.getOutputModel()).thenReturn(Model.NetworkTopology);
+        Mockito.when(mockCorrelations.getOutputModel()).thenReturn(NetworkTopology.class);
         // topology
         TopologyBuilder topoBuilder = new TopologyBuilder();
         TopologyId topoId = TopologyId.getDefaultInstance(TOPO_NAME);

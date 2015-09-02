@@ -15,6 +15,7 @@ import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventory;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -49,7 +50,7 @@ public class PathTranslator {
      * @throws IllegalStateException if required module is not loaded
      */
     public YangInstanceIdentifier translate(String yangPath, CorrelationItemEnum correlationItem,
-            GlobalSchemaContextHolder schemaHolder, Model inputModel) {
+            GlobalSchemaContextHolder schemaHolder, Class<? extends Model> inputModel) {
         LOGGER.debug("Translating target-field path: " + yangPath);
         DataSchemaContextTree contextTree = schemaHolder.getContextTree();
         QName itemQName = TopologyQNames.buildItemQName(correlationItem);
@@ -76,18 +77,18 @@ public class PathTranslator {
         return targetIdentifier;
     }
 
-    private YangInstanceIdentifier createBaseIdentifier(CorrelationItemEnum correlationItem, Model inputModel,
+    private YangInstanceIdentifier createBaseIdentifier(CorrelationItemEnum correlationItem, Class<? extends Model> inputModel,
             QName itemQName) {
         YangInstanceIdentifier itemIdentifier;
         // if inputModel == null, than use network-topology model as default
-        if (Model.OpendaylightInventory.equals(inputModel)) {
+        if (OpendaylightInventory.class.equals(inputModel)) {
             itemIdentifier = YangInstanceIdentifier.builder()
                     .node(Nodes.QNAME)
                     .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME)
                     .nodeWithKey(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME,
                             TopologyQNames.INVENTORY_NODE_ID_QNAME, "")
                     .build();
-        } else if (Model.NetworkTopology.equals(inputModel)){
+        } else if (NetworkTopology.class.equals(inputModel)){
             YangInstanceIdentifier.InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
                     .node(NetworkTopology.QNAME)
                     .node(Topology.QNAME)
@@ -98,7 +99,7 @@ public class PathTranslator {
             }
             itemIdentifier = itemIdentifierBuilder.node(itemQName)
                     .nodeWithKey(itemQName, TopologyQNames.buildItemIdQName(correlationItem), "").build();
-        } else /*if (Model.I2RS.equals(inputModel))*/ {
+        } else /*if (I2RS.equals(inputModel))*/ {
             itemIdentifier = null;
     }
         return itemIdentifier;

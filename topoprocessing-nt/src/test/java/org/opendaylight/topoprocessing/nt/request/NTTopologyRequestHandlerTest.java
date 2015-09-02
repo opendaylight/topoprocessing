@@ -59,6 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4AddressAugmentBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.LeafPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.CorrelationsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.Correlation;
@@ -150,7 +151,7 @@ public class NTTopologyRequestHandlerTest {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = new CorrelationAugmentBuilder();
         CorrelationsBuilder cBuilder = new CorrelationsBuilder();
-        cBuilder.setOutputModel(Model.NetworkTopology);
+        cBuilder.setOutputModel((Class<? extends Model>) NetworkTopology.class);
         correlationAugmentBuilder.setCorrelations(cBuilder.build());
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
@@ -171,7 +172,7 @@ public class NTTopologyRequestHandlerTest {
         correlations.add(cBuilder.build());
         CorrelationsBuilder correlationsBuilder = new CorrelationsBuilder();
         correlationsBuilder.setCorrelation(correlations);
-        correlationsBuilder.setOutputModel(Model.NetworkTopology);
+        correlationsBuilder.setOutputModel((Class<? extends Model>) NetworkTopology.class);
         CorrelationAugmentBuilder correlationAugmentBuilder = new CorrelationAugmentBuilder();
         correlationAugmentBuilder.setCorrelations(correlationsBuilder.build());
         return correlationAugmentBuilder;
@@ -248,7 +249,7 @@ public class NTTopologyRequestHandlerTest {
         MappingBuilder mappingBuilder1 = new MappingBuilder();
         mappingBuilder1.setUnderlayTopology("pcep-topology:1");
         mappingBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
-        mappingBuilder1.setInputModel(Model.NetworkTopology);
+        mappingBuilder1.setInputModel((Class<? extends Model>) NetworkTopology.class);
         mappingBuilder1.setAggregateInside(false);
         mappings.add(mappingBuilder1.build());
         aggBuilder.setMapping(mappings);
@@ -260,7 +261,7 @@ public class NTTopologyRequestHandlerTest {
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
 
         Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
-                (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
+                (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
         handler.processNewRequest();
     }
@@ -274,7 +275,7 @@ public class NTTopologyRequestHandlerTest {
         MappingBuilder mappingBuilder1 = new MappingBuilder();
         mappingBuilder1.setUnderlayTopology("pcep-topology:1");
         mappingBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
-        mappingBuilder1.setInputModel(Model.NetworkTopology);
+        mappingBuilder1.setInputModel((Class<? extends Model>) NetworkTopology.class);
         mappingBuilder1.setAggregateInside(false);
         mappings.add(mappingBuilder1.build());
         aggBuilder.setMapping(mappings);
@@ -282,8 +283,8 @@ public class NTTopologyRequestHandlerTest {
                 aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        Map<Model, ModelAdapter> modelAdapters = new HashMap<>();
-        modelAdapters.put(Model.NetworkTopology, new NTModelAdapter());
+        Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
+        modelAdapters.put((Class<? extends Model>) NetworkTopology.class, new NTModelAdapter());
         // CONFIGURATION listener registration
         handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
@@ -291,7 +292,7 @@ public class NTTopologyRequestHandlerTest {
         handler.setDatastoreType(DatastoreType.CONFIGURATION);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
-                (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
+                (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
         List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
@@ -307,7 +308,7 @@ public class NTTopologyRequestHandlerTest {
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(DatastoreType.OPERATIONAL);
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
-                (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
+                (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
         listeners = new ArrayList<>();
         handler.setListeners(listeners);
@@ -329,7 +330,7 @@ public class NTTopologyRequestHandlerTest {
         MappingBuilder mappingBuilder1 = new MappingBuilder();
         mappingBuilder1.setUnderlayTopology("pcep-topology:1");
         mappingBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
-        mappingBuilder1.setInputModel(Model.NetworkTopology);
+        mappingBuilder1.setInputModel((Class<? extends Model>) NetworkTopology.class);
         mappingBuilder1.setAggregateInside(false);
         mappings.add(mappingBuilder1.build());
         aggBuilder.setMapping(mappings);
@@ -337,15 +338,15 @@ public class NTTopologyRequestHandlerTest {
                 CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        Map<Model, ModelAdapter> modelAdapters = new HashMap<>();
-        modelAdapters.put(Model.NetworkTopology, new NTModelAdapter());
+        Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
+        modelAdapters.put((Class<? extends Model>) NetworkTopology.class, new NTModelAdapter());
         handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(DatastoreType.OPERATIONAL);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
-                (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
+                (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
         List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
@@ -365,7 +366,7 @@ public class NTTopologyRequestHandlerTest {
         ArrayList<Filter> filters = new ArrayList<>();
         FilterBuilder filterBuilder1 = new FilterBuilder();
         filterBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
-        filterBuilder1.setInputModel(Model.NetworkTopology);
+        filterBuilder1.setInputModel((Class<? extends Model>) NetworkTopology.class);
         Ipv4Prefix ipv4prefix = new Ipv4Prefix("192.168.0.1/24");
         IpPrefix ipPrefix = new IpPrefix(ipv4prefix);
         filterBuilder1.setFilterType(Ipv4Address.class);
@@ -379,8 +380,8 @@ public class NTTopologyRequestHandlerTest {
                 fBuilder.build(), null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        Map<Model, ModelAdapter> modelAdapters = new HashMap<>();
-        modelAdapters.put(Model.NetworkTopology, new NTModelAdapter());
+        Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
+        modelAdapters.put((Class<? extends Model>) NetworkTopology.class, new NTModelAdapter());
         handler = new NTTopologyRequestHandler(mockDomDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
@@ -388,7 +389,7 @@ public class NTTopologyRequestHandlerTest {
         handler.setFiltrators(DefaultFiltrators.getDefaultFiltrators());
         pathIdentifier = InstanceIdentifiers.NODE_IDENTIFIER;
         Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
-                (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
+                (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
         List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
@@ -406,7 +407,7 @@ public class NTTopologyRequestHandlerTest {
         handler.setFiltrators(DefaultFiltrators.getDefaultFiltrators());
         pathIdentifier = InstanceIdentifiers.NODE_IDENTIFIER;
         Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
-                (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
+                (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
         handler.setListeners(listeners);
         Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.CONFIGURATION),
@@ -443,7 +444,7 @@ public class NTTopologyRequestHandlerTest {
         handler.setDatastoreType(DatastoreType.CONFIGURATION);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
-                (GlobalSchemaContextHolder) any(), (Model) any())).thenReturn(pathIdentifier);
+                (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
         List<ListenerRegistration<DOMDataChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
