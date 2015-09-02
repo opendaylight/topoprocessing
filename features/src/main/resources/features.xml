@@ -10,8 +10,8 @@
     <repository>mvn:org.opendaylight.controller/features-restconf/${mdsal.version}/xml/features</repository>
     <feature name='odl-topoprocessing-framework' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Framework">
         <feature version='${yangtools.version}'>odl-yangtools-common</feature>
-        <feature version='${yangtools.version}'>odl-yangtools-binding</feature>
-        <feature version='${yangtools.version}'>odl-yangtools-models</feature>
+        <feature version='${yangtools.version}'>odl-mdsal-binding-base</feature>
+        <feature version='${yangtools.version}'>odl-mdsal-models</feature>
         <feature version='${protocol-framework.version}'>odl-protocol-framework</feature>
         <feature version='${config.version}'>odl-config-api</feature>
         <feature version='${mdsal.version}'>odl-mdsal-common</feature>
