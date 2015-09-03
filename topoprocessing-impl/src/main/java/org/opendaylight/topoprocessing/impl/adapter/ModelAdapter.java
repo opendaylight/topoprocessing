@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 /**
  * @author matej.perina
  */
@@ -41,7 +42,7 @@ public interface ModelAdapter {
      */
     UnderlayTopologyListener registerUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem, DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataChangeListener>> listeners);
+            ,List<ListenerRegistration<DOMDataChangeListener>> listeners, YangInstanceIdentifier pathIdentifier);
 
     /**
      * Create model specific TopologyRequestListener

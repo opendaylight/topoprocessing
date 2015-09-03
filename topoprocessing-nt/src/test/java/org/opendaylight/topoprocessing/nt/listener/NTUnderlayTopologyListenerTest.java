@@ -86,7 +86,7 @@ public class NTUnderlayTopologyListenerTest {
         YangInstanceIdentifier pathIdentifier = YangInstanceIdentifier.of(ipAddressQname);
         TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
         UnderlayTopologyListener listener = new NTUnderlayTopologyListener(domDataBroker, TOPOLOGY_ID,
-                CorrelationItemEnum.Node);
+                CorrelationItemEnum.Node, null);
         listener.setOperator(mockOperator);
         listener.setPathIdentifier(pathIdentifier);
         listener.readExistingData(YangInstanceIdentifier.builder().build(), DatastoreType.OPERATIONAL);
@@ -126,7 +126,7 @@ public class NTUnderlayTopologyListenerTest {
 
         TopologyFiltrator mockOperator = Mockito.mock(TopologyFiltrator.class);
         UnderlayTopologyListener listener = new NTUnderlayTopologyListener(domDataBroker, TOPOLOGY_ID,
-                CorrelationItemEnum.Node);
+                CorrelationItemEnum.Node, null);
         listener.setOperator(mockOperator);
         listener.readExistingData(YangInstanceIdentifier.builder().build(), DatastoreType.OPERATIONAL);
         Map<YangInstanceIdentifier, UnderlayItem> createdEntries = new HashMap<>();
@@ -164,7 +164,7 @@ public class NTUnderlayTopologyListenerTest {
 
         TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
         UnderlayTopologyListener listener = new NTUnderlayTopologyListener(domDataBroker, TOPOLOGY_ID,
-                CorrelationItemEnum.Node);
+                CorrelationItemEnum.Node, null);
         listener.setOperator(mockOperator);
         listener.setPathIdentifier(nodeYiid);
         listener.readExistingData(YangInstanceIdentifier.builder().build(), DatastoreType.OPERATIONAL);
@@ -177,7 +177,7 @@ public class NTUnderlayTopologyListenerTest {
     public void testReadExistingData() {
         DOMDataBroker domDataBrokerLocal = Mockito.mock(DOMDataBroker.class);
         UnderlayTopologyListener listener = new NTUnderlayTopologyListener(domDataBrokerLocal,
-                TOPOLOGY_ID, CorrelationItemEnum.Node);
+                TOPOLOGY_ID, CorrelationItemEnum.Node, null);
         listener.setOperator(Mockito.mock(TopologyOperator.class));
         listener.setPathIdentifier(YangInstanceIdentifier.builder().build());
         YangInstanceIdentifier path = YangInstanceIdentifier.builder().build();

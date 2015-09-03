@@ -79,7 +79,7 @@ public abstract class UnderlayTopologyListener implements DOMDataChangeListener 
      * @param correlationItem can be either Node or Link or TerminationPoint
      */
     public UnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
-            CorrelationItemEnum correlationItem) {
+            CorrelationItemEnum correlationItem, YangInstanceIdentifier pathIdentifier) {
         this.domDataBroker = domDataBroker;
         this.underlayTopologyId = underlayTopologyId;
         this.correlationItem = correlationItem;
@@ -92,6 +92,7 @@ public abstract class UnderlayTopologyListener implements DOMDataChangeListener 
             this.itemQName = TopologyQNames.buildItemQName(correlationItem);
         }
         this.itemIdentifier = YangInstanceIdentifier.of(itemQName);
+        this.pathIdentifier = pathIdentifier;
     }
 
     @Override
