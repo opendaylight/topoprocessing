@@ -44,7 +44,7 @@ public class InvTopologyRequestHandler extends TopologyRequestHandler{
     }
 
     @Override
-    protected Model getModel(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
+    protected Class<? extends Model> getModel(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
         return ((Topology) fromNormalizedNode.getValue()).getAugmentation(CorrelationAugment.class)
                 .getCorrelations().getOutputModel();
     }
