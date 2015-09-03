@@ -1,0 +1,88 @@
+/*
+ * Copyright (c) 2015 Pantheon Technologies s.r.o. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+module opendaylight-inventory-rendering  {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:inventory:rendering";
+    // replace with IANA namespace when assigned
+    prefix "inv";
+
+    import ietf-inet-types { prefix inet; revision-date "2010-09-24"; }
+    import network-topology {prefix topo; revision-date "2013-10-21";}
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+
+    organization "TBD";
+
+    contact "WILL-BE-DEFINED-LATER";
+
+    description
+        "This module defines a supporting model for Inventory deprecation.
+        Model is based on Network Topology model augmented by Inventory fields.";
+
+    revision 2015-08-31 {
+        description "Initial revision.";
+    }
+
+    grouping node-augmentation-grouping {
+        container node-augmentation {
+            description "Container for possible inventory node augmentations.";
+            leaf manufacturer {
+                type string;
+            }
+            leaf hardware {
+                type string;
+            }
+            leaf software {
+                type string;
+            }
+            leaf serial-number {
+                type string;
+            }
+            leaf description {
+                type string;
+            }
+            leaf ip-address {
+                type inet:ip-address;
+            }
+        }
+    }
+
+    grouping tp-augmentation-grouping {
+        container tp-augmentation {
+            description "Container for possible inventory node-connector augmentations.";
+            leaf name {
+                type string;
+                description "Human readable name of the port";                    
+            }
+            leaf hardware-address {
+                type yang:mac-address;
+                description "MAC Address of the port";
+            }
+            leaf current-speed {
+                type uint32;
+                units "kbps";
+                description "Current port bit rate in kbps";            
+            }
+            leaf maximum-speed {
+                type uint32;
+                units "kbps";
+                description "Max port bit rate in kbps";            
+            }
+        }
+    }
+
+    augment "/topo:network-topology/topo:topology/topo:node" {
+        ext:augment-identifier "node-augment";
+        uses node-augmentation-grouping;
+    }
+
+    augment "/topo:network-topology/topo:topology/topo:node/topo:termination-point" {
+        ext:augment-identifier "tp-augment";
+        uses tp-augmentation-grouping;
+    }
+}
