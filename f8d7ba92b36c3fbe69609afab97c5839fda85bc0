@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_dc673a24",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/provider/TopoProcessingProviderImpl.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T10:17:19Z",
+      "side": 1,
+      "message": "since java 1.7 we don\u0027t have to explicitly specify Collection generics - we can just call new ArrayList\u003c\u003e()",
+      "range": {
+        "startLine": 83,
+        "startChar": 8,
+        "endLine": 85,
+        "endChar": 76
+      },
+      "revId": "f8d7ba92b36c3fbe69609afab97c5839fda85bc0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
