@@ -50,7 +50,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private SchemaService schemaService;
     private ListenerRegistration<SchemaContextListener> schemaContextListenerRegistration;
     private GlobalSchemaContextHolder schemaHolder;
-    private Map<Model, ModelAdapter> modelAdapters;
+    private Map<Class<? extends Model>, ModelAdapter> modelAdapters;
     private BindingNormalizedNodeSerializer nodeSerializer;
     private RpcServices rpcServices;
     private List<TopologyRequestListener> listeners;
@@ -82,7 +82,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         schemaHolder = new GlobalSchemaContextHolder(schemaService.getGlobalContext());
         listeners = new ArrayList<TopologyRequestListener>();
         topologyRequestListenerRegistrations = new ArrayList<ListenerRegistration<DOMDataChangeListener>>();
-        modelAdapters = new HashMap<Model, ModelAdapter>();
+        modelAdapters = new HashMap<Class<? extends Model>, ModelAdapter>();
     }
 
     @Override
@@ -117,7 +117,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     }
 
     @Override
-    public void registerModelAdapter(Model model, Object modelAdapter) {
+    public void registerModelAdapter(Class<? extends Model> model, Object modelAdapter) {
         if(modelAdapter instanceof ModelAdapter) {
             ModelAdapter adapter = (ModelAdapter) modelAdapter;
             modelAdapters.put(model, adapter);

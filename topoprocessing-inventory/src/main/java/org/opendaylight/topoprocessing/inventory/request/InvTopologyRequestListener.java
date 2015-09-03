@@ -37,7 +37,7 @@ public class InvTopologyRequestListener extends TopologyRequestListener{
     private HashSet<QName> hashSet;
 
     public InvTopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
-            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, Map<Model, ModelAdapter> modelAdapters) {
+            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
         super(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
         hashSet = new HashSet<>();
         hashSet.add(TopologyQNames.TOPOLOGY_CORRELATION_AUGMENT);

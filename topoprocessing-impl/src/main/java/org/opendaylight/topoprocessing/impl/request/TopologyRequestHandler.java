@@ -87,10 +87,10 @@ public abstract class TopologyRequestHandler {
     private TopologyWriter writer;
     private DatastoreType datastoreType;
     private Map<Class<? extends FilterBase>, FiltratorFactory> filtrators;
-    private Map<Model, ModelAdapter> modelAdapters;
+    private Map<Class<? extends Model>, ModelAdapter> modelAdapters;
     private Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode;
     private TopologyManager topologyManager;
-    private Model outputModel;
+    private Class<? extends Model> outputModel;
 
     /**
      * Default constructor
@@ -110,7 +110,7 @@ public abstract class TopologyRequestHandler {
         outputModel = getModel(fromNormalizedNode);
     }
 
-    protected abstract Model getModel(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
+    protected abstract Class<? extends Model> getModel(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
 
     /**
      * Only for testing purposes
@@ -144,7 +144,7 @@ public abstract class TopologyRequestHandler {
         return transactionChain;
     }
 
-    public void setModelAdapters(Map<Model, ModelAdapter> modelAdapters) {
+    public void setModelAdapters(Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
         this.modelAdapters = modelAdapters;
         writer.setTranslator(modelAdapters.get(outputModel).createOverlayItemTranslator());
         transactionChain = domDataBroker.createTransactionChain(writer);

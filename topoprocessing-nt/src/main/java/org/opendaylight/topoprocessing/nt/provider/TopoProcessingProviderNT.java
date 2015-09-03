@@ -10,7 +10,7 @@ package org.opendaylight.topoprocessing.nt.provider;
 
 import org.opendaylight.topoprocessing.nt.adapter.NTModelAdapter;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +24,6 @@ public class TopoProcessingProviderNT implements AutoCloseable {
 
     public void startup(TopoProcessingProvider topoProvider) {
         LOGGER.info("TopoprocessingProviderNT startup");
-        topoProvider.registerModelAdapter(Model.NetworkTopology, new NTModelAdapter());
+        topoProvider.registerModelAdapter( NetworkTopologyModel.class, new NTModelAdapter());
     }
 }

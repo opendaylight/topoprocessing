@@ -56,7 +56,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     private RpcServices rpcServices;
     private DatastoreType datastoreType;
     private Map<Class<? extends FilterBase>, FiltratorFactory> filtrators;
-    private Map<Model, ModelAdapter> modelAdapters;
+    private Map<Class<? extends Model>, ModelAdapter> modelAdapters;
 
     /**
      * Default constructor
@@ -67,7 +67,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
      * @param modelAdapters     list of registered model adapters
      */
     public TopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
-            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, Map<Model, ModelAdapter> modelAdapters) {
+            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
         this.dataBroker = dataBroker;
         this.nodeSerializer = nodeSerializer;
         this.schemaHolder = schemaHolder;

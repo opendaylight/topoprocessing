@@ -10,7 +10,7 @@ package org.opendaylight.topoprocessing.inventory.provider;
 
 import org.opendaylight.topoprocessing.inventory.adapter.InvModelAdapter;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventoryModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +25,6 @@ public class TopoProcessingProviderInv implements AutoCloseable {
 
     public void startup(TopoProcessingProvider topoProvider) {
         LOGGER.info("TopoprocessingNTProvider startup");
-        topoProvider.registerModelAdapter(Model.OpendaylightInventory, new InvModelAdapter());
+        topoProvider.registerModelAdapter( OpendaylightInventoryModel.class, new InvModelAdapter());
     }
 }
