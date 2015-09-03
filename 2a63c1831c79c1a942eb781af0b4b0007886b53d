@@ -1,0 +1,274 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_7c586632",
+        "filename": "topoprocessing-artifacts/pom.xml",
+        "patchSetId": 8
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T09:15:06Z",
+      "side": 1,
+      "message": "please move this dependency right below topoprocessing-impl dependency",
+      "range": {
+        "startLine": 175,
+        "startChar": 0,
+        "endLine": 181,
+        "endChar": 25
+      },
+      "revId": "2a63c1831c79c1a942eb781af0b4b0007886b53d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_5cd9ea81",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/InventoryListener.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T09:15:06Z",
+      "side": 1,
+      "message": "we know that .getDataAfter() is present, so we can call .get() directly here",
+      "range": {
+        "startLine": 75,
+        "startChar": 24,
+        "endLine": 78,
+        "endChar": 46
+      },
+      "revId": "2a63c1831c79c1a942eb781af0b4b0007886b53d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_bcd11e59",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T09:15:06Z",
+      "side": 1,
+      "message": "we know that .getDataAfter() is present, so we can call .get() directly here",
+      "range": {
+        "startLine": 99,
+        "startChar": 23,
+        "endLine": 102,
+        "endChar": 46
+      },
+      "revId": "2a63c1831c79c1a942eb781af0b4b0007886b53d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_3c4c2e42",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/provider/TopoProcessingProviderImpl.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T09:15:06Z",
+      "side": 1,
+      "message": "DOMDataBroker",
+      "revId": "2a63c1831c79c1a942eb781af0b4b0007886b53d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_9c2a222b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/provider/TopoProcessingProviderImpl.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T09:15:06Z",
+      "side": 1,
+      "message": "we probably don\u0027t need this method ... see comments in test",
+      "range": {
+        "startLine": 143,
+        "startChar": 3,
+        "endLine": 147,
+        "endChar": 5
+      },
+      "revId": "2a63c1831c79c1a942eb781af0b4b0007886b53d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_1c1612f2",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T09:15:06Z",
+      "side": 1,
+      "message": "this command can be moved out from if-else statement and unified with ListenerRegistration\u003cDOMDataTreeChangeListener\u003e listenerRegistration \u003d null;",
+      "range": {
+        "startLine": 234,
+        "startChar": 16,
+        "endLine": 234,
+        "endChar": 135
+      },
+      "revId": "2a63c1831c79c1a942eb781af0b4b0007886b53d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_bcd4be20",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T09:15:06Z",
+      "side": 1,
+      "message": "this command can be moved out from if-else statement and unified with ListenerRegistration\u003cDOMDataTreeChangeListener\u003e listenerRegistration \u003d null;",
+      "range": {
+        "startLine": 296,
+        "startChar": 16,
+        "endLine": 296,
+        "endChar": 135
+      },
+      "revId": "2a63c1831c79c1a942eb781af0b4b0007886b53d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_dcbe5ad4",
+        "filename": "topoprocessing-inventory/pom.xml",
+        "patchSetId": 8
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T09:15:06Z",
+      "side": 1,
+      "message": "please move this dependency right below topoprocessing-impl dependency",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 21
+      },
+      "revId": "2a63c1831c79c1a942eb781af0b4b0007886b53d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_9cb8e2e6",
+        "filename": "topoprocessing-inventory/src/main/java/org/opendaylight/topoprocessing/inventory/listener/InvUnderlayTopologyListener.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T09:15:06Z",
+      "side": 1,
+      "message": "can be moved out of if statement",
+      "range": {
+        "startLine": 88,
+        "startChar": 16,
+        "endLine": 88,
+        "endChar": 133
+      },
+      "revId": "2a63c1831c79c1a942eb781af0b4b0007886b53d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_1cfff2ab",
+        "filename": "topoprocessing-inventory/src/test/java/org/opendaylight/topoprocessing/inventory/provider/InvTopoProcessingProviderImplTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T09:15:06Z",
+      "side": 1,
+      "message": "here we want to test if the modelAdapter was added into modelAdapters map, check that TopologyRequestListener was registered / created and that the , modelAdapters map was delegated into this listener - all of this can be done by mocking InvModelAdapter and InvTopologyRequestListener",
+      "range": {
+        "startLine": 133,
+        "startChar": 8,
+        "endLine": 134,
+        "endChar": 91
+      },
+      "revId": "2a63c1831c79c1a942eb781af0b4b0007886b53d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_3ccf4e81",
+        "filename": "topoprocessing-nt/pom.xml",
+        "patchSetId": 8
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T09:15:06Z",
+      "side": 1,
+      "message": "please move this dependency right below topoprocessing-impl dependency",
+      "range": {
+        "startLine": 50,
+        "startChar": 0,
+        "endLine": 56,
+        "endChar": 21
+      },
+      "revId": "2a63c1831c79c1a942eb781af0b4b0007886b53d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_1cc4d25d",
+        "filename": "topoprocessing-nt/src/test/java/org/opendaylight/topoprocessing/nt/provider/NTTopoProcessingProviderImplTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T09:15:06Z",
+      "side": 1,
+      "message": "here we want to test if the modelAdapter was added into modelAdapters map, check that TopologyRequestListener was registered / created and that the , modelAdapters map was delegated into this listener - all of this can be done by mocking InvModelAdapter and InvTopologyRequestListener",
+      "range": {
+        "startLine": 127,
+        "startChar": 8,
+        "endLine": 129,
+        "endChar": 8
+      },
+      "revId": "2a63c1831c79c1a942eb781af0b4b0007886b53d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
