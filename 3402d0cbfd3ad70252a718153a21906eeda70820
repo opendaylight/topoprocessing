@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_72f5edc9",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/InventoryListener.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T17:12:42Z",
+      "side": 1,
+      "message": "please use .equals instead",
+      "range": {
+        "startLine": 108,
+        "startChar": 39,
+        "endLine": 108,
+        "endChar": 43
+      },
+      "revId": "3402d0cbfd3ad70252a718153a21906eeda70820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_1204b9be",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T17:12:42Z",
+      "side": 1,
+      "message": "please use .equals instead",
+      "range": {
+        "startLine": 159,
+        "startChar": 39,
+        "endLine": 159,
+        "endChar": 43
+      },
+      "revId": "3402d0cbfd3ad70252a718153a21906eeda70820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_f2d7bd21",
+        "filename": "topoprocessing-inventory/src/test/java/org/opendaylight/topoprocessing/inventory/request/InvTopologyRequestHandlerTest.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T17:12:42Z",
+      "side": 1,
+      "message": "invModel please",
+      "range": {
+        "startLine": 114,
+        "startChar": 42,
+        "endLine": 114,
+        "endChar": 43
+      },
+      "revId": "3402d0cbfd3ad70252a718153a21906eeda70820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_b2e14500",
+        "filename": "topoprocessing-inventory/src/test/java/org/opendaylight/topoprocessing/inventory/request/InvTopologyRequestHandlerTest.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 485,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T17:12:42Z",
+      "side": 1,
+      "message": "why do we use this class ? This should be all part of TestingDomDataBroker",
+      "range": {
+        "startLine": 485,
+        "startChar": 0,
+        "endLine": 485,
+        "endChar": 1
+      },
+      "revId": "3402d0cbfd3ad70252a718153a21906eeda70820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_72e3ad05",
+        "filename": "topoprocessing-nt/src/test/java/org/opendaylight/topoprocessing/nt/request/NTTopologyRequestHandlerTest.java",
+        "patchSetId": 10
+      },
+      "lineNbr": 487,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T17:12:42Z",
+      "side": 1,
+      "message": "this should be part of TestingDomDataBroker",
+      "range": {
+        "startLine": 487,
+        "startChar": 0,
+        "endLine": 487,
+        "endChar": 98
+      },
+      "revId": "3402d0cbfd3ad70252a718153a21906eeda70820",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
