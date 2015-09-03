@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_7cace6a0",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-03T09:17:53Z",
+      "side": 1,
+      "message": "please use setter for pathIdentifier",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 96,
+        "endChar": 5
+      },
+      "revId": "e779c14d006810a3cb2753f06fe82fdbdd24552b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
