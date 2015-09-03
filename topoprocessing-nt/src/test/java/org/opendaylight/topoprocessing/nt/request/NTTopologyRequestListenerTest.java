@@ -21,7 +21,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
@@ -41,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoproc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.Correlations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -83,7 +86,7 @@ public class NTTopologyRequestListenerTest {
     @Mock private DOMDataWriteTransaction mockTransaction;
     @Mock private UserDefinedFilter userDefinedFilter;
     @Mock private FiltratorFactory userDefinedFiltratorFactory;
-    private Map<Model, ModelAdapter> modelAdapters = new HashMap<>();
+    private Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
 
     private class UserDefinedFilter extends FilterBase
     {
@@ -92,7 +95,7 @@ public class NTTopologyRequestListenerTest {
 
     @Before
     public void setUp() {
-        modelAdapters.put(Model.NetworkTopology, new NTModelAdapter());
+        modelAdapters.put( NetworkTopologyModel.class, new NTModelAdapter());
         listener = new NTTopologyRequestListener(mockBroker, mockNodeSerializer, mockSchemaHolder, mockRpcServices, modelAdapters);
         listener.setDatastoreType(DatastoreType.OPERATIONAL);
 
@@ -117,7 +120,14 @@ public class NTTopologyRequestListenerTest {
         Correlations mockCorrelations = Mockito.mock(Correlations.class);
         Mockito.when(mockCorrelationAugument.getCorrelations()).thenReturn(mockCorrelations);
         Mockito.when(mockCorrelations.getCorrelation()).thenReturn(new ArrayList<Correlation>());
-        Mockito.when(mockCorrelations.getOutputModel()).thenReturn(Model.NetworkTopology);
+        Answer<Class<? extends Model>> answer = new Answer<Class<? extends Model>>() {
+            @Override
+            public Class<? extends Model> answer(InvocationOnMock invocation)
+                    throws Throwable {
+                return NetworkTopologyModel.class;
+            }
+        };
+        Mockito.when(mockCorrelations.getOutputModel()).then(answer);
         // topology
         TopologyBuilder topoBuilder = new TopologyBuilder();
         TopologyId topoId = TopologyId.getDefaultInstance(TOPO_NAME);

@@ -41,16 +41,23 @@ module topology-correlation {
         }
     }
 
-    typedef model {
-        description  "Supported input models";
-        type enumeration {
-            enum network-topology {
-                description "network-topology@2013-10-21.yang";
-            }
-            enum opendaylight-inventory {
-                description "opendaylight-inventory.yang";
-            }
-        }
+    identity model {
+        description  "Base identity used for model differentiation";
+    }
+    
+    identity network-topology-model {
+        description "network-topology@2013-10-21.yang";
+        base model;
+    }
+    
+    identity opendaylight-inventory-model {
+        description "opendaylight-inventory.yang";
+        base model;
+    }
+     
+    identity inventory-rendering-model {
+        description "inventory-rendering.yang";
+        base model;
     }
 
     identity correlation-base {
@@ -135,7 +142,9 @@ module topology-correlation {
     grouping correlations-grouping {
         container correlations {
             leaf output-model {
-                type model;
+                type identityref {
+                    base model;
+                }
                 description "Desired model for output from correlation.";
             }
             list correlation {
@@ -220,7 +229,9 @@ module topology-correlation {
 
     grouping input-model-grouping {
         leaf input-model {
-            type model;
+            type identityref {
+                base model;
+            }
             description "Specifies what structures, identifiers and QNames should be used.";
         }
     }

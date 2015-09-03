@@ -27,6 +27,7 @@ import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -60,6 +61,8 @@ public class PathTranslatorTest {
     @Mock private DataSchemaContextTree mockContextTree;
     @Mock private DataSchemaContextNode<?> mockContextNode;
     @Mock private DataSchemaContextNode<?> mockContextNodeIdentifier;
+
+    private Class<? extends Model> NTmodel = NetworkTopologyModel.class;
 
     YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder()
             .node(NetworkTopology.QNAME)
@@ -105,7 +108,7 @@ public class PathTranslatorTest {
         childNames.add(qName);
         AugmentationIdentifier augmentationIdentifier = new AugmentationIdentifier(childNames);
         YangInstanceIdentifier translate = pathTranslator.translate("network-topology-pcep:path-computation-client",
-                CorrelationItemEnum.Node, mockSchemaHolder, Model.NetworkTopology);
+                CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
         YangInstanceIdentifier expectedIdentifier =
                 YangInstanceIdentifier.builder().node(qName).build();
         Assert.assertEquals("Incorrect valid YangInstanceIdentifier",
@@ -118,7 +121,7 @@ public class PathTranslatorTest {
     @Test(expected=IllegalArgumentException.class)
     public void testTwoColonsIllegalArgument() {
         pathTranslator.translate("network-topology-pcep::path-computation-client/network-topology-pcep:ip-address",
-                CorrelationItemEnum.Node, mockSchemaHolder, Model.NetworkTopology);
+                CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
     }
 
     /**
@@ -127,7 +130,7 @@ public class PathTranslatorTest {
     @Test(expected=IllegalArgumentException.class)
     public void testNoColonsIllegalArgument() {
         pathTranslator.translate("network-topology-pceppath-computation-client/network-topology-pcep:ip-address",
-                CorrelationItemEnum.Node, mockSchemaHolder, Model.NetworkTopology);
+                CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
     }
 
     /**
@@ -136,7 +139,7 @@ public class PathTranslatorTest {
     @Test(expected=IllegalArgumentException.class)
     public void testColonAtLastPosition() {
         pathTranslator.translate("network-topology-pcep:/network-topology-pcep:ip-address",
-                CorrelationItemEnum.Node, mockSchemaHolder, Model.NetworkTopology);
+                CorrelationItemEnum.Node, mockSchemaHolder,NTmodel);
 
     }
 
@@ -146,7 +149,7 @@ public class PathTranslatorTest {
     @Test(expected=IllegalArgumentException.class)
     public void testColonAtFirstPosition() {
         pathTranslator.translate(":path-computation-client/network-topology-pcep:ip-address",
-                CorrelationItemEnum.Node, mockSchemaHolder, Model.NetworkTopology);
+                CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
     }
 
     /**
@@ -154,7 +157,7 @@ public class PathTranslatorTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testEmptyString() {
-        pathTranslator.translate("", CorrelationItemEnum.Node, mockSchemaHolder, Model.NetworkTopology);
+        pathTranslator.translate("", CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
     }
 
     /**
@@ -162,13 +165,12 @@ public class PathTranslatorTest {
      */
     @Test(expected=IllegalArgumentException.class)
     public void testYangPathNull() {
-        pathTranslator.translate(null, CorrelationItemEnum.Node, mockSchemaHolder, Model.NetworkTopology);
+        pathTranslator.translate(null, CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void testPathBeginingWithSlash() {
-        pathTranslator.translate("/network-topology-pcep:ip-address", CorrelationItemEnum.Node, mockSchemaHolder,
-                Model.NetworkTopology);
+        pathTranslator.translate("/network-topology-pcep:ip-address", CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
     }
 
     @Test(expected=IllegalStateException.class)
