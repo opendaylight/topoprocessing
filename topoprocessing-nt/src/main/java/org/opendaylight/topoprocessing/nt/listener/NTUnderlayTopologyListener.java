@@ -33,8 +33,8 @@ import com.google.common.collect.Maps;
 public class NTUnderlayTopologyListener extends UnderlayTopologyListener{
 
     public NTUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
-            CorrelationItemEnum correlationItem) {
-        super(domDataBroker, underlayTopologyId, correlationItem);
+            CorrelationItemEnum correlationItem, YangInstanceIdentifier pathIdentifier) {
+        super(domDataBroker, underlayTopologyId, correlationItem, pathIdentifier);
     }
 
     @Override
