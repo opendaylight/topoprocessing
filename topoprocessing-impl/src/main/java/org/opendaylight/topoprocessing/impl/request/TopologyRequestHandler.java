@@ -211,7 +211,7 @@ public abstract class TopologyRequestHandler {
             addFiltrator(filtrator, filter, pathIdentifier);
             UnderlayTopologyListener listener = modelAdapters.get(filter.getInputModel()).
                     registerUnderlayTopologyListener(domDataBroker, underlayTopologyId,
-                    correlationItem, datastoreType, filtrator, listeners);
+                    correlationItem, datastoreType, filtrator, listeners, pathIdentifier);
 
             InstanceIdentifierBuilder topologyIdentifier =
                     createTopologyIdentifier(underlayTopologyId);
@@ -269,10 +269,10 @@ public abstract class TopologyRequestHandler {
             UnderlayTopologyListener listener;
             if(filtrator == null) {
                 listener = modelAdapters.get(mapping.getInputModel()).registerUnderlayTopologyListener(domDataBroker,
-                                underlayTopologyId, correlationItem, datastoreType, aggregator, listeners);
+                                underlayTopologyId, correlationItem, datastoreType, aggregator, listeners, pathIdentifier);
             } else {
                 listener = modelAdapters.get(mapping.getInputModel()).registerUnderlayTopologyListener(domDataBroker,
-                                underlayTopologyId, correlationItem, datastoreType, filtrator, listeners);
+                                underlayTopologyId, correlationItem, datastoreType, filtrator, listeners, pathIdentifier);
             }
             listener.setPathIdentifier(pathIdentifier);
 

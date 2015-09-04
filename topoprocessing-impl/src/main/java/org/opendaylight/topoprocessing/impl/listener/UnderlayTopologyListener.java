@@ -65,7 +65,7 @@ public abstract class UnderlayTopologyListener implements DOMDataChangeListener 
     }
 
     private TopologyOperator operator;
-    protected YangInstanceIdentifier pathIdentifier;
+    private YangInstanceIdentifier pathIdentifier;
     protected String underlayTopologyId;
     private YangInstanceIdentifier itemIdentifier;
     private YangInstanceIdentifier relativeItemIdIdentifier;
