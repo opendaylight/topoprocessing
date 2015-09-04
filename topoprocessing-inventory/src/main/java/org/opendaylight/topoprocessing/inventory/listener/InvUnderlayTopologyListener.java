@@ -67,7 +67,7 @@ public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
     }
 
     public void registerUnderlayTopologyListener(DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataChangeListener>> listeners){
+            ,List<ListenerRegistration<DOMDataChangeListener>> listeners, YangInstanceIdentifier invPathIdentifier){
         if (correlationItem.equals(CorrelationItemEnum.Node)) {
             TopoStoreProvider connTopoStoreProvider = new TopoStoreProvider();
             NotificationInterConnector connector = new NotificationInterConnector(underlayTopologyId,
@@ -76,7 +76,7 @@ public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
             this.setOperator(connector);
             InventoryListener invListener = new InventoryListener(underlayTopologyId);
             invListener.setOperator(connector);
-            invListener.setPathIdentifier(pathIdentifier);
+            invListener.setPathIdentifier(invPathIdentifier);
             YangInstanceIdentifier invId = YangInstanceIdentifier.of(Nodes.QNAME)
                     .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME);
             ListenerRegistration<DOMDataChangeListener> invListenerRegistration;
