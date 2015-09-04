@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_ad024a6d",
+        "filename": "topoprocessing-inventory/src/main/java/org/opendaylight/topoprocessing/inventory/adapter/InvModelAdapter.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-04T07:37:08Z",
+      "side": 1,
+      "message": "in inventory case - InvUnderlayTopologyListener can\u0027t have pathIdentifier set. PathIdentifier must be set into InventoryListener",
+      "range": {
+        "startLine": 45,
+        "startChar": 8,
+        "endLine": 45,
+        "endChar": 51
+      },
+      "revId": "9f580ea28a375032a33578cdb3f913e666e9dd54",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
