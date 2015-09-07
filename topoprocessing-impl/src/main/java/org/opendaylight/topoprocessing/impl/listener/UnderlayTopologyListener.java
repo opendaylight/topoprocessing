@@ -8,11 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.listener;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
@@ -112,7 +109,6 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
 
     private void proceedChangeRequest(YangInstanceIdentifier identifier,
             NormalizedNode<?,?> entry, ModificationType modificationType) {
-        Map<YangInstanceIdentifier, UnderlayItem> resultEntries = new HashMap<>();
         if ((entry instanceof MapEntryNode) && entry.getNodeType().equals(itemQName)) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Processing entry: {}", entry);
@@ -150,26 +146,21 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
                 underlayItem = new UnderlayItem(entry, null, underlayTopologyId, itemId,
                         correlationItem);
             }
-            resultEntries.put(identifier, underlayItem);
             LOGGER.debug("underlayItem created");
-        }
-        if (! resultEntries.isEmpty()) {
             if (modificationType.equals(ModificationType.WRITE)) {
-                operator.processCreatedChanges(resultEntries, underlayTopologyId);
+                operator.processCreatedChanges(identifier, underlayItem, underlayTopologyId);
             } else if (modificationType.equals(ModificationType.SUBTREE_MODIFIED)) {
-                operator.processUpdatedChanges(resultEntries, underlayTopologyId);
+                operator.processUpdatedChanges(identifier, underlayItem, underlayTopologyId);
             }
         }
     }
 
     private void proceedDeletionRequest(PathArgument pathArgument) {
-        List<YangInstanceIdentifier> identifiers = new ArrayList<>();
         if (! (pathArgument instanceof AugmentationIdentifier)
                 && pathArgument.getNodeType().equals(itemQName)
                 && ! pathArgument.equals(itemIdentifier.getLastPathArgument())) {
-            identifiers.add(itemIdentifier.node(pathArgument));
+            operator.processRemovedChanges(itemIdentifier.node(pathArgument), underlayTopologyId);
         }
-        operator.processRemovedChanges(identifiers, underlayTopologyId);
     }
 
     protected abstract Map<YangInstanceIdentifier, NormalizedNode<?, ?>> listToMap(

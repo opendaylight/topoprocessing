@@ -10,7 +10,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
-import org.opendaylight.topoprocessing.impl.operator.filtrator.RangeNumberFiltrator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -21,12 +20,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
-
-import javax.swing.*;
-import java.util.Collections;
-import java.util.Map;
-
-import static org.junit.Assert.*;
 
 /**
  * @author matus.marko
@@ -63,14 +56,14 @@ public class TerminationPointPreAggregationFiltratorTest {
         }
 
         @Override
-        public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, String topologyId) {
-            MapEntryNode inputNode = (MapEntryNode) createdEntries.entrySet().iterator().next().getValue().getItem();
+        public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry, String topologyId) {
+            MapEntryNode inputNode = (MapEntryNode) createdEntry.getItem();
             Assert.assertEquals("Nodes should be equal", output, inputNode);
         }
 
         @Override
-        public void processUpdatedChanges(Map<YangInstanceIdentifier, UnderlayItem> updatedEntries, String topologyId) {
-            MapEntryNode inputNode = (MapEntryNode) updatedEntries.entrySet().iterator().next().getValue().getItem();
+        public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedEntry, String topologyId) {
+            MapEntryNode inputNode = (MapEntryNode) updatedEntry.getItem();
             Assert.assertEquals("Nodes should be equal", output, inputNode);
         }
     }
@@ -104,27 +97,27 @@ public class TerminationPointPreAggregationFiltratorTest {
     public void testProcessCreatedChangesValid() {
         Mockito.when(filter.isFiltered(Matchers.<NormalizedNode<?, ?>>any())).thenReturn(false);
         aggregator.setOutput(nodeValueInput);
-        filtrator.processCreatedChanges(Collections.singletonMap(nodeYiid, underlayItemInput), TOPOLOGY_ID);
+        filtrator.processCreatedChanges(nodeYiid, underlayItemInput, TOPOLOGY_ID);
     }
 
     @Test
     public void testProcessCreatedChangesInvalid() {
         Mockito.when(filter.isFiltered(Matchers.<NormalizedNode<?, ?>>any())).thenReturn(true);
         aggregator.setOutput(nodeValueOutput);
-        filtrator.processCreatedChanges(Collections.singletonMap(nodeYiid, underlayItemInput), TOPOLOGY_ID);
+        filtrator.processCreatedChanges(nodeYiid, underlayItemInput, TOPOLOGY_ID);
     }
 
     @Test
     public void testProcessUpdatedChangesValid() {
         Mockito.when(filter.isFiltered(Matchers.<NormalizedNode<?, ?>>any())).thenReturn(false);
         aggregator.setOutput(nodeValueInput);
-        filtrator.processUpdatedChanges(Collections.singletonMap(nodeYiid, underlayItemInput), TOPOLOGY_ID);
+        filtrator.processUpdatedChanges(nodeYiid, underlayItemInput, TOPOLOGY_ID);
     }
 
     @Test
     public void testProcessUpdatedChangesInvalid() {
         Mockito.when(filter.isFiltered(Matchers.<NormalizedNode<?, ?>>any())).thenReturn(true);
         aggregator.setOutput(nodeValueOutput);
-        filtrator.processUpdatedChanges(Collections.singletonMap(nodeYiid, underlayItemInput), TOPOLOGY_ID);
+        filtrator.processUpdatedChanges(nodeYiid, underlayItemInput, TOPOLOGY_ID);
     }
 }

@@ -8,7 +8,12 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import com.google.common.base.Optional;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
@@ -18,7 +23,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.LeafPath;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.*;
+import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
+import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
+import org.opendaylight.yangtools.yang.data.api.schema.LeafSetEntryNode;
+import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
+import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.CollectionNodeBuilder;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.ListNodeBuilder;
@@ -28,7 +39,7 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableMa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import com.google.common.base.Optional;
 
 /**
  * @author matus.marko
@@ -89,62 +100,52 @@ public class TerminationPointAggregator extends UnificationAggregator {
     }
 
     @Override
-    public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries,
+    public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry,
                                       final String topologyId) {
         LOG.trace("Processing createdChanges");
-        if (createdEntries != null) {
-            // iterate through nodes
-            for (Map.Entry<YangInstanceIdentifier, UnderlayItem> createdEntry : createdEntries.entrySet()) {
-                UnderlayItem underlayItem = createdEntry.getValue();
-                // save underlayItem to local datastore
-                getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(createdEntry.getKey(), underlayItem);
-                // find TerminationPoint Map in underlayItem
-                NormalizedNode<?, ?> newNode = underlayItem.getItem();
-                Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(newNode,
-                        YangInstanceIdentifier.of(TerminationPoint.QNAME));
-                if (tpMapNodeOpt.isPresent()) {
-                    MapNode tpMapNode = (MapNode) tpMapNodeOpt.get();
-                    // set TPMapNode to Items leafnode for further looking for changes
-                    underlayItem.setLeafNode(tpMapNode);
-                    // aggregate Termination points to Temporary TP
-                    List<TemporaryTerminationPoint> tmpTpList = addTerminationPoints(tpMapNode);
-                    // add Temporary TP to map
-                    tpStore.put(createdEntry.getKey(), tmpTpList);
-                    underlayItem.setItem(setTpToNode(tmpTpList, newNode));
-                }
-                OverlayItem overlayItem = new OverlayItem(
-                        Collections.singletonList(underlayItem), CorrelationItemEnum.TerminationPoint);
-                underlayItem.setOverlayItem(overlayItem);
-                topologyManager.addOverlayItem(overlayItem);
-            }
+        // save underlayItem to local datastore
+        getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(identifier, createdEntry);
+        // find TerminationPoint Map in underlayItem
+        NormalizedNode<?, ?> newNode = createdEntry.getItem();
+        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(newNode,
+                YangInstanceIdentifier.of(TerminationPoint.QNAME));
+        if (tpMapNodeOpt.isPresent()) {
+            MapNode tpMapNode = (MapNode) tpMapNodeOpt.get();
+            // set TPMapNode to Items leafnode for further looking for changes
+            createdEntry.setLeafNode(tpMapNode);
+            // aggregate Termination points to Temporary TP
+            List<TemporaryTerminationPoint> tmpTpList = addTerminationPoints(tpMapNode);
+            // add Temporary TP to map
+            tpStore.put(identifier, tmpTpList);
+            createdEntry.setItem(setTpToNode(tmpTpList, newNode));
         }
+        OverlayItem overlayItem = new OverlayItem(
+                Collections.singletonList(createdEntry), CorrelationItemEnum.TerminationPoint);
+        createdEntry.setOverlayItem(overlayItem);
+        topologyManager.addOverlayItem(overlayItem);
     }
 
     @Override
-    public void processUpdatedChanges(Map<YangInstanceIdentifier, UnderlayItem> updatedEntries, String topologyId) {
+    public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedEntry, String topologyId) {
         LOG.trace("Processing updatedChanges");
-        if (updatedEntries != null) {
-            TopologyStore ts = getTopoStoreProvider().getTopologyStore(topologyId);
-            for (Map.Entry<YangInstanceIdentifier, UnderlayItem> updatedEntry : updatedEntries.entrySet()) {
-                List<TemporaryTerminationPoint> nodeTps = tpStore.get(updatedEntry.getKey());
-                // load underlay item by given key
-                UnderlayItem underlayItem = ts.getUnderlayItems().get(updatedEntry.getKey());
-                MapEntryNode newNode = (MapEntryNode) updatedEntry.getValue().getItem();
-                Optional<NormalizedNode<?, ?>> updatedTpMapNode = NormalizedNodes.findNode(
-                        newNode, YangInstanceIdentifier.of(TerminationPoint.QNAME));
-                // if node contains Termination points
-                // and those TP have some changes inside
-                if (updatedTpMapNode.isPresent()
-                        && (! underlayItem.getLeafNode().equals(updatedTpMapNode.get()))) {
-                    MapNode newTpMap = (MapNode) updatedTpMapNode.get();
-                    underlayItem.setLeafNode(newTpMap);
-                    removeTerminationPoints(newTpMap, nodeTps);
-                    updateTerminationPoints(newTpMap, nodeTps);
-                }
-                underlayItem.setItem(setTpToNode(nodeTps, newNode));
-                topologyManager.updateOverlayItem(underlayItem.getOverlayItem());
-            }
+        TopologyStore ts = getTopoStoreProvider().getTopologyStore(topologyId);
+        List<TemporaryTerminationPoint> nodeTps = tpStore.get(identifier);
+        // load underlay item by given key
+        UnderlayItem underlayItem = ts.getUnderlayItems().get(identifier);
+        MapEntryNode newNode = (MapEntryNode) updatedEntry.getItem();
+        Optional<NormalizedNode<?, ?>> updatedTpMapNode = NormalizedNodes.findNode(
+                newNode, YangInstanceIdentifier.of(TerminationPoint.QNAME));
+        // if node contains Termination points
+        // and those TP have some changes inside
+        if (updatedTpMapNode.isPresent()
+                && (! underlayItem.getLeafNode().equals(updatedTpMapNode.get()))) {
+            MapNode newTpMap = (MapNode) updatedTpMapNode.get();
+            underlayItem.setLeafNode(newTpMap);
+            removeTerminationPoints(newTpMap, nodeTps);
+            updateTerminationPoints(newTpMap, nodeTps);
         }
+        underlayItem.setItem(setTpToNode(nodeTps, newNode));
+        topologyManager.updateOverlayItem(underlayItem.getOverlayItem());
     }
 
     private void addItemToList(MapEntryNode tpMapEntry, NormalizedNode<?, ?> targetField,

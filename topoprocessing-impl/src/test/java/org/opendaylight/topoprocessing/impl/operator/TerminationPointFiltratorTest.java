@@ -1,5 +1,7 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
+import java.util.Collections;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +17,6 @@ import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.rev150209.TopoProcessingProviderServiceInterface;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
@@ -23,8 +24,6 @@ import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
-
-import java.util.Collections;
 
 /**
  * @author matus.marko
@@ -108,7 +107,7 @@ public class TerminationPointFiltratorTest {
         underlayItemOutput.setOverlayItem(overlayItemOutput);
 
         manager.setOutput(nodeValueOutput);
-        filtrator.processCreatedChanges(Collections.singletonMap(nodeYiid, underlayItemInput), TOPOLOGY_ID);
+        filtrator.processCreatedChanges(nodeYiid, underlayItemInput, TOPOLOGY_ID);
     }
 
     @Test
@@ -131,6 +130,6 @@ public class TerminationPointFiltratorTest {
                 NODE_ID).withChild(ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME).build()).build();
 
         manager.setOutput(nodeValueOutput);
-        filtrator.processUpdatedChanges(Collections.singletonMap(nodeYiid, underlayItemInput), TOPOLOGY_ID);
+        filtrator.processUpdatedChanges(nodeYiid, underlayItemInput, TOPOLOGY_ID);
     }
 }
