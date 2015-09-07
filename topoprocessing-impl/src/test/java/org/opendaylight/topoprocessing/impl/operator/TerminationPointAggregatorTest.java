@@ -1,6 +1,8 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
-import com.google.common.base.Optional;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +14,6 @@ import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
-import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
@@ -24,14 +25,18 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeWithValue;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
-import org.opendaylight.yangtools.yang.data.api.schema.*;
+import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
+import org.opendaylight.yangtools.yang.data.api.schema.LeafSetEntryNode;
+import org.opendaylight.yangtools.yang.data.api.schema.LeafSetNode;
+import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
+import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLeafSetEntryNodeBuilder;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLeafSetNodeBuilder;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import com.google.common.base.Optional;
 
 /**
  * @author matus.marko
@@ -165,7 +170,7 @@ public class TerminationPointAggregatorTest {
                         .build()
         ).build();
         UnderlayItem underlayItemInput = new UnderlayItem(nodeValueInput, null, TOPOLOGY_NAME, nodeId, CorrelationItemEnum.Node);
-        aggregator.processCreatedChanges(Collections.singletonMap(nodeYiid, underlayItemInput), TOPOLOGY_NAME);
+        aggregator.processCreatedChanges(nodeYiid, underlayItemInput, TOPOLOGY_NAME);
 
         // check results
         Assert.assertNotNull("Manager should contain some changes", topoManager.getNewOverlayItem());
@@ -235,7 +240,7 @@ public class TerminationPointAggregatorTest {
                 ).build();
 
         UnderlayItem underlayItemInput = new UnderlayItem(nodeValueInput, null, TOPOLOGY_NAME, nodeId, CorrelationItemEnum.Node);
-        aggregator.processUpdatedChanges(Collections.singletonMap(nodeYiid, underlayItemInput), TOPOLOGY_NAME);
+        aggregator.processUpdatedChanges(nodeYiid, underlayItemInput, TOPOLOGY_NAME);
 
         Assert.assertNotNull("Manager should contain some changes", topoManager.getOldOverlayItem());
         Assert.assertNotNull("OverlayItem should contain some nodes", topoManager.getOldOverlayItem().getUnderlayItems());
@@ -284,7 +289,7 @@ public class TerminationPointAggregatorTest {
 
         testCreateNode();
         UnderlayItem underlayItemInput = new UnderlayItem(nodeValueInput, null, TOPOLOGY_NAME, nodeId, CorrelationItemEnum.Node);
-        aggregator.processUpdatedChanges(Collections.singletonMap(nodeYiid, underlayItemInput), TOPOLOGY_NAME);
+        aggregator.processUpdatedChanges(nodeYiid, underlayItemInput, TOPOLOGY_NAME);
 
         MapEntryNode resultItem = (MapEntryNode) topoManager.getOldOverlayItem().getUnderlayItems().iterator().next().getItem();
         Optional<DataContainerChild<? extends PathArgument, ?>> newValueLeaf = resultItem.getChild(new NodeIdentifier(NODE_FEATURE));

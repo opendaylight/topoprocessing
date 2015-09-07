@@ -7,10 +7,7 @@
  */
 package org.opendaylight.topoprocessing.impl.operator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -117,11 +114,9 @@ public class UnificationAggregatorTest {
         LeafNode<String> leafNode22 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.3");
         UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, leafNode21, TOPO2, "21", CorrelationItemEnum.Node);
         UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, leafNode22, TOPO2, "22", CorrelationItemEnum.Node);
-        Map<YangInstanceIdentifier, UnderlayItem> physicalNodes1 = new HashMap<>();
-        physicalNodes1.put(leafYiid21, physicalNode1);
-        physicalNodes1.put(leafYiid22, physicalNode2);
 
-        aggregator.processCreatedChanges(physicalNodes1, TOPO2);
+        aggregator.processCreatedChanges(leafYiid21, physicalNode1, TOPO2);
+        aggregator.processCreatedChanges(leafYiid22, physicalNode2, TOPO2);
         
         Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
         // checks that two nodes have been correctly added into topology TOPO2
@@ -141,10 +136,8 @@ public class UnificationAggregatorTest {
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.1").build();
         UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, leafNode23, TOPO3, "23", CorrelationItemEnum.Node);
-        Map<YangInstanceIdentifier, UnderlayItem> physicalNodes2 = new HashMap<>();
-        physicalNodes2.put(leafYiid23, physicalNode3);
 
-        aggregator.processCreatedChanges(physicalNodes2, TOPO3);
+        aggregator.processCreatedChanges(leafYiid23, physicalNode3, TOPO3);
 
         Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
         Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
@@ -174,9 +167,7 @@ public class UnificationAggregatorTest {
     public void testProcessRemovedChanges() throws Exception {
         testProcessCreatedChanges();
         // case 1
-        ArrayList<YangInstanceIdentifier> remove1 = new ArrayList<>();
-        remove1.add(leafYiid23);
-        aggregator.processRemovedChanges(remove1, TOPO3);
+        aggregator.processRemovedChanges(leafYiid23, TOPO3);
 
         Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
         Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
@@ -190,9 +181,7 @@ public class UnificationAggregatorTest {
         Mockito.verify(mockManager, Mockito.times(2)).updateOverlayItem((OverlayItem) Mockito.any());
 
         // case 2
-        ArrayList<YangInstanceIdentifier> remove2 = new ArrayList<>();
-        remove2.add(leafYiid22);
-        aggregator.processRemovedChanges(remove2, TOPO2);
+        aggregator.processRemovedChanges(leafYiid22, TOPO2);
 
         // one physical node left in topology store TOPO2 (=get(1))
         Assert.assertEquals(1, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
@@ -216,9 +205,7 @@ public class UnificationAggregatorTest {
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.3").build();
         UnderlayItem physicalNode31 = new UnderlayItem(mockNormalizedNode1, leafNode31, TOPO2, "31", CorrelationItemEnum.Node);
-        Map<YangInstanceIdentifier, UnderlayItem> update = new HashMap<>();
-        update.put(leafYiid21, physicalNode31);
-        aggregator.processUpdatedChanges(update, TOPO2);
+        aggregator.processUpdatedChanges(leafYiid21, physicalNode31, TOPO2);
 
         // one new logical node has been created
         Mockito.verify(mockManager, Mockito.times(3)).addOverlayItem((OverlayItem) Mockito.any());
@@ -227,39 +214,4 @@ public class UnificationAggregatorTest {
         Mockito.verify(mockManager, Mockito.times(2)).updateOverlayItem((OverlayItem) Mockito.any());
     }
 
-    /**
-     * Testing processCreateChanges, processUpdatedChanges, processRemovedChanges with nonstandard inputs
-     */
-    @Test
-    public void testFunctionsWithEmptyAndNullMaps() {
-        // empty hash maps and array list
-        Map<YangInstanceIdentifier, UnderlayItem> update = new HashMap<>();
-        aggregator.processCreatedChanges(update, TOPO1);
-        aggregator.processUpdatedChanges(update, TOPO1);
-        ArrayList<YangInstanceIdentifier> remove = new ArrayList<>();
-        aggregator.processRemovedChanges(remove, TOPO1);
-
-        // null topology names
-        Map<YangInstanceIdentifier, UnderlayItem> update2 = new HashMap<>();
-        aggregator.processCreatedChanges(update2, null);
-        aggregator.processUpdatedChanges(update2, null);
-        ArrayList<YangInstanceIdentifier> remove2 = new ArrayList<>();
-        aggregator.processRemovedChanges(remove2, null);
-
-        // null hash maps and array list
-        Map<YangInstanceIdentifier, UnderlayItem> update3 = null;
-        aggregator.processCreatedChanges(update3, TOPO1);
-        aggregator.processUpdatedChanges(update3, TOPO1);
-        ArrayList<YangInstanceIdentifier> remove3 = null;
-        aggregator.processRemovedChanges(remove3, TOPO1);
-
-        // TOPO5 has never been used nor initialized, this shall not cause any problem
-        Map<YangInstanceIdentifier, UnderlayItem> update4 = new HashMap<>();
-        aggregator.processCreatedChanges(update4, TOPO5);
-        aggregator.processUpdatedChanges(update4, TOPO5);
-        ArrayList<YangInstanceIdentifier> remove4 = new ArrayList<>();
-        aggregator.processRemovedChanges(remove4, TOPO5);
-
-        Assert.assertTrue(true);
-    }
 }

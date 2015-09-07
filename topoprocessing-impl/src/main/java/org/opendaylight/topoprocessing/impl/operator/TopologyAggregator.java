@@ -57,19 +57,15 @@ public abstract class TopologyAggregator implements TopologyOperator {
     }
 
     @Override
-    public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries,
+    public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdItem,
                                                 final String topologyId) {
         LOG.trace("Processing createdChanges");
-        if (createdEntries != null) {
-            for (Entry<YangInstanceIdentifier, UnderlayItem> createdEntry : createdEntries.entrySet()) {
-                for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
-                    if (ts.getId().equals(topologyId)) {
-                        ts.getUnderlayItems().put(createdEntry.getKey(), createdEntry.getValue());
-                    }
-                }
-                checkForPossibleAggregation(createdEntry.getValue(), topologyId);
+        for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
+            if (ts.getId().equals(topologyId)) {
+                ts.getUnderlayItems().put(identifier, createdItem);
             }
         }
+        checkForPossibleAggregation(createdItem, topologyId);
     }
 
     /**
@@ -144,20 +140,16 @@ public abstract class TopologyAggregator implements TopologyOperator {
     }
 
     @Override
-    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId) {
+    public void processRemovedChanges(YangInstanceIdentifier identifier, final String topologyId) {
         LOG.trace("Processing removedChanges");
         for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
             if (ts.getId().equals(topologyId)) {
                 Map<YangInstanceIdentifier, UnderlayItem> underlayItems = ts.getUnderlayItems();
-                if (identifiers != null) {
-                    for (YangInstanceIdentifier identifier : identifiers) {
-                        UnderlayItem underlayItem = underlayItems.remove(identifier);
-                        // if identifier exists in topology store
-                        if (underlayItem != null) {
-                            // if underlay item is part of some overlay item
-                            removeUnderlayItemFromOverlayItem(underlayItem);
-                        }
-                    }
+                UnderlayItem underlayItem = underlayItems.remove(identifier);
+                // if identifier exists in topology store
+                if (underlayItem != null) {
+                    // if underlay item is part of some overlay item
+                    removeUnderlayItemFromOverlayItem(underlayItem);
                 }
             }
         }
@@ -183,33 +175,28 @@ public abstract class TopologyAggregator implements TopologyOperator {
     }
 
     @Override
-    public void processUpdatedChanges(Map<YangInstanceIdentifier, UnderlayItem> updatedEntries,
+    public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedItem,
                                                 String topologyId) {
         LOG.trace("Processing updatedChanges");
-        if (updatedEntries != null) {
-            for (Entry<YangInstanceIdentifier, UnderlayItem> updatedEntry : updatedEntries.entrySet()) {
-                for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
-                    if (ts.getId().equals(topologyId)) {
-                        LOG.debug("Updating overlay item");
-                        UnderlayItem underlayItem = ts.getUnderlayItems().get(updatedEntry.getKey());
-                        Preconditions.checkNotNull(underlayItem, "Updated underlay item not found in the Topology store");
-                        UnderlayItem updatedEntryValue = updatedEntry.getValue();
-                        underlayItem.setItem(updatedEntryValue.getItem());
-                        NormalizedNode<?, ?> leafNode = underlayItem.getLeafNode();
-                        // if Leaf Node was changed
-                        if (! leafNode.equals(updatedEntryValue.getLeafNode())) {
-                            underlayItem.setLeafNode(updatedEntryValue.getLeafNode());
-                            if (underlayItem.getOverlayItem() != null) {
-                                removeUnderlayItemFromOverlayItem(underlayItem);
-                            }
-                            checkForPossibleAggregation(underlayItem, topologyId);
-                        } else if (underlayItem.getOverlayItem() != null) {
-                            // in case that only Node value was changed
-                            topologyManager.updateOverlayItem(underlayItem.getOverlayItem());
-                        }
-                        break;
+        for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
+            if (ts.getId().equals(topologyId)) {
+                LOG.debug("Updating overlay item");
+                UnderlayItem underlayItem = ts.getUnderlayItems().get(identifier);
+                Preconditions.checkNotNull(underlayItem, "Updated underlay item not found in the Topology store");
+                underlayItem.setItem(updatedItem.getItem());
+                NormalizedNode<?, ?> leafNode = underlayItem.getLeafNode();
+                // if Leaf Node was changed
+                if (! leafNode.equals(updatedItem.getLeafNode())) {
+                    underlayItem.setLeafNode(updatedItem.getLeafNode());
+                    if (underlayItem.getOverlayItem() != null) {
+                        removeUnderlayItemFromOverlayItem(underlayItem);
                     }
+                    checkForPossibleAggregation(underlayItem, topologyId);
+                } else if (underlayItem.getOverlayItem() != null) {
+                    // in case that only Node value was changed
+                    topologyManager.updateOverlayItem(underlayItem.getOverlayItem());
                 }
+                break;
             }
         }
     }

@@ -35,43 +35,38 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
     }
 
     @Override
-    public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, String topologyId) {
+    public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry, String topologyId) {
         LOGGER.trace("Processing createdChanges");
-        for (Map.Entry<YangInstanceIdentifier, UnderlayItem> itemEntry : createdEntries.entrySet()) {
-            UnderlayItem underlayItem = itemEntry.getValue();
-            NormalizedNode<?, ?> node = underlayItem.getItem();
-            Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(node,
-                    YangInstanceIdentifier.of(TerminationPoint.QNAME));
-            if (tpMapNodeOpt.isPresent()) {
-                node = filterTerminationPoints(node, (MapNode) tpMapNodeOpt.get());
-                underlayItem.setItem(node);
-            }
-            getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(itemEntry.getKey(), underlayItem);
-            OverlayItem overlayItem = wrapUnderlayItem(underlayItem);
-            manager.addOverlayItem(overlayItem);
+        NormalizedNode<?, ?> node = createdEntry.getItem();
+        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(node,
+                YangInstanceIdentifier.of(TerminationPoint.QNAME));
+        if (tpMapNodeOpt.isPresent()) {
+            node = filterTerminationPoints(node, (MapNode) tpMapNodeOpt.get());
+            createdEntry.setItem(node);
         }
+        getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(identifier, createdEntry);
+        OverlayItem overlayItem = wrapUnderlayItem(createdEntry);
+        manager.addOverlayItem(overlayItem);
     }
 
     @Override
-    public void processUpdatedChanges(Map<YangInstanceIdentifier, UnderlayItem> updatedEntries, String topologyId) {
+    public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedEntry, String topologyId) {
         LOGGER.trace("Processing updatedChanges");
         Map<YangInstanceIdentifier, UnderlayItem> oldUnderlayItems =
                 getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems();
-        for (Map.Entry<YangInstanceIdentifier, UnderlayItem> itemEntry : updatedEntries.entrySet()) {
-            OverlayItem overlayItem;
-            UnderlayItem newUnderlayItem = itemEntry.getValue();
-            NormalizedNode<?, ?> newNode = newUnderlayItem.getItem();
-            Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(newNode,
-                    YangInstanceIdentifier.of(TerminationPoint.QNAME));
-            if (tpMapNodeOpt.isPresent()) {
-                newNode = filterTerminationPoints(newNode, (MapNode) tpMapNodeOpt.get());
-                newUnderlayItem.setItem(newNode);
-            }
-            UnderlayItem oldUnderlayItem = oldUnderlayItems.get(itemEntry.getKey());
-            overlayItem = oldUnderlayItem.getOverlayItem();
-            overlayItem.setUnderlayItems(Collections.singletonList(newUnderlayItem));
-            manager.addOverlayItem(overlayItem);
+        OverlayItem overlayItem;
+        UnderlayItem newUnderlayItem = updatedEntry;
+        NormalizedNode<?, ?> newNode = newUnderlayItem.getItem();
+        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(newNode,
+                YangInstanceIdentifier.of(TerminationPoint.QNAME));
+        if (tpMapNodeOpt.isPresent()) {
+            newNode = filterTerminationPoints(newNode, (MapNode) tpMapNodeOpt.get());
+            newUnderlayItem.setItem(newNode);
         }
+        UnderlayItem oldUnderlayItem = oldUnderlayItems.get(identifier);
+        overlayItem = oldUnderlayItem.getOverlayItem();
+        overlayItem.setUnderlayItems(Collections.singletonList(newUnderlayItem));
+        manager.addOverlayItem(overlayItem);
     }
 
     private NormalizedNode<?, ?> filterTerminationPoints(NormalizedNode<?, ?> node, MapNode tpMapNode) {

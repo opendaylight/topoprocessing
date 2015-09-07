@@ -93,12 +93,9 @@ public class UnificationCustomScriptTest {
         LeafNode<String> leafNode22 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.3");
         UnderlayItem UnderlayItem1 = new UnderlayItem(mockNormalizedNode1, leafNode21, TOPO1, "21", nodeItem);
         UnderlayItem UnderlayItem2 = new UnderlayItem(mockNormalizedNode1, leafNode22, TOPO1, "22", nodeItem);
-        Map<YangInstanceIdentifier, UnderlayItem> UnderlayItems1 = new HashMap<>();
-        UnderlayItems1.put(leafYiid21, UnderlayItem1);
-        UnderlayItems1.put(leafYiid22, UnderlayItem2);
-
-        aggregator.processCreatedChanges(UnderlayItems1, TOPO1);
-
+        aggregator.processCreatedChanges(leafYiid21, UnderlayItem1, TOPO1);
+        aggregator.processCreatedChanges(leafYiid22, UnderlayItem2, TOPO1);
+        
         Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
         // checks that two nodes have been correctly added into topology TOPO2
         Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
@@ -114,11 +111,8 @@ public class UnificationCustomScriptTest {
         LeafNode<Object> leafNode23 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.1").build();
-        UnderlayItem UnderlayItem3 = new UnderlayItem(mockNormalizedNode1, leafNode23, TOPO2, "23", nodeItem);
-        Map<YangInstanceIdentifier, UnderlayItem> UnderlayItems2 = new HashMap<>();
-        UnderlayItems2.put(leafYiid23, UnderlayItem3);
-
-        aggregator.processCreatedChanges(UnderlayItems2, TOPO2);
+        UnderlayItem underlayItem3 = new UnderlayItem(mockNormalizedNode1, leafNode23, TOPO2, "23", nodeItem);
+        aggregator.processCreatedChanges(leafYiid23, underlayItem3, TOPO2);
 
         Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
         Assert.assertEquals(1, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());

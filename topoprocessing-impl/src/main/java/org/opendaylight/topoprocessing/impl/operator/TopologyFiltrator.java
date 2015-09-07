@@ -42,59 +42,51 @@ public class TopologyFiltrator implements TopologyOperator {
     
 
     @Override
-    public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, String topologyId) {
+    public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdItem, String topologyId) {
         LOGGER.trace("Processing createdChanges");
-        for (Map.Entry<YangInstanceIdentifier, UnderlayItem> itemEntry : createdEntries.entrySet()) {
-            UnderlayItem newItemValue = itemEntry.getValue();
-            if (passedFiltration(newItemValue.getItem())) {
-                topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(itemEntry.getKey(), newItemValue);
-                OverlayItem overlayItem = wrapUnderlayItem(newItemValue);
-                manager.addOverlayItem(overlayItem);
-            }
+        if (passedFiltration(createdItem.getItem())) {
+            topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, createdItem);
+            OverlayItem overlayItem = wrapUnderlayItem(createdItem);
+            manager.addOverlayItem(overlayItem);
         }
     }
 
     @Override
-    public void processUpdatedChanges(Map<YangInstanceIdentifier, UnderlayItem> updatedEntries, String topologyId) {
+    public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedItem, String topologyId) {
         LOGGER.trace("Processing updatedChanges");
-        for (Map.Entry<YangInstanceIdentifier, UnderlayItem> mapEntry : updatedEntries.entrySet()) {
-            UnderlayItem updatedItem = mapEntry.getValue();
-            UnderlayItem oldItem = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().get(mapEntry.getKey());
-            if (null == oldItem) {
-                // updatedItem is not present yet
-                if (passedFiltration(updatedItem.getItem())) {
-                    // passed through filtrator
-                    topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
-                    manager.addOverlayItem(wrapUnderlayItem(updatedItem));
-                }
-                // else do nothing
+        UnderlayItem oldItem = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().get(identifier);
+        if (null == oldItem) {
+            // updatedItem is not present yet
+            if (passedFiltration(updatedItem.getItem())) {
+                // passed through filtrator
+                topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, updatedItem);
+                manager.addOverlayItem(wrapUnderlayItem(updatedItem));
+            }
+            // else do nothing
+        } else {
+            // updatedItem exists already
+            if (passedFiltration(updatedItem.getItem())) {
+                // passed through filtrator
+                topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, updatedItem);
+                OverlayItem overlayItem = oldItem.getOverlayItem();
+                updatedItem.setOverlayItem(overlayItem);
+                overlayItem.setUnderlayItems(Collections.singletonList(updatedItem));
+                manager.updateOverlayItem(overlayItem);
             } else {
-                // updatedItem exists already
-                if (passedFiltration(updatedItem.getItem())) {
-                    // passed through filtrator
-                    topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(mapEntry.getKey(), updatedItem);
-                    OverlayItem overlayItem = oldItem.getOverlayItem();
-                    updatedItem.setOverlayItem(overlayItem);
-                    overlayItem.setUnderlayItems(Collections.singletonList(updatedItem));
-                    manager.updateOverlayItem(overlayItem);
-                } else {
-                    // filtered out
-                    OverlayItem oldOverlayItem = oldItem.getOverlayItem();
-                    topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().remove(mapEntry.getKey());
-                    manager.removeOverlayItem(oldOverlayItem);
-                }
+                // filtered out
+                OverlayItem oldOverlayItem = oldItem.getOverlayItem();
+                topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().remove(identifier);
+                manager.removeOverlayItem(oldOverlayItem);
             }
         }
     }
 
     @Override
-    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
+    public void processRemovedChanges(YangInstanceIdentifier itemIdentifier, String topologyId) {
         LOGGER.trace("Processing removedChanges");
-        for (YangInstanceIdentifier itemIdentifier : identifiers) {
-            UnderlayItem underlayItem = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().remove(itemIdentifier);
-            if (null != underlayItem) {
-                manager.removeOverlayItem(underlayItem.getOverlayItem());
-            }
+        UnderlayItem underlayItem = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().remove(itemIdentifier);
+        if (null != underlayItem) {
+            manager.removeOverlayItem(underlayItem.getOverlayItem());
         }
     }
 

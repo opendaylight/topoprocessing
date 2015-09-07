@@ -8,9 +8,6 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
@@ -30,51 +27,40 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
     }
 
     @Override
-    public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, String topologyId) {
+    public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry, String topologyId) {
         LOGGER.trace("Processing createdChanges");
-        for (Map.Entry<YangInstanceIdentifier, UnderlayItem> itemEntry : createdEntries.entrySet()) {
-            UnderlayItem newItem = itemEntry.getValue();
-            if (passedFiltration(newItem.getItem())) {
-                aggregator.processCreatedChanges(Collections.singletonMap(itemEntry.getKey(), newItem),
-                        topologyId);
-            }
+        if (passedFiltration(createdEntry.getItem())) {
+            aggregator.processCreatedChanges(identifier, createdEntry, topologyId);
         }
     }
 
     @Override
-    public void processUpdatedChanges(Map<YangInstanceIdentifier, UnderlayItem> updatedEntries, String topologyId) {
+    public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedEntry, String topologyId) {
         LOGGER.trace("Processing updatedChanges");
-        for (Map.Entry<YangInstanceIdentifier, UnderlayItem> mapEntry : updatedEntries.entrySet()) {
-            UnderlayItem updatedItem = mapEntry.getValue();
-            UnderlayItem olditem = getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().get(mapEntry.getKey());
-            if (null == olditem) {
-                // updateditem is not present yet
-                if (passedFiltration(updatedItem.getItem())) {
-                    // passed through filtrator
-                    aggregator.processCreatedChanges(Collections.singletonMap(mapEntry.getKey(), updatedItem),
-                            topologyId);
-                }
-                // else do nothing
+        UnderlayItem olditem = getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().get(identifier);
+        if (null == olditem) {
+            // updateditem is not present yet
+            if (passedFiltration(updatedEntry.getItem())) {
+                // passed through filtrator
+                aggregator.processCreatedChanges(identifier, updatedEntry, topologyId);
+            }
+            // else do nothing
+        } else {
+            // updateditem exists already
+            if (passedFiltration(updatedEntry.getItem())) {
+                // passed through filtrator
+                aggregator.processUpdatedChanges(identifier, updatedEntry, topologyId);
             } else {
-                // updateditem exists already
-                if (passedFiltration(updatedItem.getItem())) {
-                    // passed through filtrator
-                    aggregator.processUpdatedChanges(Collections.singletonMap(mapEntry.getKey(), updatedItem),
-                            topologyId);
-                } else {
-                    // filtered out
-                    aggregator.processRemovedChanges(Collections.singletonList(mapEntry.getKey()), topologyId);
-                }
+                // filtered out
+                aggregator.processRemovedChanges(identifier, topologyId);
             }
         }
     }
 
     @Override
-    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
+    public void processRemovedChanges(YangInstanceIdentifier identifier, String topologyId) {
         LOGGER.trace("Processing removedChanges");
-        for (YangInstanceIdentifier itemIdentifier : identifiers) {
-                aggregator.processRemovedChanges(Collections.singletonList(itemIdentifier), topologyId);
-        }
+        aggregator.processRemovedChanges(identifier, topologyId);
     }
 
     @Override
