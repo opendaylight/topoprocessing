@@ -38,35 +38,30 @@ public class TerminationPointPreAggregationFiltrator extends PreAggregationFiltr
     }
     
     @Override
-    public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, String topologyId) {
+    public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry, String topologyId) {
         LOGGER.trace("Processing createdChanges");
-        for (Map.Entry<YangInstanceIdentifier, UnderlayItem> itemEntry : createdEntries.entrySet()) {
-            UnderlayItem underlayItem = itemEntry.getValue();
-            NormalizedNode<?, ?> node = underlayItem.getItem();
-            Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(node,
-                    YangInstanceIdentifier.of(TerminationPoint.QNAME));
-            if (tpMapNodeOpt.isPresent()) {
-                node = filterNode(node, (MapNode) tpMapNodeOpt.get());
-                underlayItem.setItem(node);
-            }
-            aggregator.processCreatedChanges(Collections.singletonMap(itemEntry.getKey(), underlayItem), topologyId);
+        NormalizedNode<?, ?> node = createdEntry.getItem();
+        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(node,
+                YangInstanceIdentifier.of(TerminationPoint.QNAME));
+        if (tpMapNodeOpt.isPresent()) {
+            node = filterNode(node, (MapNode) tpMapNodeOpt.get());
+            createdEntry.setItem(node);
         }
+        aggregator.processCreatedChanges(identifier, createdEntry, topologyId);
     }
 
     @Override
-    public void processUpdatedChanges(Map<YangInstanceIdentifier, UnderlayItem> updatedEntries, String topologyId) {
+    public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedEntry, String topologyId) {
         LOGGER.trace("Processing updatedChanges");
-        for (Map.Entry<YangInstanceIdentifier, UnderlayItem> itemEntry : updatedEntries.entrySet()) {
-            UnderlayItem underlayItem = itemEntry.getValue();
-            NormalizedNode<?, ?> node = underlayItem.getItem();
-            Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(node,
-                    YangInstanceIdentifier.of(TerminationPoint.QNAME));
-            if (tpMapNodeOpt.isPresent()) {
-                node = filterNode(node, (MapNode) tpMapNodeOpt.get());
-                underlayItem.setItem(node);
-            }
-            aggregator.processUpdatedChanges(Collections.singletonMap(itemEntry.getKey(), underlayItem), topologyId);
+        UnderlayItem underlayItem = updatedEntry;
+        NormalizedNode<?, ?> node = underlayItem.getItem();
+        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(node,
+                YangInstanceIdentifier.of(TerminationPoint.QNAME));
+        if (tpMapNodeOpt.isPresent()) {
+            node = filterNode(node, (MapNode) tpMapNodeOpt.get());
+            underlayItem.setItem(node);
         }
+        aggregator.processUpdatedChanges(identifier, underlayItem, topologyId);
     }
 
     private NormalizedNode<?, ?> filterNode(NormalizedNode<?, ?> node, MapNode tpMapNode) {

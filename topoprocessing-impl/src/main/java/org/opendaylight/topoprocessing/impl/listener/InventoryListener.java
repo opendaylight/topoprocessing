@@ -9,12 +9,8 @@
 package org.opendaylight.topoprocessing.impl.listener;
 
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -83,7 +79,6 @@ public class InventoryListener implements DOMDataTreeChangeListener {
 
     private void proceedChangeRequest(YangInstanceIdentifier identifier,
             NormalizedNode<?, ?> entry, ModificationType modificationType) {
-        Map<YangInstanceIdentifier, UnderlayItem> resultEntries = new HashMap<>();
         if (entry instanceof MapEntryNode && entry.getNodeType().equals(Node.QNAME)) {
             Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry, pathIdentifier);
             if (node.isPresent()) {
@@ -93,16 +88,13 @@ public class InventoryListener implements DOMDataTreeChangeListener {
                 NormalizedNode<?, ?> leafnode = node.get();
                 UnderlayItem underlayItem =
                         new UnderlayItem(null, leafnode, topologyId, null, CorrelationItemEnum.Node);
-                resultEntries.put(identifier, underlayItem);
+                if (modificationType.equals(ModificationType.WRITE)) {
+                    operator.processCreatedChanges(identifier, underlayItem, topologyId);
+                } else if (modificationType.equals(ModificationType.SUBTREE_MODIFIED)) {
+                    operator.processUpdatedChanges(identifier, underlayItem, topologyId);
+                }
             } else {
                 return;
-            }
-        }
-        if (! resultEntries.isEmpty()) {
-            if (modificationType.equals(ModificationType.WRITE)) {
-                operator.processCreatedChanges(resultEntries, topologyId);
-            } else if (modificationType.equals(ModificationType.SUBTREE_MODIFIED)) {
-                operator.processUpdatedChanges(resultEntries, topologyId);
             }
         }
     }
@@ -111,13 +103,11 @@ public class InventoryListener implements DOMDataTreeChangeListener {
      * @param removedPaths identifies removed structures
      */
     private void processRemovedChanges(PathArgument pathArgument) {
-        List<YangInstanceIdentifier> identifiers = new ArrayList<>();
         if (! (pathArgument instanceof AugmentationIdentifier)
                 && pathArgument.getNodeType().equals(Node.QNAME)
                 && ! pathArgument.equals(itemIdentifier.getLastPathArgument())) {
-            identifiers.add(itemIdentifier.node(pathArgument));
+            operator.processRemovedChanges(itemIdentifier.node(pathArgument), topologyId);
         }
-        operator.processRemovedChanges(identifiers, topologyId);
     }
 
     /**

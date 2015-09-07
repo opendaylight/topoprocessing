@@ -8,11 +8,9 @@
 
  package org.opendaylight.topoprocessing.inventory.listener;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,15 +19,6 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBrokerExtension;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataReadWriteTransaction;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
-import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
@@ -42,7 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
@@ -89,7 +77,10 @@ public class InvUnderlayTopologyListenerTest {
         QName ipAddressQname = QName.create(Node.QNAME, "ip-address");
         String nodeName = "node:1";
         String ipAddress = "192.168.1.1";
-        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.of(Node.QNAME);
+        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder()
+                .node(Node.QNAME)
+                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName)
+                .build();
         LeafNode<String> nodeIpValue = ImmutableNodes.leafNode(ipAddressQname, ipAddress);
         MapEntryNode nodeValueWithIp = ImmutableNodes.mapEntryBuilder(
                 Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName).addChild(nodeIpValue).build();
@@ -101,9 +92,7 @@ public class InvUnderlayTopologyListenerTest {
         listener.setOperator(mockOperator);
         listener.setPathIdentifier(pathIdentifier);
 
-        Map<YangInstanceIdentifier, UnderlayItem> createdEntries = new HashMap<>();
         UnderlayItem physicalNode = new UnderlayItem(nodeValueWithIp, nodeIpValue, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
-        createdEntries.put(nodeYiid, physicalNode);
         NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
 
@@ -114,27 +103,24 @@ public class InvUnderlayTopologyListenerTest {
         rootNode.setDataAfter(dataAfter);
         rootNode.setIdentifier(nodePathArgument);
         listener.onDataTreeChanged(mockCollection);
-        Mockito.verify(mockOperator).processCreatedChanges(Matchers.refEq(createdEntries), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(mockOperator).processCreatedChanges(Matchers.eq(nodeYiid), Matchers.refEq(physicalNode), Matchers.eq(TOPOLOGY_ID));
 
         // update
         resetMocks();
         setUpMocks(rootNode);
         rootNode.setModificationType(ModificationType.SUBTREE_MODIFIED);
         listener.onDataTreeChanged(mockCollection);
-        Mockito.verify(mockOperator).processUpdatedChanges(Matchers.refEq(createdEntries), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(mockOperator).processUpdatedChanges(Matchers.eq(nodeYiid), Matchers.refEq(physicalNode), Matchers.eq(TOPOLOGY_ID));
 
         // delete
         resetMocks();
         setUpMocks(rootNode);
         rootNode.setModificationType(ModificationType.DELETE);
         rootNode.setIdentifier(nodePathArgument);
-        YangInstanceIdentifier nodeIdYiid = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME)
-                .node(Topology.QNAME).nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY_ID)
+        YangInstanceIdentifier nodeIdYiid = YangInstanceIdentifier.builder()
                 .node(Node.QNAME).nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName).build();
         listener.onDataTreeChanged(mockCollection);
-        ArrayList<YangInstanceIdentifier> identifiers = new ArrayList<>();
-        identifiers.add(nodeIdYiid);
-        Mockito.verify(mockOperator).processRemovedChanges(Matchers.refEq(identifiers), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(mockOperator).processRemovedChanges(Matchers.eq(nodeIdYiid), Matchers.eq(TOPOLOGY_ID));
     }
 
     private void setUpMocks(TestDataTreeCandidateNode rootNode) {
@@ -156,18 +142,17 @@ public class InvUnderlayTopologyListenerTest {
     @Test
     public void testFiltrationRequest() {
         String nodeName = "node:1";
-        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.of(Node.QNAME);
+        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder()
+                .node(Node.QNAME)
+                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName)
+                .build();
         MapEntryNode nodeValue = ImmutableNodes.mapEntry(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
-        HashMap<YangInstanceIdentifier, NormalizedNode<?, ?>> mapCreated = new HashMap<>();
-        mapCreated.put(nodeYiid, nodeValue);
 
         TopologyFiltrator mockOperator = Mockito.mock(TopologyFiltrator.class);
         UnderlayTopologyListener listener = new InvUnderlayTopologyListener(dataBroker, TOPOLOGY_ID,
                 CorrelationItemEnum.Node);
         listener.setOperator(mockOperator);
-        Map<YangInstanceIdentifier, UnderlayItem> createdEntries = new HashMap<>();
         UnderlayItem physicalNode = new UnderlayItem(nodeValue, null, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
-        createdEntries.put(nodeYiid, physicalNode);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
         NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
 
@@ -178,26 +163,25 @@ public class InvUnderlayTopologyListenerTest {
         rootNode.setDataAfter(dataAfter);
         rootNode.setIdentifier(nodePathArgument);
         listener.onDataTreeChanged(mockCollection);
-        Mockito.verify(mockOperator).processCreatedChanges(Matchers.refEq(createdEntries), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(mockOperator).processCreatedChanges(Matchers.eq(nodeYiid), Matchers.refEq(physicalNode),
+                Matchers.eq(TOPOLOGY_ID));
 
         // update
         resetMocks();
         setUpMocks(rootNode);
         rootNode.setModificationType(ModificationType.SUBTREE_MODIFIED);
         listener.onDataTreeChanged(mockCollection);
-        Mockito.verify(mockOperator).processUpdatedChanges(Matchers.refEq(createdEntries), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(mockOperator).processUpdatedChanges(Matchers.eq(nodeYiid), Matchers.refEq(physicalNode),
+                Matchers.eq(TOPOLOGY_ID));
 
         // delete
         resetMocks();
         setUpMocks(rootNode);
         rootNode.setModificationType(ModificationType.DELETE);
-        YangInstanceIdentifier nodeIdYiid = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME)
-                .node(Topology.QNAME).nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY_ID)
+        YangInstanceIdentifier nodeIdYiid = YangInstanceIdentifier.builder()
                 .node(Node.QNAME).nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName).build();
         listener.onDataTreeChanged(mockCollection);
-        ArrayList<YangInstanceIdentifier> identifiers = new ArrayList<>();
-        identifiers.add(nodeIdYiid);
-        Mockito.verify(mockOperator).processRemovedChanges(Matchers.refEq(identifiers), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(mockOperator).processRemovedChanges(Matchers.eq(nodeIdYiid), Matchers.eq(TOPOLOGY_ID));
     }
 
     @Test(expected = IllegalStateException.class)
