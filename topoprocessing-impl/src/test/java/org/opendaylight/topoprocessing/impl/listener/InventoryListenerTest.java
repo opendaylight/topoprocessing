@@ -10,11 +10,8 @@ package org.opendaylight.topoprocessing.impl.listener;
 
 import static org.mockito.Matchers.any;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +23,6 @@ import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestDataTreeCandidateNode;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -67,7 +63,11 @@ public class InventoryListenerTest {
     public void test() {
         String nodeName = "node:1";
         String leafValue = "10.0.0.1";
-        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.of(Node.QNAME);
+        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder()
+                .node(Node.QNAME)
+                .nodeWithKey(Node.QNAME, TopologyQNames.INVENTORY_NODE_ID_QNAME, nodeName)
+                .build();
+        
         LeafNode<String> leafNodeValue = ImmutableNodes.leafNode(leafQname, leafValue);
         MapEntryNode testNode = ImmutableNodes.mapEntryBuilder(Node.QNAME, nodeIdQname, nodeName)
                 .addChild(leafNodeValue).build();
@@ -77,10 +77,9 @@ public class InventoryListenerTest {
         listener.setOperator(mockOperator);
         listener.setPathIdentifier(pathIdentifier);
 
-        Map<YangInstanceIdentifier, UnderlayItem> createdEntries = new HashMap<>();
-        UnderlayItem physicalNode = new UnderlayItem(testNode, leafNodeValue, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
-        createdEntries.put(nodeYiid, physicalNode);
-        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
+        UnderlayItem physicalNode = new UnderlayItem(null, leafNodeValue, TOPOLOGY_ID, null, CorrelationItemEnum.Node);
+        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME,
+                TopologyQNames.INVENTORY_NODE_ID_QNAME, nodeName);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
 
         // create
@@ -90,26 +89,25 @@ public class InventoryListenerTest {
         rootNode.setDataAfter(dataAfter);
         rootNode.setIdentifier(nodePathArgument);
         listener.onDataTreeChanged(mockCollection);
-        Mockito.verify(mockOperator).processCreatedChanges(Matchers.refEq(createdEntries), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(mockOperator).processCreatedChanges(Matchers.eq(nodeYiid), Matchers.refEq(physicalNode),
+                Matchers.eq(TOPOLOGY_ID));
 
         // update
         resetMocks();
         setUpMocks(rootNode);
         rootNode.setModificationType(ModificationType.SUBTREE_MODIFIED);
         listener.onDataTreeChanged(mockCollection);
-        Mockito.verify(mockOperator).processUpdatedChanges(Matchers.refEq(createdEntries), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(mockOperator).processUpdatedChanges(Matchers.eq(nodeYiid), Matchers.refEq(physicalNode), Matchers.eq(TOPOLOGY_ID));
 
         // delete
         resetMocks();
         setUpMocks(rootNode);
         rootNode.setModificationType(ModificationType.DELETE);
         rootNode.setIdentifier(nodePathArgument);
-        YangInstanceIdentifier nodeIdYiid = YangInstanceIdentifier.builder().node(Nodes.QNAME)
+        YangInstanceIdentifier nodeIdYiid = YangInstanceIdentifier.builder()
                 .node(Node.QNAME).nodeWithKey(Node.QNAME, nodeIdQname, nodeName).build();
         listener.onDataTreeChanged(mockCollection);
-        ArrayList<YangInstanceIdentifier> identifiers = new ArrayList<>();
-        identifiers.add(nodeIdYiid);
-        Mockito.verify(mockOperator).processRemovedChanges(Matchers.refEq(identifiers), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(mockOperator).processRemovedChanges(Matchers.eq(nodeIdYiid), Matchers.eq(TOPOLOGY_ID));
     }
 
     private void setUpMocks(TestDataTreeCandidateNode rootNode) {
@@ -149,6 +147,6 @@ public class InventoryListenerTest {
         rootNode.setDataAfter(dataAfter);
         listener.onDataTreeChanged(mockCollection);
         Mockito.verify(mockOperator, Mockito.times(0)).processCreatedChanges(
-                (Map<YangInstanceIdentifier, UnderlayItem>) any(), Matchers.eq(TOPOLOGY_ID));
+                (YangInstanceIdentifier) any(), (UnderlayItem) any(), Matchers.eq(TOPOLOGY_ID));
     }
 }

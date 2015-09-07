@@ -8,9 +8,6 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import java.util.List;
-import java.util.Map;
-
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
@@ -21,24 +18,26 @@ public interface TopologyOperator {
 
     /**
      * Process newly created changes
-     * @param createdEntries created changes
+     * @param itemIdentifier identifies item which is being created
+     * @param createdItem item which is being created
      * @param topologyId identifies topology, which the new changes came from
      */
-    void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, final String topologyId);
+    void processCreatedChanges(YangInstanceIdentifier itemIdentifier, UnderlayItem createdItem, final String topologyId);
 
     /**
      * Process newly updated changes
-     * @param updatedEntries updated changes
+     * @param itemIdentifier identifies updated item
+     * @param updatedItem item which is being updated
      * @param topologyId identifies topology, which the updated changes came from
      */
-    void processUpdatedChanges(Map<YangInstanceIdentifier, UnderlayItem> updatedEntries, String topologyId);
+    void processUpdatedChanges(YangInstanceIdentifier itemIdentifier, UnderlayItem updatedItem, String topologyId);
 
     /**
      * Process newly deleted changes
-     * @param identifiers removed changes
+     * @param itemIdentifier removed item identifier
      * @param topologyId identifies topology, which the removed changes came from
      */
-    void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId);
+    void processRemovedChanges(YangInstanceIdentifier itemIdentifier, final String topologyId);
 
     /**
      * @param topologyManager handles aggregated items from all correlations

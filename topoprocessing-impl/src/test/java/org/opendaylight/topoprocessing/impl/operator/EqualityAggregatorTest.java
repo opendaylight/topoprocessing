@@ -9,10 +9,6 @@ package org.opendaylight.topoprocessing.impl.operator;
 
 import static org.mockito.Matchers.any;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -138,11 +134,9 @@ public class EqualityAggregatorTest {
         LeafNode<String> leafNode22 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.3");
         UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, leafNode21, TOPO2, "21", CorrelationItemEnum.Node);
         UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, leafNode22, TOPO2, "22", CorrelationItemEnum.Node);
-        Map<YangInstanceIdentifier, UnderlayItem> physicalNodes1 = new HashMap<>();
-        physicalNodes1.put(leafYiid21, physicalNode1);
-        physicalNodes1.put(leafYiid22, physicalNode2);
-
-        aggregator.processCreatedChanges(physicalNodes1, TOPO2);
+        
+        aggregator.processCreatedChanges(leafYiid21, physicalNode1, TOPO2);
+        aggregator.processCreatedChanges(leafYiid22, physicalNode2, TOPO2);
 
         Mockito.verify(mockManager, Mockito.times(1)).addOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) any());
@@ -152,10 +146,7 @@ public class EqualityAggregatorTest {
         leafYiid23 = testNodeCreator.createNodeIdYiid("23");
         LeafNode<String> leafNode23 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.1");
         UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, leafNode23, TOPO3, "23", CorrelationItemEnum.Node);
-        Map<YangInstanceIdentifier, UnderlayItem> physicalNodes2 = new HashMap<>();
-        physicalNodes2.put(leafYiid23, physicalNode3);
-
-        aggregator.processCreatedChanges(physicalNodes2, TOPO3);
+        aggregator.processCreatedChanges(leafYiid23, physicalNode3, TOPO3);
 
         // one physical node in topology store TOPO1
         Assert.assertEquals(1, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
@@ -198,9 +189,7 @@ public class EqualityAggregatorTest {
         testProcessCreatedChanges();
 
         // case 1
-        ArrayList<YangInstanceIdentifier> remove1 = new ArrayList<>();
-        remove1.add(leafYiid11);
-        aggregator.processRemovedChanges(remove1, TOPO1);
+        aggregator.processRemovedChanges(leafYiid11, TOPO1);
 
         // no physical nodes in topology store TOPO1
         Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
@@ -211,9 +200,7 @@ public class EqualityAggregatorTest {
         Mockito.verify(mockManager, Mockito.times(2)).updateOverlayItem((OverlayItem) any());
 
         // case 2
-        ArrayList<YangInstanceIdentifier> remove2 = new ArrayList<>();
-        remove2.add(leafYiid21);
-        aggregator.processRemovedChanges(remove2, TOPO2);
+        aggregator.processRemovedChanges(leafYiid21, TOPO2);
 
         // two physical nodes in topology store TOPO2
         Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
@@ -254,9 +241,7 @@ public class EqualityAggregatorTest {
         testProcessCreatedChanges();
         LeafNode<String> leafNode31 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.2");
         UnderlayItem physicalNode31 = new UnderlayItem(mockNormalizedNode1, leafNode31, TOPO1, "11", CorrelationItemEnum.Node);
-        Map<YangInstanceIdentifier, UnderlayItem> update = new HashMap<>();
-        update.put(leafYiid11, physicalNode31);
-        aggregator.processUpdatedChanges(update, TOPO1);
+        aggregator.processUpdatedChanges(leafYiid11, physicalNode31, TOPO1);
 
         // one new logical node has been created
         Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) any());
@@ -294,9 +279,7 @@ public class EqualityAggregatorTest {
 
         LeafNode<String> leafNode32 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.2");
         UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, leafNode32, TOPO3, "23", CorrelationItemEnum.Node);
-        Map<YangInstanceIdentifier, UnderlayItem> update = new HashMap<>();
-        update.put(leafYiid23, physicalNode);
-        aggregator.processUpdatedChanges(update, TOPO3);
+        aggregator.processUpdatedChanges(leafYiid23, physicalNode, TOPO3);
 
         Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) any());
         // one logical node has been removed
@@ -336,9 +319,7 @@ public class EqualityAggregatorTest {
         testProcessCreatedChanges();
         LeafNode<String> leafNode31 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.2");
         UnderlayItem physicalNode31 = new UnderlayItem(mockNormalizedNode1, leafNode31, TOPO2, "22", CorrelationItemEnum.Node);
-        Map<YangInstanceIdentifier, UnderlayItem> update = new HashMap<>();
-        update.put(leafYiid22, physicalNode31);
-        aggregator.processUpdatedChanges(update, TOPO2);
+        aggregator.processUpdatedChanges(leafYiid22, physicalNode31, TOPO2);
 
         // Even though nodes node12 and node22 have now the same IP 192.168.1.2, they cannot create aggregated
         // node because they belong to the same topology TOPO2
@@ -359,10 +340,7 @@ public class EqualityAggregatorTest {
         leafYiid23 = testNodeCreator.createNodeIdYiid("23");
         LeafNode<String> leafNode23 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.1");
         UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode2, leafNode23, TOPO3, "23", CorrelationItemEnum.Node);
-        Map<YangInstanceIdentifier, UnderlayItem> physicalNodes2 = new HashMap<>();
-        physicalNodes2.put(leafYiid23, physicalNode3);
-
-        aggregator.processUpdatedChanges(physicalNodes2, TOPO3);
+        aggregator.processUpdatedChanges(leafYiid23, physicalNode3, TOPO3);
 
         Mockito.verify(mockManager, Mockito.times(1)).addOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) any());
@@ -386,10 +364,9 @@ public class EqualityAggregatorTest {
         LeafNode<String> leafNode61 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.6");
         UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, leafNode51, TOPO5, "51", CorrelationItemEnum.Node);
         UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, leafNode61, TOPO6, "61", CorrelationItemEnum.Node);
-        Map<YangInstanceIdentifier, UnderlayItem> physicalNodes1 = new HashMap<>();
-        physicalNodes1.put(leafYiid51, physicalNode1);
-        physicalNodes1.put(leafYiid61, physicalNode2);
-        aggregator.processCreatedChanges(physicalNodes1, TOPO5);
+        aggregator.processCreatedChanges(leafYiid51, physicalNode1, TOPO5);
+        aggregator.processCreatedChanges(leafYiid61, physicalNode2, TOPO5);
+        
         Mockito.verify(mockManager, Mockito.times(0)).addOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).updateOverlayItem((OverlayItem) any());
@@ -398,9 +375,7 @@ public class EqualityAggregatorTest {
         YangInstanceIdentifier leafYiid52 = testNodeCreator.createNodeIdYiid("52");
         LeafNode<String> leafNode52 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.5");
         UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, leafNode52, TOPO5, "52", CorrelationItemEnum.Node);
-        physicalNodes1 = new HashMap<>();
-        physicalNodes1.put(leafYiid52, physicalNode);
-        aggregator.processCreatedChanges(physicalNodes1, TOPO5);
+        aggregator.processCreatedChanges(leafYiid52, physicalNode, TOPO5);
         // logical node have been created over two physical nodes having the same IP partaining to the same topology 
         Mockito.verify(mockManager, Mockito.times(1)).addOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) any());

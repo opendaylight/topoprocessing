@@ -8,12 +8,9 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -54,116 +51,98 @@ public class NotificationInterConnector implements TopologyOperator {
     }
 
     @Override
-    public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries,
+    public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry,
             String topologyId) {
-        if (createdEntries != null) {
+        if (createdEntry != null) {
             LOGGER.trace("Processing created changes");
             Map<YangInstanceIdentifier, UnderlayItem> items = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems();
-            Map<YangInstanceIdentifier, UnderlayItem> combinedEntries = new HashMap<>();
-            for (Entry<YangInstanceIdentifier, UnderlayItem> createdEntry : createdEntries.entrySet()) {
-                YangInstanceIdentifier key = null;
-                if (itemFromTopology(createdEntry)) {
-                    key = extractInventoryNodeRefIdentifier(createdEntry.getValue());
-                    if (key != null) {
-                        topoToInvIds.put(createdEntry.getKey(), key);
-                    } else {
-                        continue;
-                    }
+            YangInstanceIdentifier key = null;
+            if (itemFromTopology(createdEntry)) {
+                key = extractInventoryNodeRefIdentifier(createdEntry);
+                if (key != null) {
+                    topoToInvIds.put(identifier, key);
                 } else {
-                    key = createdEntry.getKey();
+                    return;
                 }
-                UnderlayItem item = items.get(key);
-                if (item != null) {
-                    UnderlayItem combinedItem = null;
-                    LOGGER.debug("Created changes - item exists");
-                    if (item.getItem() != null) {
-                        combinedItem = new UnderlayItem(item.getItem(), createdEntry.getValue().getLeafNode(),
-                                topologyId, item.getItemId(), item.getCorrelationItem());
-                    } else {
-                        UnderlayItem newItem = createdEntry.getValue();
-                        combinedItem = new UnderlayItem(newItem.getItem(), item.getLeafNode(), topologyId,
-                                newItem.getItemId(), newItem.getCorrelationItem());
-                    }
-                    items.put(key, combinedItem);
-                    combinedEntries.put(key, combinedItem);
-                } else {
-                    LOGGER.debug("Created changes - item doesn't exist");
-                    items.put(key, createdEntry.getValue());
-                }
+            } else {
+                key = identifier;
             }
-            if (! combinedEntries.isEmpty()) {
-                operator.processCreatedChanges(combinedEntries, topologyId);
+            UnderlayItem item = items.get(key);
+            if (item != null) {
+                UnderlayItem combinedItem = null;
+                LOGGER.debug("Created changes - item exists");
+                if (item.getItem() != null) {
+                    combinedItem = new UnderlayItem(item.getItem(), createdEntry.getLeafNode(),
+                            topologyId, item.getItemId(), item.getCorrelationItem());
+                } else {
+                    UnderlayItem newItem = createdEntry;
+                    combinedItem = new UnderlayItem(newItem.getItem(), item.getLeafNode(), topologyId,
+                            newItem.getItemId(), newItem.getCorrelationItem());
+                }
+                items.put(key, combinedItem);
+                operator.processCreatedChanges(key, combinedItem, topologyId);
+            } else {
+                LOGGER.debug("Created changes - item doesn't exist");
+                items.put(key, createdEntry);
             }
         }
     }
 
     @Override
-    public void processUpdatedChanges(Map<YangInstanceIdentifier, UnderlayItem> updatedEntries,
+    public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedEntry,
             String topologyId) {
-        if (updatedEntries != null) {
+        if (updatedEntry != null) {
             LOGGER.trace("Processing updated changes");
             Map<YangInstanceIdentifier, UnderlayItem> items = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems();
-            Map<YangInstanceIdentifier, UnderlayItem> combinedEntries = new HashMap<>();
-            for (Entry<YangInstanceIdentifier, UnderlayItem> updatedEntry : updatedEntries.entrySet()) {
-                YangInstanceIdentifier key = null;
-                if (itemFromTopology(updatedEntry)){
-                    key = extractInventoryNodeRefIdentifier(updatedEntry.getValue());
-                    if (key != null) {
-                        topoToInvIds.put(updatedEntry.getKey(), key);
-                    } else {
-                        continue;
-                    }
+            YangInstanceIdentifier key = null;
+            if (itemFromTopology(updatedEntry)){
+                key = extractInventoryNodeRefIdentifier(updatedEntry);
+                if (key != null) {
+                    topoToInvIds.put(identifier, key);
                 } else {
-                    key = updatedEntry.getKey();
+                    return;
                 }
-                UnderlayItem item = items.get(key);
-                UnderlayItem updatedItem = updatedEntry.getValue();
-                if (item != null) {
-                    UnderlayItem resultingItem = null;
-                    LOGGER.debug("Updated changes - item exists");
-                    if ((item.getItem() != null) && (item.getLeafNode() != null)) {
-                        resultingItem = updateItemFields(item, updatedItem);
-                        combinedEntries.put(key, resultingItem);
-                    } else {
-                        resultingItem = updateItemFields(item, updatedItem);
-                    }
-                    items.put(key, resultingItem);
-                } else {
-                    // might happen only in case when item was created without inventory-node-ref
-                    LOGGER.debug("Updated changes - item doesn't exist");
-                    if (itemFromTopology(updatedEntry)) {
-                        if (itemType.equals(CorrelationItemEnum.Node)){
-                            items.put(key, updatedEntry.getValue());
-                        }
-                    }
-                }
+            } else {
+                key = identifier;
             }
-            if (! combinedEntries.isEmpty()) {
-                operator.processUpdatedChanges(combinedEntries, topologyId);
+            UnderlayItem item = items.get(key);
+            UnderlayItem updatedItem = updatedEntry;
+            if (item != null) {
+                UnderlayItem resultingItem = null;
+                LOGGER.debug("Updated changes - item exists");
+                if ((item.getItem() != null) && (item.getLeafNode() != null)) {
+                    resultingItem = updateItemFields(item, updatedItem);
+                    operator.processUpdatedChanges(key, resultingItem, topologyId);
+                } else {
+                    resultingItem = updateItemFields(item, updatedItem);
+                }
+                items.put(key, resultingItem);
+            } else {
+                // might happen only in case when item was created without inventory-node-ref
+                LOGGER.debug("Updated changes - item doesn't exist");
+                if (itemFromTopology(updatedEntry)) {
+                    if (itemType.equals(CorrelationItemEnum.Node)){
+                        items.put(key, updatedEntry);
+                    }
+                }
             }
         }
     }
 
     @Override
-    public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, String topologyId) {
-        if (identifiers != null) {
+    public void processRemovedChanges(YangInstanceIdentifier identifier, String topologyId) {
+        if (identifier != null) {
             LOGGER.trace("Processing removed changes");
-            List<YangInstanceIdentifier> presentIdentifiers = new ArrayList<>();
             Map<YangInstanceIdentifier, UnderlayItem> underlayItems = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems();
-            for (YangInstanceIdentifier identifier : identifiers) {
-                YangInstanceIdentifier removalIdentifier = identifier;
-                YangInstanceIdentifier checkedIdentifier = topoToInvIds.remove(identifier);
-                if (checkedIdentifier != null) {
-                    removalIdentifier = checkedIdentifier;
-                }
-                UnderlayItem underlayItem = underlayItems.remove(removalIdentifier);
-                // if identifier exists in topology store
-                if (underlayItem != null) {
-                    presentIdentifiers.add(removalIdentifier);
-                }
+            YangInstanceIdentifier removalIdentifier = identifier;
+            YangInstanceIdentifier checkedIdentifier = topoToInvIds.remove(identifier);
+            if (checkedIdentifier != null) {
+                removalIdentifier = checkedIdentifier;
             }
-            if (! presentIdentifiers.isEmpty()) {
-                operator.processRemovedChanges(presentIdentifiers, topologyId);
+            UnderlayItem underlayItem = underlayItems.remove(removalIdentifier);
+            // if identifier exists in topology store
+            if (underlayItem != null) {
+                operator.processRemovedChanges(removalIdentifier, topologyId);
             }
         }
     }
@@ -182,8 +161,8 @@ public class NotificationInterConnector implements TopologyOperator {
         this.operator = operator;
     }
 
-    private boolean itemFromTopology(Entry<YangInstanceIdentifier, UnderlayItem> createdEntry) {
-        return createdEntry.getValue().getItem() != null;
+    private static boolean itemFromTopology(UnderlayItem createdEntry) {
+        return createdEntry.getItem() != null;
     }
 
     private YangInstanceIdentifier extractInventoryNodeRefIdentifier(UnderlayItem underlayItem) {
@@ -206,7 +185,7 @@ public class NotificationInterConnector implements TopologyOperator {
         return null;
     }
 
-    private UnderlayItem updateItemFields(UnderlayItem oldItem, UnderlayItem newItem) {
+    private static UnderlayItem updateItemFields(UnderlayItem oldItem, UnderlayItem newItem) {
         if (newItem.getItem() != null) {
             oldItem.setItem(newItem.getItem());
         }
