@@ -249,11 +249,13 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
             transaction.merge(LogicalDatastoreType.OPERATIONAL, linkInstanceId, linkBuilderSwapped.build());
         }
 
-        forwardingAdjacencyProvider.onLinkCreated(LogicalDatastoreType.OPERATIONAL, destTopologyId,
-                outFaId, head2TailLinkKey);
-        if (tail2HeadLinkKey != null) {
+        if (forwardingAdjacencyProvider != null) {
             forwardingAdjacencyProvider.onLinkCreated(LogicalDatastoreType.OPERATIONAL, destTopologyId,
-                    outFaId, tail2HeadLinkKey);
+                    outFaId, head2TailLinkKey);
+            if (tail2HeadLinkKey != null) {
+                forwardingAdjacencyProvider.onLinkCreated(LogicalDatastoreType.OPERATIONAL, destTopologyId,
+                        outFaId, tail2HeadLinkKey);
+            }
         }
     }
 
@@ -294,8 +296,10 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         LinkBuilder linkBuilder = parser.parseLinkBuilder(input, faId);
         createLink(transaction, outFaId, linkBuilder, bidirFlag);
 
-        forwardingAdjacencyProvider.onForwardingAdjacencyCreated(LogicalDatastoreType.OPERATIONAL, destTopologyId,
-                outFaId, input);
+        if (forwardingAdjacencyProvider != null) {
+            forwardingAdjacencyProvider.onForwardingAdjacencyCreated(LogicalDatastoreType.OPERATIONAL, destTopologyId,
+                    outFaId, input);
+        }
 
         try {
             transaction.submit().checkedGet();
