@@ -47,11 +47,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationAggregation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.RenderingOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.Correlations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.Aggregation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.Filtration;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.Rendering;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.aggregation.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.Filter;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -176,6 +178,8 @@ public abstract class TopologyRequestHandler {
                     operator = initFiltration(correlation);
                 } else if (AggregationOnly.class.equals(correlation.getType())) {
                     operator = initAggregation(correlation, false);
+                } else if (RenderingOnly.class.equals(correlation.getType())){
+                    operator = initRendering(correlation, correlations.getOutputModel(), operator);
                 } else {
                     throw new IllegalStateException("Filtration and Aggregation data missing: " + correlation);
                 }
@@ -292,6 +296,33 @@ public abstract class TopologyRequestHandler {
             listeners.add(listenerRegistration);
         }
         return aggregator;
+    }
+
+    private TopologyOperator initRendering(Correlation correlation, Class<? extends Model> outputModel, TopologyOperator operator) {
+        Rendering rendering = correlation.getRendering();
+        if (rendering != null) {
+            String underlayTopologyId = rendering.getUnderlayTopology();
+            UnderlayTopologyListener listener = modelAdapters.get(outputModel).
+                    registerUnderlayTopologyListener(domDataBroker, underlayTopologyId,
+                    correlation.getCorrelationItem(), datastoreType, operator, listeners, null);
+            InstanceIdentifierBuilder topologyIdentifier = createTopologyIdentifier(underlayTopologyId);
+            YangInstanceIdentifier itemIdentifier = buildListenerIdentifier(topologyIdentifier, correlation.getCorrelationItem());
+            LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
+            ListenerRegistration<DOMDataChangeListener> listenerRegistration;
+
+            if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
+                listenerRegistration = domDataBroker.registerDataChangeListener(
+                        LogicalDatastoreType.OPERATIONAL, itemIdentifier, listener, DataChangeScope.SUBTREE);
+            } else {
+                listenerRegistration = domDataBroker.registerDataChangeListener(
+                        LogicalDatastoreType.CONFIGURATION, itemIdentifier, listener, DataChangeScope.SUBTREE);
+            }
+            listener.readExistingData(itemIdentifier, datastoreType);
+            listeners.add(listenerRegistration);
+        } else {
+            throw new IllegalStateException("Rendering data missing: " + correlation);
+        }
+        return operator;
     }
 
     private Filter findFilter(List<Filter> filters, String filterId) {
