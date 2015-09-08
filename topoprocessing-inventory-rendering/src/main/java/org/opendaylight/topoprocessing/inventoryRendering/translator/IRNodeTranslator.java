@@ -7,14 +7,12 @@
  */
 package org.opendaylight.topoprocessing.inventoryRendering.translator;
 
-import com.google.common.base.Optional;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
@@ -39,6 +37,8 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.DataContaine
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableAugmentationNodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Optional;
 
 /**
  * @author andrej.zan
@@ -95,7 +95,7 @@ public class IRNodeTranslator implements NodeTranslator {
                 ImmutableAugmentationNodeBuilder.create();
 
         QName augmentationQname = QName.create(
-                "(urn:opendaylight:topology:inventory:rendering revision=2015-08-31)node-augmentation");
+                "urn:opendaylight:topology:inventory:rendering", "2015-08-31", "node-augmentation");
         Set<QName> qnames = new HashSet<>();
         qnames.add(augmentationQname);
         AugmentationIdentifier augId = new AugmentationIdentifier(qnames);
@@ -127,26 +127,36 @@ public class IRNodeTranslator implements NodeTranslator {
                 ImmutableAugmentationNodeBuilder.create();
 
         QName augmentationQname = QName.create(
-                "(urn:opendaylight:topology:inventory:rendering revision=2015-08-31)tp-augmentation");
+                "urn:opendaylight:topology:inventory:rendering","2015-08-31","tp-augmentation");
         Set<QName> qnames = new HashSet<>();
         qnames.add(augmentationQname);
         AugmentationIdentifier augId = new AugmentationIdentifier(qnames);
+        LOG.debug("nodeConnectorEntry je: {}", nodeConnectorEntry);
+        Set<QName> nodeIdentifier = new HashSet<>();
+        nodeIdentifier.add(IRQNames.OPEN_FLOW_PORT_CURRENT_SPEED_QNAME);
+        AugmentationIdentifier augmentFindId = new AugmentationIdentifier(nodeIdentifier);
+        Optional<NormalizedNode<?, ?>> inventoryNodeAugNode = NormalizedNodes.findNode(nodeConnectorEntry, augmentFindId);
         tpAugmentationBuilder.withNodeIdentifier(augId)
                 .withChild(ImmutableNodes.leafNode(IRQNames.TP_AUG_CURRENT_SPEED_QNAME,
-                        NormalizedNodes.findNode(nodeConnectorEntry, YangInstanceIdentifier.of(
-                                IRQNames.OPEN_FLOW_PORT_CURRENT_SPEED_QNAME)).orNull()))
+                        NormalizedNodes.findNode(inventoryNodeAugNode.get(), YangInstanceIdentifier.of(
+                                IRQNames.OPEN_FLOW_PORT_CURRENT_SPEED_QNAME))
+                                .get().getValue()))
                 .withChild(ImmutableNodes.leafNode(IRQNames.TP_AUG_HARDWARE_ADDRESS_QNAME,
-                        NormalizedNodes.findNode(nodeConnectorEntry, YangInstanceIdentifier.of(
-                                IRQNames.OPEN_FLOW_PORT_HARDWARE_ADDRESS_QNAME)).orNull()))
+                        NormalizedNodes.findNode(inventoryNodeAugNode.get(), YangInstanceIdentifier.of(
+                                IRQNames.OPEN_FLOW_PORT_HARDWARE_ADDRESS_QNAME))
+                                .get().getValue()))
                 .withChild(ImmutableNodes.leafNode(IRQNames.TP_AUG_MAXIMUM_SPEED_QNAME,
-                        NormalizedNodes.findNode(nodeConnectorEntry, YangInstanceIdentifier.of(
-                                IRQNames.OPEN_FLOW_PORT_MAXIMUM_SPEED_QNAME)).orNull()))
+                        NormalizedNodes.findNode(inventoryNodeAugNode.get(), YangInstanceIdentifier.of(
+                                IRQNames.OPEN_FLOW_PORT_MAXIMUM_SPEED_QNAME))
+                                .get().getValue()))
                 .withChild(ImmutableNodes.leafNode(IRQNames.TP_AUG_NAME_QNAME,
-                        NormalizedNodes.findNode(nodeConnectorEntry, YangInstanceIdentifier.of(
-                                IRQNames.OPEN_FLOW_PORT_NAME_QNAME)).orNull()));
+                        NormalizedNodes.findNode(inventoryNodeAugNode.get(), YangInstanceIdentifier.of(
+                                IRQNames.OPEN_FLOW_PORT_NAME_QNAME))
+                                .get().getValue()));
 
-        Object tpId = nodeConnectorEntry.getAttributeValue(
-                TopologyQNames.NODE_CONNECTOR_ID_QNAME);
+        Object tpId = nodeConnectorEntry.getChild(
+                YangInstanceIdentifier.of(TopologyQNames.NODE_CONNECTOR_ID_QNAME)
+                        .getLastPathArgument()).get().getValue();
         MapEntryNode terminationPoint = ImmutableNodes.mapEntryBuilder(
                 TerminationPoint.QNAME, TopologyQNames.TP_ID_QNAME, tpId)
                         .withChild(tpAugmentationBuilder.build()).build();
