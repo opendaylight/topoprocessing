@@ -8,6 +8,7 @@
 
 package org.opendaylight.topoprocessing.impl.util;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
@@ -40,6 +41,10 @@ public final class TopologyQNames {
     public static final QName LINK_REF = QName.create(Link.QNAME, "link-ref");
     /** Network-topology termination-point tp-ref */
     public static final QName TP_REF = QName.create(TerminationPoint.QNAME, "tp-ref");
+    /** Network-topology termination-point tp-id */
+    public static final QName TP_ID_QNAME = QName.create(TerminationPoint.QNAME, "tp-id");
+    /** Inventory node-connector id */
+    public static final QName NODE_CONNECTOR_ID_QNAME = QName.create(NodeConnector.QNAME, "id");
     /**Correlation augment QName**/
     public static final QName TOPOLOGY_CORRELATION_AUGMENT =
             QName.create("urn:opendaylight:topology:correlation", "2015-01-21", "correlations");
