@@ -22,6 +22,7 @@
 
     <properties>
         <bgp.version>0.5.0-SNAPSHOT</bgp.version>
+        <openflowplugin.version>0.2.0-SNAPSHOT</openflowplugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <karaf.empty.version>1.6.0-SNAPSHOT</karaf.empty.version>
         <features.file>features.xml</features.file>
@@ -72,6 +73,13 @@
         <dependency>
             <groupId>org.opendaylight.controller</groupId>
             <artifactId>features-protocol-framework</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>features-openflowplugin-li</artifactId>
+            <version>${openflowplugin.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
