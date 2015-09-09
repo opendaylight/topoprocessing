@@ -19,6 +19,8 @@ import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.topoprocessing.inventoryRendering.listener.IRUnderlayTopologyListener;
+import org.opendaylight.topoprocessing.inventoryRendering.request.IRTopologyRequestListener;
 import org.opendaylight.topoprocessing.inventoryRendering.translator.IRLinkTranslator;
 import org.opendaylight.topoprocessing.inventoryRendering.translator.IRNodeTranslator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
@@ -39,14 +41,17 @@ public class IRModelAdapter implements ModelAdapter {
             String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType,
             TopologyOperator operator, List<ListenerRegistration<DOMDataChangeListener>> listeners,
             YangInstanceIdentifier pathIdentifier) {
-        return null;
+
+        IRUnderlayTopologyListener listener = new IRUnderlayTopologyListener(domDataBroker, underlayTopologyId, correlationItem);
+        listener.registerUnderlayTopologyListener(datastoreType,listeners);
+        return listener;
     }
 
     @Override
     public TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
-        return null;
+        return new IRTopologyRequestListener(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
     }
 
     @Override
