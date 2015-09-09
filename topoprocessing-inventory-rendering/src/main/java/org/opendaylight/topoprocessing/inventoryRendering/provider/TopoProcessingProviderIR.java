@@ -8,7 +8,9 @@
 
 package org.opendaylight.topoprocessing.inventoryRendering.provider;
 
+import org.opendaylight.topoprocessing.inventoryRendering.adapter.IRModelAdapter;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.InventoryRenderingModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,5 +24,6 @@ public class TopoProcessingProviderIR implements AutoCloseable {
 
     public void startup(TopoProcessingProvider topoProvider) {
         LOGGER.info("TopoprocessingProviderIR startup");
+        topoProvider.registerModelAdapter(InventoryRenderingModel.class, new IRModelAdapter());
     }
 }
