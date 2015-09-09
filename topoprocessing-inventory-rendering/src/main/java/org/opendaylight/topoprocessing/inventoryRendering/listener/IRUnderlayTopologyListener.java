@@ -21,7 +21,6 @@ import org.opendaylight.topoprocessing.impl.listener.InventoryListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
 import org.opendaylight.topoprocessing.impl.operator.TopoStoreProvider;
-import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.inventoryRendering.operator.IRRenderingOperator;
@@ -33,6 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
@@ -43,6 +44,7 @@ import com.google.common.collect.Maps;
  */
 public class IRUnderlayTopologyListener extends UnderlayTopologyListener{
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(IRUnderlayTopologyListener.class);
     public IRUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         super(domDataBroker, underlayTopologyId, correlationItem);
@@ -67,22 +69,25 @@ public class IRUnderlayTopologyListener extends UnderlayTopologyListener{
         return map;
     }
 
-    public void registerUnderlayTopologyListener(DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataChangeListener>> listeners){
+    public void registerUnderlayTopologyListener(DatastoreType datastoreType,
+            List<ListenerRegistration<DOMDataChangeListener>> listeners){
         if (correlationItem.equals(CorrelationItemEnum.Node)) {
             TopoStoreProvider connTopoStoreProvider = new TopoStoreProvider();
-            operator = new IRRenderingOperator();
+            connTopoStoreProvider.initializeStore(underlayTopologyId, false);
+            TopoStoreProvider renderingTopoProvider = new TopoStoreProvider();
+            renderingTopoProvider.initializeStore(underlayTopologyId, false);
+            IRRenderingOperator operator = new IRRenderingOperator();
+            operator.setTopoStoreProvider(renderingTopoProvider);
             NotificationInterConnector connector = new NotificationInterConnector(underlayTopologyId,
                     correlationItem,connTopoStoreProvider);
-            connTopoStoreProvider.initializeStore(underlayTopologyId, false);
             connector.setOperator(operator);
             this.setOperator(connector);
             InventoryListener invListener = new InventoryListener(underlayTopologyId);
             invListener.setOperator(connector);
             YangInstanceIdentifier invId = YangInstanceIdentifier.of(Nodes.QNAME)
                     .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME);
-            invListener.setPathIdentifier(invId);
             ListenerRegistration<DOMDataChangeListener> invListenerRegistration;
+
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
                 invListenerRegistration = domDataBroker.registerDataChangeListener(
                         LogicalDatastoreType.OPERATIONAL, invId, invListener, DataChangeScope.SUBTREE);

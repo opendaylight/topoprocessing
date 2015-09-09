@@ -239,6 +239,10 @@ public abstract class UnderlayTopologyListener implements DOMDataChangeListener 
         this.operator = operator;
     }
 
+    public TopologyOperator getOperator() {
+        return this.operator;
+    }
+
     /**
      * @param pathIdentifier identifies leaf (node), which aggregation / filtering will be based on
      */

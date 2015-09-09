@@ -33,6 +33,7 @@ public class IRRenderingOperator implements TopologyOperator {
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyOperator.class);
     private TopologyManager manager;
     private TopoStoreProvider topoStoreProvider;
+
     @Override
     public void processCreatedChanges(Map<YangInstanceIdentifier, UnderlayItem> createdEntries, String topologyId) {
         if(createdEntries != null) {
