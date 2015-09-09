@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Ignore;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
@@ -85,12 +86,36 @@ public class MlmtTopologyUpdateTest{
         NodeKey rxNodeKey = update.getNodeKey();
         assertEquals(rxNodeKey, nodeKey);
 
+        TerminationPoint rxTerminationPoint = update.getTerminationPoint();
+        assertNull(rxTerminationPoint);
+
+        Link rxLink = update.getLink();
+        assertNull(rxLink);
+
         update = new MlmtTopologyUpdateOnNode(LogicalDatastoreType.OPERATIONAL,
                 mlmtTopologyInstanceId, nodeBuilder.build());
         assertNotNull(update);
 
+        rxType = update.getType();
+        assertEquals(rxType, MlmtTopologyUpdateType.NODE);
+
         rxStoreType = update.getStoreType();
         assertEquals(rxStoreType, LogicalDatastoreType.OPERATIONAL);
+
+        rxTopologyId = update.getTopologyInstanceId();
+        assertEquals(rxTopologyId, mlmtTopologyInstanceId);
+
+        rxNode = update.getNode();
+        assertNotNull(rxNode);
+
+        rxNodeKey = update.getNodeKey();
+        assertEquals(rxNodeKey, nodeKey);
+
+        rxTerminationPoint = update.getTerminationPoint();
+        assertNull(rxTerminationPoint);
+
+        rxLink = update.getLink();
+        assertNull(rxLink);
     }
 
     @Test
@@ -117,18 +142,42 @@ public class MlmtTopologyUpdateTest{
         InstanceIdentifier<Topology> rxTopologyId = update.getTopologyInstanceId();
         assertEquals(rxTopologyId, mlmtTopologyInstanceId);
 
+        Node rxNode = update.getNode();
+        assertNull(rxNode);
+
         NodeKey rxNodeKey = update.getNodeKey();
         assertEquals(rxNodeKey, nodeKey);
 
         TerminationPoint rxTerminationPoint = update.getTerminationPoint();
         assertNotNull(rxTerminationPoint);
 
+        Link rxLink = update.getLink();
+        assertNull(rxLink);
+
         update = new MlmtTopologyUpdateOnTp(LogicalDatastoreType.OPERATIONAL,
                 mlmtTopologyInstanceId, nodeKey, tpBuilder.build());
         assertNotNull(update);
 
+        rxType = update.getType();
+        assertEquals(rxType, MlmtTopologyUpdateType.TP);
+
         rxStoreType = update.getStoreType();
         assertEquals(rxStoreType, LogicalDatastoreType.OPERATIONAL);
+
+        rxTopologyId = update.getTopologyInstanceId();
+        assertEquals(rxTopologyId, mlmtTopologyInstanceId);
+
+        rxNode = update.getNode();
+        assertNull(rxNode);
+
+        rxNodeKey = update.getNodeKey();
+        assertEquals(rxNodeKey, nodeKey);
+
+        rxTerminationPoint = update.getTerminationPoint();
+        assertNotNull(rxTerminationPoint);
+
+        rxLink = update.getLink();
+        assertNull(rxLink);
     }
 
     private String buildLinkName(String sourceNodeName, String sourceTpName, String destNodeName, String destTpName) {
@@ -170,6 +219,15 @@ public class MlmtTopologyUpdateTest{
         InstanceIdentifier<Topology> rxTopologyId = update.getTopologyInstanceId();
         assertEquals(rxTopologyId, mlmtTopologyInstanceId);
 
+        Node rxNode = update.getNode();
+        assertNull(rxNode);
+
+        NodeKey rxNodeKey = update.getNodeKey();
+        assertNull(rxNodeKey);
+
+        TerminationPoint rxTerminationPoint = update.getTerminationPoint();
+        assertNull(rxTerminationPoint);
+
         Link rxLink = update.getLink();
         assertNotNull(rxLink);
 
@@ -177,8 +235,26 @@ public class MlmtTopologyUpdateTest{
                 mlmtTopologyInstanceId, linkBuilder.build());
         assertNotNull(update);
 
+        rxType = update.getType();
+        assertEquals(rxType, MlmtTopologyUpdateType.LINK);
+
         rxStoreType = update.getStoreType();
         assertEquals(rxStoreType, LogicalDatastoreType.OPERATIONAL);
+
+        rxTopologyId = update.getTopologyInstanceId();
+        assertEquals(rxTopologyId, mlmtTopologyInstanceId);
+
+        rxNode = update.getNode();
+        assertNull(rxNode);
+
+        rxNodeKey = update.getNodeKey();
+        assertNull(rxNodeKey);
+
+        rxTerminationPoint = update.getTerminationPoint();
+        assertNull(rxTerminationPoint);
+
+        rxLink = update.getLink();
+        assertNotNull(rxLink);
     }
 
     @After
