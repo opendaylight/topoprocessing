@@ -59,16 +59,16 @@ public final class IRQNames {
 
     /** flow-inventory port name QName */
     public static final QName OPEN_FLOW_PORT_NAME_QNAME =
-            QName.create("urn:opendaylight:flow:types:port", "2013-09-25", "name");
+            QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "name");
     /** flow-inventory port hardware-address QName */
     public static final QName OPEN_FLOW_PORT_HARDWARE_ADDRESS_QNAME =
-            QName.create("urn:opendaylight:flow:types:port", "2013-09-25", "hardware-address");
+            QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "hardware-address");
     /** flow-inventory port current-speed QName */
     public static final QName OPEN_FLOW_PORT_CURRENT_SPEED_QNAME =
-            QName.create("urn:opendaylight:flow:types:port", "2013-09-25", "current-speed");
+            QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "current-speed");
     /** flow-inventory port maximum-speed QName */
     public static final QName OPEN_FLOW_PORT_MAXIMUM_SPEED_QNAME =
-            QName.create("urn:opendaylight:flow:types:port", "2013-09-25", "maximum-speed");
+            QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "maximum-speed");
 
     private IRQNames() {
         throw new UnsupportedOperationException("InventoryRenderingQNames can't be instantiated.");

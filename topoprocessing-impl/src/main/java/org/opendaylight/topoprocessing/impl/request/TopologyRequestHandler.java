@@ -23,6 +23,7 @@ import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
+import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
 import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TerminationPointFiltrator;
@@ -179,7 +180,7 @@ public abstract class TopologyRequestHandler {
                 } else if (AggregationOnly.class.equals(correlation.getType())) {
                     operator = initAggregation(correlation, false);
                 } else if (RenderingOnly.class.equals(correlation.getType())){
-                    operator = initRendering(correlation, correlations.getOutputModel(), operator);
+                    operator = initRendering(correlation, correlations.getOutputModel());
                 } else {
                     throw new IllegalStateException("Filtration and Aggregation data missing: " + correlation);
                 }
@@ -298,13 +299,18 @@ public abstract class TopologyRequestHandler {
         return aggregator;
     }
 
-    private TopologyOperator initRendering(Correlation correlation, Class<? extends Model> outputModel, TopologyOperator operator) {
+    private TopologyOperator initRendering(Correlation correlation, Class<? extends Model> outputModel) {
         Rendering rendering = correlation.getRendering();
+        TopologyOperator operator = null;
         if (rendering != null) {
             String underlayTopologyId = rendering.getUnderlayTopology();
             UnderlayTopologyListener listener = modelAdapters.get(outputModel).
                     registerUnderlayTopologyListener(domDataBroker, underlayTopologyId,
                     correlation.getCorrelationItem(), datastoreType, operator, listeners, null);
+            operator = listener.getOperator();
+            if(operator instanceof NotificationInterConnector) {
+                operator = ((NotificationInterConnector) operator).getOperator();
+            }
             InstanceIdentifierBuilder topologyIdentifier = createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier itemIdentifier = buildListenerIdentifier(topologyIdentifier, correlation.getCorrelationItem());
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);

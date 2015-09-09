@@ -80,17 +80,25 @@ public class InventoryListener implements DOMDataChangeListener {
         while (iterator.hasNext()) {
             Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry = iterator.next();
             if (entry.getValue() instanceof MapEntryNode && entry.getValue().getNodeType().equals(Node.QNAME)) {
-                Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
-                if (node.isPresent()) {
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("Found node: {}", node.get());
+                LOGGER.debug("Ten zly identifier vyzera takto: {}", pathIdentifier);
+                if (pathIdentifier != null) {
+                    Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry.getValue(), pathIdentifier);
+                    if (node.isPresent()) {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("Found node: {}", node.get());
+                        }
+                        NormalizedNode<?, ?> leafnode = node.get();
+                        UnderlayItem underlayItem =
+                                new UnderlayItem(null, leafnode, topologyId, null, CorrelationItemEnum.Node);
+                        resultEntries.put(entry.getKey(), underlayItem);
+                    } else {
+                        continue;
                     }
-                    NormalizedNode<?, ?> leafnode = node.get();
-                    UnderlayItem underlayItem =
-                            new UnderlayItem(null, leafnode, topologyId, null, CorrelationItemEnum.Node);
-                    resultEntries.put(entry.getKey(), underlayItem);
                 } else {
-                    continue;
+                    //RENDERING
+                    UnderlayItem underlayItem =
+                            new UnderlayItem(null, entry.getValue(), topologyId, null, CorrelationItemEnum.Node);
+                    resultEntries.put(entry.getKey(), underlayItem);
                 }
             }
         }

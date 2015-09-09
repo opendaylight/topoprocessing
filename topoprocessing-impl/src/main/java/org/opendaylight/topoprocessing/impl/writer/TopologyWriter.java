@@ -198,6 +198,7 @@ public class TopologyWriter implements TransactionChainListener {
      */
     public void writeItem(final OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
         NormalizedNode<?, ?> node = translator.translate(wrapper);
+        LOGGER.debug("Idem zapisat toto: {}", node);
         preparedOperations.add(new PutOperation(createItemIdentifier(wrapper, itemType), node));
         scheduleWrite();
     }
