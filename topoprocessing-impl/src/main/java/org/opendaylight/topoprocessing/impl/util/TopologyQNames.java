@@ -40,6 +40,8 @@ public final class TopologyQNames {
     public static final QName LINK_REF = QName.create(Link.QNAME, "link-ref");
     /** Network-topology termination-point tp-ref */
     public static final QName TP_REF = QName.create(TerminationPoint.QNAME, "tp-ref");
+    /** Network-topology termination-point tp-id */
+    public static final QName TP_ID_QNAME = QName.create(TerminationPoint.QNAME, "tp-id");
     /**Correlation augment QName**/
     public static final QName TOPOLOGY_CORRELATION_AUGMENT =
             QName.create("urn:opendaylight:topology:correlation", "2015-01-21", "correlations");
