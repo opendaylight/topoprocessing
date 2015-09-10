@@ -7,6 +7,7 @@
  */
 package org.opendaylight.topoprocessing.inventoryRendering.translator;
 
+import com.google.common.base.Optional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,7 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
@@ -44,8 +44,6 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableAu
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableContainerNodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 /**
  * @author andrej.zan
