@@ -219,7 +219,8 @@ public class IRNodeTranslator implements NodeTranslator {
     }
 
     private static AugmentationIdentifier createInventoryNodeConnectorRefAugIdentifier() {
-        Set<QName> qnames = new HashSet<>(); qnames.add(IRQNames.INVENTORY_NODE_CONNECTOR_REF_QNAME);
+        Set<QName> qnames = new HashSet<>();
+        qnames.add(IRQNames.INVENTORY_NODE_CONNECTOR_REF_QNAME);
         return new AugmentationIdentifier(qnames);
     }
 
