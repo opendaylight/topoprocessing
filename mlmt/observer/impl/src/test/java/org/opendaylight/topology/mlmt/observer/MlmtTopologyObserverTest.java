@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Ignore;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
@@ -253,6 +254,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         assertEquals(rxTopology, wrTopology);
     }
 
+    @Ignore
     @Test(timeout = 10000)
     public void testOnUnderlayTopologyCreated() throws Exception {
         InstanceIdentifier<Topology> mlmtTopologyIid = buildTopologyIid(MLMT);
