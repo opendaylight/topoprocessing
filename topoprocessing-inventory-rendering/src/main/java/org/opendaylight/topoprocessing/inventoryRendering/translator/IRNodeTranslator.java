@@ -22,7 +22,6 @@ import org.opendaylight.topoprocessing.inventoryRendering.util.IRQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNode;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
@@ -56,52 +55,37 @@ public class IRNodeTranslator implements NodeTranslator {
     public NormalizedNode<?, ?> translate(OverlayItemWrapper wrapper) {
         LOG.debug("Transforming OverlayItemWrapper containing Nodes to datastore format");
         List<UnderlayItem> writtenNodes = new ArrayList<>();
-        CollectionNodeBuilder<MapEntryNode, MapNode> supportingNodes = ImmutableNodes.mapNodeBuilder(
-                SupportingNode.QNAME);
         CollectionNodeBuilder<MapEntryNode, MapNode> terminationPoints = ImmutableNodes.mapNodeBuilder(
                 TerminationPoint.QNAME);
         AugmentationNode nodeAugmentation = null;
-        UnderlayItem undItem = null;
-        // iterate through overlay items containing nodes
-        for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
-            // iterate through overlay item
-            for (UnderlayItem underlayItem : overlayItem.getUnderlayItems()) {
-                undItem = underlayItem;
-                if (! writtenNodes.contains(underlayItem)) {
-                    writtenNodes.add(underlayItem);
-                    NormalizedNode<?, ?> inventoryItemNode = underlayItem.getLeafNode();
-                    // prepare termination points
-                    Optional<NormalizedNode<?, ?>> nodeConnectorNode = NormalizedNodes.findNode(
-                            inventoryItemNode, NODE_CONNECTOR_IDENTIFIER);
-                    if (nodeConnectorNode.isPresent()) {
-                        Collection<MapEntryNode> nodeConnectorEntries =
-                                ((MapNode) nodeConnectorNode.get()).getValue();
-                        for (MapEntryNode nodeConnectorEntry : nodeConnectorEntries) {
-                            terminationPoints.addChild(createTerminationPoint(nodeConnectorEntry));
-                        }
-                    }
-                    // prepare node augments
-                    nodeAugmentation = createNodeAugmentation(inventoryItemNode);
+        //In this case, we always have only one overlay item with one underlay item
+        OverlayItem overlayItem = wrapper.getOverlayItems().get(0);
+        UnderlayItem underlayItem = overlayItem.getUnderlayItems().get(0);
+        if (! writtenNodes.contains(underlayItem)) {
+            writtenNodes.add(underlayItem);
+            NormalizedNode<?, ?> inventoryItemNode = underlayItem.getLeafNode();
+            // prepare termination points
+            Optional<NormalizedNode<?, ?>> nodeConnectorNode = NormalizedNodes.findNode(
+                    inventoryItemNode, NODE_CONNECTOR_IDENTIFIER);
+            if (nodeConnectorNode.isPresent()) {
+                Collection<MapEntryNode> nodeConnectorEntries =
+                        ((MapNode) nodeConnectorNode.get()).getValue();
+                for (MapEntryNode nodeConnectorEntry : nodeConnectorEntries) {
+                    terminationPoints.addChild(createTerminationPoint(nodeConnectorEntry));
                 }
             }
+            // prepare node augments
+            nodeAugmentation = createNodeAugmentation(inventoryItemNode);
         }
 
         return ImmutableNodes
-                .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, undItem.getItemId())
-                .withChild(supportingNodes.build())
+                .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, underlayItem.getItemId())
                 .withChild(terminationPoints.build())
                 .withChild(nodeAugmentation)
                 .build();
     }
 
     private AugmentationNode createNodeAugmentation(NormalizedNode<?, ?> inventoryNode) {
-        DataContainerNodeBuilder<AugmentationIdentifier, AugmentationNode> nodeAugmentationBuilder =
-                ImmutableAugmentationNodeBuilder.create();
-        QName augmentationQname = QName.create(
-                "urn:opendaylight:topology:inventory:rendering", "2015-08-31", "node-augmentation");
-        Set<QName> qnames = new HashSet<>();
-        qnames.add(augmentationQname);
-        AugmentationIdentifier augId = new AugmentationIdentifier(qnames);
         Set<QName> nodeIdentifier = new HashSet<>();
         nodeIdentifier.add(QName.create("(urn:opendaylight:flow:inventory?revision=2013-08-19)meter"));
         nodeIdentifier.add(QName.create("(urn:opendaylight:flow:inventory?revision=2013-08-19)software"));
@@ -119,6 +103,14 @@ public class IRNodeTranslator implements NodeTranslator {
         AugmentationIdentifier augmentFindId = new AugmentationIdentifier(nodeIdentifier);
         Optional<NormalizedNode<?, ?>> inventoryNodeAugNode = NormalizedNodes.findNode(inventoryNode, augmentFindId);
 
+        QName augmentationQname = QName.create(
+                "urn:opendaylight:topology:inventory:rendering", "2015-08-31", "node-augmentation");
+        Set<QName> qnames = new HashSet<>();
+        qnames.add(augmentationQname);
+        AugmentationIdentifier augId = new AugmentationIdentifier(qnames);
+        DataContainerNodeBuilder<AugmentationIdentifier, AugmentationNode> nodeAugmentationBuilder =
+                ImmutableAugmentationNodeBuilder.create();
+        //node augmentation -> node augmentation container -> leaf nodes
         nodeAugmentationBuilder.withNodeIdentifier(augId)
                 .withChild(ImmutableContainerNodeBuilder.create()
                         .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(augmentationQname))
@@ -146,14 +138,6 @@ public class IRNodeTranslator implements NodeTranslator {
     }
 
     private MapEntryNode createTerminationPoint(MapEntryNode nodeConnectorEntry) {
-        DataContainerNodeBuilder<AugmentationIdentifier, AugmentationNode> tpAugmentationBuilder =
-                ImmutableAugmentationNodeBuilder.create();
-
-        QName augmentationQname = QName.create(
-                "urn:opendaylight:topology:inventory:rendering","2015-08-31","tp-augmentation");
-        Set<QName> qnames = new HashSet<>();
-        qnames.add(augmentationQname);
-        AugmentationIdentifier augId = new AugmentationIdentifier(qnames);
         Set<QName> nodeIdentifier = new HashSet<>();
         nodeIdentifier.add(QName.create("(urn:opendaylight:flow:inventory?revision=2013-08-19)queue"));
         nodeIdentifier.add(QName.create("(urn:opendaylight:flow:inventory?revision=2013-08-19)port-number"));
@@ -168,8 +152,17 @@ public class IRNodeTranslator implements NodeTranslator {
         nodeIdentifier.add(QName.create("(urn:opendaylight:flow:inventory?revision=2013-08-19)peer-features"));
         nodeIdentifier.add(QName.create("(urn:opendaylight:flow:inventory?revision=2013-08-19)maximum-speed"));
         AugmentationIdentifier augmentFindId = new AugmentationIdentifier(nodeIdentifier);
-        Optional<NormalizedNode<?, ?>> inventoryNodeConnectorAugNode = NormalizedNodes.findNode(nodeConnectorEntry, augmentFindId);
+        Optional<NormalizedNode<?, ?>> inventoryNodeConnectorAugNode =
+                NormalizedNodes.findNode(nodeConnectorEntry, augmentFindId);
 
+        QName augmentationQname = QName.create(
+                "urn:opendaylight:topology:inventory:rendering","2015-08-31","tp-augmentation");
+        Set<QName> qnames = new HashSet<>();
+        qnames.add(augmentationQname);
+        AugmentationIdentifier augId = new AugmentationIdentifier(qnames);
+        DataContainerNodeBuilder<AugmentationIdentifier, AugmentationNode> tpAugmentationBuilder =
+                ImmutableAugmentationNodeBuilder.create();
+        //t.p. augmentation -> t.p. augmentation container -> leaf nodes
         tpAugmentationBuilder.withNodeIdentifier(augId)
                 .withChild(ImmutableContainerNodeBuilder.create()
                         .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(augmentationQname))
