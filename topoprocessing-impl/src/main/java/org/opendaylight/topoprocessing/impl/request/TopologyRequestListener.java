@@ -95,7 +95,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
             YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
             NormalizedNode<?, ?> normalizedNode = entry.getValue();
             if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)){
-                if (isTopologyRequest(normalizedNode)){
+                if (isTopologyRequest(normalizedNode)) {
                     Map.Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode =
                             nodeSerializer.fromNormalizedNode(identifier, normalizedNode);
                     TopologyRequestHandler requestHandler =

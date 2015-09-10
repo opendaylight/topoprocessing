@@ -19,19 +19,19 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public class TopologyStore {
 
-    private String id;
+    private String topologyId;
     private final boolean aggregateInside;
     private Map<YangInstanceIdentifier, UnderlayItem> underlayItems;
 
     /**
      * Default constructor
-     * @param id topology-id of stored topology
+     * @param topologyId topology-id of stored topology
      * @param aggregateInside signals if aggregation should happen even inside
      *        the same topology
      * @param underlayItem all items (either nodes, links or termination points) present in this topology
      */
-    public TopologyStore(String id, boolean aggregateInside, Map<YangInstanceIdentifier, UnderlayItem> underlayItem) {
-        this.id = id;
+    public TopologyStore(String topologyId, boolean aggregateInside, Map<YangInstanceIdentifier, UnderlayItem> underlayItem) {
+        this.topologyId = topologyId;
         this.aggregateInside = aggregateInside;
         this.underlayItems = underlayItem;
     }
@@ -39,8 +39,8 @@ public class TopologyStore {
     /**
      * @return id of the {@link Topology} represented by this {@link TopologyStore}
      */
-    public String getId() {
-        return id;
+    public String getTopologyId() {
+        return topologyId;
     }
 
     /**
