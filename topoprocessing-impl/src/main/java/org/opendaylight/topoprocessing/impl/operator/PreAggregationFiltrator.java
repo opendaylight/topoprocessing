@@ -11,6 +11,7 @@ package org.opendaylight.topoprocessing.impl.operator;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;

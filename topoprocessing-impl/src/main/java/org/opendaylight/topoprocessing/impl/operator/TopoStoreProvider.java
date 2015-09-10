@@ -22,8 +22,18 @@ public class  TopoStoreProvider {
 
     private List<TopologyStore> topologyStores;
 
+    /**
+     * Constructor
+     */
     public TopoStoreProvider () {
         topologyStores= new ArrayList<>();
+    }
+
+    /**
+     * @return topology stores
+     */
+    public List<TopologyStore> getTopologyStores() {
+        return topologyStores;
     }
 
     /**
@@ -32,7 +42,7 @@ public class  TopoStoreProvider {
      */
     public TopologyStore getTopologyStore(String topologyId) {
         for (TopologyStore topologyStore : topologyStores) {
-            if (topologyId.equals(topologyStore.getId())) {
+            if (topologyId.equals(topologyStore.getTopologyId())) {
                 return topologyStore;
             }
         }
@@ -50,19 +60,12 @@ public class  TopoStoreProvider {
             throw new IllegalStateException("Underlay topology cannot be null nor empty.");
         }
         for (TopologyStore topologyStore : topologyStores) {
-            if (underlayTopologyId.equals(topologyStore.getId())) {
+            if (underlayTopologyId.equals(topologyStore.getTopologyId())) {
                 return;
             }
         }
         topologyStores.add(new TopologyStore(underlayTopologyId, aggregateInside,
                 new HashMap<YangInstanceIdentifier, UnderlayItem>()));
-    }
-
-    /**
-     * @return topology stores
-     */
-    public List<TopologyStore> getTopologyStores() {
-        return topologyStores;
     }
 }
 

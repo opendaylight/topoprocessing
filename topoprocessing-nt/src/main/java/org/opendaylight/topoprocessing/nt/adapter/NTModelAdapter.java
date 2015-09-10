@@ -58,7 +58,7 @@ public class NTModelAdapter implements ModelAdapter {
     @Override
     public OverlayItemTranslator createOverlayItemTranslator() {
 
-        return new OverlayItemTranslator(new NTNodeTranslator(),new NTLinkTranslator());
+        return new OverlayItemTranslator(new NTNodeTranslator(), new NTLinkTranslator());
     }
 
 }

@@ -30,7 +30,7 @@ import com.google.common.collect.Maps;
  * @author matej.perina
  *
  */
-public class NTUnderlayTopologyListener extends UnderlayTopologyListener{
+public class NTUnderlayTopologyListener extends UnderlayTopologyListener {
 
     public NTUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
@@ -56,7 +56,7 @@ public class NTUnderlayTopologyListener extends UnderlayTopologyListener{
         return map;
     }
 
-    public void registerTopologyOperator(TopologyOperator operator){
+    public void registerTopologyOperator(TopologyOperator operator) {
         this.setOperator(operator);
     };
 }

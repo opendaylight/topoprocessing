@@ -38,6 +38,7 @@ public interface ModelAdapter {
      * @param datastoreType         type of data store
      * @param operator              topology operator to use
      * @param listeners             list of registered change listeners
+     * @param pathIdentifier        identifies path
      * @return new instance of model specific UnderlayTopologyListener
      */
     UnderlayTopologyListener registerUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
