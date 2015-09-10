@@ -8,23 +8,24 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import org.opendaylight.topoprocessing.impl.structure.ScriptResult;
-
-import javax.script.ScriptException;
-import javax.script.ScriptEngine;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.Scripting;
-import javax.script.ScriptEngineManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.topoprocessing.impl.structure.ScriptResult;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Preconditions;
 
 /**
@@ -63,7 +64,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
         if (createdEntries != null) {
             for (Entry<YangInstanceIdentifier, UnderlayItem> createdEntry : createdEntries.entrySet()) {
                 for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
-                    if (ts.getId().equals(topologyId)) {
+                    if (ts.getTopologyId().equals(topologyId)) {
                         ts.getUnderlayItems().put(createdEntry.getKey(), createdEntry.getValue());
                     }
                 }
@@ -79,7 +80,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
      */
     private void checkForPossibleAggregation(UnderlayItem newItem, String topologyId) {
         for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
-            if ((! ts.getId().equals(topologyId)) || ts.isAggregateInside()) {
+            if ((! ts.getTopologyId().equals(topologyId)) || ts.isAggregateInside()) {
                 for (Entry<YangInstanceIdentifier, UnderlayItem> topoStoreEntry : ts.getUnderlayItems().entrySet()) {
                     UnderlayItem topoStoreItem = topoStoreEntry.getValue();
                     if (scriptEngine != null) {
@@ -147,7 +148,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
     public void processRemovedChanges(List<YangInstanceIdentifier> identifiers, final String topologyId) {
         LOG.trace("Processing removedChanges");
         for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
-            if (ts.getId().equals(topologyId)) {
+            if (ts.getTopologyId().equals(topologyId)) {
                 Map<YangInstanceIdentifier, UnderlayItem> underlayItems = ts.getUnderlayItems();
                 if (identifiers != null) {
                     for (YangInstanceIdentifier identifier : identifiers) {
@@ -189,7 +190,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
         if (updatedEntries != null) {
             for (Entry<YangInstanceIdentifier, UnderlayItem> updatedEntry : updatedEntries.entrySet()) {
                 for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
-                    if (ts.getId().equals(topologyId)) {
+                    if (ts.getTopologyId().equals(topologyId)) {
                         LOG.debug("Updating overlay item");
                         UnderlayItem underlayItem = ts.getUnderlayItems().get(updatedEntry.getKey());
                         Preconditions.checkNotNull(underlayItem, "Updated underlay item not found in the Topology store");
