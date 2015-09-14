@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_272dddfe",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/translator/IRNodeTranslatorTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2015-09-14T07:11:07Z",
+      "side": 1,
+      "message": "please remove empty line",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 0
+      },
+      "revId": "39c059896d582f85307f23ddcc901bc555c43954",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
