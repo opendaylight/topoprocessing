@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_2714fd9e",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/listener/IRUnderlayTopologyListenerTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-09-14T07:16:39Z",
+      "side": 1,
+      "message": "split this line",
+      "range": {
+        "startLine": 71,
+        "startChar": 8,
+        "endLine": 71,
+        "endChar": 122
+      },
+      "revId": "6eb3289ca01a136074f035641adc29b0a9b8e70a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_4717b9a3",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/listener/IRUnderlayTopologyListenerTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-09-14T07:16:39Z",
+      "side": 1,
+      "message": "split this line",
+      "range": {
+        "startLine": 97,
+        "startChar": 8,
+        "endLine": 97,
+        "endChar": 132
+      },
+      "revId": "6eb3289ca01a136074f035641adc29b0a9b8e70a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_e70da591",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/request/IRTopologyRequestListenerTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-09-14T07:16:39Z",
+      "side": 1,
+      "message": "split this line",
+      "range": {
+        "startLine": 99,
+        "startChar": 8,
+        "endLine": 99,
+        "endChar": 131
+      },
+      "revId": "6eb3289ca01a136074f035641adc29b0a9b8e70a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
