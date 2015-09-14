@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_fdebf4ad",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/util/TopologyQNames.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-14T14:58:38Z",
+      "side": 1,
+      "message": "is this constant used somewhere else than in rendering usecase ? If not it should be stored in some utility class inside rendering bundle",
+      "range": {
+        "startLine": 46,
+        "startChar": 4,
+        "endLine": 47,
+        "endChar": 96
+      },
+      "revId": "5f8505fc35929940ada590ff96a183ed9fc83c7e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_ddb5d8ee",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/adapter/IRModelAdapter.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-14T14:58:38Z",
+      "side": 1,
+      "message": "here we should provide full implementation as it is example - no worries with having 2 same codes ... or is it only rebase problem ?",
+      "range": {
+        "startLine": 42,
+        "startChar": 8,
+        "endLine": 42,
+        "endChar": 20
+      },
+      "revId": "5f8505fc35929940ada590ff96a183ed9fc83c7e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_fdb8d4e6",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/adapter/IRModelAdapter.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-14T14:58:38Z",
+      "side": 1,
+      "message": "same as above",
+      "range": {
+        "startLine": 49,
+        "startChar": 14,
+        "endLine": 49,
+        "endChar": 19
+      },
+      "revId": "5f8505fc35929940ada590ff96a183ed9fc83c7e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_1ddfd00e",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/translator/IRNodeTranslator.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-14T14:58:38Z",
+      "side": 1,
+      "message": "save performance by storing identifier as a field - Qnames can be created only once ... same can be done below",
+      "range": {
+        "startLine": 102,
+        "startChar": 8,
+        "endLine": 119,
+        "endChar": 90
+      },
+      "revId": "5f8505fc35929940ada590ff96a183ed9fc83c7e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
