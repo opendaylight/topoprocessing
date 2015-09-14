@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_67c5153b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/util/TopologyQNames.java",
+        "patchSetId": 12
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2015-09-14T06:51:27Z",
+      "side": 1,
+      "message": "please add correct description",
+      "range": {
+        "startLine": 46,
+        "startChar": 4,
+        "endLine": 46,
+        "endChar": 96
+      },
+      "revId": "2ec6272c3fc26d508f9b3ecb46a4e361ce89d402",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
