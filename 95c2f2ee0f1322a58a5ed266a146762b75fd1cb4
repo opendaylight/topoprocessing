@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_07030174",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-09-14T07:13:11Z",
+      "side": 1,
+      "message": "please split this line",
+      "range": {
+        "startLine": 315,
+        "startChar": 12,
+        "endLine": 315,
+        "endChar": 130
+      },
+      "revId": "95c2f2ee0f1322a58a5ed266a146762b75fd1cb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_c7f42989",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/adapter/IRModelAdapter.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-09-14T07:13:11Z",
+      "side": 1,
+      "message": "split this line",
+      "range": {
+        "startLine": 45,
+        "startChar": 8,
+        "endLine": 45,
+        "endChar": 129
+      },
+      "revId": "95c2f2ee0f1322a58a5ed266a146762b75fd1cb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_47301956",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/operator/IRRenderingOperator.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-09-14T07:13:11Z",
+      "side": 1,
+      "message": "split this line",
+      "range": {
+        "startLine": 41,
+        "startChar": 12,
+        "endLine": 41,
+        "endChar": 128
+      },
+      "revId": "95c2f2ee0f1322a58a5ed266a146762b75fd1cb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_e7360552",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/operator/IRRenderingOperator.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-09-14T07:13:11Z",
+      "side": 1,
+      "message": "split this line",
+      "range": {
+        "startLine": 56,
+        "startChar": 12,
+        "endLine": 56,
+        "endChar": 128
+      },
+      "revId": "95c2f2ee0f1322a58a5ed266a146762b75fd1cb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_073a2136",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/operator/IRRenderingOperator.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-09-14T07:13:11Z",
+      "side": 1,
+      "message": "split this line",
+      "range": {
+        "startLine": 73,
+        "startChar": 11,
+        "endLine": 73,
+        "endChar": 128
+      },
+      "revId": "95c2f2ee0f1322a58a5ed266a146762b75fd1cb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_674af5c6",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/request/IRTopologyRequestListener.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-09-14T07:13:11Z",
+      "side": 1,
+      "message": "split this line",
+      "range": {
+        "startLine": 40,
+        "startChar": 12,
+        "endLine": 40,
+        "endChar": 135
+      },
+      "revId": "95c2f2ee0f1322a58a5ed266a146762b75fd1cb4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
