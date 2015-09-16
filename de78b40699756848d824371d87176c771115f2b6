@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "3a79b1b5_b88583ae",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2015-09-16T09:50:27Z",
+      "side": 1,
+      "message": "because in rendering case we dont have appropriate TopologyOperator interface and we have to extract created operator from listener (TopologyRequestHandler, lines 310-313",
+      "parentUuid": "3a79b1b5_183917a4",
+      "range": {
+        "startLine": 242,
+        "startChar": 0,
+        "endLine": 244,
+        "endChar": 5
+      },
+      "revId": "de78b40699756848d824371d87176c771115f2b6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_d842bf0f",
         "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NotificationInterConnector.java",
         "patchSetId": 7
@@ -59,6 +83,30 @@
       "writtenOn": "2015-09-16T08:35:06Z",
       "side": 1,
       "message": "why do we need this method ?",
+      "range": {
+        "startLine": 185,
+        "startChar": 0,
+        "endLine": 187,
+        "endChar": 5
+      },
+      "revId": "de78b40699756848d824371d87176c771115f2b6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_58946fe1",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NotificationInterConnector.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2015-09-16T09:50:27Z",
+      "side": 1,
+      "message": "because in rendering case we dont have appropriate TopologyOperator interface and we have to extract created operator from interconnector (TopologyRequestHandler, lines 310-313",
+      "parentUuid": "3a79b1b5_d842bf0f",
       "range": {
         "startLine": 185,
         "startChar": 0,
