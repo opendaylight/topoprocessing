@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "3a79b1b5_35c17ce4",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/adapter/IRModelAdapter.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-09-16T06:30:24Z",
+      "side": 1,
+      "message": "It is implemented by Created input adapters for inventory rendering change - https://git.opendaylight.org/gerrit/#/c/26512/. If I should implement it here, then I will have to create also classes which are not related to Output part of model adapter.",
+      "parentUuid": "3a79b1b5_ddb5d8ee",
+      "range": {
+        "startLine": 42,
+        "startChar": 8,
+        "endLine": 42,
+        "endChar": 20
+      },
+      "revId": "5f8505fc35929940ada590ff96a183ed9fc83c7e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_fdb8d4e6",
         "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/adapter/IRModelAdapter.java",
         "patchSetId": 14
