@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.impl.listener;
+package org.opendaylight.topoprocessing.inventoryRendering.listener;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,6 +17,7 @@ import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -34,31 +35,28 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Optional;
 
-
 /**
- * Listens on underlay topology changes
- * @author matus.marko
+ * @author michal.polkorab
+ *
  */
-public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListener {
+public class IRInventoryListener implements DOMDataTreeChangeListener {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UnderlayTopologyListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IRInventoryListener.class);
+    private static final YangInstanceIdentifier itemIdentifier = YangInstanceIdentifier.of(Node.QNAME);
     protected final PingPongDataBroker dataBroker;
 
     private TopologyOperator operator;
     private YangInstanceIdentifier pathIdentifier;
     protected String underlayTopologyId;
-    private YangInstanceIdentifier itemIdentifier;
     private YangInstanceIdentifier relativeItemIdIdentifier;
     private QName itemQName;
     protected CorrelationItemEnum correlationItem;
 
     /**
      * Default constructor
-     * @param dataBroker DOM Data Broker
-     * @param underlayTopologyId underlay topology identifier
-     * @param correlationItem can be either Node or Link or TerminationPoint
+     * @param underlayTopologyId underlay topology id
      */
-    public UnderlayTopologyListener(PingPongDataBroker dataBroker, String underlayTopologyId,
+    public IRInventoryListener(PingPongDataBroker dataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         this.dataBroker = dataBroker;
         this.underlayTopologyId = underlayTopologyId;
@@ -71,14 +69,11 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
             this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(correlationItem);
             this.itemQName = TopologyQNames.buildItemQName(correlationItem);
         }
-        this.itemIdentifier = YangInstanceIdentifier.of(itemQName);
     }
 
     @Override
     public void onDataTreeChanged(Collection<DataTreeCandidate> dataTreeCandidates) {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("OnDataTreeChanged event, with data tree candidates: {}", dataTreeCandidates);
-        }
+        LOGGER.debug("DataChangeEvent processed");
         Iterator<DataTreeCandidate> iterator = dataTreeCandidates.iterator();
         while (iterator.hasNext()) {
             DataTreeCandidate dataTreeCandidate = iterator.next();
@@ -99,7 +94,6 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
                 }
             }
         }
-        LOGGER.debug("DataTreeChanged event processed");
     }
 
     private void proceedChangeRequest(YangInstanceIdentifier identifier,
@@ -136,10 +130,9 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
                     return;
                 }
             } else {
-                // FILTRATION or opendaylight-inventory model is used - doesn't contain leafNode
-                // or Termination-point aggregation
-                underlayItem = new UnderlayItem(entry, null, underlayTopologyId, itemId,
-                        correlationItem);
+                // RENDERING
+                underlayItem =
+                        new UnderlayItem(null, entry, underlayTopologyId, null, CorrelationItemEnum.Node);
             }
             LOGGER.debug("underlayItem created");
             if (modificationType.equals(ModificationType.WRITE)) {
@@ -165,14 +158,11 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
         this.operator = operator;
     }
 
-    public TopologyOperator getOperator() {
-        return this.operator;
-    }
-
     /**
      * @param pathIdentifier identifies leaf (node), which aggregation / filtering will be based on
      */
     public void setPathIdentifier(YangInstanceIdentifier pathIdentifier) {
         this.pathIdentifier = pathIdentifier;
     }
+
 }
