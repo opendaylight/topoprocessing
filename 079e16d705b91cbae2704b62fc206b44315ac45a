@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_9821a74f",
+        "filename": "link-computation/src/main/java/org/opendaylight/topoprocessing/linkComputation/LinkCalculator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-16T09:06:22Z",
+      "side": 1,
+      "message": "consider using TopologyStore directly, or you can use whatever map that suits our needs",
+      "range": {
+        "startLine": 45,
+        "startChar": 12,
+        "endLine": 47,
+        "endChar": 29
+      },
+      "revId": "079e16d705b91cbae2704b62fc206b44315ac45a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_d8de3f3f",
+        "filename": "link-computation/src/main/java/org/opendaylight/topoprocessing/linkComputation/LinkCalculator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-16T09:06:22Z",
+      "side": 1,
+      "message": "this will fail, as the received object is UnderlayItem",
+      "range": {
+        "startLine": 66,
+        "startChar": 20,
+        "endLine": 66,
+        "endChar": 86
+      },
+      "revId": "079e16d705b91cbae2704b62fc206b44315ac45a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_78728b4a",
+        "filename": "link-computation/src/main/java/org/opendaylight/topoprocessing/linkComputation/LinkCalculator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-16T09:06:22Z",
+      "side": 1,
+      "message": "this is not correct identifier",
+      "range": {
+        "startLine": 82,
+        "startChar": 57,
+        "endLine": 82,
+        "endChar": 103
+      },
+      "revId": "079e16d705b91cbae2704b62fc206b44315ac45a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_d89abf62",
+        "filename": "link-computation/src/main/java/org/opendaylight/topoprocessing/linkComputation/LinkCalculator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-16T09:06:22Z",
+      "side": 1,
+      "message": "here we received overlay node, we should check if his supporting nodes contain those referenced in some received link",
+      "range": {
+        "startLine": 83,
+        "startChar": 28,
+        "endLine": 94,
+        "endChar": 29
+      },
+      "revId": "079e16d705b91cbae2704b62fc206b44315ac45a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_78a92b7a",
+        "filename": "link-computation/src/main/java/org/opendaylight/topoprocessing/linkComputation/LinkCalculator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-16T09:06:22Z",
+      "side": 1,
+      "message": "if we found match on both dst \u0026 src we need to delegate this link for further processing",
+      "revId": "079e16d705b91cbae2704b62fc206b44315ac45a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_581b0f1b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopoStoreProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-16T09:06:22Z",
+      "side": 1,
+      "message": "please don\u0027t make refactoring changes when not needed",
+      "range": {
+        "startLine": 32,
+        "startChar": 0,
+        "endLine": 37,
+        "endChar": 5
+      },
+      "revId": "079e16d705b91cbae2704b62fc206b44315ac45a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_78160bf3",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopoStoreProvider.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-16T09:06:22Z",
+      "side": 1,
+      "message": "please don\u0027t make refactoring changes when not needed",
+      "range": {
+        "startLine": 45,
+        "startChar": 47,
+        "endLine": 45,
+        "endChar": 64
+      },
+      "revId": "079e16d705b91cbae2704b62fc206b44315ac45a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
