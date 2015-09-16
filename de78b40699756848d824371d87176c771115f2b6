@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_98c52790",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/InventoryListener.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-16T08:35:06Z",
+      "side": 1,
+      "message": "don\u0027t modify InventoryListener, this whole class has to be copied, modified and moved to rendering bundle - don\u0027t worry about duplicity, this should serve as an example",
+      "range": {
+        "startLine": 83,
+        "startChar": 7,
+        "endLine": 100,
+        "endChar": 24
+      },
+      "revId": "de78b40699756848d824371d87176c771115f2b6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_183917a4",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-16T08:35:06Z",
+      "side": 1,
+      "message": "why do we need this method ?",
+      "range": {
+        "startLine": 242,
+        "startChar": 0,
+        "endLine": 244,
+        "endChar": 5
+      },
+      "revId": "de78b40699756848d824371d87176c771115f2b6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_d842bf0f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NotificationInterConnector.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-16T08:35:06Z",
+      "side": 1,
+      "message": "why do we need this method ?",
+      "range": {
+        "startLine": 185,
+        "startChar": 0,
+        "endLine": 187,
+        "endChar": 5
+      },
+      "revId": "de78b40699756848d824371d87176c771115f2b6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
