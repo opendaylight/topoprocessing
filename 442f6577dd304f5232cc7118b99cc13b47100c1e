@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_af6f74c4",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/listener/IRUnderlayTopologyListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-09-17T20:00:08Z",
+      "side": 1,
+      "message": "Change \"readTrandaction\" to \"readTransaction\".",
+      "revId": "442f6577dd304f5232cc7118b99cc13b47100c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_cf72f0ac",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/listener/IRUnderlayTopologyListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-09-17T20:00:08Z",
+      "side": 1,
+      "message": "This method isn\u0027t testing or verifying anything.",
+      "revId": "442f6577dd304f5232cc7118b99cc13b47100c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_ef9c8cc2",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/provider/IRTopoProcessingProviderImplTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-09-17T20:00:08Z",
+      "side": 1,
+      "message": "I don\u0027t think it\u0027s necessary to define a dummy class for this.  Just mock the base abstract class.",
+      "revId": "442f6577dd304f5232cc7118b99cc13b47100c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_cfa990e0",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/request/IRTopologyRequestHandlerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-09-17T20:00:08Z",
+      "side": 1,
+      "message": "I don\u0027t believe it\u0027s necessary to define this class.  Just mock an instance of CorrelationBase.",
+      "revId": "442f6577dd304f5232cc7118b99cc13b47100c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a79b1b5_4f5ee013",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/request/IRTopologyRequestListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-09-17T20:00:08Z",
+      "side": 1,
+      "message": "Isn\u0027t this the same as just \"thenReturn(InventoryRenderingModel.class)\"?",
+      "revId": "442f6577dd304f5232cc7118b99cc13b47100c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
