@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a79b1b5_798a8ac0",
+        "filename": "link-computation/src/main/java/org/opendaylight/topoprocessing/linkComputation/LinkCalculator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-17T13:51:09Z",
+      "side": 1,
+      "message": "id should be generated in TopologyManager",
+      "range": {
+        "startLine": 97,
+        "startChar": 24,
+        "endLine": 97,
+        "endChar": 96
+      },
+      "revId": "6442d4ba2472b1c0e9c10da7dbb30e9806e59dd7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
