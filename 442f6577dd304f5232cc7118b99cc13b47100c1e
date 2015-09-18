@@ -53,6 +53,24 @@
     },
     {
       "key": {
+        "uuid": "3a79b1b5_c82426b1",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/provider/IRTopoProcessingProviderImplTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-09-18T15:09:13Z",
+      "side": 1,
+      "message": "I confirm, Mockito can mock abstract classes perfectly fine.  There is no need to create dummy subclasses of abstract classes.",
+      "parentUuid": "3a79b1b5_ef9c8cc2",
+      "revId": "442f6577dd304f5232cc7118b99cc13b47100c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_cfa990e0",
         "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/request/IRTopologyRequestHandlerTest.java",
         "patchSetId": 8
