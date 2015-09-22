@@ -54,6 +54,24 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_e824f7c7",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/listener/IRUnderlayTopologyListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-09-22T15:20:45Z",
+      "side": 1,
+      "message": "A reasonable test needs to verify expected results from the execution of the CUT.  It\u0027s not reasonable to simply \"exercise\" the code and fail the test if it throws an unexpected exception.",
+      "parentUuid": "1a76adc5_e7f74a8b",
+      "revId": "442f6577dd304f5232cc7118b99cc13b47100c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_ef9c8cc2",
         "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/provider/IRTopoProcessingProviderImplTest.java",
         "patchSetId": 8
@@ -101,6 +119,24 @@
       "side": 1,
       "message": "I agree that we can mock abstract classes. However in this case we need to override protected methods from AbstractSchemaContext and thats not possible by using Mockito.",
       "parentUuid": "3a79b1b5_c82426b1",
+      "revId": "442f6577dd304f5232cc7118b99cc13b47100c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_6831c70a",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/provider/IRTopoProcessingProviderImplTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 3576
+      },
+      "writtenOn": "2015-09-22T15:20:45Z",
+      "side": 1,
+      "message": "All you\u0027ve done in the overridden methods is have them return \"null\".  That\u0027s what you would get if you mocked the abstract class.",
+      "parentUuid": "1a76adc5_a72e32a4",
       "revId": "442f6577dd304f5232cc7118b99cc13b47100c1e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
