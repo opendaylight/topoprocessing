@@ -36,6 +36,24 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_e7f74a8b",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/listener/IRUnderlayTopologyListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 181,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2015-09-22T08:03:05Z",
+      "side": 1,
+      "message": "Not true. It is testing wheter function readExistingData is not throwing exception. If it does test will fail.",
+      "parentUuid": "3a79b1b5_cf72f0ac",
+      "revId": "442f6577dd304f5232cc7118b99cc13b47100c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_ef9c8cc2",
         "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/provider/IRTopoProcessingProviderImplTest.java",
         "patchSetId": 8
@@ -71,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_a72e32a4",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/provider/IRTopoProcessingProviderImplTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2015-09-22T08:03:05Z",
+      "side": 1,
+      "message": "I agree that we can mock abstract classes. However in this case we need to override protected methods from AbstractSchemaContext and thats not possible by using Mockito.",
+      "parentUuid": "3a79b1b5_c82426b1",
+      "revId": "442f6577dd304f5232cc7118b99cc13b47100c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_cfa990e0",
         "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/request/IRTopologyRequestHandlerTest.java",
         "patchSetId": 8
@@ -99,6 +135,24 @@
       "writtenOn": "2015-09-17T20:00:08Z",
       "side": 1,
       "message": "Isn\u0027t this the same as just \"thenReturn(InventoryRenderingModel.class)\"?",
+      "revId": "442f6577dd304f5232cc7118b99cc13b47100c1e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_c219dc7a",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/request/IRTopologyRequestListenerTest.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2015-09-22T08:03:05Z",
+      "side": 1,
+      "message": "We wish it would :) In scope of generic classes its something completely different.\nTo save you from testing: (Class\u003ccapture#3-of ? extends Model\u003e) is not applicable for the arguments (Class\u003cInventoryRenderingModel\u003e)... resp. (Class\u003ccapture#5-of ? extends Model\u003e)",
+      "parentUuid": "3a79b1b5_4f5ee013",
       "revId": "442f6577dd304f5232cc7118b99cc13b47100c1e",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
