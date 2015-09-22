@@ -32,6 +32,7 @@ import org.opendaylight.topoprocessing.impl.util.IgnoreAddQueue;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -39,11 +40,13 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
+import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
+import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableContainerNodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -176,20 +179,41 @@ public class TopologyWriter implements TransactionChainListener {
      * and {@link Node} mapnode.
      */
     public void initOverlayTopology() {
-        MapEntryNode topologyMapEntryNode = ImmutableNodes
-                .mapEntry(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, topologyId);
+        /*LOGGER.trace("Reading existing data from dataStore");
+        DOMDataReadOnlyTransaction transaction = transactionChain.newReadOnlyTransaction();
+        LogicalDatastoreType logicalDatastoreType = LogicalDatastoreType.OPERATIONAL;
+        final YangInstanceIdentifier networkId = YangInstanceIdentifier.of(NetworkTopology.QNAME);
+        CheckedFuture<Optional<NormalizedNode<?, ?>>, ReadFailedException> future =
+                transaction.read(logicalDatastoreType, networkId);
+        try {
+            Optional<NormalizedNode<?, ?>> result = future.get(5, TimeUnit.SECONDS);
+            if (result.isPresent()){
+                LOGGER.debug("Network Topology already exists.");
+            } else {
+                LOGGER.debug("Network Topology does not exist. Creating Network Topology.");
 
-        MapNode nodeMapNode = ImmutableNodes.mapNodeBuilder(Node.QNAME).build();
-        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder(topologyIdentifier)
-                .node(Node.QNAME).build();
-        MapNode linkMapNode = ImmutableNodes.mapNodeBuilder(Link.QNAME).build();
-        YangInstanceIdentifier linkYiid = YangInstanceIdentifier.builder(topologyIdentifier)
-                .node(Link.QNAME).build();
+            }*/
 
-        preparedOperations.add(new PutOperation(topologyIdentifier, topologyMapEntryNode));
-        preparedOperations.add(new PutOperation(nodeYiid, nodeMapNode));
-        preparedOperations.add(new PutOperation(linkYiid, linkMapNode));
-        scheduleWrite();
+            ContainerNode networkNode = ImmutableContainerNodeBuilder.create()
+                .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(NetworkTopology.QNAME))
+                .build();
+            YangInstanceIdentifier networkId = YangInstanceIdentifier.of(NetworkTopology.QNAME);
+            MapEntryNode topologyMapEntryNode = ImmutableNodes
+                    .mapEntry(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, topologyId);
+
+            MapNode nodeMapNode = ImmutableNodes.mapNodeBuilder(Node.QNAME).build();
+            YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder(topologyIdentifier)
+                    .node(Node.QNAME).build();
+            MapNode linkMapNode = ImmutableNodes.mapNodeBuilder(Link.QNAME).build();
+            YangInstanceIdentifier linkYiid = YangInstanceIdentifier.builder(topologyIdentifier)
+                    .node(Link.QNAME).build();
+
+
+            preparedOperations.add(new MergeOperation(networkId, networkNode));
+            preparedOperations.add(new PutOperation(topologyIdentifier, topologyMapEntryNode));
+            preparedOperations.add(new PutOperation(nodeYiid, nodeMapNode));
+            preparedOperations.add(new PutOperation(linkYiid, linkMapNode));
+            scheduleWrite();
     }
 
     /**
