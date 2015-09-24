@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_a194d537",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 14
+      },
+      "lineNbr": 176,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-24T16:15:53Z",
+      "side": 1,
+      "message": "this method should be also removed",
+      "range": {
+        "startLine": 175,
+        "startChar": 4,
+        "endLine": 176,
+        "endChar": 83
+      },
+      "revId": "39bca0897b9f4de88ded52d1f277c1519111c1f5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
