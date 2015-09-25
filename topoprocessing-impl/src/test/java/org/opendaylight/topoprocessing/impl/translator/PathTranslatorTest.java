@@ -8,12 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.translator;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -24,22 +26,20 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
-import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
-import org.opendaylight.yangtools.yang.data.util.DataSchemaContextNode;
 import org.opendaylight.yangtools.yang.data.util.DataSchemaContextTree;
-import org.opendaylight.yangtools.yang.model.api.DataSchemaNode;
-import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
+import org.opendaylight.yangtools.yang.model.parser.api.YangSyntaxErrorException;
+import org.opendaylight.yangtools.yang.parser.impl.YangParserImpl;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.io.ByteSource;
 
 /**
  * @author martin.uhlir
@@ -49,48 +49,38 @@ import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 public class PathTranslatorTest {
 
     private PathTranslator pathTranslator = new PathTranslator();
-
-    @Mock private SchemaContext mockContext;
-    @Mock private Module mockModule;
-    @Mock private DataSchemaNode mockDataSchemaNode1;
-    @Mock private DataSchemaNode mockDataSchemaNode2;
+    private SchemaContext schemaContext;
 
     @Mock private GlobalSchemaContextHolder mockSchemaHolder;
-    @Mock private SchemaContext mockSchemaContext;
-
-    @Mock private DataSchemaContextTree mockContextTree;
-    @Mock private DataSchemaContextNode<?> mockContextNode;
-    @Mock private DataSchemaContextNode<?> mockContextNodeIdentifier;
 
     private Class<? extends Model> NTmodel = NetworkTopologyModel.class;
 
-    YangInstanceIdentifier nodeIdentifier = YangInstanceIdentifier.builder()
-            .node(NetworkTopology.QNAME)
-            .node(Topology.QNAME)
-            .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, "")
-            .node(Node.QNAME)
-            .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, "")
-            .build();
+    private static SchemaContext createTestContext() throws IOException, YangSyntaxErrorException {
+        final YangParserImpl parser = new YangParserImpl();
+        List<String> modules = new ArrayList<String>();
+        modules.add("/ietf-inet-types.yang");
+        modules.add("/network-topology.yang");
+        modules.add("/network-topology-pcep.yang");
+        return parser.parseSources(Collections2.transform(modules, new Function<String, ByteSource>() {
+            @Override
+            public ByteSource apply(final String input) {
+                return new ByteSource() {
+                    @Override
+                    public InputStream openStream() throws IOException {
+                        return PathTranslatorTest.class.getResourceAsStream(input);
+                    }
+                };
+            }
+        }));
+      }
+
 
     @Before
-    public void startup() throws URISyntaxException, ParseException {
-        Mockito.when(mockSchemaHolder.getSchemaContext()).thenReturn(mockSchemaContext);
-        Mockito.when(mockSchemaHolder.getContextTree()).thenReturn(mockContextTree);
-        Mockito.when(mockSchemaContext.findModuleByName(Mockito.eq("network-topology-pcep"), (Date) Mockito.any()))
-            .thenReturn(mockModule);
-        String uriString = "urn:opendaylight:params:xml:ns:yang:topology:pcep";
-        URI namespaceURI = new URI(uriString);
-        Mockito.when(mockModule.getNamespace()).thenReturn(namespaceURI);
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        Date revisionDate = sdf.parse("24/10/2013");
-        Mockito.when(mockModule.getRevision()).thenReturn(revisionDate);
-        String pathComputationClient = "path-computation-client";
-        Mockito.when(mockContextTree.getChild(nodeIdentifier)).thenReturn((DataSchemaContextNode) mockContextNode);
-        QName qName = QName.create(namespaceURI, revisionDate, pathComputationClient);
-        Mockito.when(mockContextNode.getChild(qName)).thenReturn((DataSchemaContextNode) mockContextNode);
-
-        NodeIdentifier nodeIdentifier = new NodeIdentifier(qName);
-        Mockito.doReturn(nodeIdentifier).when(mockContextNode).getIdentifier();
+    public void startup() throws URISyntaxException, ParseException, IOException, YangSyntaxErrorException {
+        schemaContext = createTestContext();
+        DataSchemaContextTree contextTree = DataSchemaContextTree.from(schemaContext);
+        Mockito.when(mockSchemaHolder.getSchemaContext()).thenReturn(schemaContext);
+        Mockito.when(mockSchemaHolder.getContextTree()).thenReturn(contextTree);
     }
 
     /**
@@ -110,7 +100,7 @@ public class PathTranslatorTest {
         YangInstanceIdentifier translate = pathTranslator.translate("network-topology-pcep:path-computation-client",
                 CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
         YangInstanceIdentifier expectedIdentifier =
-                YangInstanceIdentifier.builder().node(qName).build();
+                YangInstanceIdentifier.builder().node(augmentationIdentifier).node(qName).build();
         Assert.assertEquals("Incorrect valid YangInstanceIdentifier",
                 expectedIdentifier.toString(), translate.toString());
     }
@@ -170,13 +160,33 @@ public class PathTranslatorTest {
 
     @Test(expected=IllegalArgumentException.class)
     public void testPathBeginingWithSlash() {
-        pathTranslator.translate("/network-topology-pcep:ip-address", CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
+        pathTranslator.translate("/network-topology-pcep:ip-address",
+                CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
     }
 
+    /**
+     * Test case: module does not exist
+     */
     @Test(expected=IllegalStateException.class)
-    public void testUnexistingModuleName() throws URISyntaxException, ParseException {
-        Mockito.when(mockSchemaContext.findModuleByName(Mockito.eq("network-topology-pcep"), (Date) Mockito.any()))
-            .thenReturn(null);
+    public void testUnexistingModuleName()
+            throws URISyntaxException, ParseException, IOException, YangSyntaxErrorException {
+        final YangParserImpl parser = new YangParserImpl();
+        List<String> modules = new ArrayList<String>();
+        modules.add("/ietf-inet-types.yang");
+        modules.add("/network-topology.yang");
+        SchemaContext schemaContext2 = parser.parseSources(Collections2.transform(modules,
+                new Function<String, ByteSource>() {
+            @Override
+            public ByteSource apply(final String input) {
+                return new ByteSource() {
+                    @Override
+                    public InputStream openStream() throws IOException {
+                        return PathTranslatorTest.class.getResourceAsStream(input);
+                    }
+                };
+            }
+        }));
+        Mockito.when(mockSchemaHolder.getSchemaContext()).thenReturn(schemaContext2);
         testLegalPath();
     }
 }
