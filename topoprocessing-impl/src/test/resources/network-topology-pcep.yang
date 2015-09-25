@@ -1,0 +1,99 @@
+module network-topology-pcep {
+    // vi: set et smarttab sw=4 tabstop=4:
+    yang-version 1;
+    namespace "urn:opendaylight:params:xml:ns:yang:topology:pcep";
+    prefix "pn";
+
+    import ietf-inet-types { prefix inet; revision-date 2010-09-24; }
+    import network-topology { prefix nt; revision-date 2013-10-21; }
+
+    organization "Cisco Systems, Inc.";
+    contact "Robert Varga <rovarga@cisco.com>";
+
+    description
+        "This module contains the PCEP extensions to base topology model. It
+        exposes the LSPs for which a particular node is the head end.
+
+        This module exposes three programming instructions,add-lsp,
+        remove-lsp and update-lsp, which map to actively-stateful PCEP
+        operations using PCInitiate and PCUpd messages to initiate,
+        destroy and udpate LSP configuration. The lifecycle of these
+        instructions follows draft-crabbe-pce-pce-initiated-lsp and
+        draft-ietf-pce-stateful-pce, completing execution once the head-end
+        router has acknowledged operation success. Should the router become
+        disconnected, the instruction resolve to Cancelled if the message
+        has not been sent into the TCP socket, or Failed it they have.
+
+        Copyright (c)2013 Cisco Systems, Inc. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html";
+
+    revision "2013-10-24" {
+        description
+            "Initial revision.";
+        reference "";
+    }
+
+    typedef pcc-sync-state {
+        type enumeration {
+            enum initial-resync {
+                description
+                    "Initial state resynchronization is being performed.";
+            }
+            enum synchronized {
+                description
+                    "State synchronization has been achieved.";
+            }
+        }
+    }
+
+    grouping topology-pcep-type {
+        container topology-pcep {
+            presence "indicates a PCEP-aware topology";
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:topology-types" {
+        uses topology-pcep-type;
+    }
+
+    grouping pcep-client-attributes {
+        description "Data present in a node which is a PCEP client (PCC).";
+
+        container path-computation-client {
+            description
+                "PCC-related run-time information. This container is only
+                present when the node is connected through PCEP in a PCC
+                role.";
+            config false;
+
+            leaf ip-address {
+                description
+                    "IP address which the node used to connected to the PCE.
+                    There are no guarantees as to reachability of the address,
+                    nor its relationship to other control, management, or
+                    data plane addresses.";
+
+                type inet:ip-address;
+            }
+
+            container stateful-tlv {
+
+            }
+
+            leaf state-sync {
+                type pcc-sync-state;
+                when "../stateful-tlv";
+            }
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:node" {
+        when "../../nt:topology-types/topology-pcep";
+
+        uses pcep-client-attributes;
+    }
+}
