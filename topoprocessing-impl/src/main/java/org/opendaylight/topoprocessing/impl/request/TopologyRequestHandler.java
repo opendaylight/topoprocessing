@@ -262,7 +262,7 @@ public abstract class TopologyRequestHandler {
                 for (String filterId : mapping.getApplyFilters()) {
                     Filter filter = findFilter(correlation.getFiltration().getFilter(), filterId);
                     YangInstanceIdentifier filterPath = translator.translate(filter.getTargetField().getValue(),
-                            correlationItem, schemaHolder, filter.getInputModel());
+                            correlationItem, schemaHolder, mapping.getInputModel());
                     addFiltrator(filtrator, filter, filterPath);
                 }
             }

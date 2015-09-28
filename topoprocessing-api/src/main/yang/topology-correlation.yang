@@ -196,7 +196,7 @@ module topology-correlation {
                         description "Input topology which will be filtered.";
                     }
                     list filter {
-                        key "filter-type target-field";
+                        key "filter-id";
                         uses input-model-grouping;
                         leaf filter-id {
                             type string;
