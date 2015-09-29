@@ -12,15 +12,17 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
-import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
+import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableContainerNodeBuilder;
 
 import com.google.common.util.concurrent.CheckedFuture;
 
@@ -61,23 +63,25 @@ public class TopologyWriterTest {
         Mockito.when(transaction.submit()).thenReturn(submit);
         topologyWriter.initOverlayTopology();
 
-        MapEntryNode topologyMapEntryNode = ImmutableNodes
-                .mapEntry(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY_ID);
+        YangInstanceIdentifier networkId = YangInstanceIdentifier.of(NetworkTopology.QNAME);
+
         MapNode nodeMapNode = ImmutableNodes.mapNodeBuilder(Node.QNAME).build();
-        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder(topologyIdentifier)
-                .node(Node.QNAME).build();
         MapNode linkMapNode = ImmutableNodes.mapNodeBuilder(Link.QNAME).build();
-        YangInstanceIdentifier linkYiid = YangInstanceIdentifier.builder(topologyIdentifier)
-                .node(Link.QNAME).build();
+        ContainerNode networkNode = ImmutableContainerNodeBuilder.create()
+                .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(NetworkTopology.QNAME))
+                .withChild(ImmutableNodes.mapNodeBuilder(Topology.QNAME)
+                        .withChild(ImmutableNodes.mapEntryBuilder(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY_ID)
+                                .withChild(nodeMapNode)
+                                .withChild(linkMapNode).build())
+                        .build())
+                .build();
 
         try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             throw new IllegalStateException("Exception while waiting on thread pool to process transaction");
         }
-        Mockito.verify(transaction).put(LogicalDatastoreType.OPERATIONAL, topologyIdentifier, topologyMapEntryNode);
-        Mockito.verify(transaction).put(LogicalDatastoreType.OPERATIONAL, nodeYiid, nodeMapNode);
-        Mockito.verify(transaction).put(LogicalDatastoreType.OPERATIONAL, linkYiid, linkMapNode);
+        Mockito.verify(transaction).merge(LogicalDatastoreType.OPERATIONAL, networkId, networkNode);
         Mockito.verify(transaction).submit();
     }
 
