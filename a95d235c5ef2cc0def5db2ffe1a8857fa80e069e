@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_c718f786",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/testUtilities/TestingDOMDataBroker.java",
+        "patchSetId": 17
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-29T12:34:16Z",
+      "side": 1,
+      "message": "fields first, please",
+      "range": {
+        "startLine": 39,
+        "startChar": 4,
+        "endLine": 40,
+        "endChar": 101
+      },
+      "revId": "a95d235c5ef2cc0def5db2ffe1a8857fa80e069e",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
