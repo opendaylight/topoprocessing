@@ -2,6 +2,23 @@
   "comments": [
     {
       "key": {
+        "uuid": "1a76adc5_97c78845",
+        "filename": "topoprocessing-api/src/main/yang/topology-correlation.yang",
+        "patchSetId": 7
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-30T12:45:05Z",
+      "side": 1,
+      "message": "here we should also add input model, so that we can use registered / already existing classes and so that we don\u0027t override them which might cause duplicities / problems",
+      "revId": "de78b40699756848d824371d87176c771115f2b6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a79b1b5_98c52790",
         "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/InventoryListener.java",
         "patchSetId": 7
@@ -112,6 +129,29 @@
         "startChar": 0,
         "endLine": 187,
         "endChar": 5
+      },
+      "revId": "de78b40699756848d824371d87176c771115f2b6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_37c4743f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 307,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-09-30T12:45:05Z",
+      "side": 1,
+      "message": "here we should differenciate based on input model",
+      "range": {
+        "startLine": 307,
+        "startChar": 66,
+        "endLine": 307,
+        "endChar": 77
       },
       "revId": "de78b40699756848d824371d87176c771115f2b6",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
