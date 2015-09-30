@@ -579,7 +579,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         InstanceIdentifier<Node> nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
         Optional<Node> optionalNode = rTx.read(LogicalDatastoreType.OPERATIONAL, nodeIid).get();
-        if (optionalNode != null) {
+        if (optionalNode != null && optionalNode.isPresent()) {
             assertTrue("Operational mlmt:1 topology node ", optionalNode.isPresent());
         }
     }
