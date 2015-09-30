@@ -63,12 +63,12 @@ module multitechnology-topology-opaque-attribute {
 
     grouping opaque-attribute-value {
         choice basic-attribute-types {
-            case boolean-value   {leaf      boolean-value   {type boolean;}}
-            case empty-value     {leaf      empty-value     {type empty;  }}
-            case int32-value     {leaf      int64-value     {type int32;  }}
-            case string-value    {leaf      string-value    {type string; }}
-            case string-list     {leaf-list string-list     {type string; }}
-            case uint32-value    {leaf      uint32-value    {type uint32; }}
+            case boolean-value   { leaf      boolean-value   { type boolean; } }
+            case empty-value     { leaf      empty-value     { type empty; } }
+            case int32-value     { leaf      int64-value     { type int32; } }
+            case string-value    { leaf      string-value    { type string; } }
+            case string-list     { leaf-list string-list     { type string; } }
+            case uint32-value    { leaf      uint32-value    { type uint32; } }
         }
     }
 
