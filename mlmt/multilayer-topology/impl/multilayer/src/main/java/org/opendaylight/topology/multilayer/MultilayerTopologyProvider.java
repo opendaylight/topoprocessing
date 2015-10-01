@@ -583,21 +583,26 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                     faId, input);
         }
 
-        FaEndPoint headEnd = parser.parseHeadEnd(input);
-        NodeId headNodeId = parser.parseNodeId(headEnd);
-        TerminationPointBuilder tpBuilder = parser.parseTerminationPointBuilder(headEnd);
-        InstanceIdentifier<TerminationPoint> tpInstanceId = destTopologyId
-                .child(Node.class, new NodeKey(headNodeId))
-                .child(TerminationPoint.class, tpBuilder.getKey());
         WriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
-        transaction.merge(LogicalDatastoreType.OPERATIONAL, tpInstanceId, tpBuilder.build());
+
+        FaEndPoint headEnd = parser.parseHeadEnd(input);
+        if (headEnd != null) {
+            NodeId headNodeId = parser.parseNodeId(headEnd);
+            TerminationPointBuilder tpBuilder = parser.parseTerminationPointBuilder(headEnd);
+            InstanceIdentifier<TerminationPoint> tpInstanceId = destTopologyId
+                    .child(Node.class, new NodeKey(headNodeId))
+                    .child(TerminationPoint.class, tpBuilder.getKey());
+            transaction.merge(LogicalDatastoreType.OPERATIONAL, tpInstanceId, tpBuilder.build());
+        }
 
         FaEndPoint tailEnd = parser.parseTailEnd(input);
-        NodeId tailNodeId = parser.parseNodeId(tailEnd);
-        tpBuilder = parser.parseTerminationPointBuilder(tailEnd);
-        tpInstanceId = destTopologyId.child(Node.class, new NodeKey(tailNodeId))
-                .child(TerminationPoint.class, tpBuilder.getKey());
-        transaction.merge(LogicalDatastoreType.OPERATIONAL, tpInstanceId, tpBuilder.build());
+        if (tailEnd != null) {
+            NodeId tailNodeId = parser.parseNodeId(tailEnd);
+            TerminationPointBuilder tpBuilder = parser.parseTerminationPointBuilder(tailEnd);
+            InstanceIdentifier<TerminationPoint> tpInstanceId = destTopologyId.child(Node.class, new NodeKey(tailNodeId))
+                    .child(TerminationPoint.class, tpBuilder.getKey());
+            transaction.merge(LogicalDatastoreType.OPERATIONAL, tpInstanceId, tpBuilder.build());
+        }
 
         transaction.merge(LogicalDatastoreType.OPERATIONAL, linkInstanceId, linkBuilder.build());
 
@@ -619,10 +624,9 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                      .withResult(faAdjAnnUpdBuilder.build()).build());
         }
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.OkBuilder
-               okBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.OkBuilder();
-        ForwardingAdjWithdrawOutputBuilder faAdjWithdrawOutputBuilder = new ForwardingAdjWithdrawOutputBuilder();
-        faAdjWithdrawOutputBuilder.setResult(okBuilder.build());
+        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.update.output.result.OkBuilder
+               okBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.update.output.result.OkBuilder();
+        faAdjAnnUpdBuilder.setResult(okBuilder.build());
         return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjUpdateOutput> success()
                 .withResult(faAdjAnnUpdBuilder.build()).build());
     }

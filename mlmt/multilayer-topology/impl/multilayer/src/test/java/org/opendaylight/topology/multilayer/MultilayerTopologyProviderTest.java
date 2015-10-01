@@ -89,6 +89,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev1501
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjAnnounceInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjAnnounceOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjUpdateInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjUpdateInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjUpdateOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjWithdrawInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjWithdrawInputBuilder;
@@ -431,12 +432,16 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
              waitObject.wait(1500);
         }
 
+        /*
+         * Forwarding Adjacency announce
+         */
         ForwardingAdjAnnounceInputBuilder forwardingAdjAnnounceInputBuilder = new ForwardingAdjAnnounceInputBuilder();
         AnnouncementContextBuilder announcementContextBuilder = new AnnouncementContextBuilder();
         announcementContextBuilder.setId(new Uri("test"));
         HeadEndBuilder headEndBuilder = new HeadEndBuilder();
         headEndBuilder.setNode(nodeId1);
         headEndBuilder.setTpId(tpId1);
+        headEndBuilder.setStitchingPoint(null);
         List<TpId> lTpId = new ArrayList<TpId>();
         TpId supportingTpId = new TpId("supporting:1");
         lTpId.add(supportingTpId);
@@ -445,22 +450,23 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         TailEndBuilder tailEndBuilder = new TailEndBuilder();
         tailEndBuilder.setNode(nodeId2);
         tailEndBuilder.setTpId(tpId2);
+        tailEndBuilder.setStitchingPoint(null);
         lTpId = new ArrayList<TpId>();
         supportingTpId = new TpId("supporting:2");
         lTpId.add(supportingTpId);
         tailEndBuilder.setSupportingTp(lTpId);
 
         Long metric = 10L;
-        final MtLinkMetricAttributeValueBuilder mtLinkMetricAVBuilder = new MtLinkMetricAttributeValueBuilder();
+        MtLinkMetricAttributeValueBuilder mtLinkMetricAVBuilder = new MtLinkMetricAttributeValueBuilder();
         mtLinkMetricAVBuilder.setMetric(metric);
-        final ValueBuilder valueBuilder = new ValueBuilder();
+        ValueBuilder valueBuilder = new ValueBuilder();
         valueBuilder.addAugmentation(MtLinkMetricAttributeValue.class, mtLinkMetricAVBuilder.build());
-        final AttributeBuilder attributeBuilder = new AttributeBuilder();
+        AttributeBuilder attributeBuilder = new AttributeBuilder();
         attributeBuilder.setAttributeType(NativeL3IgpMetric.class);
         attributeBuilder.setValue(valueBuilder.build());
         final Uri uri = new Uri("test:1");
         attributeBuilder.setId(uri);
-        final AttributeKey attributeKey = new AttributeKey(uri);
+        AttributeKey attributeKey = new AttributeKey(uri);
         attributeBuilder.setKey(attributeKey);
 
         List<Attribute> lAttribute = new ArrayList<Attribute>();
@@ -490,6 +496,43 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaId faId = ((FaId)resultOutput).getFaId();
 
+        /*
+         * Forwarding Adjacency update
+         */
+         ForwardingAdjUpdateInputBuilder forwardingAdjUpdateInputBuilder = new ForwardingAdjUpdateInputBuilder();
+         forwardingAdjUpdateInputBuilder.setFaId(faId);
+         forwardingAdjUpdateInputBuilder.setNetworkTopologyRef(networkTopologyRef);
+         forwardingAdjUpdateInputBuilder.setAnnouncementContext(announcementContextBuilder.build());
+         forwardingAdjUpdateInputBuilder.setHeadEnd(headEndBuilder.build());
+         forwardingAdjUpdateInputBuilder.setTailEnd(tailEndBuilder.build());
+         forwardingAdjUpdateInputBuilder.setDirectionalityInfo(unidirBuilder.build());
+         metric = 20L;
+         mtLinkMetricAVBuilder = new MtLinkMetricAttributeValueBuilder();
+         mtLinkMetricAVBuilder.setMetric(metric);
+         valueBuilder = new ValueBuilder();
+         valueBuilder.addAugmentation(MtLinkMetricAttributeValue.class, mtLinkMetricAVBuilder.build());
+         attributeBuilder = new AttributeBuilder();
+         attributeBuilder.setAttributeType(NativeL3IgpMetric.class);
+         attributeBuilder.setValue(valueBuilder.build());
+         attributeBuilder.setId(uri);
+         attributeKey = new AttributeKey(uri);
+         attributeBuilder.setKey(attributeKey);
+         forwardingAdjUpdateInputBuilder.setAttribute(lAttribute);
+
+         Future<RpcResult<ForwardingAdjUpdateOutput>> futureUpdate =
+                 provider.forwardingAdjUpdate(forwardingAdjUpdateInputBuilder.build());
+         RpcResult<ForwardingAdjUpdateOutput> update = futureUpdate.get();
+         assertNotNull(update);
+         ForwardingAdjUpdateOutput resultUpdateOutput = update.getResult();
+         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.update.output.Result
+                 resultUpdate = resultUpdateOutput.getResult();
+         assertNotNull(resultUpdate);
+         b = resultUpdate instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.update.output.result.Ok;
+         assertTrue(b);
+
+         /*
+          * Forwarding Adjacency withdraw
+         */
         ForwardingAdjWithdrawInputBuilder forwardingAdjWithdrawInputBuilder = new ForwardingAdjWithdrawInputBuilder();
         forwardingAdjWithdrawInputBuilder.setFaId(faId);
         forwardingAdjWithdrawInputBuilder.setNetworkTopologyRef(networkTopologyRef);
