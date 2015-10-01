@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a76adc5_402048f7",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/translator/IRNodeTranslator.java",
+        "patchSetId": 23
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-10-01T09:30:41Z",
+      "side": 1,
+      "message": "I believe that we don\u0027t want to throw an exception when one of desired fields is missing, we should just skip adding missing fields into the result",
+      "range": {
+        "startLine": 140,
+        "startChar": 12,
+        "endLine": 143,
+        "endChar": 13
+      },
+      "revId": "61f8da321c437a91f8d7f4530ed7884c7ce62b2b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_e0edd48c",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/translator/IRNodeTranslator.java",
+        "patchSetId": 23
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-10-01T09:30:41Z",
+      "side": 1,
+      "message": "we should check if .isPresent()",
+      "range": {
+        "startLine": 154,
+        "startChar": 51,
+        "endLine": 154,
+        "endChar": 57
+      },
+      "revId": "61f8da321c437a91f8d7f4530ed7884c7ce62b2b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_a0ffdc33",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/translator/IRNodeTranslator.java",
+        "patchSetId": 23
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-10-01T09:30:41Z",
+      "side": 1,
+      "message": "simple return should be fine, we don\u0027t want to throw exception here.",
+      "range": {
+        "startLine": 159,
+        "startChar": 8,
+        "endLine": 162,
+        "endChar": 9
+      },
+      "revId": "61f8da321c437a91f8d7f4530ed7884c7ce62b2b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_c0d1b8ce",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/translator/IRNodeTranslator.java",
+        "patchSetId": 23
+      },
+      "lineNbr": 195,
+      "author": {
+        "id": 664
+      },
+      "writtenOn": "2015-10-01T09:30:41Z",
+      "side": 1,
+      "message": "I believe that we don\u0027t want to throw an exception when one of desired fields is missing, we should just skip adding missing fields into the result",
+      "range": {
+        "startLine": 192,
+        "startChar": 12,
+        "endLine": 195,
+        "endChar": 13
+      },
+      "revId": "61f8da321c437a91f8d7f4530ed7884c7ce62b2b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
