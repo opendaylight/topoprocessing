@@ -21,39 +21,38 @@ public class ForwardingAdjacencyTopologyProviderModule extends org.opendaylight.
         // add custom validation form module attributes here.
     }
 
-     @Override
-       public java.lang.AutoCloseable createInstance() {
+    @Override
+    public java.lang.AutoCloseable createInstance() {
+        LOG.info("*** ForwardingAdjacencyTopologyProviderModule createInstance. ***");
 
-           LOG.info("*** ForwardingAdjacencyTopologyProviderModule createInstance. ***");
+        final ForwardingAdjacencyTopologyProvider faTopologyProvider = new ForwardingAdjacencyTopologyProvider();
 
-           final ForwardingAdjacencyTopologyProvider faTopologyProvider = new ForwardingAdjacencyTopologyProvider();
+        DataBroker dataBrokerService = getDataBrokerDependency();
+        faTopologyProvider.setDataProvider(dataBrokerService);
 
-           DataBroker dataBrokerService = getDataBrokerDependency();
-           faTopologyProvider.setDataProvider(dataBrokerService);
+        final ForwardingAdjacencyTopologyProviderRuntimeRegistration runtimeReg = getRootRuntimeBeanRegistratorWrapper().register(
+                faTopologyProvider);
 
-           final ForwardingAdjacencyTopologyProviderRuntimeRegistration runtimeReg = getRootRuntimeBeanRegistratorWrapper().register(
-                   faTopologyProvider);
+        final class AutoCloseableFaTopology implements AutoCloseable {
 
-          final class AutoCloseableFaTopology implements AutoCloseable {
+            @Override
+            public void close() throws Exception {
+                runtimeReg.close();
+                closeQuietly(faTopologyProvider);
+                LOG.info("Multilayer provider (instance {}) torn down.", this);
+            }
 
-              @Override
-              public void close() throws Exception {
-                  runtimeReg.close();
-                  closeQuietly(faTopologyProvider);
-                  LOG.info("Multilayer provider (instance {}) torn down.", this);
-              }
+            private void closeQuietly(final AutoCloseable resource) {
+                try {
+                    resource.close();
+                } catch (final Exception e) {
+                    LOG.debug("Ignoring exception while closing {}", resource, e);
+                }
+            }
+        }
 
-              private void closeQuietly(final AutoCloseable resource) {
-                  try {
-                      resource.close();
-                  } catch (final Exception e) {
-                      LOG.debug("Ignoring exception while closing {}", resource, e);
-                  }
-              }
-          }
-
-          AutoCloseable ret = new AutoCloseableFaTopology();
-          LOG.info("ForwardingAdjacency provider (instance {}) initialized.", ret);
-          return ret;
-       }
+        AutoCloseable ret = new AutoCloseableFaTopology();
+        LOG.info("ForwardingAdjacency provider (instance {}) initialized.", ret);
+        return ret;
+    }
 }

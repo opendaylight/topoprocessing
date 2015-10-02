@@ -8,8 +8,6 @@
 
 package org.opendaylight.topology.forwarding.adjacency;
 
-import java.util.Iterator;
-import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -40,18 +38,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacen
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.MlLink;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.MlTerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.MlTerminationPoint;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.slf4j.Logger;
-import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
-import org.opendaylight.topology.mlmt.utility.MlmtTopologyOperation;
-import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.multitechnology.topology.type.MultitechnologyTopology;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MlTopologyType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.multilayer.topology.type.MultilayerTopology;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.impl.rev150123.ForwardingAdjacencyTopologyProviderRuntimeMXBean;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
+import org.opendaylight.topology.mlmt.utility.MlmtTopologyOperation;
+import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.topology.multilayer.MultilayerForwardingAdjacency;
+
+import org.slf4j.Logger;
 
 public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyTopologyProviderRuntimeMXBean,
         AutoCloseable, MultilayerForwardingAdjacency {
