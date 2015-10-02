@@ -23,6 +23,7 @@ import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestDataTreeCandidateNode;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -64,10 +65,11 @@ public class InventoryListenerTest {
         String nodeName = "node:1";
         String leafValue = "10.0.0.1";
         YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder()
+                .node(Nodes.QNAME)
                 .node(Node.QNAME)
                 .nodeWithKey(Node.QNAME, TopologyQNames.INVENTORY_NODE_ID_QNAME, nodeName)
                 .build();
-        
+
         LeafNode<String> leafNodeValue = ImmutableNodes.leafNode(leafQname, leafValue);
         MapEntryNode testNode = ImmutableNodes.mapEntryBuilder(Node.QNAME, nodeIdQname, nodeName)
                 .addChild(leafNodeValue).build();
@@ -105,7 +107,7 @@ public class InventoryListenerTest {
         rootNode.setModificationType(ModificationType.DELETE);
         rootNode.setIdentifier(nodePathArgument);
         YangInstanceIdentifier nodeIdYiid = YangInstanceIdentifier.builder()
-                .node(Node.QNAME).nodeWithKey(Node.QNAME, nodeIdQname, nodeName).build();
+                .node(Nodes.QNAME).node(Node.QNAME).nodeWithKey(Node.QNAME, nodeIdQname, nodeName).build();
         listener.onDataTreeChanged(mockCollection);
         Mockito.verify(mockOperator).processRemovedChanges(Matchers.eq(nodeIdYiid), Matchers.eq(TOPOLOGY_ID));
     }
