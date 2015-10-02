@@ -25,6 +25,7 @@ import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
+import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
 import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TerminationPointFiltrator;
@@ -49,11 +50,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationAggregation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.RenderingOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.Correlations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.Correlation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.Aggregation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.Filtration;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.Rendering;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.aggregation.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.Filter;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -183,6 +186,8 @@ public abstract class TopologyRequestHandler {
                     operator = initFiltration(correlation);
                 } else if (AggregationOnly.class.equals(correlation.getType())) {
                     operator = initAggregation(correlation, false);
+                } else if (RenderingOnly.class.equals(correlation.getType())){
+                    operator = initRendering(correlation);
                 } else {
                     throw new IllegalStateException("Filtration and Aggregation data missing: " + correlation);
                 }
@@ -296,6 +301,38 @@ public abstract class TopologyRequestHandler {
             listeners.add(listenerRegistration);
         }
         return aggregator;
+    }
+
+    private TopologyOperator initRendering(Correlation correlation) {
+        Rendering rendering = correlation.getRendering();
+        TopologyOperator operator = null;
+        if (rendering != null) {
+            String underlayTopologyId = rendering.getUnderlayTopology();
+            Class<? extends Model> inputModel = rendering.getInputModel();
+            UnderlayTopologyListener listener = modelAdapters.get(inputModel).
+                    registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
+                    correlation.getCorrelationItem(), datastoreType, operator, listeners, null);
+            operator = listener.getOperator();
+            if(operator instanceof NotificationInterConnector) {
+                operator = ((NotificationInterConnector) operator).getOperator();
+            }
+            InstanceIdentifierBuilder topologyIdentifier = createTopologyIdentifier(underlayTopologyId);
+            YangInstanceIdentifier itemIdentifier =
+                    buildListenerIdentifier(topologyIdentifier, correlation.getCorrelationItem());
+            LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
+            DOMDataTreeIdentifier treeId ;
+            if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
+                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
+            } else {
+                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
+            }
+            ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
+                    pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
+            listeners.add(listenerRegistration);
+        } else {
+            throw new IllegalStateException("Rendering data missing: " + correlation);
+        }
+        return operator;
     }
 
     private Filter findFilter(List<Filter> filters, String filterId) {

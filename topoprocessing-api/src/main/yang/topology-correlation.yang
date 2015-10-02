@@ -54,7 +54,7 @@ module topology-correlation {
         description "opendaylight-inventory.yang";
         base model;
     }
-     
+
     identity inventory-rendering-model {
         description "inventory-rendering.yang";
         base model;
@@ -76,6 +76,11 @@ module topology-correlation {
 
     identity filtration-aggregation {
         description "Unification aggregation preceeded with filtration.";
+        base correlation-base;
+    }
+
+    identity rendering-only {
+        description "Creates nodes with augmented fields from another model.";
         base correlation-base;
     }
 
@@ -211,6 +216,13 @@ module topology-correlation {
                             description "Path to target field";
                         }
                     }
+                }
+                container rendering {
+                    leaf underlay-topology {
+                        type string;
+                        description "Input topology to render.";
+                    }
+                    uses input-model-grouping;
                 }
             }
         }

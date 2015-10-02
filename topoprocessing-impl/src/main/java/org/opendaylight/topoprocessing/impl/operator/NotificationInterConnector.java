@@ -161,6 +161,10 @@ public class NotificationInterConnector implements TopologyOperator {
         this.operator = operator;
     }
 
+    public TopologyOperator getOperator() {
+        return this.operator;
+    }
+
     private static boolean itemFromTopology(UnderlayItem createdEntry) {
         return createdEntry.getItem() != null;
     }
