@@ -15,6 +15,7 @@ import java.util.Iterator;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -38,7 +39,8 @@ import com.google.common.base.Optional;
 public class InventoryListener implements DOMDataTreeChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InventoryListener.class);
-    private static final YangInstanceIdentifier itemIdentifier = YangInstanceIdentifier.of(Node.QNAME);
+    private static final YangInstanceIdentifier itemIdentifier =
+            YangInstanceIdentifier.of(Nodes.QNAME).node(Node.QNAME);
 
     private TopologyOperator operator;
     private String topologyId;
@@ -58,7 +60,8 @@ public class InventoryListener implements DOMDataTreeChangeListener {
         Iterator<DataTreeCandidate> iterator = dataTreeCandidates.iterator();
         while (iterator.hasNext()) {
             DataTreeCandidate dataTreeCandidate = iterator.next();
-            Iterator<DataTreeCandidateNode> iteratorChildNodes = dataTreeCandidate.getRootNode().getChildNodes().iterator();
+            Iterator<DataTreeCandidateNode> iteratorChildNodes =
+                    dataTreeCandidate.getRootNode().getChildNodes().iterator();
             while (iteratorChildNodes.hasNext()) {
                 DataTreeCandidateNode dataTreeCandidateNode = iteratorChildNodes.next();
                 ModificationType modificationType = dataTreeCandidateNode.getModificationType();
