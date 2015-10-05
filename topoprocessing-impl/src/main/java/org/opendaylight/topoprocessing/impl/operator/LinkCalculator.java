@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.linkComputation.operator;
+package org.opendaylight.topoprocessing.impl.operator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -18,11 +18,9 @@ import java.util.Map.Entry;
 
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
-import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
-import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
+import org.opendaylight.topoprocessing.impl.structure.ComputedLink;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
-import org.opendaylight.topoprocessing.linkComputation.api.ComputedLink;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNode;

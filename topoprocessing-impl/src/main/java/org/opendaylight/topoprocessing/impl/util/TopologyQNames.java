@@ -9,6 +9,8 @@
 package org.opendaylight.topoprocessing.impl.util;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Destination;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Source;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -43,6 +45,14 @@ public final class TopologyQNames {
     /**Correlation augment QName**/
     public static final QName TOPOLOGY_CORRELATION_AUGMENT =
             QName.create("urn:opendaylight:topology:correlation", "2015-01-21", "correlations");
+    /**Network topology source-node QName**/
+    public static final QName LINK_SOURCE_NODE_QNAME = QName.create(Source.QNAME, "source-node");
+    /**Network topology source-tp QName**/
+    public static final QName LINK_SOURCE_TP_QNAME = QName.create(Source.QNAME, "source-tp");
+    /**Network topology dest-node QName**/
+    public static final QName LINK_DEST_NODE_QNAME = QName.create(Destination.QNAME, "dest-node");
+    /**Network topology dest-tp QName**/
+    public static final QName LINK_DEST_TP_QNAME = QName.create(Destination.QNAME, "dest-tp");
 
     private TopologyQNames() {
         throw new UnsupportedOperationException("TopologyQNames can't be instantiated.");
