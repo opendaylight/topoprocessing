@@ -199,7 +199,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
         switch (correlationItem) {
         case Node:
         case TerminationPoint:
-            resultList = nodeWrappers; 
+            resultList = nodeWrappers;
             break;
         case Link:
             resultList = linkWrappers;
