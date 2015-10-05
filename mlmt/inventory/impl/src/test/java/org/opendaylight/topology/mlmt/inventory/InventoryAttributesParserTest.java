@@ -1,0 +1,73 @@
+/*
+ * Copyright (c) 2015 Ericsson, AB.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+package org.opendaylight.topology.mlmt.inventory;
+
+import com.google.common.base.Optional;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.math.BigDecimal;
+
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+
+import org.junit.runner.RunWith;
+import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.After;
+import org.junit.AfterClass;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+
+import org.opendaylight.topology.mlmt.inventory.InventoryAttributesParser;
+
+public class InventoryAttributesParserTest implements InventoryAttributesParser {
+
+    private static Logger log;
+
+    public void init(final Logger logger) {
+        log = logger;
+    }
+
+    @Override
+    public NodeRef parseInventoryNodeAttributes(final Node node) {
+        final InventoryNode inventoryNode = node.getAugmentation(InventoryNode.class);
+        if (inventoryNode == null) {
+            return null;
+        }
+        return inventoryNode.getInventoryNodeRef();
+    }
+
+    @Override
+    public NodeConnectorRef parseInventoryNodeConnectorAttributes(final TerminationPoint tp) {
+        final InventoryNodeConnector inventoryNodeConnector = tp.getAugmentation(InventoryNodeConnector.class);
+        if (inventoryNodeConnector == null) {
+            return null;
+        }
+        return inventoryNodeConnector.getInventoryNodeConnectorRef();
+    }
+}
