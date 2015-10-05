@@ -6,7 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.linkComputation.operator;
+package org.opendaylight.topoprocessing.impl.operator;
 
 import java.util.Collection;
 import java.util.Collections;

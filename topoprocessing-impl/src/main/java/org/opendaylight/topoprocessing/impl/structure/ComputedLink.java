@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.topoprocessing.linkComputation.api;
+package org.opendaylight.topoprocessing.impl.structure;
 
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
