@@ -7,11 +7,7 @@
  */
 package org.opendaylight.topoprocessing.inventory.listener;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Nullable;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
@@ -27,14 +23,9 @@ import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventoryModel;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
 
 /**
  * @author matej.perina
@@ -45,6 +36,17 @@ public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
     public InvUnderlayTopologyListener(PingPongDataBroker domDataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         super(domDataBroker, underlayTopologyId, correlationItem);
+        // this needs to be done because for processing TerminationPoints we need to filter Node instead of TP
+        if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
+            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Node,
+                    OpendaylightInventoryModel.class);
+            this.itemQName = TopologyQNames.buildItemQName(CorrelationItemEnum.Node, OpendaylightInventoryModel.class);
+        } else {
+            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(correlationItem,
+                    OpendaylightInventoryModel.class);
+            this.itemQName = TopologyQNames.buildItemQName(correlationItem, OpendaylightInventoryModel.class);
+        }
+        this.itemIdentifier = YangInstanceIdentifier.of(itemQName);
     }
 
     public void registerUnderlayTopologyListener(DatastoreType datastoreType, TopologyOperator operator

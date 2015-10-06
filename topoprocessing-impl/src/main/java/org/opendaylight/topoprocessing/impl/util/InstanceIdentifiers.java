@@ -8,7 +8,10 @@
 
 package org.opendaylight.topoprocessing.impl.util;
 
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
@@ -30,12 +33,22 @@ public final class InstanceIdentifiers {
     /** Network-topology {@link Node} (MapNode) identifier */
     public static final YangInstanceIdentifier NODE_IDENTIFIER = YangInstanceIdentifier.builder(TOPOLOGY_IDENTIFIER)
             .node(Node.QNAME).build();
-    private static final YangInstanceIdentifier RELATIVE_NODE_ID_IDENTIFIER = 
+    private static final YangInstanceIdentifier RELATIVE_NODE_ID_IDENTIFIER =
                         YangInstanceIdentifier.of(TopologyQNames.NETWORK_NODE_ID_QNAME);
-    private static final YangInstanceIdentifier RELATIVE_LINK_ID_IDENTIFIER = 
+    private static final YangInstanceIdentifier RELATIVE_LINK_ID_IDENTIFIER =
                         YangInstanceIdentifier.of(TopologyQNames.NETWORK_LINK_ID_QNAME);
-    private static final YangInstanceIdentifier RELATIVE_TP_ID_IDENTIFIER = 
+    private static final YangInstanceIdentifier RELATIVE_TP_ID_IDENTIFIER =
                         YangInstanceIdentifier.of(TopologyQNames.NETWORK_TP_ID_QNAME);
+    //I2RS
+    /** I2RS model {@link Network} (MapNode) identifier */
+    public static final YangInstanceIdentifier I2RS_NETWORK_IDENTIFIER =
+            YangInstanceIdentifier.of(Network.QNAME);
+    private static final YangInstanceIdentifier I2RS_RELATIVE_NODE_ID_IDENTIFIER =
+                        YangInstanceIdentifier.of(TopologyQNames.I2RS_NETWORK_ID_QNAME);
+    private static final YangInstanceIdentifier I2RS_RELATIVE_LINK_ID_IDENTIFIER =
+                        YangInstanceIdentifier.of(TopologyQNames.I2RS_LINK_ID_QNAME);
+    private static final YangInstanceIdentifier I2RS_RELATIVE_TP_ID_IDENTIFIER =
+                        YangInstanceIdentifier.of(TopologyQNames.I2RS_TP_ID_QNAME);
 
     private InstanceIdentifiers() {
         throw new UnsupportedOperationException("InstanceIdentifiers can't be instantiated.");
@@ -46,17 +59,21 @@ public final class InstanceIdentifiers {
      * @param correlationItem item type
      * @return item identifier
      */
-    public static YangInstanceIdentifier relativeItemIdIdentifier(CorrelationItemEnum correlationItem) {
+    public static YangInstanceIdentifier relativeItemIdIdentifier(CorrelationItemEnum correlationItem,
+            Class<? extends Model> model) {
         YangInstanceIdentifier itemIdIdentifier;
         switch (correlationItem) {
         case Node:
-            itemIdIdentifier = RELATIVE_NODE_ID_IDENTIFIER;
+            itemIdIdentifier = ! model.equals(I2rsModel.class) ? RELATIVE_NODE_ID_IDENTIFIER
+                    : I2RS_RELATIVE_NODE_ID_IDENTIFIER;
             break;
         case Link:
-            itemIdIdentifier = RELATIVE_LINK_ID_IDENTIFIER;
+            itemIdIdentifier = ! model.equals(I2rsModel.class) ? RELATIVE_LINK_ID_IDENTIFIER
+                    : I2RS_RELATIVE_LINK_ID_IDENTIFIER;
             break;
         case TerminationPoint:
-            itemIdIdentifier = RELATIVE_TP_ID_IDENTIFIER;
+            itemIdIdentifier = ! model.equals(I2rsModel.class) ? RELATIVE_TP_ID_IDENTIFIER
+                    : I2RS_RELATIVE_TP_ID_IDENTIFIER;
             break;
         default:
             throw new IllegalArgumentException("Wrong Correlation item set: "

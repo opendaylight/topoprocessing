@@ -376,7 +376,7 @@ public class EqualityAggregatorTest {
         LeafNode<String> leafNode52 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.5");
         UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, leafNode52, TOPO5, "52", CorrelationItemEnum.Node);
         aggregator.processCreatedChanges(leafYiid52, physicalNode, TOPO5);
-        // logical node have been created over two physical nodes having the same IP partaining to the same topology 
+        // logical node have been created over two physical nodes having the same IP partaining to the same topology
         Mockito.verify(mockManager, Mockito.times(1)).addOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).updateOverlayItem((OverlayItem) any());
