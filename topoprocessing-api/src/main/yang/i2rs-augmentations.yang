@@ -1,0 +1,80 @@
+/*
+ * Copyright (c) 2015 Pantheon Technologies s.r.o. and others. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+module i2rs-augmentations {
+
+    namespace "urn:opendaylight:i2rs:augmentations";
+    prefix "i2rs-augmentations";
+
+    import topology-correlation {prefix topo-correlation;}
+    import ietf-inet-types {prefix inet;}
+    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import ietf-network {prefix i2rs; revision-date "2015-06-08";}
+
+    revision "2015-08-27" {
+        description "Topology Correlation augmentation into I2RS model";
+    }
+
+    augment "/i2rs:network" {
+        ext:augment-identifier "correlation-augment";
+        uses topo-correlation:correlations-grouping;
+    }
+
+    augment "/i2rs:network/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "ipv4-address-augment";
+        leaf ipv4-address {
+            type inet:ip-prefix;
+        }
+    }
+
+    augment "/i2rs:network/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "ipv6-address-augment";
+        leaf ipv6-address {
+            type inet:ip-prefix;
+        }
+    }
+
+    augment "/i2rs:network/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "range-number-augment";
+        leaf min-number-value {
+            type uint16;
+        }
+        leaf max-number-value {
+            type uint16;
+        }
+    }
+
+    augment "/i2rs:network/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "range-string-augment";
+        leaf min-string-value {
+            type string;
+        }
+        leaf max-string-value {
+            type string;
+        }
+    }
+
+    augment "/i2rs:network/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "specific-number-augment";
+        leaf specific-number {
+            type uint16;
+        }
+    }
+
+    augment "/i2rs:network/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "specific-string-augment";
+        leaf specific-string {
+            type string;
+        }
+    }
+
+    augment "/i2rs:network/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
+        ext:augment-identifier "scripting-augment";
+        uses topo-correlation:scripting-grouping;
+    }
+}
