@@ -18,6 +18,7 @@ import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -53,7 +54,7 @@ public class TerminationPointFiltratorTest {
         private MapEntryNode output;
 
         public TestManager() {
-            super(rpcServicesMock, schemaHolderMock, topologyIdentifierMock);
+            super(rpcServicesMock, schemaHolderMock, topologyIdentifierMock, NetworkTopologyModel.class);
         }
 
         public void setOutput(MapEntryNode output) {

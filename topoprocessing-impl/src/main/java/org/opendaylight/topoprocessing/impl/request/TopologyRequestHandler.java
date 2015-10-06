@@ -160,7 +160,7 @@ public abstract class TopologyRequestHandler {
         transactionChain = pingPongDataBroker.createTransactionChain(writer);
         writer.setTransactionChain(transactionChain);
         topologyManager = new TopologyManager(rpcServices, schemaHolder,
-                createTopologyIdentifier(topologyId).build());
+                createTopologyIdentifier(topologyId).build(), outputModel);
         topologyManager.setWriter(writer);
         writer.initOverlayTopology();
 

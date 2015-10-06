@@ -130,7 +130,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
         }
     }
 
-    protected abstract boolean isTopology(NormalizedNode<?,?> normalizeNode);
+    protected abstract boolean isTopology(NormalizedNode<?,?> normalizedNode);
 
     protected abstract boolean isTopologyRequest(NormalizedNode<?,?> normalizedNode);
 

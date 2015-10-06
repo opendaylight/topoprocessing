@@ -15,8 +15,6 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
-import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
-import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -47,9 +45,9 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
     private TopologyOperator operator;
     private YangInstanceIdentifier pathIdentifier;
     protected String underlayTopologyId;
-    private YangInstanceIdentifier itemIdentifier;
-    private YangInstanceIdentifier relativeItemIdIdentifier;
-    private QName itemQName;
+    protected YangInstanceIdentifier itemIdentifier;
+    protected YangInstanceIdentifier relativeItemIdIdentifier;
+    protected QName itemQName;
     protected CorrelationItemEnum correlationItem;
 
     /**
@@ -63,15 +61,6 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
         this.dataBroker = dataBroker;
         this.underlayTopologyId = underlayTopologyId;
         this.correlationItem = correlationItem;
-        // this needs to be done because for processing TerminationPoints we need to filter Node instead of TP
-        if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
-            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Node);
-            this.itemQName = TopologyQNames.buildItemQName(CorrelationItemEnum.Node);
-        } else {
-            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(correlationItem);
-            this.itemQName = TopologyQNames.buildItemQName(correlationItem);
-        }
-        this.itemIdentifier = YangInstanceIdentifier.of(itemQName);
     }
 
     @Override
@@ -175,4 +164,17 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
     public void setPathIdentifier(YangInstanceIdentifier pathIdentifier) {
         this.pathIdentifier = pathIdentifier;
     }
+
+    /*public DOMDataBroker getDomDataBroker() {
+        return domDataBroker;
+    }*/
+
+    public String getUnderlayTopologyId() {
+        return underlayTopologyId;
+    }
+
+    public CorrelationItemEnum getCorrelationItem() {
+        return correlationItem;
+    }
+
 }
