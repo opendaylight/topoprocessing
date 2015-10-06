@@ -67,6 +67,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SourceBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.DestinationBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
@@ -102,7 +104,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev1501
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.HeadEndBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.TailEndBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.unidirectional.UnidirectionalBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.bidirectional.BidirectionalBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.announce.output.result.FaId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.end.point.StitchingPointBuilder;
 
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
@@ -240,10 +244,6 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         rwTx.merge(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, mlmtTopology, true);
         assertCommit(rwTx.submit());
 
-        synchronized (waitObject) {
-            waitObject.wait(1500);
-        }
-
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
         Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
         assertNotNull(optional);
@@ -279,6 +279,30 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
     }
 
     @Test(timeout = 10000)
+    public void testOnTopologyUpdated() throws Exception {
+        provider.onTopologyUpdated(LogicalDatastoreType.OPERATIONAL, exampleIid, exampleTopology);
+
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
+        assertNotNull(optional);
+        assertTrue("Operational mlmt:1 topology ", optional.isPresent());
+        Topology rxTopology = optional.get();
+        assertNotNull(rxTopology);
+    }
+
+    @Test(timeout = 10000)
+    public void testOnTopologyDeleted() throws Exception {
+        provider.onTopologyDeleted(LogicalDatastoreType.OPERATIONAL, exampleIid);
+
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
+        assertNotNull(optional);
+        assertTrue("Operational mlmt:1 topology ", optional.isPresent());
+        Topology rxTopology = optional.get();
+        assertNotNull(rxTopology);
+    }
+
+    @Test(timeout = 10000)
     public void testOnNodeCreated() throws Exception {
         NodeBuilder nodeBuilder = new NodeBuilder();
         String nodeName = "node:1";
@@ -290,9 +314,43 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
 
         provider.onNodeCreated(LogicalDatastoreType.OPERATIONAL, exampleIid, nodeBuilder.build());
 
-        synchronized (waitObject) {
-            waitObject.wait(1500);
-        }
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
+        assertNotNull(optional);
+        assertTrue("Operational mlmt:1 topology ", optional.isPresent());
+        Topology rxTopology = optional.get();
+        assertNotNull(rxTopology);
+    }
+
+    @Test(timeout = 10000)
+    public void testOnNodeUpdated() throws Exception {
+        NodeBuilder nodeBuilder = new NodeBuilder();
+        String nodeName = "node:1";
+        NodeId nodeId = new NodeId(nodeName);
+        nodeBuilder.setNodeId(nodeId);
+        NodeKey nodeKey = new NodeKey(nodeId);
+        nodeBuilder.setKey(nodeKey);
+        InstanceIdentifier<Node> nodeIid = exampleIid.child(Node.class, nodeKey);
+
+        provider.onNodeUpdated(LogicalDatastoreType.OPERATIONAL, exampleIid, nodeBuilder.build());
+
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
+        assertNotNull(optional);
+        assertTrue("Operational mlmt:1 topology ", optional.isPresent());
+        Topology rxTopology = optional.get();
+        assertNotNull(rxTopology);
+    }
+
+    @Test(timeout = 10000)
+    public void testOnNodeDeleted() throws Exception {
+        NodeBuilder nodeBuilder = new NodeBuilder();
+        String nodeName = "node:1";
+        NodeId nodeId = new NodeId(nodeName);
+        NodeKey nodeKey = new NodeKey(nodeId);
+        InstanceIdentifier<Node> nodeIid = exampleIid.child(Node.class, nodeKey);
+
+        provider.onNodeDeleted(LogicalDatastoreType.OPERATIONAL, exampleIid, nodeKey);
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
         Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
@@ -320,9 +378,31 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         provider.onTpCreated(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid,
                 nodeKey, tpBuilder.build());
 
-        synchronized (waitObject) {
-            waitObject.wait(1500);
-        }
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
+        assertNotNull(optional);
+        assertTrue("Operational mlmt:1 topology ", optional.isPresent());
+        Topology rxTopology = optional.get();
+        assertNotNull(rxTopology);
+    }
+
+    @Test(timeout = 10000)
+    public void testOnTpUpdated() throws Exception {
+        NodeBuilder nodeBuilder = new NodeBuilder();
+        String nodeName = "node:1";
+        NodeId nodeId = new NodeId(nodeName);
+        nodeBuilder.setNodeId(nodeId);
+        NodeKey nodeKey = new NodeKey(nodeId);
+        TpId tpId = new TpId("tp:1");
+        final TerminationPointKey tpKey = new TerminationPointKey(tpId);
+        final TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
+        tpBuilder.setKey(tpKey);
+        tpBuilder.setTpId(tpId);
+        final InstanceIdentifier<TerminationPoint> instanceId = exampleIid
+                .child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
+
+        provider.onTpUpdated(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid,
+                nodeKey, tpBuilder.build());
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
         Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
@@ -330,6 +410,98 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         assertTrue("Operational mlmt:1 topology ", optional.isPresent());
         Topology rxTopology = optional.get();
         assertNotNull(rxTopology);
+    }
+
+    @Test(timeout = 10000)
+    public void testOnTpDeleted() throws Exception {
+        String nodeName = "node:1";
+        NodeId nodeId = new NodeId(nodeName);
+        NodeKey nodeKey = new NodeKey(nodeId);
+        TpId tpId = new TpId("tp:1");
+        final TerminationPointKey tpKey = new TerminationPointKey(tpId);
+        final TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
+        final InstanceIdentifier<TerminationPoint> instanceId = exampleIid
+                .child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
+
+        provider.onTpDeleted(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid,
+                nodeKey, tpKey);
+
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
+        assertNotNull(optional);
+        assertTrue("Operational mlmt:1 topology ", optional.isPresent());
+        Topology rxTopology = optional.get();
+        assertNotNull(rxTopology);
+    }
+
+    private void createMlmtNodeAndTp(String nodeName, String tpName1, String tpName2) throws Exception {
+        NodeBuilder nodeBuilder = new NodeBuilder();
+        NodeId nodeId = new NodeId(nodeName);
+        NodeKey nodeKey = new NodeKey(nodeId);
+        nodeBuilder.setKey(nodeKey);
+        nodeBuilder.setNodeId(nodeId);
+        Node wrNode = nodeBuilder.build();
+        InstanceIdentifier<Node> nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
+        WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.merge(LogicalDatastoreType.OPERATIONAL, nodeIid, wrNode);
+        assertCommit(rwTx.submit());
+
+        TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
+        TpId tpId = new TpId(tpName1);
+        TerminationPointKey tpKey = new TerminationPointKey(tpId);
+        tpBuilder.setKey(tpKey);
+        tpBuilder.setTpId(tpId);
+        TerminationPoint tp = tpBuilder.build();
+        InstanceIdentifier<TerminationPoint> tpIid = nodeIid.child(TerminationPoint.class, tpKey);
+        rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.merge(LogicalDatastoreType.OPERATIONAL, tpIid, tp);
+        assertCommit(rwTx.submit());
+
+        tpId = new TpId(tpName2);
+        tpKey = new TerminationPointKey(tpId);
+        tpBuilder.setKey(tpKey);
+        tpBuilder.setTpId(tpId);
+        tp = tpBuilder.build();
+        tpIid = nodeIid.child(TerminationPoint.class, tpKey);
+        rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.merge(LogicalDatastoreType.OPERATIONAL, tpIid, tp);
+        assertCommit(rwTx.submit());
+    }
+
+    private void createMlmtLink(String linkName, String node1, String tp1,
+            String node2, String tp2) throws Exception {
+        LinkBuilder linkBuilder = new LinkBuilder();
+        LinkId linkId = new LinkId(linkName);
+        linkBuilder.setLinkId(linkId);
+        LinkKey linkKey = new LinkKey(linkId);
+        linkBuilder.setKey(linkKey);
+        SourceBuilder sourceBuilder = new SourceBuilder();
+        sourceBuilder.setSourceNode(new NodeId(node1));
+        sourceBuilder.setSourceTp(new TpId(tp1));
+        DestinationBuilder destinationBuiler = new DestinationBuilder();
+        destinationBuiler.setDestNode(new NodeId(node2));
+        destinationBuiler.setDestTp(new TpId(tp1));
+        linkBuilder.setSource(sourceBuilder.build());
+        linkBuilder.setDestination(destinationBuiler.build());
+        InstanceIdentifier<Link> linkIid = mlmtTopologyIid.child(Link.class, linkKey);
+        WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.merge(LogicalDatastoreType.OPERATIONAL, linkIid, linkBuilder.build());
+        assertCommit(rwTx.submit());
+    }
+
+    private void prepareTopology() throws Exception {
+        InstanceIdentifier<Topology> topologyIid = buildTopologyIid(MLMT);
+        final Topology wrTopology = buildMlmtTopology(MLMT);
+        WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.merge(LogicalDatastoreType.OPERATIONAL, topologyIid, wrTopology, true);
+        assertCommit(rwTx.submit());
+
+        createMlmtNodeAndTp("node:1", "1:1", "1:2");
+        createMlmtNodeAndTp("node:2", "2:1", "2:2");
+        createMlmtNodeAndTp("node:3", "3:1", "3:2");
+        createMlmtNodeAndTp("node:4", "4:1", "4:2");
+        createMlmtLink("link:12", "node:1", "1:2", "node:3", "3:2");
+        createMlmtLink("link:24", "node:2", "2:2", "node:4", "4:2");
     }
 
     @Test(timeout = 10000)
@@ -344,9 +516,25 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
 
         provider.onLinkCreated(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, linkBuilder.build());
 
-        synchronized (waitObject) {
-            waitObject.wait(1500);
-        }
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
+        assertNotNull(optional);
+        assertTrue("Operational mlmt:1 topology ", optional.isPresent());
+        Topology rxTopology = optional.get();
+        assertNotNull(rxTopology);
+    }
+
+    @Test(timeout = 10000)
+    public void testOnLinkUpdated() throws Exception {
+        LinkBuilder linkBuilder = new LinkBuilder();
+        String linkName = "link:1";
+        LinkId linkId = new LinkId(linkName);
+        linkBuilder.setLinkId(linkId);
+        LinkKey linkKey = new LinkKey(linkId);
+        linkBuilder.setKey(linkKey);
+        InstanceIdentifier<Link> linkIid = exampleIid.child(Link.class, linkKey);
+
+        provider.onLinkUpdated(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, linkBuilder.build());
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
         Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
@@ -357,80 +545,29 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
     }
 
     @Test(timeout = 10000)
-    public void testOnFaAnnounce() throws Exception {
+    public void testOnLinkDeleted() throws Exception {
+        LinkBuilder linkBuilder = new LinkBuilder();
+        String linkName = "link:1";
+        LinkId linkId = new LinkId(linkName);
+        LinkKey linkKey = new LinkKey(linkId);
+        InstanceIdentifier<Link> linkIid = exampleIid.child(Link.class, linkKey);
+
+        provider.onLinkDeleted(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, linkKey);
+
+        ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
+        Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
+        assertNotNull(optional);
+        assertTrue("Operational mlmt:1 topology ", optional.isPresent());
+        Topology rxTopology = optional.get();
+        assertNotNull(rxTopology);
+    }
+
+    private void executeTestOnFa(boolean bidirectional, boolean stitch) throws Exception {
         InstanceIdentifier<Topology> topologyIid = buildTopologyIid(MLMT);
-        final Topology wrTopology = buildMlmtTopology(MLMT);
-        WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, topologyIid, wrTopology, true);
-        assertCommit(rwTx.submit());
-
-        synchronized (waitObject) {
-            waitObject.wait(1500);
-        }
-
-        String nodeName1 = "node:1";
-        NodeBuilder nodeBuilder = new NodeBuilder();
-        NodeId nodeId1 = new NodeId(nodeName1);
-        NodeKey nodeKey = new NodeKey(nodeId1);
-        nodeBuilder.setKey(nodeKey);
-        nodeBuilder.setNodeId(nodeId1);
-        Node wrNode = nodeBuilder.build();
-        InstanceIdentifier<Node> nodeIid = topologyIid.child(Node.class, nodeKey);
-        rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, nodeIid, wrNode);
-        assertCommit(rwTx.submit());
-
-        synchronized (waitObject) {
-             waitObject.wait(1500);
-        }
-
-        TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
-        String tpName1 = "1:1";
-        TpId tpId1 = new TpId(tpName1);
-        TerminationPointKey tpKey = new TerminationPointKey(tpId1);
-        tpBuilder.setKey(tpKey);
-        tpBuilder.setTpId(tpId1);
-        TerminationPoint tp = tpBuilder.build();
-        InstanceIdentifier<TerminationPoint> tpIid = nodeIid.child(TerminationPoint.class, tpKey);
-        rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, tpIid, tp);
-        assertCommit(rwTx.submit());
-
-        synchronized (waitObject) {
-             waitObject.wait(1500);
-        }
-
-        String nodeName2 = "node:2";
-        nodeBuilder = new NodeBuilder();
-        NodeId nodeId2 = new NodeId(nodeName2);
-        nodeKey = new NodeKey(nodeId2);
-        nodeBuilder.setKey(nodeKey);
-        nodeBuilder.setNodeId(nodeId2);
-        wrNode = nodeBuilder.build();
-        nodeIid = topologyIid.child(Node.class, nodeKey);
-        rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, nodeIid, wrNode);
-        assertCommit(rwTx.submit());
-
-        synchronized (waitObject) {
-             waitObject.wait(1500);
-        }
-
-        tpBuilder = new TerminationPointBuilder();
-        String tpName2 = "2:1";
-        TpId tpId2 = new TpId(tpName2);
-        tpKey = new TerminationPointKey(tpId2);
-        tpBuilder.setKey(tpKey);
-        tpBuilder.setTpId(tpId2);
-        tp = tpBuilder.build();
-        tpIid = nodeIid.child(TerminationPoint.class, tpKey);
-        rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, tpIid, tp);
-        assertCommit(rwTx.submit());
-
-        synchronized (waitObject) {
-             waitObject.wait(1500);
-        }
+        NodeId nodeId1 = new NodeId("node:1");
+        TpId tpId1 = new TpId("1:1");
+        NodeId nodeId2 = new NodeId("node:2");
+        TpId tpId2 = new TpId("2:1");
 
         /*
          * Forwarding Adjacency announce
@@ -441,7 +578,15 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         HeadEndBuilder headEndBuilder = new HeadEndBuilder();
         headEndBuilder.setNode(nodeId1);
         headEndBuilder.setTpId(tpId1);
-        headEndBuilder.setStitchingPoint(null);
+
+        StitchingPointBuilder stitchingPointBuilder = new StitchingPointBuilder();
+        if (stitch) {
+            stitchingPointBuilder.setTpId(new TpId("1:2"));
+            headEndBuilder.setStitchingPoint(stitchingPointBuilder.build());
+        } else {
+            headEndBuilder.setStitchingPoint(null);
+        }
+
         List<TpId> lTpId = new ArrayList<TpId>();
         TpId supportingTpId = new TpId("supporting:1");
         lTpId.add(supportingTpId);
@@ -450,7 +595,14 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         TailEndBuilder tailEndBuilder = new TailEndBuilder();
         tailEndBuilder.setNode(nodeId2);
         tailEndBuilder.setTpId(tpId2);
-        tailEndBuilder.setStitchingPoint(null);
+
+        if (stitch) {
+            stitchingPointBuilder.setTpId(new TpId("2:2"));
+            tailEndBuilder.setStitchingPoint(stitchingPointBuilder.build());
+        } else {
+            tailEndBuilder.setStitchingPoint(null);
+        }
+
         lTpId = new ArrayList<TpId>();
         supportingTpId = new TpId("supporting:2");
         lTpId.add(supportingTpId);
@@ -475,11 +627,22 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         NetworkTopologyRef networkTopologyRef = new NetworkTopologyRef(topologyIid);
         forwardingAdjAnnounceInputBuilder.setAnnouncementContext(announcementContextBuilder.build());
         forwardingAdjAnnounceInputBuilder.setAttribute(lAttribute);
-        UnidirectionalBuilder unidirectionalBuilder = new UnidirectionalBuilder();
+
         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.UnidirectionalBuilder
                 unidirBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.UnidirectionalBuilder();
-        unidirBuilder.setUnidirectional(unidirectionalBuilder.build());
-        forwardingAdjAnnounceInputBuilder.setDirectionalityInfo(unidirBuilder.build());
+        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.BidirectionalBuilder
+                bidirBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.BidirectionalBuilder();
+
+        if (bidirectional) {
+            BidirectionalBuilder bidirectionalBuilder = new BidirectionalBuilder();
+            bidirBuilder.setBidirectional(bidirectionalBuilder.build());
+            forwardingAdjAnnounceInputBuilder.setDirectionalityInfo(bidirBuilder.build());
+        } else {
+            UnidirectionalBuilder unidirectionalBuilder = new UnidirectionalBuilder();
+            unidirBuilder.setUnidirectional(unidirectionalBuilder.build());
+            forwardingAdjAnnounceInputBuilder.setDirectionalityInfo(unidirBuilder.build());
+        }
+
         forwardingAdjAnnounceInputBuilder.setHeadEnd(headEndBuilder.build());
         forwardingAdjAnnounceInputBuilder.setTailEnd(tailEndBuilder.build());
         forwardingAdjAnnounceInputBuilder.setNetworkTopologyRef(networkTopologyRef);
@@ -505,7 +668,13 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
          forwardingAdjUpdateInputBuilder.setAnnouncementContext(announcementContextBuilder.build());
          forwardingAdjUpdateInputBuilder.setHeadEnd(headEndBuilder.build());
          forwardingAdjUpdateInputBuilder.setTailEnd(tailEndBuilder.build());
-         forwardingAdjUpdateInputBuilder.setDirectionalityInfo(unidirBuilder.build());
+
+         if (bidirectional) {
+             forwardingAdjUpdateInputBuilder.setDirectionalityInfo(bidirBuilder.build());
+         } else {
+             forwardingAdjUpdateInputBuilder.setDirectionalityInfo(unidirBuilder.build());
+         }
+
          metric = 20L;
          mtLinkMetricAVBuilder = new MtLinkMetricAttributeValueBuilder();
          mtLinkMetricAVBuilder.setMetric(metric);
@@ -546,6 +715,21 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
                 resultWithdraw = resultAdjWithdraw.getResult();
         b = resultWithdraw instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.Ok;
         assertTrue(b);
+    }
+
+    @Test(timeout = 10000)
+    public void testOnForwardingAdjacency() throws Exception {
+        prepareTopology();
+        executeTestOnFa(false, false);
+        executeTestOnFa(true, false);
+        executeTestOnFa(false, true);
+        executeTestOnFa(true, true);
+    }
+
+    @Test
+    public void testOnClose()  throws Exception {
+        provider.close();
+        assertNotNull(provider);
     }
 
     @After
