@@ -1,0 +1,69 @@
+module rwa-annotated {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:rwa:annotated";
+    prefix "annotated-rwa";
+
+    import yang-ext         { prefix "ext";     revision-date 2013-07-09; }
+
+    import network-topology { prefix "nt";      revision-date 2013-10-21; }
+    import rwa              { prefix "rwa";     revision-date 2015-01-22; }
+
+    organization "Ericsson AB";
+    contact "Carlo Perocchio
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152
+             Italy";
+
+    description
+        "
+        Copyright (c)2015 Ericsson, AB. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        ";
+
+    revision "2015-01-22" {
+        description
+            "Initial revision.";
+    }
+
+    typedef note {
+        description
+            "where used, relative field must be optional;
+            it refers to not signaled information;
+            only for systems capable to provide an annotation in the connectivity matrix,
+            for example: line to line.";
+        type string;
+    }
+
+    grouping annotation {
+        leaf note {
+            type note;
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:node/rwa:connectivity-matrix/rwa:block-matrix" {
+        when "../../../../nt:topology-types/rwa:rwa-topology-type";
+        ext:augment-identifier "block-matrix-annotated";
+        uses annotation;
+    }
+    augment "/nt:network-topology/nt:topology/nt:node/rwa:resource-pool/rwa:resource-accessibility/rwa:input-set" {
+        when "../../../../nt:topology-types/rwa:rwa-topology-type";
+        ext:augment-identifier "input-block-set-annotated";
+        uses annotation;
+    }
+    augment "/nt:network-topology/nt:topology/nt:node/rwa:resource-pool/rwa:resource-accessibility/rwa:internal-set" {
+        when "../../../../nt:topology-types/rwa:rwa-topology-type";
+        ext:augment-identifier "internal-block-set-annotated";
+        uses annotation;
+    }
+    augment "/nt:network-topology/nt:topology/nt:node/rwa:resource-pool/rwa:resource-accessibility/rwa:output-set" {
+        when "../../../../nt:topology-types/rwa:rwa-topology-type";
+        ext:augment-identifier "output-block-set-annotated";
+        uses annotation;
+    }
+}

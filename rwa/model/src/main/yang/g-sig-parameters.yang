@@ -1,0 +1,51 @@
+module g-sig-parameters {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:generalized-signaling-parameters";
+    prefix "g-sig-parameters";
+
+    organization "Ericsson AB";
+    contact "Carlo Perocchio
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152
+             Italy";
+
+    description
+        "
+        Copyright (c)2015 Ericsson, AB. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        ";
+
+    revision "2015-01-22" {
+        description
+            "Initial revision.";
+    }
+
+    identity g-pid-qualifier {
+        description "an entry point for introducing proprietary values for protocol identification.";
+    }
+    identity standard-g-pid {
+        base g-pid-qualifier;
+    }
+    identity experimental-g-pid {
+        base g-pid-qualifier;
+    }
+    identity vendor-specific-g-pid {
+        base g-pid-qualifier;
+    }
+
+    typedef g-pid {
+        reference "http://tools.ietf.org/html/rfc3471";
+        description 
+            "ranges defined in http://tools.ietf.org/html/rfc4328:
+                   0-31743 IETF Standards Track RFC                    [RFC4328]
+               31744-32767 Assigned Temporarily for Experimental Usage [RFC4328]
+               32768-65535 Standards Track RFC                         [RFC4328]";
+        type uint16;
+    }
+}

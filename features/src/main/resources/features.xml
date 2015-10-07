@@ -26,6 +26,7 @@
     <feature name='odl-topoprocessing-mlmt' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Mlmt">
         <feature version='${project.version}'>odl-topoprocessing-framework</feature>
         <bundle>mvn:org.opendaylight.controller.model/model-topology/${mdsal.version}</bundle>
+        <bundle>mvn:org.opendaylight.topoprocessing/rwa-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-common-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/mlmt-topology-common-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/multitechnology-topology-model/${project.version}</bundle>
