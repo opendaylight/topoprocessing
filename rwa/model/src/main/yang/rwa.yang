@@ -1,0 +1,853 @@
+module rwa {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:rwa";
+    prefix "rwa";
+
+    import yang-ext          { prefix "ext";     revision-date 2013-07-09; }
+
+    import ietf-inet-types   { prefix "inet";    revision-date 2010-09-24; }
+    import network-topology  { prefix "nt";      revision-date 2013-10-21; }
+    import ted               { prefix "ted";     revision-date 2013-10-21; }
+
+    import g-sig-parameters  { prefix "g-sig";   revision-date 2015-01-22; }
+
+    import generalized-label { prefix "g-lbl";   revision-date 2015-05-04; }
+    import wdm-label         { prefix "wdm";     revision-date 2015-05-04; }
+
+    organization "Ericsson AB";
+    contact "Carlo Perocchio
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152
+             Italy";
+
+    description
+        "
+        Copyright (c)2015 Ericsson, AB. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        .";
+
+    revision "2015-01-22" {
+        description
+            "Initial revision.";
+    }
+    
+    //
+    //
+    grouping rwa-topology-type {
+        container rwa-topology {
+            presence "indicates a Routing and Wavelenght Assignment capable Topology";
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:topology-types" {
+        ext:augment-identifier "rwa-topology";
+        uses rwa-topology-type;
+    }
+
+    //
+    // connectivity-matrix conn-type
+    identity basic-conn-type {
+        description 
+            "To denote fixed (possibly multi-cast) connectivity or
+            to denote potential (switched) connectivity. 
+            Used in Connectivity Matrix and in Resource Accessibility.";
+    }
+
+    identity fixed-conn-type {
+        base basic-conn-type;
+    }
+    identity switched-conn-type {
+        base basic-conn-type;
+    }
+
+    //
+    // link-set action
+    identity basic-action {
+        reference "http://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-19#section-2.3";
+    }
+    identity inclusive-list {
+        base basic-action;
+    }
+    identity inclusive-range {
+        base basic-action;
+    }
+// TODO?
+// come si puo` fare un range
+// magari si puo` fare un filtro?!?
+//
+
+    //
+    // link-set directionality
+    identity basic-directionality {
+        reference "http://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-19#section-2.3";
+    }
+    identity bidirectional {
+        base basic-directionality;
+    }
+    identity input-directionality {
+        base basic-directionality;
+    }
+    identity output-directionality {
+        base basic-directionality;
+    }
+    
+    //
+    //
+    typedef matrix-id {
+        reference "https://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-19#section-2.1";
+        type uint8 {
+            range "0..254";
+        }
+        description 
+            "The value of 0xFF is reserved for use with port label
+            constraints and should not be used to identify a connectivity matrix";
+    }
+
+    typedef resource-block-id {
+        type uint32;
+        reference "http://tools.ietf.org/html/draft-ietf-ccamp-rwa-wson-encode-26#section-2.1";
+        description 
+            "The RB identifier represents the ID of the resource block which is a 32 bit integer.";
+    }
+
+    typedef bit-rate {
+        reference "https://tools.ietf.org/html/rfc3471#section-3.1.2";
+        description 
+            "Bandwidth encodings are carried in 32 bit number in IEEE floating
+            point format (the unit is bytes per second).
+            For non-packet LSPs, it is useful to define discrete values to identify the bandwidth of the LSP.
+
+               Signal Type   (Bit-rate)              Value (Bytes/Sec)
+                                                   (IEEE Floating point)
+             --------------  ---------------       ---------------------
+                        DS0  (0.064 Mbps)              0x45FA0000
+                        DS1  (1.544 Mbps)              0x483C7A00
+                         E1  (2.048 Mbps)              0x487A0000
+                        DS2  (6.312 Mbps)              0x4940A080
+                         E2  (8.448 Mbps)              0x4980E800
+                   Ethernet  (10.00 Mbps)              0x49989680
+                         E3  (34.368 Mbps)             0x4A831A80
+                        DS3  (44.736 Mbps)             0x4AAAA780
+                      STS-1  (51.84 Mbps)              0x4AC5C100
+              Fast Ethernet  (100.00 Mbps)             0x4B3EBC20
+                         E4  (139.264 Mbps)            0x4B84D000
+                  FC-0 133M                            0x4B7DAD68
+                 OC-3/STM-1  (155.52 Mbps)             0x4B9450C0
+                  FC-0 266M                            0x4BFDAD68
+                  FC-0 531M                            0x4C7D3356
+                OC-12/STM-4  (622.08 Mbps)             0x4C9450C0
+                       GigE  (1000.00 Mbps)            0x4CEE6B28
+                 FC-0 1062M                            0x4CFD3356
+               OC-48/STM-16  (2488.32 Mbps)            0x4D9450C0
+              OC-192/STM-64  (9953.28 Mbps)            0x4E9450C0
+                 10GigE-LAN  (10000.00 Mbps)           0x4E9502F9
+             OC-768/STM-256  (39813.12 Mbps)           0x4F9450C0
+
+            Type is a string with a pattern for a float number.
+            ";
+         type string {
+             pattern '^[+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$';
+         }
+    }
+
+    //
+    //
+    grouping link-set {
+        reference "http://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-19#section-2.3";
+        description "";
+        leaf action {
+            description "if not present, inclusive list must be intended.";
+            type identityref {
+                base basic-action;
+            }
+        }
+        leaf directionality {
+            description "if not present, bidirectional must be intended.";
+            type identityref {
+                base basic-directionality;
+            }
+        }
+        // format: link-local, local-interface-ipv4-address, local-interface-ipv6-address
+        // link-identifier
+        list port {
+            description
+                "The link identifier represents the port which is being described
+                either for connectivity or label restrictions.";
+
+            key "id";
+            leaf id {
+                type nt:tp-id;
+            }
+        }
+    }
+
+    //
+    //
+    grouping resource-block-set {
+        reference "http://tools.ietf.org/html/draft-ietf-ccamp-rwa-wson-encode-26#section-2.1";
+        description "";
+        leaf action {
+            description 
+                "if not present, inclusive list must be intended.
+                 Action:
+
+                        0 - Inclusive List
+
+                 Indicates that the TLV contains one or more RB elements that are
+                 included in the list.
+
+                        1 - Inclusive Range(s)
+
+                 Indicates that the TLV contains one or more ranges of RBs.  Each
+                 individual range is denoted by two 32-bit RB identifier. The first
+                 32 bits is the RB identifier for the start of the range and the next
+                 32 bits is the RB identifier for the end of the range.";
+            type identityref {
+                base basic-action;
+            }
+        }
+        leaf connectivity {
+            when "../../../resource-accessibility";
+            description 
+                "connectivity is used in Resource Accessibility field. 
+                Ignored elsewhere.";
+            type identityref {
+                base basic-conn-type;
+            }
+        }
+        list resource-block {
+            key "rb-id";
+            leaf rb-id {
+                type resource-block-id;
+            }
+        }
+    }
+
+    //
+    //
+    grouping pool-input-matrix {
+        reference "http://tools.ietf.org/html/draft-ietf-ccamp-rwa-wson-encode-26#section-3.1";
+        list input-set {
+            key "id";
+            leaf id {
+                type uint32;
+            }
+            container link-set-a {
+                uses link-set;
+            }
+            container rb-set-a {
+                uses resource-block-set;
+            }
+        }
+    }
+
+    grouping internal-stage-matrix {
+        list internal-set {
+            key "id";
+            leaf id {
+                type uint32;
+            }
+            container rb-set-a {
+                uses resource-block-set;
+            }
+            container rb-set-b {
+                uses resource-block-set;
+            }
+        }
+    }
+
+    grouping pool-output-matrix {
+        reference "http://tools.ietf.org/html/draft-ietf-ccamp-rwa-wson-encode-26#section-3.1";
+        list output-set {
+            key "id";
+            leaf id {
+                type uint32;
+            }
+            container rb-set-b {
+                uses resource-block-set;
+            }
+            container link-set-b {
+                uses link-set;
+            }
+        }
+    }
+
+    //
+    //
+    grouping label-set {
+        description "label-set for general applicability to other technologies.";
+        choice set-action {
+            container inclusive-list {
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-20#section-2.6.1";
+                uses g-lbl:generalized-lbl-set;
+            }
+            container exclusive-list {
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-20#section-2.6.1";
+                uses g-lbl:generalized-lbl-set;
+            }
+            container inclusive-range {
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-20#section-2.6.2";
+                container start-label {
+                    uses g-lbl:generalized-lbl;
+                }
+                container end-label {
+                    uses g-lbl:generalized-lbl;
+                }
+            }
+            container exclusive-range {
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-20#section-2.6.2";
+                container start-label {
+                    uses g-lbl:generalized-lbl;
+                }
+                container end-label {
+                    uses g-lbl:generalized-lbl;
+                }
+            }
+            container bitmap {
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-20#section-2.6.3";
+                leaf num-labels {
+                    type uint16 {
+                        range "0..4095";
+                    }
+                }
+                container base-label {
+                    uses g-lbl:generalized-lbl;
+                }
+                leaf bitmap {
+                    type binary;
+                }
+            }
+        }
+    }
+
+    grouping wave-label-set {
+        reference "https://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-20#section-2.6";
+        description "label-set for wdm specific applicability.";
+        choice set-action {
+            container inclusive-list {
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-20#section-2.6.1";
+                uses wdm:wdm-lbl-set;
+            }
+            container exclusive-list {
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-20#section-2.6.1";
+                uses wdm:wdm-lbl-set;
+            }
+            container inclusive-range {
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-20#section-2.6.2";
+                container start-label {
+                    uses wdm:wdm-lbl;
+                }
+                container end-label {
+                    uses wdm:wdm-lbl;
+                }
+            }
+            container exclusive-range {
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-20#section-2.6.2";
+                container start-label {
+                    uses wdm:wdm-lbl;
+                }
+                container end-label {
+                    uses wdm:wdm-lbl;
+                }
+            }
+            container bitmap {
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-20#section-2.6.3";
+                leaf num-labels {
+                    type uint16 {
+                        range "0..4095";
+                    }
+                }
+                container base-label {
+                    uses wdm:wdm-lbl;
+                }
+                leaf bitmap {
+                    type binary;
+                }
+            }
+        }
+    }
+
+    //
+    //
+    typedef oper-status {
+        description "Providing the type definition of the operative status
+                     based on a subset of all potential values in general.";
+        type enumeration {
+            enum up {
+               value 1;
+            }
+            enum down {
+                value 2;
+            }
+        }
+    }
+
+    grouping rb-oper-status {
+        leaf rb-oper-status {
+            type oper-status;
+            default "up";
+            description "Resource block operative status.";
+        }
+    }
+
+    //
+    //
+    grouping rb-pool-state {
+        reference "http://tools.ietf.org/html/draft-ietf-ccamp-rwa-info-24#section-5";
+        list rb-state {
+            description 
+                "deviation from:
+                http://tools.ietf.org/html/draft-ietf-ccamp-rwa-wson-encode-26#section-3.3
+                with bitmap or unit16 representation.";
+            key "rb-id";
+            leaf rb-id {
+                type resource-block-id;
+            }
+
+            uses rb-oper-status;
+
+            choice usage-state {
+                case used {
+                    leaf used {
+                        type empty;
+                    }
+                }
+                case available {
+                    leaf available {
+                        type empty;
+                    }
+                }
+                case num-resources-in-use {
+                    leaf num-resources-in-use {
+                        type uint16;
+                    }
+                }
+            }
+            container rb-shared-access-wave-availability {
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-rwa-wson-encode-26#section-3.4";
+                choice wave-availability {
+                    case bidir-case {
+                        container bidir-available-wavelengths {
+                            presence "indicates (I,O,B) combination is (0,0,1).";
+                            uses wave-label-set;
+                        }
+                    }
+                    case unidir-case {
+                        container input-available-wavelengths {
+                            presence "indicates (I,O,B) combination are (1,x,0).";
+                            uses wave-label-set;
+                        }
+                        container output-available-wavelengths {
+                            presence "indicates (I,O,B) combination are (x,1,0).";
+                            uses wave-label-set;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //
+    //
+    identity regenerator-type {
+    }
+    identity regenerator-1-r {
+        description "re-amplification";
+        base regenerator-type;
+    }
+    identity regenerator-2-r {
+        description "re-amplification and re-shaping";
+        base regenerator-type;
+    }
+    identity regenerator-3-r {
+        description "re-amplification, re-shaping and re-timing";
+        base regenerator-type;
+    }
+
+    identity regenerator-capability {
+    }
+    identity fixed-regeneration-point {
+        base "regenerator-capability";
+    }
+    identity selective-regeneration-point {
+        base "regenerator-capability";
+    }
+
+    grouping regeneration-capability {
+        leaf type {
+            type identityref {
+                base regenerator-type;
+            }
+        }
+        leaf capability {
+            type identityref {
+                base regenerator-capability;
+            }
+        }
+    }
+
+    //
+    //
+    grouping resource-pool {
+        reference "http://tools.ietf.org/html/draft-ietf-ccamp-rwa-info-24#section-5";
+        description 
+            "Note that except for <RBPoolState> all the other components of
+            <ResourcePool> are relatively static. Also the
+            <InAvailableWavelengths> and <OutAvailableWavelengths> are only used
+            in the cases of shared input or output access to the particular
+            block.";
+        container resource-pool {
+            list resource-block-info {
+
+                description 
+                    "main references are
+                    http://tools.ietf.org/html/draft-ietf-ccamp-rwa-info-24#section-5 
+                    http://tools.ietf.org/html/draft-ietf-ccamp-rwa-wson-encode-26#section-4,
+                    ";
+
+                key "rb-info-id";
+                leaf rb-info-id {
+                    description 
+                        "a unique identifier, local to controller.";
+                    type inet:uri;
+                }
+                container rb-set {
+                    description "all resource blocks sharing the same constraints and capabilities.";
+                    uses resource-block-set;
+                }
+                container input-constraint {
+                    description "eventual optical interface classes are demanded to external augmentations as per vendor specific constraints.";
+                    leaf shared-input {
+                        description 
+                            "the input access to a resource block may be via a shared fiber.
+                            The <SharedInput> element is indicator for this
+                            condition with respect to the block being described.
+                            If present, the input access is via a shared fiber.";
+                        type empty;
+                    }
+                    list client-signal {
+                        key "client-signal";
+                        leaf client-signal {
+                            type g-sig:g-pid;
+                        }
+                        leaf client-signal-qualifier {
+                            type identityref {
+                                base g-sig:g-pid-qualifier;
+                            }
+                            default g-sig:standard-g-pid;
+                        }
+ 
+                        leaf input-bit-rate {
+                            type bit-rate;
+                        }
+                    }
+                    container vendor-specific {
+                    }
+                }
+                container processing-capability {
+                    leaf num-resources {
+                        type uint64;
+                    }
+                    container regeneration-capabilities {
+                        // TODO
+                        // Molteplice?
+                        uses regeneration-capability;
+                    }
+                    container fault-perf-mon {
+                        // TODO
+                    }
+                    container vendor-specific {
+                    }
+                }
+                container output-constraint {
+                    description "eventual optical interface classes are demanded to external augmentations as per vendor specific constraints.";
+                    leaf shared-output {
+                        description 
+                            "the output access to a resource block may be via a shared fiber.
+                            The <SharedOutput> element is indicator for this
+                            condition with respect to the block being described.
+                            If present, the output access is via a shared fiber.";
+                        type empty;
+                    }
+                    list client-signal {
+                        key "client-signal";
+                        leaf client-signal {
+                            type g-sig:g-pid;
+                        }
+                        leaf client-signal-qualifier {
+                            type identityref {
+                                base g-sig:g-pid-qualifier;
+                            }
+                            default g-sig:standard-g-pid;
+                        }
+                        leaf input-bit-rate {
+                            type bit-rate;
+                        }
+                    }
+                    container vendor-specific {
+                    }
+                }
+            }
+            container resource-accessibility {
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-rwa-wson-encode-26#section-3.1";
+                description 
+                    "the direction parameter within the Link Set Field is used
+                    to indicate whether the link set is an input or output link set, and
+                    the bidirectional value for this parameter is not permitted in this
+                    field.";
+                leaf connectivity {
+                    type identityref {
+                        base basic-conn-type;
+                    }
+                }
+                uses pool-input-matrix;
+                uses internal-stage-matrix {
+                    when "../../../../stages > 3";
+                }
+                uses pool-output-matrix;
+            }
+            list resource-wave-constraints {
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-rwa-wson-encode-26#section-3.2";
+                description 
+                    "Resources, such as wavelength converters, etc., may have a limited
+                    input or output wavelength ranges.
+                    Currently the only valid combinations of (I,O,B) are (1,0,0), (0,1,0), (1,1,0), (0,0,1).";
+                key "constraint-id";
+                leaf constraint-id {
+                    description 
+                        "a unique identifier, local to controller.";
+                    type inet:uri;
+                }
+                container rb-set {
+                    uses resource-block-set;
+                }
+                choice wave-constraints {
+                    case bidir-case {
+                        container bidir-wave-constraints {
+                            presence "indicates (I,O,B) combination is (0,0,1).";
+                            description 
+                                "a single wavelength constraints field represents both Input and Output Wavelength Constraints.";
+                            uses wave-label-set;
+                        }
+                    }
+                    case unidir-case {
+                        container input-wave-constraints {
+                            presence "indicates (I,O,B) combination are (1,x,0).";
+                            description 
+                                "Indicates the wavelength input restrictions of the RBs in the corresponding RB set.";
+                            uses wave-label-set;
+                        }
+                        container output-wave-constraints {
+                            presence "indicates (I,O,B) combination are (x,1,0).";
+                            description 
+                                "Indicates the wavelength output restrictions of the RBs in the corresponding RB set.";
+                            uses wave-label-set;
+                        }
+                    }
+                }
+            }
+            container rb-pool-state {
+                uses rb-pool-state;
+            }
+        }
+    }
+
+    //
+    //
+    grouping connectivity-matrix {
+        reference "http://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-19#section-2.1";
+        description 
+            "When the matrix is partitioned into
+            sub-matrices, each sub-matrix will be mutually exclusive to
+            one another in representing which ports/labels are associated with
+            each sub-matrix. This implies that two matrices will not have the
+            same {src port, src label, dst port, dst label}.";
+        list connectivity-matrix {
+            key "matrix-id";
+            leaf matrix-id {
+                type matrix-id;
+            }
+            leaf connectivity {
+                type identityref {
+                    base basic-conn-type;
+                }
+            }
+
+            // name to unnamed list of pairs of link-set
+            list block-matrix {
+                description
+                    "There are two permitted combinations for the link set field
+                    parameter 'diriectionality' for Link Set A and B pairs:
+
+                    -  Link Set A dir=input, Link Set B dir=output
+
+                    In this case, the meaning of the pair of link sets A and B in this
+                    case is that any signal that inputs a link in set A can be
+                    potentially switched out of an output link in set B.
+
+                    -  Link Set A dir=bidirectional, Link Set B dir=bidirectional
+
+                    The meaning of the pair of link sets A and B in this case is that
+                    any signal that inputs on the links in set A can potentially
+                    output on a link in set B, and any input signal on the links in
+                    set B can potentially output on a link in set A. If link set A is
+                    an input and link set B is an output for a signal, then it
+                    implies that link set A is an output and link set B is an input
+                    for that signal.";
+
+                key "id";
+                leaf id {
+                    type uint32;
+                }
+                container link-set-a {
+                    uses link-set;
+                }
+                container link-set-b {
+                    uses link-set;
+                }
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // ------------------------------------------------------------------
+
+    grouping node-information {
+        leaf stages {
+            reference "http://tools.ietf.org/html/rfc6163";
+            description
+                "number of stages of used model to represent node.
+                0 value reserved,
+                1 (or absent) value reserved to specify full meshed internal connectivity.";
+            type uint8;
+            must "stages > 0";
+        }
+        uses connectivity-matrix {
+            when "../stages = 2";
+        }
+        uses resource-pool {
+            when "../stages > 2";
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:node" {
+        when "../nt:topology-types/rwa:rwa-topology-type";
+        ext:augment-identifier "rwa-node";
+        uses node-information; 
+    }
+
+    // ------------------------------------------------------------------
+    // ------------------------------------------------------------------
+
+    identity basic-restriction-type {
+    }
+    identity simple-label {
+        base basic-restriction-type;
+    }
+    identity channel-count {
+        base basic-restriction-type;
+    }
+    identity label-range {
+        base basic-restriction-type;
+    }
+    identity simple-and-channel-restriction {
+        base basic-restriction-type;
+    }
+    identity label-exclusivity {
+        base basic-restriction-type;
+    }
+
+    grouping link-info {
+        list port-label-restriction {
+            reference "http://tools.ietf.org/html/draft-ietf-ccamp-general-constraint-encode-19#section-2.2";
+            description "Port Label Restriction Field indicates what labels may or may not be used on a link";
+
+            key "matrix-id restriction-type switching-capability encoding";
+            leaf matrix-id {
+                type matrix-id;
+            }
+            leaf restriction-type {
+                type identityref {
+                    base basic-restriction-type;
+                }
+            }
+            leaf switching-capability {
+                type ted:switching-capabilities;
+            }
+            leaf encoding-qualifier {
+                type identityref {
+                    base g-sig:g-pid-qualifier;
+                }
+                default g-sig:standard-g-pid;
+            }
+            leaf encoding {
+                type g-sig:g-pid;
+            }
+            choice label-restriction {
+                case simple-label {
+                    when "../restriction-type = simple-label";
+                    container simple-label {
+                        uses label-set;
+                    }
+                }
+                case channel-count {
+                    when "../restriction-type = channel-count";
+                    container channel-count {
+                        leaf max-num-channels {
+                            type uint32;
+                        }
+                    }
+                }
+                case label-range {
+                    when "../restriction-type = label-range";
+                    container label-range {
+                        leaf max-label-range {
+                            type uint32;
+                        }
+                        uses label-set;
+                    }
+                }
+                case simple-and-channel-restriction {
+                    when "../restriction-type = simple-and-channel-restriction";
+                    container simple-and-channel-restriction {
+                        leaf max-num-channels {
+                            type uint32;
+                        }
+                        uses label-set;
+                    }
+                }
+                case label-exclusivity {
+                    when "../restriction-type = restriction-type";
+                    container label-exclusivity {
+                        uses label-set;
+                    }
+                }
+            }
+        }
+    }
+
+    grouping dynamic-link-info {
+        container available-labels {
+            uses label-set;
+        }
+        container shared-backup-labels {
+            uses label-set;
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:link" {
+        when "../nt:topology-types/rwa:rwa-topology-type";
+        ext:augment-identifier "rwa-link";
+        uses link-info;
+        container dynamic-link-info {
+            uses dynamic-link-info;
+        }
+    }
+}
+

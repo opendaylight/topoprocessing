@@ -26,6 +26,7 @@
         <module>features</module>
         <module>forwarding</module>
         <module>link-computation</module>
+        <module>rwa</module>
         <module>mlmt</module>
         <module>parent</module>
         <module>topoprocessing-api</module>

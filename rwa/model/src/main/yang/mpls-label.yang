@@ -1,0 +1,80 @@
+module mpls-label {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:mpls-label";
+    prefix "mlbl";
+
+    organization "Ericsson AB";
+    contact "Carlo Perocchio
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152
+             Italy";
+
+    description
+        "
+        Copyright (c)2015 Ericsson, AB. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        .";
+
+    revision "2015-05-04" {
+        description
+            "Initial revision.";
+    }
+
+    typedef mpls-label-reserved-type {
+        reference "https://tools.ietf.org/html/rfc3032#section-2.1";
+        type uint32 {
+            range "0..15";
+        }
+    }
+
+    typedef mpls-label-type {
+        reference "https://tools.ietf.org/html/rfc3032#section-2.1";
+        description 
+            "A type for representing labels used for labeled packets on both LAN and PPP data links.
+             A 20-bit field carries the actual value of the Label within the shim header:
+                  0                   1                   2                   3
+                  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+                 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+                 |                Label                  | Exp |S|       TTL     | 
+                 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ 
+
+                                     Label:  Label Value, 20 bits
+                                     Exp:    Experimental Use, 3 bits
+                                     S:      Bottom of Stack, 1 bit
+                                     TTL:    Time to Live, 8 bits
+             reserved label values:
+
+               i. A value of 0 represents the 'IPv4 Explicit NULL Label'.
+              ii. A value of 1 represents the 'Router Alert Label'.
+             iii. A value of 2 represents the 'IPv6 Explicit NULL Label'.
+              iv. A value of 3 represents the 'Implicit NULL Label'.
+               v. Values 4-15 are reserved.
+            ";
+        type union {
+            type uint32 {
+                // 0xfffff = 1048575 
+                range "16..1048575";
+            }
+            type mpls-label-reserved-type;
+        }
+    }
+
+    grouping mpls-lbl {
+        leaf mpls-label {
+            type mpls-label-type;
+        }
+    }
+
+    grouping mpls-lbl-set {
+        list mpls-label-set {
+            key "mpls-label";
+            uses mpls-lbl;
+        }
+    }
+}

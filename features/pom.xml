@@ -71,6 +71,11 @@
         <!-- bundle dependencies -->
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
+            <artifactId>rwa-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>mlmt-topology-common-model</artifactId>
         </dependency>
         <dependency>

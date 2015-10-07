@@ -1,0 +1,144 @@
+module generalized-label {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:generalized-label";
+    prefix "glbl";
+
+    import mpls-label       { prefix "mpls";    revision-date 2015-05-04; }
+    import wdm-label        { prefix "wdm";     revision-date 2015-05-04; }
+    import otn-label        { prefix "otn";     revision-date 2015-05-04; }
+    import sonet-sdh-label  { prefix "tdm";     revision-date 2015-05-04; }
+    import pbbte-label      { prefix "pbbte";   revision-date 2015-05-04; }
+    import dcsc-label       { prefix "dcsc";    revision-date 2015-05-04; }
+
+    organization "Ericsson AB";
+    contact "Carlo Perocchio
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152
+             Italy";
+
+    description
+        "
+        Copyright (c)2015 Ericsson, AB. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        .";
+
+    revision "2015-05-04" {
+        description
+            "Initial revision.";
+    }
+
+    typedef free-form-label-type {
+        reference "https://tools.ietf.org/html/rfc3471#section-3.2.1 and https://tools.ietf.org/html/rfc4801";
+        description "labels that have label types that are not defined in any RFCs.";
+        type binary {
+            length "0..64";
+        }
+    }
+
+    typedef port-wavelength-label-type {
+        reference "https://tools.ietf.org/html/rfc3471#section-3.2.1.1";
+        type uint32;
+    }
+
+    grouping free-form-lbl {
+        leaf free-form-label {
+            type free-form-label-type;
+        }
+    }
+
+    grouping port-wavelength-lbl {
+        leaf port-wavelength-label {
+            type port-wavelength-label-type;
+        }
+    }
+
+    grouping generalized-lbl {
+        choice generalized-label {
+            description "type of label is described by external condition";
+            case mpls-case {
+                reference "IP/MPLS rfc 3031 and rfc 3032";
+                uses mpls:mpls-lbl;
+            }
+            case free-form-case {
+                uses free-form-lbl;
+            }
+            case port-wavelength-case {
+                reference "rfc 3471";
+                description 
+                    "Port Wavelength lable case should be considered obsolete.
+                     If label does not match wdm case, free form should be preferred.";
+                uses port-wavelength-lbl;
+            }
+            // case waveband-case {        
+            //    3471, Obsolete definition
+            // }
+            case wdm-case {
+                reference "6205 (Otani) + draft-ietf-ccamp-flexigrid-lambda-label";
+                container wdm-label {
+                    uses wdm:wdm-lbl;
+                }
+            }
+
+            case otn-case {             // 4328, 7139
+                container otn-label {
+                    uses otn:otn-lbl;
+                }
+            }
+            case sonet-sdh-case {       // 6344
+                container sonet-sdh-label {
+                    uses tdm:sonet-sdh-lbl;
+                }
+            }
+            case pbbte-case {           // 6060 
+                container pbbte-label {
+                    uses pbbte:pbbte-lbl;
+                }
+            }
+            case dcsc-case {            // 6002 port-switching
+                container dcsc-label {
+                    uses dcsc:dcsc-lbl;
+                }
+            }
+        }
+    }
+
+    grouping generalized-lbl-set {
+        choice generalized-label-set {
+
+            description "type of label is described by external condition";
+
+            case mpls-case {
+                uses mpls:mpls-lbl-set;
+            }
+            list free-form-label-set {
+                key "free-form-label";
+                uses free-form-lbl;
+            }
+            list port-wavelength-label-set {
+                key "port-wavelength-label";
+                uses port-wavelength-lbl;
+            }
+            case wdm-case {    
+                uses wdm:wdm-lbl-set;
+            }
+            case otn-case {    
+                uses otn:otn-lbl-set;
+            }
+            case tdm-case {    
+                uses tdm:sonet-sdh-lbl-set;
+            }
+            case pbbte-case {    
+                uses pbbte:pbbte-lbl-set;
+            }
+            case dcsc-case {    
+                uses dcsc:dcsc-lbl-set;
+            }
+        }
+    }
+}

@@ -1,0 +1,172 @@
+module wdm-label {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:generalized-label:wdm";
+    prefix "wdm";
+
+    organization "Ericsson AB";
+    contact "Carlo Perocchio
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152
+             Italy";
+
+    description
+        "
+        Copyright (c)2015 Ericsson, AB. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        .";
+
+    revision "2015-05-04" {
+        description
+            "Initial revision.";
+    }
+
+    identity grid-and-channel-spacing {
+        reference "http://tools.ietf.org/html/rfc6205#section-3";
+    }
+    identity dwdm-at-100-GHz {
+        reference "http://tools.ietf.org/html/rfc6205#section-3.2";
+        base grid-and-channel-spacing;
+    }
+    identity dwdm-at-50-GHz {
+        reference "http://tools.ietf.org/html/rfc6205#section-3.2";
+        base grid-and-channel-spacing;
+    }
+    identity dwdm-at-25-GHz {
+        reference "http://tools.ietf.org/html/rfc6205#section-3.2";
+        base grid-and-channel-spacing;
+    }
+    identity dwdm-at-12_5-GHz {
+        reference "http://tools.ietf.org/html/rfc6205#section-3.2";
+        base grid-and-channel-spacing;
+    }
+    identity flexi-dwdm-at-6_25-GHz {
+        base grid-and-channel-spacing;
+    }
+    identity cwdm-at-20-nm {
+        reference "http://tools.ietf.org/html/rfc6205#section-3.3";
+        base grid-and-channel-spacing;
+    }
+
+    typedef grid-value {
+        reference "http://tools.ietf.org/html/rfc6205#section-3";
+        description "Type for representing WDM grids defined in G.694.1 and G.694.2 as defined in RFC 6205.";
+        type uint8 {
+            range "0..7";
+        }
+    }
+    typedef grid-enum {
+        type enumeration {
+            enum d-wdm {
+                value 1;
+                reference "http://tools.ietf.org/html/rfc6205#section-3.2";
+            }
+            enum c-wdm {
+                value 2;
+                reference "http://tools.ietf.org/html/rfc6205#section-3.3";
+            }
+            enum flexi {
+                value 3;
+                reference "https://tools.ietf.org/html/draft-ietf-ccamp-flexigrid-lambda-label-03#section-4.1";
+                description "D-WDM flexible grid";
+            }
+        }
+    }
+
+    typedef identifier-type {
+        reference "http://tools.ietf.org/html/rfc6205#section-3.2";
+        description 
+            "The Identifier field in lambda label format is used to distinguish
+             different lasers (in one node) when they can transmit the same
+             frequency lambda.";
+        type uint16 {
+            range "0..511";
+        }
+    }
+
+    grouping wdm-lbl {
+        description "
+            rfc6205 defines a standard lambda label format that is 
+            compliant with the DWDM and CWDM fixed grids defined ITU.
+
+            D-WDM [G.694.1]: The frequency is calculated as: 
+                Frequency (THz) = 193.1 THz + n * channel spacing (THz)
+
+                defined label format is still 32 bits:
+                 0                   1                   2                   3
+                 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                |Grid | C.S.  |    Identifier   |              n                |
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+            C-WDM [G.694.2]: The wavelength is calculated as follows:
+                Wavelength (nm) = 1471 nm + n * 20 nm
+
+                defined label format is still 32 bits:
+                 0                   1                   2                   3
+                 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                |Grid | C.S.  |    Identifier   |                n              |
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+            D-WDM Flexible grid:
+                draft-ietf-ccamp-flexigrid-lambda-label 
+                updates rfc6205 introducing support for DWDM flexible grid,
+                adding a 16 bit integer value for
+                    Slot Width (GHz) = 12.5 GHz * m
+                computation.
+
+                updated label format is 64 bits:
+                 0                   1                   2                   3
+                 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                |Grid | C.S.  |    Identifier   |              n                |
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                |              m                |          Reserved             |
+                +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                Considerations of Bandwidth:
+                in a flexi-grid system a label value indicates the 
+                slot width and so affects the bandwidth supported by an LSP.  
+            ";
+
+        leaf grid-cs {
+            type identityref {
+                base grid-and-channel-spacing;
+            }
+        }
+        leaf identifier {
+            reference "http://tools.ietf.org/html/rfc6205#section-3.2";
+            description "A local-scoped integer used to distinguish different lasers (in one node) when they can transmit the same frequency lambda.";
+
+            type identifier-type;
+        }
+        leaf n {
+            reference "http://tools.ietf.org/html/rfc6205#section-3.2";
+            description
+                "A two's-complement integer to take either a positive, negative,
+                 or zero value.  
+                 This value is used to compute the frequency in both DWDM and CWDM cases.";
+            type int16;
+        }
+        leaf m {
+            reference "https://tools.ietf.org/html/draft-ietf-ccamp-flexigrid-lambda-label-03#section-4.1";
+            when "../grid = 3 or ../grid = 'flexi'";
+            description
+                "";
+            type int16;
+        }
+    }
+
+    grouping wdm-lbl-set {
+        list wdm-label-set {
+            key "grid-cs identifier n m";
+            uses wdm-lbl;
+        }
+    }
+}

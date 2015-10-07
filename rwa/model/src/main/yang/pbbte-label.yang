@@ -1,0 +1,35 @@
+module pbbte-label {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:generalized-label:pbbte";
+    prefix "pbbte";
+
+    organization "Ericsson AB";
+    contact "Carlo Perocchio
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152
+             Italy";
+
+    description
+        "
+        Copyright (c)2015 Ericsson, AB. All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        .";
+
+    revision "2015-05-04" {
+        description
+            "Initial revision.";
+    }
+
+    grouping pbbte-lbl {
+        description "";
+    }
+
+    grouping pbbte-lbl-set {
+    }
+}
