@@ -43,6 +43,7 @@ module topology-link-computation {
                 uses topo-corr:input-model-grouping;
             }
             list link-info {
+                key "topology-ref input-model";
                 leaf link-topology {
                     type string;
                     mandatory true;
