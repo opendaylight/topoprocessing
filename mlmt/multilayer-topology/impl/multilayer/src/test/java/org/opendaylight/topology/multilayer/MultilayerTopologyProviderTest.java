@@ -480,7 +480,7 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         sourceBuilder.setSourceTp(new TpId(tp1));
         DestinationBuilder destinationBuiler = new DestinationBuilder();
         destinationBuiler.setDestNode(new NodeId(node2));
-        destinationBuiler.setDestTp(new TpId(tp1));
+        destinationBuiler.setDestTp(new TpId(tp2));
         linkBuilder.setSource(sourceBuilder.build());
         linkBuilder.setDestination(destinationBuiler.build());
         InstanceIdentifier<Link> linkIid = mlmtTopologyIid.child(Link.class, linkKey);
