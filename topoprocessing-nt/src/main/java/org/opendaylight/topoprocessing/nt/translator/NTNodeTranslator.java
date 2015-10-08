@@ -10,8 +10,10 @@ package org.opendaylight.topoprocessing.nt.translator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -23,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNode;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -42,6 +45,8 @@ public class NTNodeTranslator implements NodeTranslator{
 
     private static final Logger LOG = LoggerFactory.getLogger(NTNodeTranslator.class);
     private static final YangInstanceIdentifier TP_IDENTIFIER = YangInstanceIdentifier.of(TerminationPoint.QNAME);
+    private static final QName LONGITUDE_IDENTIFIER = QName.create("urn:opendaylight:topology:node:coordinates", "2015-10-08", "longitude");
+    private static final QName LATITUDE_IDENTIFIER = QName.create("urn:opendaylight:topology:node:coordinates", "2015-10-08", "latitude");
 
     @Override
     public NormalizedNode<?, ?> translate(OverlayItemWrapper wrapper) {
@@ -77,6 +82,23 @@ public class NTNodeTranslator implements NodeTranslator{
                     }
                 }
             }
+        }
+
+        NormalizedNode<?,?> node = wrapper.getOverlayItems().get(0).getUnderlayItems().get(0).getItem();
+        Set<QName> identifiers = new HashSet<QName>();
+        identifiers.add(LONGITUDE_IDENTIFIER);
+        identifiers.add(LATITUDE_IDENTIFIER);
+        Optional<NormalizedNode<?, ?>> augmentation = NormalizedNodes.findNode(node, new AugmentationIdentifier(identifiers));
+        if(augmentation.isPresent()) {
+            String longitude = (String) NormalizedNodes.findNode(augmentation.get(),YangInstanceIdentifier.of(LONGITUDE_IDENTIFIER)).get().getValue();
+            String latitude = (String) NormalizedNodes.findNode(augmentation.get(),YangInstanceIdentifier.of(LATITUDE_IDENTIFIER)).get().getValue();
+            return ImmutableNodes
+                    .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, wrapper.getId())
+                    .withChild(supportingNodes.build())
+                    .withChild(terminationPoints.build())
+                    .withChild(ImmutableNodes.leafNode(LONGITUDE_IDENTIFIER, longitude))
+                    .withChild(ImmutableNodes.leafNode(LATITUDE_IDENTIFIER, latitude))
+                    .build();
         }
 
         return ImmutableNodes
