@@ -285,7 +285,6 @@ public abstract class TopologyRequestHandler {
                 listener = modelAdapters.get(mapping.getInputModel()).registerUnderlayTopologyListener(pingPongDataBroker,
                                 underlayTopologyId, correlationItem, datastoreType, filtrator, listeners, pathIdentifier);
             }
-            listener.setPathIdentifier(pathIdentifier);
 
             InstanceIdentifierBuilder topologyIdentifier = createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier itemIdentifier = buildListenerIdentifier(topologyIdentifier, correlationItem);
