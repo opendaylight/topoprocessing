@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "1a76adc5_3ee3cd06",
+        "filename": "topoprocessing-inventory/src/main/java/org/opendaylight/topoprocessing/inventory/translator/InvLinkTranslator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2015-10-09T06:37:22Z",
+      "side": 1,
+      "message": "already fixed in patch 7",
+      "parentUuid": "1a76adc5_c6ac59f0",
+      "range": {
+        "startLine": 61,
+        "startChar": 36,
+        "endLine": 61,
+        "endChar": 50
+      },
+      "revId": "7f11ab860efb63c65b099191dfd2e3008add164b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1a76adc5_06ab31d9",
         "filename": "topoprocessing-nt/src/main/java/org/opendaylight/topoprocessing/nt/translator/NTLinkTranslator.java",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2015-10-08T17:57:15Z",
       "side": 1,
       "message": "this won\u0027t be ComputedLink all the time - we should check if it is a ComputedLink",
+      "range": {
+        "startLine": 61,
+        "startChar": 36,
+        "endLine": 61,
+        "endChar": 50
+      },
+      "revId": "7f11ab860efb63c65b099191dfd2e3008add164b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a76adc5_9ed46121",
+        "filename": "topoprocessing-nt/src/main/java/org/opendaylight/topoprocessing/nt/translator/NTLinkTranslator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2015-10-09T06:37:22Z",
+      "side": 1,
+      "message": "already fixed in patch 7",
+      "parentUuid": "1a76adc5_06ab31d9",
       "range": {
         "startLine": 61,
         "startChar": 36,
