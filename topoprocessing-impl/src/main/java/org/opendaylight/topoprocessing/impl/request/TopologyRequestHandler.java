@@ -25,6 +25,7 @@ import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
+import org.opendaylight.topoprocessing.impl.operator.LinkCalculator;
 import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
 import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
@@ -191,7 +192,7 @@ public abstract class TopologyRequestHandler {
                 } else {
                     throw new IllegalStateException("Filtration and Aggregation data missing: " + correlation);
                 }
-                operator.setTopologyManager(topologyManager);
+                //operator.setTopologyManager(topologyManager);
             }
             LOG.debug("Correlation configuration successfully read");
         } catch (Exception e) {
@@ -217,6 +218,7 @@ public abstract class TopologyRequestHandler {
         } else {
             filtrator = new TopologyFiltrator(topoStoreProvider);
         }
+        filtrator.setTopologyManager(topologyManager);
         for (Filter filter : filtration.getFilter()) {
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
             correlation.getCorrelationItem(), schemaHolder, filter.getInputModel());
@@ -255,6 +257,7 @@ public abstract class TopologyRequestHandler {
         TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
         TopologyAggregator aggregator = createAggregator(aggregation.getAggregationType(),
                 correlationItem, topoStoreProvider);
+        aggregator.setTopologyManager(topologyManager);
         if (aggregation.getScripting() != null) {
             aggregator.initCustomAggregation(aggregation.getScripting());
         }
@@ -315,6 +318,7 @@ public abstract class TopologyRequestHandler {
             if(operator instanceof NotificationInterConnector) {
                 operator = ((NotificationInterConnector) operator).getOperator();
             }
+            operator.setTopologyManager(topologyManager);
             InstanceIdentifierBuilder topologyIdentifier = createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier itemIdentifier =
                     buildListenerIdentifier(topologyIdentifier, correlation.getCorrelationItem());

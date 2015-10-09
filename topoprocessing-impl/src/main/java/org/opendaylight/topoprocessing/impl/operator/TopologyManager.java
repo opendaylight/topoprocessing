@@ -75,7 +75,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
      * - new overlay item wrapper
      * @param newOverlayItem - OverlayItem which shall be put into wrapper
      */
-    public void addOverlayItem(OverlayItem newOverlayItem) {
+    public synchronized void addOverlayItem(OverlayItem newOverlayItem) {
         if (newOverlayItem != null && !newOverlayItem.getUnderlayItems().isEmpty()) {
             for (UnderlayItem newUnderlayItem : newOverlayItem.getUnderlayItems()) {
                 for (OverlayItemWrapper wrapper : getWrappersList(newOverlayItem.getCorrelationItem())) {
@@ -104,7 +104,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     /**
      * @param overlayItemIdentifier OverlayItem with new changes to update
      */
-    public void updateOverlayItem(OverlayItem overlayItemIdentifier) {
+    public synchronized void updateOverlayItem(OverlayItem overlayItemIdentifier) {
         for (OverlayItemWrapper wrapper : getWrappersList(overlayItemIdentifier.getCorrelationItem())) {
             for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
                 if (overlayItem.equals(overlayItemIdentifier)) {
@@ -118,7 +118,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     /**
      * @param overlayItemIdentifier OverlayItem to remove
      */
-    public void removeOverlayItem(OverlayItem overlayItemIdentifier) {
+    public synchronized void removeOverlayItem(OverlayItem overlayItemIdentifier) {
         OverlayItemWrapper foundWrapper = null;
         for (OverlayItemWrapper wrapper : getWrappersList(overlayItemIdentifier.getCorrelationItem())) {
             if (wrapper.getOverlayItems().contains(overlayItemIdentifier)) {
