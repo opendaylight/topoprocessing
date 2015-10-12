@@ -222,7 +222,12 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         thread.start();
         mlmtTopologyIid = buildTopologyIid(MLMT);
         this.provider = new MultilayerTopologyProvider();
-        provider.init(LOG, processor, mlmtTopologyIid, parser, null);
+
+        ForwardingAdjacencyTopologyTest forwardingAdjacencyTopologyTest = new ForwardingAdjacencyTopologyTest();
+        forwardingAdjacencyTopologyTest.init(LOG, processor, mlmtTopologyIid);
+        forwardingAdjacencyTopologyTest.setDataProvider(dataBroker);
+
+        provider.init(LOG, processor, mlmtTopologyIid, parser, forwardingAdjacencyTopologyTest);
         provider.setDataProvider(dataBroker);
         MlmtRpcProviderRegistryMock rpcRegistry = new MlmtRpcProviderRegistryMock();
         provider.registerRpcImpl(rpcRegistry, mlmtTopologyIid);
