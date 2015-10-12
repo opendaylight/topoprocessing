@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.After;
 import org.junit.AfterClass;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -70,52 +71,101 @@ public class MultitechnologyAttributesParserImplTest {
     @Test
     public void parseTedNodeAttributesTest() {
         TedBuilder tedBuilder = new TedBuilder();
-        Ipv4Address ipv4Address = new Ipv4Address("10.0.0.1");
-        tedBuilder.setTeRouterIdIpv4(ipv4Address);
         IsisNodeAttributesBuilder isisNodeAttributesBuilder = new IsisNodeAttributesBuilder();
-        isisNodeAttributesBuilder.setTed(tedBuilder.build());
         IgpNodeAttributes1Builder igpNodeAttributes1Builder = new IgpNodeAttributes1Builder();
-        igpNodeAttributes1Builder.setIsisNodeAttributes(isisNodeAttributesBuilder.build());
         IgpNodeAttributesBuilder igpNodeAttributesBuilder = new IgpNodeAttributesBuilder();
-        igpNodeAttributesBuilder.addAugmentation(IgpNodeAttributes1.class, igpNodeAttributes1Builder.build());
         Node1Builder node1Builder = new Node1Builder();
-        node1Builder.setIgpNodeAttributes(igpNodeAttributesBuilder.build());
         NodeBuilder nodeBuilder = new NodeBuilder();
         nodeBuilder.addAugmentation(Node1.class, node1Builder.build());
+
         TedNodeAttributes tedNodeAttributes = parser.parseTedNodeAttributes(nodeBuilder.build());
+        assertNull(tedNodeAttributes);
+        node1Builder.setIgpNodeAttributes(igpNodeAttributesBuilder.build());
+        nodeBuilder.addAugmentation(Node1.class, node1Builder.build());
+        tedNodeAttributes = parser.parseTedNodeAttributes(nodeBuilder.build());
+        assertNull(tedNodeAttributes);
+
+        igpNodeAttributes1Builder.setIsisNodeAttributes(isisNodeAttributesBuilder.build());
+        igpNodeAttributesBuilder.addAugmentation(IgpNodeAttributes1.class, igpNodeAttributes1Builder.build());
+        node1Builder.setIgpNodeAttributes(igpNodeAttributesBuilder.build());
+        nodeBuilder.addAugmentation(Node1.class, node1Builder.build());
+        tedNodeAttributes = parser.parseTedNodeAttributes(nodeBuilder.build());
+        assertNull(tedNodeAttributes);
+
+        Ipv4Address ipv4Address = new Ipv4Address("10.0.0.1");
+        tedBuilder.setTeRouterIdIpv4(ipv4Address);
+        isisNodeAttributesBuilder.setTed(tedBuilder.build());
+        igpNodeAttributes1Builder = new IgpNodeAttributes1Builder();
+        igpNodeAttributes1Builder.setIsisNodeAttributes(isisNodeAttributesBuilder.build());
+        igpNodeAttributesBuilder = new IgpNodeAttributesBuilder();
+        igpNodeAttributesBuilder.addAugmentation(IgpNodeAttributes1.class, igpNodeAttributes1Builder.build());
+        node1Builder.setIgpNodeAttributes(igpNodeAttributesBuilder.build());
+        nodeBuilder.addAugmentation(Node1.class, node1Builder.build());
+        tedNodeAttributes = parser.parseTedNodeAttributes(nodeBuilder.build());
         assertEquals(tedNodeAttributes.getTeRouterIdIpv4().getValue(), ipv4Address.getValue());
     }
 
     @Test
     public void parseTedLinkAttributesTest() {
-        org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.link.attributes.isis.link.attributes.TedBuilder
-                tedBuilder = new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.link.attributes.isis.link.attributes.TedBuilder();
+        org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021
+                .isis.link.attributes.isis.link.attributes.TedBuilder tedBuilder =
+                        new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021
+                                .isis.link.attributes.isis.link.attributes.TedBuilder();
+        IsisLinkAttributesBuilder isisLinkAttributedBuilder = new IsisLinkAttributesBuilder();
+        IgpLinkAttributes1Builder igpLinkAttributes1Builder = new IgpLinkAttributes1Builder();
+        IgpLinkAttributesBuilder igpLinkAttributesBuilder = new IgpLinkAttributesBuilder();
+        Link1Builder link1Builder = new Link1Builder();
+        LinkBuilder linkBuilder = new LinkBuilder();
+        TedLinkAttributes tedLinkAttributes = parser.parseTedLinkAttributes(linkBuilder.build());
+        assertNull(tedLinkAttributes);
+
+        link1Builder.setIgpLinkAttributes(igpLinkAttributesBuilder.build());
+        linkBuilder.addAugmentation(Link1.class, link1Builder.build());
+        tedLinkAttributes = parser.parseTedLinkAttributes(linkBuilder.build());
+        assertNull(tedLinkAttributes);
+
+        igpLinkAttributesBuilder.addAugmentation(IgpLinkAttributes1.class, igpLinkAttributes1Builder.build());
+        link1Builder.setIgpLinkAttributes(igpLinkAttributesBuilder.build());
+        linkBuilder.addAugmentation(Link1.class, link1Builder.build());
+        tedLinkAttributes = parser.parseTedLinkAttributes(linkBuilder.build());
+        assertNull(tedLinkAttributes);
+
+        igpLinkAttributes1Builder.setIsisLinkAttributes(isisLinkAttributedBuilder.build());
+        igpLinkAttributesBuilder.addAugmentation(IgpLinkAttributes1.class, igpLinkAttributes1Builder.build());
+        link1Builder.setIgpLinkAttributes(igpLinkAttributesBuilder.build());
+        linkBuilder.addAugmentation(Link1.class, link1Builder.build());
+        tedLinkAttributes = parser.parseTedLinkAttributes(linkBuilder.build());
+        assertNull(tedLinkAttributes);
+
         Long color = (Long)10L;
         tedBuilder.setColor(color);
-        IsisLinkAttributesBuilder isisLinkAttributedBuilder = new IsisLinkAttributesBuilder();
         isisLinkAttributedBuilder.setTed(tedBuilder.build());
-        IgpLinkAttributes1Builder igpLinkAttributes1Builder = new IgpLinkAttributes1Builder();
         igpLinkAttributes1Builder.setIsisLinkAttributes(isisLinkAttributedBuilder.build());
-        IgpLinkAttributesBuilder igpLinkAttributesBuilder = new IgpLinkAttributesBuilder();
         igpLinkAttributesBuilder.addAugmentation(IgpLinkAttributes1.class, igpLinkAttributes1Builder.build());
-        Link1Builder link1Builder = new Link1Builder();
         link1Builder.setIgpLinkAttributes(igpLinkAttributesBuilder.build());
-        LinkBuilder linkBuilder = new LinkBuilder();
         linkBuilder.addAugmentation(Link1.class, link1Builder.build());
-        TedLinkAttributes tedLinkAttributes = parser.parseTedLinkAttributes(linkBuilder.build());
+        tedLinkAttributes = parser.parseTedLinkAttributes(linkBuilder.build());
         assertEquals(tedLinkAttributes.getColor(), color);
    }
 
     @Test
     public void parseLinkMetricTest() {
-        Long metric = (Long)150L;
         IgpLinkAttributesBuilder igpLinkAttributesBuilder = new IgpLinkAttributesBuilder();
-        igpLinkAttributesBuilder.setMetric(metric);
         Link1Builder link1Builder = new Link1Builder();
-        link1Builder.setIgpLinkAttributes(igpLinkAttributesBuilder.build());
         LinkBuilder linkBuilder = new LinkBuilder();
-        linkBuilder.addAugmentation(Link1.class, link1Builder.build());
         Long parsedMetric = parser.parseLinkMetric(linkBuilder.build());
+        assertNull(parsedMetric);
+
+        link1Builder.setIgpLinkAttributes(igpLinkAttributesBuilder.build());
+        linkBuilder.addAugmentation(Link1.class, link1Builder.build());
+        parsedMetric = parser.parseLinkMetric(linkBuilder.build());
+        assertNull(parsedMetric);
+
+        Long metric = (Long)150L;
+        igpLinkAttributesBuilder.setMetric(metric);
+        link1Builder.setIgpLinkAttributes(igpLinkAttributesBuilder.build());
+        linkBuilder.addAugmentation(Link1.class, link1Builder.build());
+        parsedMetric = parser.parseLinkMetric(linkBuilder.build());
         assertEquals(parsedMetric, metric);
     }
 
