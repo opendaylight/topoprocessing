@@ -18,7 +18,6 @@
     </parent>
 
     <artifactId>topoprocessing-aggregator</artifactId>
-    <name>topoprocessing</name> <!-- Used by Sonar to set project name -->
     <packaging>pom</packaging>
 
     <modules>
