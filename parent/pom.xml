@@ -30,6 +30,33 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <name>Matej Perina</name>
+            <email>matej.perina@pantheon.sk</email>
+            <organization>Pantheon Technologies</organization>
+            <organizationUrl>https://www.pantheon.sk/en/</organizationUrl>
+        </developer>
+        <developer>
+            <name>Andrej Záň</name>
+            <email>andrej.zan@pantheon.sk</email>
+            <organization>Pantheon Technologies</organization>
+            <organizationUrl>https://www.pantheon.sk/en/</organizationUrl>
+        </developer>
+		<developer>
+			  <name>Giorgio Garziano</name>
+			  <email>giorgio.garziano@ericsson.com</email>
+			  <organization>Ericsson</organization>
+			  <organizationUrl>http://www.ericsson.com</organizationUrl>
+		</developer>
+		<developer>
+			  <name>Carlo Perocchio</name>
+			  <email>carlo.perocchio@ericsson.com</email>
+			  <organization>Ericsson</organization>
+			  <organizationUrl>http://www.ericsson.com</organizationUrl>
+		</developer>
+    </developers>
+
     <scm>
         <connection>scm:git:ssh://git.opendaylight.org:29418/topoprocessing.git</connection>
         <developerConnection>scm:git:ssh://git.opendaylight.org:29418/topoprocessing.git</developerConnection>
