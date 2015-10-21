@@ -19,6 +19,9 @@
 
     <artifactId>topoprocessing-aggregator</artifactId>
     <name>topoprocessing</name> <!-- Used by Sonar to set project name -->
+    <description>
+        Topology processing framework allow developers to agregate and filter topologies according to defined correlations. It also provides functionality, which you can use to make your own topology model rendering (translation from one model to another).
+    </description>
     <packaging>pom</packaging>
 
     <modules>
