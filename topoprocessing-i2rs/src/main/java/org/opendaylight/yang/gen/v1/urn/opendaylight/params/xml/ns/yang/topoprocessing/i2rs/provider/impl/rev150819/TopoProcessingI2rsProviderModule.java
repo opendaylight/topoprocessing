@@ -1,6 +1,6 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.i2rs.provider.impl.rev150819;
 
-import org.opendaylight.topoprocessing.i2rs.TopoProcessingI2rsProvider;
+import org.opendaylight.topoprocessing.i2rs.provider.TopoProcessingProviderI2RS;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 
 public class TopoProcessingI2rsProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.i2rs.provider.impl.rev150819.AbstractTopoProcessingI2rsProviderModule {
@@ -21,7 +21,7 @@ public class TopoProcessingI2rsProviderModule extends org.opendaylight.yang.gen.
     @Override
     public java.lang.AutoCloseable createInstance() {
         TopoProcessingProvider topoProvider = getTopoprocessingProviderDependency();
-        TopoProcessingI2rsProvider i2rsProvider = new TopoProcessingI2rsProvider();
+        TopoProcessingProviderI2RS i2rsProvider = new TopoProcessingProviderI2RS();
         i2rsProvider.startup(topoProvider);
         return i2rsProvider;
     }

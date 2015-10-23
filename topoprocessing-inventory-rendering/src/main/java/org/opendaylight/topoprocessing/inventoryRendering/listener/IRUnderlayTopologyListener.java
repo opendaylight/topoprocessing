@@ -16,10 +16,14 @@ import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
 import org.opendaylight.topoprocessing.impl.operator.TopoStoreProvider;
+import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.inventoryRendering.operator.IRRenderingOperator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.InventoryRenderingModel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
@@ -35,6 +39,17 @@ public class IRUnderlayTopologyListener extends UnderlayTopologyListener{
     public IRUnderlayTopologyListener(PingPongDataBroker dataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         super(dataBroker, underlayTopologyId, correlationItem);
+     // this needs to be done because for processing TerminationPoints we need to filter Node instead of TP
+        if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
+            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Node,
+                    NetworkTopologyModel.class);
+            this.itemQName = TopologyQNames.buildItemQName(CorrelationItemEnum.Node, InventoryRenderingModel.class);
+        } else {
+            this.relativeItemIdIdentifier = InstanceIdentifiers.relativeItemIdIdentifier(correlationItem,
+                    InventoryRenderingModel.class);
+            this.itemQName = TopologyQNames.buildItemQName(correlationItem, InventoryRenderingModel.class);
+        }
+        this.itemIdentifier = YangInstanceIdentifier.of(itemQName);
     }
 
     public void registerUnderlayTopologyListener(DatastoreType datastoreType,
