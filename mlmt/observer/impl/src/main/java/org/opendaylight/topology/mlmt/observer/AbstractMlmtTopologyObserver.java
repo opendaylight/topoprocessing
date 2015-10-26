@@ -209,7 +209,7 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
             Optional<Topology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, topologyInstanceId).get();
             if (optional.isPresent()) {
                 Topology rxTopology = optional.get();
-                if (rxTopology != null & rxTopology.getTopologyTypes() != null) {
+                if (rxTopology != null && rxTopology.getTopologyTypes() != null) {
                     mlmtConsequentAction = mlmtProviderFactory.consequentAction(rxTopology.getTopologyTypes());
                 }
             }
@@ -217,7 +217,7 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
                 optional = rTx.read(LogicalDatastoreType.OPERATIONAL, topologyInstanceId).get();
                 if (optional.isPresent()) {
                     Topology rxTopology = optional.get();
-                    if (rxTopology != null & rxTopology.getTopologyTypes() != null) {
+                    if (rxTopology != null && rxTopology.getTopologyTypes() != null) {
                         mlmtConsequentAction = mlmtProviderFactory.consequentAction(rxTopology.getTopologyTypes());
                     }
                 }
