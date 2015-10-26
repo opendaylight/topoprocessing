@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fad0f9df_51da7579",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/test/java/org/opendaylight/topology/multilayer/ForwardingAdjacencyTopologyTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-10-26T13:47:28Z",
+      "side": 1,
+      "message": "Please adjust line size (120 chars)",
+      "revId": "851377fe38c0e42375eb6db60275e5145a093aac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fad0f9df_11e4ed39",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/test/java/org/opendaylight/topology/multilayer/ForwardingAdjacencyTopologyTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-10-26T13:47:28Z",
+      "side": 1,
+      "message": "Please adjust line size (120 chars)",
+      "revId": "851377fe38c0e42375eb6db60275e5145a093aac",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
