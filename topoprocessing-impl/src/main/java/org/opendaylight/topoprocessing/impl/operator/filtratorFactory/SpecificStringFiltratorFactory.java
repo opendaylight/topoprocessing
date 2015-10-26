@@ -10,8 +10,8 @@ package org.opendaylight.topoprocessing.impl.operator.filtratorFactory;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.operator.filtrator.SpecificValueFiltrator;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.SpecificStringAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.Filter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.filter.filter.type.body.SpecificStringFilterType;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
@@ -22,7 +22,11 @@ public class SpecificStringFiltratorFactory implements FiltratorFactory {
 
     @Override
     public Filtrator createFiltrator(Filter filter, YangInstanceIdentifier pathIdentifier) {
-        return new SpecificValueFiltrator<>(
-                filter.getAugmentation(SpecificStringAugment.class).getSpecificString(), pathIdentifier);
+        if(filter.getFilterTypeBody() instanceof SpecificStringFilterType) {
+            return new SpecificValueFiltrator<>(((SpecificStringFilterType)filter.getFilterTypeBody())
+                    .getSpecificStringFilter().getSpecificString(), pathIdentifier);
+        } else {
+            throw new IllegalStateException("Wrong filter type and body combination");
+        }
     }
 }

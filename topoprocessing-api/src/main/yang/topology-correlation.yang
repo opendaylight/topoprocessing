@@ -14,6 +14,7 @@ module topology-correlation {
     import network-topology {prefix topo; revision-date "2013-10-21";}
     import ietf-inet-types {prefix inet;}
     import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import ietf-network {prefix i2rs; revision-date "2015-06-08";}
 
     revision "2015-01-21" {
         description "Topology Processing Framework correlation definition";
@@ -49,7 +50,7 @@ module topology-correlation {
         description "network-topology@2013-10-21.yang";
         base model;
     }
-    
+
     identity opendaylight-inventory-model {
         description "opendaylight-inventory.yang";
         base model;
@@ -57,6 +58,11 @@ module topology-correlation {
 
     identity inventory-rendering-model {
         description "inventory-rendering.yang";
+        base model;
+    }
+
+    identity i2rs-model {
+        description "ietf-network@2015-06-08.yang";
         base model;
     }
 
@@ -143,7 +149,12 @@ module topology-correlation {
         ext:augment-identifier "correlation-augment";
         uses correlations-grouping;
     }
-    
+
+    augment "/i2rs:network/" {
+        ext:augment-identifier "i2rs-correlation-augment";
+        uses correlations-grouping;
+    }
+
     grouping correlations-grouping {
         container correlations {
             leaf output-model {
@@ -215,6 +226,61 @@ module topology-correlation {
                             type leaf-path;
                             description "Path to target field";
                         }
+                        choice filter-type-body {
+                            case ipv4-address-filter-type {
+                                container ipv4-address-filter {
+	                                leaf ipv4-address {
+	                                    type inet:ip-prefix;
+	                                }
+                                }
+                            }
+                            case ipv6-address-filter-type {
+                                container ipv6-address-filter {
+	                                leaf ipv6-address {
+	                                    type inet:ip-prefix;
+	                                }
+                                }
+                            }
+                            case range-number-filter-type {
+                                container range-number-filter {
+                                    leaf min-number-value {
+                                        type uint16;
+                                    }
+                                    leaf max-number-value {
+                                        type uint16;
+                                    }
+                                }
+                            }
+                            case range-string-filter-type {
+                                container range-string-filter {
+                                    leaf min-string-value {
+                                        type string;
+                                    }
+                                    leaf max-string-value {
+                                        type string;
+                                    }
+                                }
+                            }
+                            case specific-number-filter-type {
+                                container specific-number-filter {
+	                                leaf specific-number {
+	                                    type uint16;
+	                                }
+                                }
+                            }
+                            case specific-string-filter-type {
+                                container specific-string-filter {
+	                                leaf specific-string {
+	                                    type string;
+	                                }
+                                }
+                            }
+                            case script-filter-type {
+                                container script-filter {
+                                    uses scripting-grouping;
+                                }
+                            }
+                        }
                     }
                 }
                 container rendering {
@@ -247,58 +313,4 @@ module topology-correlation {
             description "Specifies what structures, identifiers and QNames should be used.";
         }
     }
-
-    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
-        ext:augment-identifier "ipv4-address-augment";
-        leaf ipv4-address {
-            type inet:ip-prefix;
-        }
-    }
-
-    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
-        ext:augment-identifier "ipv6-address-augment";
-        leaf ipv6-address {
-            type inet:ip-prefix;
-        }
-    }
-
-    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
-        ext:augment-identifier "range-number-augment";
-        leaf min-number-value {
-            type uint16;
-        }
-        leaf max-number-value {
-            type uint16;
-        }
-    }
-
-    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
-        ext:augment-identifier "range-string-augment";
-        leaf min-string-value {
-            type string;
-        }
-        leaf max-string-value {
-            type string;
-        }
-    }
-
-    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
-        ext:augment-identifier "specific-number-augment";
-        leaf specific-number {
-            type uint16;
-        }
-    }
-
-    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
-        ext:augment-identifier "specific-string-augment";
-        leaf specific-string {
-            type string;
-        }
-    }
-
-    augment "/topo:network-topology/topo:topology/topo-correlation:correlations/topo-correlation:correlation/topo-correlation:filtration/topo-correlation:filter" {
-        ext:augment-identifier "scripting-augment";
-        uses scripting-grouping;
-    }
-
 }

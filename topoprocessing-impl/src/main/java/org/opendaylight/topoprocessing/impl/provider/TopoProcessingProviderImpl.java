@@ -28,9 +28,11 @@ import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,14 +123,18 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         if(modelAdapter instanceof ModelAdapter) {
             ModelAdapter adapter = (ModelAdapter) modelAdapter;
             modelAdapters.put(model, adapter);
-            registerTopologyRequestListener(adapter);
+            if (model.equals(I2rsModel.class)) {
+                registerTopologyRequestListener(adapter, InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER);
+            } else {
+                registerTopologyRequestListener(adapter, InstanceIdentifiers.TOPOLOGY_IDENTIFIER);
+            }
         }
         else {
             throw new IllegalStateException("Incorrect type of ModelAdapter");
         }
     }
 
-    private void registerTopologyRequestListener(ModelAdapter modelAdapter) {
+    private void registerTopologyRequestListener(ModelAdapter modelAdapter, YangInstanceIdentifier path) {
         TopologyRequestListener listener = modelAdapter.createTopologyRequestListener(dataBroker,
                 nodeSerializer, schemaHolder, rpcServices, modelAdapters);
         listener.setDatastoreType(dataStoreType);
@@ -136,7 +142,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         LOGGER.debug("Registering Topology Request Listener");
         topologyRequestListenerRegistrations.add(
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                        InstanceIdentifiers.TOPOLOGY_IDENTIFIER, listener, DataChangeScope.ONE));
+                        path, listener, DataChangeScope.ONE));
     }
 
 }

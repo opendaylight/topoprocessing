@@ -33,8 +33,6 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
@@ -60,8 +58,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4Address;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4AddressAugment;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4AddressAugmentBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.LeafPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
@@ -77,6 +73,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.aggregation.MappingBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.FilterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.filter.filter.type.body.Ipv4AddressFilterTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.filter.filter.type.body.ipv4.address.filter.type.Ipv4AddressFilterBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
@@ -380,10 +378,11 @@ public class NTTopologyRequestHandlerTest {
         Ipv4Prefix ipv4prefix = new Ipv4Prefix("192.168.0.1/24");
         IpPrefix ipPrefix = new IpPrefix(ipv4prefix);
         filterBuilder1.setFilterType(Ipv4Address.class);
-        Ipv4AddressAugmentBuilder augmentBuilder = new Ipv4AddressAugmentBuilder();
-        augmentBuilder.setIpv4Address(ipPrefix);
+        Ipv4AddressFilterBuilder filterBuilder = new Ipv4AddressFilterBuilder();
+        filterBuilder.setIpv4Address(ipPrefix);
 
-        filterBuilder1.addAugmentation(Ipv4AddressAugment.class, augmentBuilder.build());
+        filterBuilder1.setFilterTypeBody(new Ipv4AddressFilterTypeBuilder().setIpv4AddressFilter(filterBuilder.build())
+                .build());
         filters.add(filterBuilder1.build());
         fBuilder.setFilter(filters);
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(FiltrationOnly.class,

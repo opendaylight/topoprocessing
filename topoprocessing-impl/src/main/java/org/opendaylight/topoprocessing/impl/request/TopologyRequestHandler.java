@@ -116,8 +116,8 @@ public abstract class TopologyRequestHandler {
         this.rpcServices = rpcServices;
         this.fromNormalizedNode = fromNormalizedNode;
         this.topologyId = getTopologyId(fromNormalizedNode);
-        writer = new TopologyWriter(topologyId);
         outputModel = getModel(fromNormalizedNode);
+        writer = new TopologyWriter(topologyId, outputModel);
     }
 
     protected abstract Class<? extends Model> getModel(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
@@ -160,7 +160,7 @@ public abstract class TopologyRequestHandler {
         transactionChain = pingPongDataBroker.createTransactionChain(writer);
         writer.setTransactionChain(transactionChain);
         topologyManager = new TopologyManager(rpcServices, schemaHolder,
-                createTopologyIdentifier(topologyId).build());
+                createTopologyIdentifier(topologyId).build(), outputModel);
         topologyManager.setWriter(writer);
         writer.initOverlayTopology();
 

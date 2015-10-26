@@ -10,8 +10,8 @@ package org.opendaylight.topoprocessing.impl.operator.filtratorFactory;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.operator.filtrator.Ipv4AddressFiltrator;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4AddressAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.Filter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.filter.filter.type.body.Ipv4AddressFilterType;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
@@ -22,6 +22,11 @@ public class Ipv4FiltratorFactory implements FiltratorFactory {
 
     @Override
     public Filtrator createFiltrator(Filter filter, YangInstanceIdentifier pathIdentifier) {
-        return new Ipv4AddressFiltrator(filter.getAugmentation(Ipv4AddressAugment.class).getIpv4Address(), pathIdentifier);
+        if(filter.getFilterTypeBody() instanceof Ipv4AddressFilterType) {
+            return new Ipv4AddressFiltrator(((Ipv4AddressFilterType)filter.getFilterTypeBody())
+                    .getIpv4AddressFilter().getIpv4Address(), pathIdentifier);
+        } else {
+            throw new IllegalStateException("Wrong filter type and body combination");
+        }
     }
 }

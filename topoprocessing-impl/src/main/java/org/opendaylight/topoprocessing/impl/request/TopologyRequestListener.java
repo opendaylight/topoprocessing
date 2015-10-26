@@ -49,7 +49,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyRequestListener.class);
 
     private DOMDataBroker dataBroker;
-    private YangInstanceIdentifier identifier = InstanceIdentifiers.TOPOLOGY_IDENTIFIER;
+    protected YangInstanceIdentifier identifier = InstanceIdentifiers.TOPOLOGY_IDENTIFIER;
     private BindingNormalizedNodeSerializer nodeSerializer;
     private Map<YangInstanceIdentifier, TopologyRequestHandler> topoRequestHandlers = new HashMap<>();
     private GlobalSchemaContextHolder schemaHolder;
@@ -130,7 +130,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
         }
     }
 
-    protected abstract boolean isTopology(NormalizedNode<?,?> normalizeNode);
+    protected abstract boolean isTopology(NormalizedNode<?,?> normalizedNode);
 
     protected abstract boolean isTopologyRequest(NormalizedNode<?,?> normalizedNode);
 

@@ -134,7 +134,7 @@ public class EqualityAggregatorTest {
         LeafNode<String> leafNode22 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.3");
         UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, leafNode21, TOPO2, "21", CorrelationItemEnum.Node);
         UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, leafNode22, TOPO2, "22", CorrelationItemEnum.Node);
-        
+
         aggregator.processCreatedChanges(leafYiid21, physicalNode1, TOPO2);
         aggregator.processCreatedChanges(leafYiid22, physicalNode2, TOPO2);
 
@@ -366,7 +366,7 @@ public class EqualityAggregatorTest {
         UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, leafNode61, TOPO6, "61", CorrelationItemEnum.Node);
         aggregator.processCreatedChanges(leafYiid51, physicalNode1, TOPO5);
         aggregator.processCreatedChanges(leafYiid61, physicalNode2, TOPO5);
-        
+
         Mockito.verify(mockManager, Mockito.times(0)).addOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).updateOverlayItem((OverlayItem) any());
@@ -376,7 +376,7 @@ public class EqualityAggregatorTest {
         LeafNode<String> leafNode52 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.5");
         UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, leafNode52, TOPO5, "52", CorrelationItemEnum.Node);
         aggregator.processCreatedChanges(leafYiid52, physicalNode, TOPO5);
-        // logical node have been created over two physical nodes having the same IP partaining to the same topology 
+        // logical node have been created over two physical nodes having the same IP partaining to the same topology
         Mockito.verify(mockManager, Mockito.times(1)).addOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) any());
         Mockito.verify(mockManager, Mockito.times(0)).updateOverlayItem((OverlayItem) any());

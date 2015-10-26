@@ -10,8 +10,9 @@ package org.opendaylight.topoprocessing.impl.operator.filtratorFactory;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.operator.filtrator.RangeStringFiltrator;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.RangeStringAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.Filter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.filter.filter.type.body.RangeStringFilterType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.filter.filter.type.body.range.string.filter.type.RangeStringFilter;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
@@ -22,7 +23,11 @@ public class RangeStringFiltratorFactory implements FiltratorFactory {
 
     @Override
     public Filtrator createFiltrator(Filter filter, YangInstanceIdentifier pathIdentifier) {
-        return new RangeStringFiltrator(filter.getAugmentation(RangeStringAugment.class).getMinStringValue(),
-                filter.getAugmentation(RangeStringAugment.class).getMaxStringValue(), pathIdentifier);
+        if(filter.getFilterTypeBody() instanceof RangeStringFilterType) {
+            RangeStringFilter RSFilter = ((RangeStringFilterType)filter.getFilterTypeBody()).getRangeStringFilter();
+            return new RangeStringFiltrator(RSFilter.getMinStringValue(), RSFilter.getMaxStringValue(), pathIdentifier);
+        } else {
+            throw new IllegalStateException("Wrong filter type and body combination");
+        }
     }
 }

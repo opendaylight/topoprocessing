@@ -48,5 +48,4 @@ public class IRTopologyRequestHandler extends TopologyRequestHandler{
         return ((Topology) fromNormalizedNode.getValue()).getAugmentation(CorrelationAugment.class)
                 .getCorrelations().getOutputModel();
     }
-
 }
