@@ -179,19 +179,17 @@ public abstract class TopologyRequestHandler {
             LOG.debug("Processing correlation configuration");
             List<Correlation> correlationList = correlations.getCorrelation();
             for (Correlation correlation : correlationList) {
-                TopologyOperator operator = null;
                 if (FiltrationAggregation.class.equals(correlation.getType())) {
-                    operator = initAggregation(correlation, true);
+                    initAggregation(correlation, true);
                 } else if (FiltrationOnly.class.equals(correlation.getType())) {
-                    operator = initFiltration(correlation);
+                    initFiltration(correlation);
                 } else if (AggregationOnly.class.equals(correlation.getType())) {
-                    operator = initAggregation(correlation, false);
+                    initAggregation(correlation, false);
                 } else if (RenderingOnly.class.equals(correlation.getType())){
-                    operator = initRendering(correlation);
+                    initRendering(correlation);
                 } else {
                     throw new IllegalStateException("Filtration and Aggregation data missing: " + correlation);
                 }
-                operator.setTopologyManager(topologyManager);
             }
             LOG.debug("Correlation configuration successfully read");
         } catch (Exception e) {
@@ -205,7 +203,7 @@ public abstract class TopologyRequestHandler {
      * @param correlation contains filtration configuration
      * @return configured {@link TopologyFiltrator}
      */
-    private TopologyFiltrator initFiltration(Correlation correlation) {
+    private void initFiltration(Correlation correlation) {
         CorrelationItemEnum correlationItem = correlation.getCorrelationItem();
         Filtration filtration = correlation.getFiltration();
         String underlayTopologyId = filtration.getUnderlayTopology();
@@ -217,6 +215,7 @@ public abstract class TopologyRequestHandler {
         } else {
             filtrator = new TopologyFiltrator(topoStoreProvider);
         }
+        filtrator.setTopologyManager(topologyManager);
         for (Filter filter : filtration.getFilter()) {
             YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
             correlation.getCorrelationItem(), schemaHolder, filter.getInputModel());
@@ -239,7 +238,6 @@ public abstract class TopologyRequestHandler {
                     pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
             listeners.add(listenerRegistration);
         }
-        return filtrator;
     }
 
     private void addFiltrator(TopologyFiltrator operator, Filter filter,
@@ -249,12 +247,13 @@ public abstract class TopologyRequestHandler {
         operator.addFilter(currentFiltrator);
     }
 
-    private TopologyAggregator initAggregation(Correlation correlation, boolean filtration) {
+    private void initAggregation(Correlation correlation, boolean filtration) {
         CorrelationItemEnum correlationItem = correlation.getCorrelationItem();
         Aggregation aggregation = correlation.getAggregation();
         TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
         TopologyAggregator aggregator = createAggregator(aggregation.getAggregationType(),
                 correlationItem, topoStoreProvider);
+        aggregator.setTopologyManager(topologyManager);
         if (aggregation.getScripting() != null) {
             aggregator.initCustomAggregation(aggregation.getScripting());
         }
@@ -299,10 +298,9 @@ public abstract class TopologyRequestHandler {
                     pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
             listeners.add(listenerRegistration);
         }
-        return aggregator;
     }
 
-    private TopologyOperator initRendering(Correlation correlation) {
+    private void initRendering(Correlation correlation) {
         Rendering rendering = correlation.getRendering();
         TopologyOperator operator = null;
         if (rendering != null) {
@@ -315,6 +313,7 @@ public abstract class TopologyRequestHandler {
             if(operator instanceof NotificationInterConnector) {
                 operator = ((NotificationInterConnector) operator).getOperator();
             }
+            operator.setTopologyManager(topologyManager);
             InstanceIdentifierBuilder topologyIdentifier = createTopologyIdentifier(underlayTopologyId);
             YangInstanceIdentifier itemIdentifier =
                     buildListenerIdentifier(topologyIdentifier, correlation.getCorrelationItem());
@@ -331,7 +330,6 @@ public abstract class TopologyRequestHandler {
         } else {
             throw new IllegalStateException("Rendering data missing: " + correlation);
         }
-        return operator;
     }
 
     private Filter findFilter(List<Filter> filters, String filterId) {
