@@ -154,10 +154,6 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
-            <artifactId>topoprocessing-link-computation</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>topoprocessing-common</artifactId>
         </dependency>
         <dependency>
