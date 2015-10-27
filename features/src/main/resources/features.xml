@@ -64,8 +64,4 @@
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-inventory-rendering/${project.version}</bundle>
         <configfile finalname="etc/opendaylight/karaf/81-topoprocessing-inventory-rendering-config.xml">mvn:org.opendaylight.topoprocessing/topoprocessing-config/${project.version}/xml/config-inventory-rendering</configfile>
     </feature>
-    <feature name='odl-topoprocessing-link-computation' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Link computation">
-        <feature version='${project.version}'>odl-topoprocessing-framework</feature>
-        <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-link-computation/${project.version}</bundle>
-    </feature>
 </features>

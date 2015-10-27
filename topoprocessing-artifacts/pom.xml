@@ -94,11 +94,6 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>topoprocessing-link-computation</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>mlmt-topology-common-model</artifactId>
                 <version>${project.version}</version>
             </dependency>
