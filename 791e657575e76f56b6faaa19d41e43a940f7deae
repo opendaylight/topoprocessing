@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "dad5f5cf_d1ae84e7",
+        "filename": "parent/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2015-10-27T09:29:34Z",
+      "side": 1,
+      "message": "please change tabs to spaces here and in the rest of file",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 2
+      },
+      "revId": "791e657575e76f56b6faaa19d41e43a940f7deae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_71879862",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2015-10-27T09:29:34Z",
+      "side": 1,
+      "message": "not just developers, applications, users etc. I recommend to remove this word",
+      "range": {
+        "startLine": 23,
+        "startChar": 44,
+        "endLine": 23,
+        "endChar": 54
+      },
+      "revId": "791e657575e76f56b6faaa19d41e43a940f7deae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "dad5f5cf_b1b50033",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2015-10-27T09:29:34Z",
+      "side": 1,
+      "message": "allows",
+      "range": {
+        "startLine": 23,
+        "startChar": 38,
+        "endLine": 23,
+        "endChar": 43
+      },
+      "revId": "791e657575e76f56b6faaa19d41e43a940f7deae",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
