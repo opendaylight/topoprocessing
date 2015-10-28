@@ -20,6 +20,8 @@ import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
+import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.inventory.listener.InvUnderlayTopologyListener;
 import org.opendaylight.topoprocessing.inventory.request.InvTopologyRequestListener;
 import org.opendaylight.topoprocessing.inventory.translator.InvLinkTranslator;
@@ -27,9 +29,13 @@ import org.opendaylight.topoprocessing.inventory.translator.InvNodeTranslator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 
 /** *
  * @author matej.perina
@@ -59,4 +65,28 @@ public class InvModelAdapter implements ModelAdapter {
         return new OverlayItemTranslator(new InvNodeTranslator(), new InvLinkTranslator());
     }
 
+    @Override
+    public YangInstanceIdentifier buildItemIdentifier(InstanceIdentifierBuilder builder,
+            CorrelationItemEnum correlationItemEnum) {
+        switch (correlationItemEnum) {
+        case Node:
+        case TerminationPoint:
+            builder.node(Node.QNAME);
+            break;
+        case Link:
+            builder.node(Link.QNAME);
+            break;
+        default:
+            throw new IllegalArgumentException("Wrong Correlation item set: "
+                    + correlationItemEnum);
+        }
+        return builder.build();
+    }
+
+    @Override
+    public InstanceIdentifierBuilder createTopologyIdentifier(String underlayTopologyId) {
+        InstanceIdentifierBuilder identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, underlayTopologyId);
+        return identifier;
+    }
 }

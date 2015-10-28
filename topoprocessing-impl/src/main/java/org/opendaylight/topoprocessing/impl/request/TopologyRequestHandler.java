@@ -25,6 +25,7 @@ import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
+import org.opendaylight.topoprocessing.impl.operator.LinkCalculator;
 import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
 import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
@@ -38,8 +39,6 @@ import org.opendaylight.topoprocessing.impl.operator.UnificationAggregator;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
-import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
-import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationBase;
@@ -59,9 +58,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.Rendering;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.aggregation.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.Filter;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.rev150824.link.computation.grouping.LinkComputation;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.rev150824.link.computation.grouping.link.computation.LinkInfo;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -69,7 +67,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
-import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -160,7 +157,7 @@ public abstract class TopologyRequestHandler {
         transactionChain = pingPongDataBroker.createTransactionChain(writer);
         writer.setTransactionChain(transactionChain);
         topologyManager = new TopologyManager(rpcServices, schemaHolder,
-                createTopologyIdentifier(topologyId).build(), outputModel);
+                modelAdapters.get(outputModel).createTopologyIdentifier(topologyId).build(), outputModel);
         topologyManager.setWriter(writer);
         writer.initOverlayTopology();
 
@@ -174,6 +171,7 @@ public abstract class TopologyRequestHandler {
     public void processNewRequest() {
         LOG.debug("Processing overlay topology creation request");
         Correlations correlations = getCorrelations(fromNormalizedNode);
+        LinkComputation linkComputation = getLinkComputation(fromNormalizedNode);
         Preconditions.checkNotNull(correlations, "Received correlations can't be null");
         try {
             LOG.debug("Processing correlation configuration");
@@ -190,6 +188,9 @@ public abstract class TopologyRequestHandler {
                 } else {
                     throw new IllegalStateException("Filtration and Aggregation data missing: " + correlation);
                 }
+            }
+            if (linkComputation != null) {
+                initLinkComputation(linkComputation);
             }
             LOG.debug("Correlation configuration successfully read");
         } catch (Exception e) {
@@ -224,9 +225,10 @@ public abstract class TopologyRequestHandler {
                     registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
                     correlationItem, datastoreType, filtrator, listeners, pathIdentifier);
 
-            InstanceIdentifierBuilder topologyIdentifier =
-                    createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier itemIdentifier = buildListenerIdentifier(topologyIdentifier, correlationItem);
+            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(filter.getInputModel())
+                    .createTopologyIdentifier(underlayTopologyId);
+            YangInstanceIdentifier itemIdentifier = modelAdapters.get(filter.getInputModel())
+                    .buildItemIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering filtering underlay topology listener for topology: {}", underlayTopologyId);
             DOMDataTreeIdentifier treeId;
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
@@ -285,8 +287,10 @@ public abstract class TopologyRequestHandler {
                                 underlayTopologyId, correlationItem, datastoreType, filtrator, listeners, pathIdentifier);
             }
 
-            InstanceIdentifierBuilder topologyIdentifier = createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier itemIdentifier = buildListenerIdentifier(topologyIdentifier, correlationItem);
+            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(mapping.getInputModel())
+                    .createTopologyIdentifier(underlayTopologyId);
+            YangInstanceIdentifier itemIdentifier = modelAdapters.get(mapping.getInputModel())
+                    .buildItemIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
             DOMDataTreeIdentifier treeId ;
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
@@ -306,17 +310,18 @@ public abstract class TopologyRequestHandler {
         if (rendering != null) {
             String underlayTopologyId = rendering.getUnderlayTopology();
             Class<? extends Model> inputModel = rendering.getInputModel();
-            UnderlayTopologyListener listener = modelAdapters.get(inputModel).
-                    registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
+            UnderlayTopologyListener listener = modelAdapters.get(inputModel)
+                    .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
                     correlation.getCorrelationItem(), datastoreType, operator, listeners, null);
             operator = listener.getOperator();
             if(operator instanceof NotificationInterConnector) {
                 operator = ((NotificationInterConnector) operator).getOperator();
             }
             operator.setTopologyManager(topologyManager);
-            InstanceIdentifierBuilder topologyIdentifier = createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier itemIdentifier =
-                    buildListenerIdentifier(topologyIdentifier, correlation.getCorrelationItem());
+            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
+                    .createTopologyIdentifier(underlayTopologyId);
+            YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
+                    .buildItemIdentifier(topologyIdentifier, correlation.getCorrelationItem());
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
             DOMDataTreeIdentifier treeId ;
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
@@ -330,6 +335,55 @@ public abstract class TopologyRequestHandler {
         } else {
             throw new IllegalStateException("Rendering data missing: " + correlation);
         }
+    }
+
+    private LinkCalculator initLinkComputation(LinkComputation linkComputation) {
+        LinkCalculator calculator = null;
+        List<LinkInfo> linksInformations = linkComputation.getLinkInfo();
+        if (linksInformations != null && !linksInformations.isEmpty()) {
+            String overlayTopologyId = linkComputation.getNodeInfo().getNodeTopology();
+            calculator = new LinkCalculator(overlayTopologyId, outputModel);
+            calculator.setTopologyManager(topologyManager);
+            //register underlay listeners
+            for (LinkInfo linkInfo : linksInformations) {
+                String underlayTopologyId = linkInfo.getLinkTopology();
+                Class<? extends Model> inputModel = linkInfo.getInputModel();
+                UnderlayTopologyListener listener = modelAdapters.get(inputModel)
+                        .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
+                                CorrelationItemEnum.Link, datastoreType, calculator, listeners, null);
+                InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
+                        .createTopologyIdentifier(underlayTopologyId);
+                YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
+                        .buildItemIdentifier(topologyIdentifier, CorrelationItemEnum.Link);
+                LOG.debug("Registering link calculation underlay topology listener for topology: {}",
+                        underlayTopologyId);
+                DOMDataTreeIdentifier treeId ;
+                if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
+                    treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
+                } else {
+                    treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
+                }
+                ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
+                        pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
+                listeners.add(listenerRegistration);
+            }
+            //register overlay listener
+            UnderlayTopologyListener listener = modelAdapters.get(outputModel)
+                    .registerUnderlayTopologyListener(pingPongDataBroker, topologyId,
+                            CorrelationItemEnum.Node, datastoreType, calculator, listeners, null);
+            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(outputModel)
+                    .createTopologyIdentifier(overlayTopologyId);
+            YangInstanceIdentifier itemIdentifier = modelAdapters.get(outputModel)
+                    .buildItemIdentifier(topologyIdentifier, CorrelationItemEnum.Node);
+            LOG.debug("Registering link calculation overlay topology listener for topology: {}", overlayTopologyId);
+            DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
+            ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
+                    pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
+            listeners.add(listenerRegistration);
+        } else {
+            throw new IllegalStateException("link computation data missing: " + linkComputation);
+        }
+        return calculator;
     }
 
     private Filter findFilter(List<Filter> filters, String filterId) {
@@ -356,15 +410,6 @@ public abstract class TopologyRequestHandler {
         return aggregator;
     }
 
-    private static InstanceIdentifierBuilder createTopologyIdentifier(
-            String underlayTopologyId) {
-        InstanceIdentifierBuilder identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, underlayTopologyId);
-        return identifier;
-    }
-
-
-
     /**
      * @return ID of topology that is handled by this {@link TopologyRequestHandler}
      */
@@ -373,6 +418,8 @@ public abstract class TopologyRequestHandler {
     }
 
     protected abstract Correlations getCorrelations(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
+
+    protected abstract LinkComputation getLinkComputation(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
 
     /**
      * Closes all registered listeners and providers
@@ -411,29 +458,5 @@ public abstract class TopologyRequestHandler {
      */
     public void setFiltrators(Map<Class<? extends FilterBase>, FiltratorFactory> filtrators) {
         this.filtrators = filtrators;
-    }
-
-    /**
-     * Builds item identifier (identifies item {@link MapNode})
-     * @param builder starting builder (set with specific topology) that will be appended
-     * with corresponding item QName
-     * @param correlationItemEnum item type
-     * @return item identifier (identifies item {@link MapNode})
-     */
-    private YangInstanceIdentifier buildListenerIdentifier(YangInstanceIdentifier.InstanceIdentifierBuilder builder,
-            CorrelationItemEnum correlationItemEnum) {
-        switch (correlationItemEnum) {
-        case Node:
-        case TerminationPoint:
-            builder.node(Node.QNAME);
-            break;
-        case Link:
-            builder.node(Link.QNAME);
-            break;
-        default:
-            throw new IllegalArgumentException("Wrong Correlation item set: "
-                    + correlationItemEnum);
-        }
-        return builder.build();
     }
 }

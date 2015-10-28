@@ -18,6 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsCorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.Correlations;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.rev150824.I2rsLinkComputationAugment;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.rev150824.link.computation.grouping.LinkComputation;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -42,5 +44,14 @@ public class I2RSTopologyRequestHandler extends TopologyRequestHandler {
     protected Correlations getCorrelations(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
         return ((Network) fromNormalizedNode.getValue()).getAugmentation(I2rsCorrelationAugment.class)
                 .getCorrelations();
+    }
+    @Override
+    protected LinkComputation getLinkComputation(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
+        I2rsLinkComputationAugment augment = ((Network) fromNormalizedNode.getValue())
+                .getAugmentation(I2rsLinkComputationAugment.class);
+        if (augment == null) {
+            return null;
+        }
+        return augment.getLinkComputation();
     }
 }
