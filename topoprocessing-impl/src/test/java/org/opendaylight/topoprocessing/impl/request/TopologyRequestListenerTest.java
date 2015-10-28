@@ -233,5 +233,9 @@ public class TopologyRequestListenerTest {
         public void setCreateTopologyRequestHandlerReturnValue(TopologyRequestHandler requestHandler) {
             this.requestHandlerReturnValue = requestHandler;
         }
+        @Override
+        protected boolean isLinkCalculation(NormalizedNode<?, ?> normalizedNode) {
+            return false;
+        }
     }
 }

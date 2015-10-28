@@ -63,4 +63,9 @@ public class IRTopologyRequestListener extends TopologyRequestListener{
         return new IRTopologyRequestHandler(dataBroker, schemaHolder, rpcServices, fromNormalizedNode);
     }
 
+    @Override
+    protected boolean isLinkCalculation(NormalizedNode<?, ?> normalizedNode) {
+        return false;
+    }
+
 }

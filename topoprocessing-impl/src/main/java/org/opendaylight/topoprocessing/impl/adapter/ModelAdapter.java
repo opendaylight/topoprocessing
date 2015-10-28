@@ -26,6 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
+import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 /**
  * @author matej.perina
  */
@@ -64,4 +66,21 @@ public interface ModelAdapter {
      * @return new instance of model specific TopologyRequestListener
      */
     OverlayItemTranslator createOverlayItemTranslator();
+
+    /**
+     * Builds item identifier (identifies item {@link MapNode})
+     * @param builder starting builder (set with specific topology) that will be appended
+     * with corresponding item QName
+     * @param correlationItemEnum item type
+     * @return item identifier (identifies item {@link MapNode})
+     */
+    YangInstanceIdentifier buildItemIdentifier(YangInstanceIdentifier.InstanceIdentifierBuilder builder,
+            CorrelationItemEnum correlationItemEnum);
+
+    /**
+     * Creates model specific (topology or network) identifier builder
+     * @param underlayTopologyId
+     * @return new model specific topology builder
+     */
+    InstanceIdentifierBuilder createTopologyIdentifier(String underlayTopologyId);
 }

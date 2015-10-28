@@ -76,6 +76,9 @@ public final class TopologyQNames {
     /**Correlation augment QName**/
     public static final QName TOPOLOGY_CORRELATION_AUGMENT =
             QName.create("urn:opendaylight:topology:correlation", "2015-01-21", "correlations");
+    /**Link computation augment QName**/
+    public static final QName LINK_COMPUTATION_AUGMENT =
+            QName.create("urn:opendaylight:link:computation", "2015-08-24", "link-computation");
 
     private TopologyQNames() {
         throw new UnsupportedOperationException("TopologyQNames can't be instantiated.");
