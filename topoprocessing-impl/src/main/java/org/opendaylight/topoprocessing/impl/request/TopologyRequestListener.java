@@ -95,7 +95,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
             YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
             NormalizedNode<?, ?> normalizedNode = entry.getValue();
             if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)){
-                if (isTopologyRequest(normalizedNode)){
+                if (isTopologyRequest(normalizedNode) || isLinkCalculation(normalizedNode)){
                     Map.Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode =
                             nodeSerializer.fromNormalizedNode(identifier, normalizedNode);
                     TopologyRequestHandler requestHandler =
@@ -112,7 +112,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
                         requestHandler.delegateTopologyTypes(topologyTypes.get());
                     }
                 } else {
-                    LOGGER.debug("Missing Correlations");
+                    LOGGER.debug("Missing Correlations or Link Computation. At least one of them must be present");
                 }
             } else {
                 LOGGER.debug("Node is not topology");
@@ -133,6 +133,8 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     protected abstract boolean isTopology(NormalizedNode<?,?> normalizedNode);
 
     protected abstract boolean isTopologyRequest(NormalizedNode<?,?> normalizedNode);
+
+    protected abstract boolean isLinkCalculation(NormalizedNode<?, ?> normalizedNode);
 
     protected abstract TopologyRequestHandler createTopologyRequestHandler(DOMDataBroker dataBroker,
             GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,

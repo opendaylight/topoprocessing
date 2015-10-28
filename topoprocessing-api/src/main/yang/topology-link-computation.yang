@@ -15,6 +15,7 @@ module topology-link-computation {
     import ietf-inet-types {prefix inet;}
     import yang-ext {prefix ext; revision-date "2013-07-09";}
     import topology-correlation {prefix topo-corr; revision-date "2015-01-21";}
+    import ietf-network {prefix i2rs; revision-date "2015-06-08";}
 
     revision "2015-08-24" {
         description "Topology Processing Framework - Link-computation module request definition";
@@ -22,6 +23,11 @@ module topology-link-computation {
 
     augment "/topo:network-topology/topo:topology" {
         ext:augment-identifier "link-computation-augment";
+        uses link-computation-grouping;
+    }
+
+    augment "/i2rs:network" {
+        ext:augment-identifier "i2rs-link-computation-augment";
         uses link-computation-grouping;
     }
 
