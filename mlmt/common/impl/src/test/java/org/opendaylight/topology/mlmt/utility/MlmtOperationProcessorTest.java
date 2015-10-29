@@ -7,39 +7,36 @@
  */
 package org.opendaylight.topology.mlmt.utility;
 
-import java.util.Collections;
-
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-
-import org.junit.BeforeClass;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Ignore;
-
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopologyBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopologyBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
-import org.slf4j.LoggerFactory;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
 
@@ -49,10 +46,11 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
     private static TopologyKey topologyKey;
     private static InstanceIdentifier<Topology> topologyInstanceId;
     private final Object waitObject = new Object();
-    private ProviderContext session;
     private DataBroker dataBroker;
     private MlmtOperationProcessor processor;
     private Thread thread;
+    private List<Topology> topologies;
+    private int testRun = 0;
 
     public class ChangeListener implements DataChangeListener {
         @Override
@@ -88,6 +86,10 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
                 topologyInstanceId, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);
         dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
                 topologyInstanceId, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);
+        Topology tp = new TopologyBuilder().setKey(new TopologyKey(new TopologyId("mlmttopo" + testRun))).build();
+        topologies = new ArrayList<Topology>();
+        topologies.add(tp);
+        testRun ++;
     }
 
     @Test(timeout = 10000)
@@ -97,6 +99,7 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
+                nb.setTopology(topologies);
                 transaction.put(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class), nb.build());
             }
         });
@@ -120,6 +123,7 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
+                nb.setTopology(topologies);
                 transaction.put(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class), nb.build());
             }
 
@@ -146,6 +150,7 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
+                nb.setTopology(topologies);
                 transaction.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), nb.build());
             }
         });
@@ -169,6 +174,7 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
+                nb.setTopology(topologies);
                 transaction.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), nb.build());
             }
 
@@ -195,6 +201,7 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
+                nb.setTopology(topologies);
                 transaction.merge(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class), nb.build());
             }
         });
@@ -218,6 +225,7 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
+                nb.setTopology(topologies);
                 transaction.merge(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class), nb.build());
             }
 
@@ -244,6 +252,7 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
+                nb.setTopology(topologies);
                 transaction.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), nb.build());
             }
         });
@@ -267,6 +276,7 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
+                nb.setTopology(topologies);
                 transaction.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), nb.build());
             }
 

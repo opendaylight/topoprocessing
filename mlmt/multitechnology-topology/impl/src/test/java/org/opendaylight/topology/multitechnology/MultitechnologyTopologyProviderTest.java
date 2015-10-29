@@ -312,9 +312,11 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
             assertNotNull(rxTopology);
 
             TopologyTypes topologyTypes = rxTopology.getTopologyTypes();
-            MtTopologyType mtTopologyType = topologyTypes.getAugmentation(MtTopologyType.class);
-            if (mtTopologyType != null) {
-                assertNotNull(mtTopologyType.getMultitechnologyTopology());
+            if (topologyTypes != null) {
+                MtTopologyType mtTopologyType = topologyTypes.getAugmentation(MtTopologyType.class);
+                if (mtTopologyType != null) {
+                    assertNotNull(mtTopologyType.getMultitechnologyTopology());
+                }
             }
         }
     }
