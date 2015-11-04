@@ -25,6 +25,7 @@ public class NoOpTopoprocessingProvider implements Provider {
         // NOOP
     }
 
+
     @Override
     public Collection<ProviderFunctionality> getProviderFunctionality() {
         return Collections.emptyList();

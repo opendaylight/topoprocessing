@@ -46,7 +46,7 @@ import org.opendaylight.topoprocessing.inventory.adapter.InvModelAdapter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventoryModel;
-import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
+import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.Module;
@@ -141,7 +141,7 @@ public class InvTopoProcessingProviderImplTest {
         topoProcessingProvider = new TopoProcessingProviderImpl(
                 schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
         topoProcessingProvider.registerModelAdapter(OpendaylightInventoryModel.class, mockInvModelAdapter);
-        
+
         Map<Class<? extends Model>, ModelAdapter> expectedModelAdapters = new HashMap<>();
         expectedModelAdapters.put(OpendaylightInventoryModel.class, mockInvModelAdapter);
         Mockito.verify(mockInvModelAdapter).createTopologyRequestListener((DOMDataBroker) Matchers.any(),
