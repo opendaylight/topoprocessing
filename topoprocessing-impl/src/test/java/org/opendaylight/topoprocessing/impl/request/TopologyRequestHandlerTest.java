@@ -43,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.r
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 
 import static org.mockito.Mockito.times;
@@ -153,7 +154,7 @@ public class TopologyRequestHandlerTest {
         setTestHandler();
         handler.processNewRequest();
 
-        verify(mapping, times(6)).getInputModel();
+        verify(mapping, times(12)).getInputModel();
         verify(mapping, atMost(3)).getApplyFilters();
         assertTrue(handler.getListeners().size() == 3);
         handler.aggregationOnly = false;
@@ -194,7 +195,7 @@ public class TopologyRequestHandlerTest {
         setTestHandler();
         handler.processNewRequest();
 
-        verify(mapping, times(9)).getInputModel();
+        verify(mapping, times(15)).getInputModel();
         verify(mapping, times(6)).getApplyFilters();
         assertTrue(handler.getListeners().size() == 3);
         handler.filtrationAggregation = false;
@@ -224,6 +225,11 @@ public class TopologyRequestHandlerTest {
         when(modelAdapters.get(null)).thenReturn(ma);
         when(modelAdapters.get(NetworkTopologyModel.class)).thenReturn(ma);
         when(ma.createOverlayItemTranslator()).thenReturn(oit);
+        //when(ma.createTopologyIdentifier((String)any()).build()).thenReturn(yii);
+        InstanceIdentifierBuilder iib = mock(InstanceIdentifierBuilder.class);
+        when(modelAdapters.get(NetworkTopologyModel.class).createTopologyIdentifier("topo1")).thenReturn(iib);
+        when(iib.build()).thenReturn(yii);
+        when(modelAdapters.get(NetworkTopologyModel.class).buildItemIdentifier(iib, CorrelationItemEnum.Node)).thenReturn(yii);
         when(rpc.getRpcService()).thenReturn(domRpcService);
         handler.setModelAdapters(modelAdapters);
         when(modelAdapters.get(null).registerUnderlayTopologyListener((PingPongDataBroker)any(),(String) any(),(CorrelationItemEnum) any(),(DatastoreType) any(),(TopologyAggregator) any(),(List) any(),(YangInstanceIdentifier) any())).thenReturn(utl);
