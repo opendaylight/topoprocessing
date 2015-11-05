@@ -75,6 +75,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.FilterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.filter.filter.type.body.Ipv4AddressFilterTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.filter.filter.type.body.ipv4.address.filter.type.Ipv4AddressFilterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.rev150824.LinkComputationAugment;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.rev150824.link.computation.grouping.LinkComputation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
@@ -481,5 +483,32 @@ public class NTTopologyRequestHandlerTest {
         testDeletionWithEmptyListener();
     }
 
+    @Test
+    public void testGetLinkComputation() {
+        Topology mockTopology = Mockito.mock(Topology.class);
+        LinkComputationAugment mockLinkCompAug = Mockito.mock(LinkComputationAugment.class);
+        LinkComputation mockLinkComputation = Mockito.mock(LinkComputation.class);
+
+        Mockito.when(mockFromNormalizedNode.getValue()).thenReturn(mockTopology);
+        Mockito.when(mockTopology.getAugmentation(any(Class.class))).thenReturn(mockLinkCompAug);
+        Mockito.when(mockLinkCompAug.getLinkComputation()).thenReturn(mockLinkComputation);
+
+        TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
+        AggregationBuilder aggBuilder = new AggregationBuilder();
+        aggBuilder.setAggregationType(Equality.class);
+        ArrayList<Mapping> mappings = new ArrayList<>();
+        aggBuilder.setMapping(mappings);
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
+                aggBuilder.build(), CorrelationItemEnum.Node);
+        topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
+        Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
+        NTTopologyRequestHandler handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
+                        (Entry<InstanceIdentifier<?>, DataObject>) entry);
+
+        Assert.assertEquals(handler.getLinkComputation(mockFromNormalizedNode), mockLinkComputation);
+
+        Mockito.when(mockTopology.getAugmentation(any(Class.class))).thenReturn(null);
+        Assert.assertEquals(handler.getLinkComputation(mockFromNormalizedNode), null);
+    }
 
 }
