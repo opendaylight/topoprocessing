@@ -77,7 +77,7 @@ public class IRRenderingOperatorTest {
         operator.processCreatedChanges(yangInstanceIdentifierMock, underlayItemMock, topologyId);
         assertEquals(1, items.size());
         assertEquals(underlayItemMock, items.get(yangInstanceIdentifierMock));
-        verify(underlayItemMock, times(2)).setOverlayItem(any(OverlayItem.class));
+        verify(underlayItemMock, times(1)).setOverlayItem(any(OverlayItem.class));
         verify(managerMock, times(1)).addOverlayItem(any(OverlayItem.class));
     }
 
