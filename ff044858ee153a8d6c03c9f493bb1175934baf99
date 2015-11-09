@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fab9d9a7_ca1fa308",
+        "filename": "topoprocessing-nt/src/test/java/org/opendaylight/topoprocessing/nt/request/NTTopologyRequestHandlerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 506,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-09T16:34:32Z",
+      "side": 1,
+      "message": "Please fix line length",
+      "range": {
+        "startLine": 505,
+        "startChar": 7,
+        "endLine": 506,
+        "endChar": 73
+      },
+      "revId": "ff044858ee153a8d6c03c9f493bb1175934baf99",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
