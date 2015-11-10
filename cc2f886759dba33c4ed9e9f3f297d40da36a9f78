@@ -1,0 +1,418 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bab3e1c7_ab19157b",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "Please change attributes names to something clear. No one will no what is for example oit. We prefer readability over length. Also add \"mock\" prefix or suffix to mocked attribute, so it will be obvious that it is a mock object.",
+      "range": {
+        "startLine": 69,
+        "startChar": 4,
+        "endLine": 94,
+        "endChar": 40
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bab3e1c7_eb362de7",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "This should be also mock, so use @Mock annotation.",
+      "range": {
+        "startLine": 97,
+        "startChar": 4,
+        "endLine": 97,
+        "endChar": 51
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bab3e1c7_2b2525ab",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "Please remove SuppressWarnings annotation",
+      "range": {
+        "startLine": 101,
+        "startChar": 4,
+        "endLine": 101,
+        "endChar": 34
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bab3e1c7_8b33f1f5",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "rename to for example pingPongBroker",
+      "range": {
+        "startLine": 105,
+        "startChar": 27,
+        "endLine": 105,
+        "endChar": 35
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bab3e1c7_cb39e9d9",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "if you use @Mock annotation in mock object declaration, then it si created automatically so you don\u0027t have to create it here.",
+      "range": {
+        "startLine": 107,
+        "startChar": 8,
+        "endLine": 120,
+        "endChar": 42
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bab3e1c7_6ba6bdc3",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "rename. At least add \"mock\" prefix or suffix",
+      "range": {
+        "startLine": 219,
+        "startChar": 25,
+        "endLine": 219,
+        "endChar": 27
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bab3e1c7_ebf5cdcb",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "Please remove SuppressWarnings annotation",
+      "range": {
+        "startLine": 223,
+        "startChar": 4,
+        "endLine": 223,
+        "endChar": 34
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bab3e1c7_8b0211b3",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 228,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "Please remove unnecessary comment",
+      "range": {
+        "startLine": 228,
+        "startChar": 8,
+        "endLine": 228,
+        "endChar": 83
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bab3e1c7_2be20504",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 229,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "rename to something self describing. You can use abbreviation, but not this much. As before, use \"mock\" suffix or prefix.",
+      "range": {
+        "startLine": 229,
+        "startChar": 34,
+        "endLine": 229,
+        "endChar": 37
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bab3e1c7_4b889922",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "Isn\u0027t this same as\nwhen(ma.createTopologyIdentifier(\"topo1\")).thenReturn(iib); ?",
+      "range": {
+        "startLine": 230,
+        "startChar": 8,
+        "endLine": 230,
+        "endChar": 110
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bab3e1c7_6b8d5d31",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "Please fix line size. It should not exceed 120 chars.\nIsn\u0027t this same as\nwhen(ma.buildItemIdentifier(iib, CorrelationItemEnum.Node)).thenReturn(yii); ?",
+      "range": {
+        "startLine": 232,
+        "startChar": 8,
+        "endLine": 232,
+        "endChar": 127
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9ab8dda7_275c7a25",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "move this line to the end",
+      "range": {
+        "startLine": 234,
+        "startChar": 8,
+        "endLine": 234,
+        "endChar": 48
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9ab8dda7_0757f603",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "I believe that this is same as\n        when(ma.registerUnderlayTopologyListener((PingPongDataBroker)any(),(String) any(),(CorrelationItemEnum) any(),\n                (DatastoreType) any(),(TopologyAggregator) any(),(List) any(),(YangInstanceIdentifier) any()\n                )).thenReturn(utl);\n\nAlso please fix line lenght - max 120 chars",
+      "range": {
+        "startLine": 235,
+        "startChar": 8,
+        "endLine": 235,
+        "endChar": 250
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9ab8dda7_c740fe37",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "You don\u0027t have to create local variable here just return NetworkTopologyModel.class",
+      "range": {
+        "startLine": 254,
+        "startChar": 12,
+        "endLine": 254,
+        "endChar": 76
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9ab8dda7_8761a6d5",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "rename please",
+      "range": {
+        "startLine": 265,
+        "startChar": 35,
+        "endLine": 265,
+        "endChar": 44
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9ab8dda7_e73d02bd",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 268,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "rename this variable. For example corelBuilder is good to me",
+      "range": {
+        "startLine": 268,
+        "startChar": 34,
+        "endLine": 268,
+        "endChar": 42
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9ab8dda7_076e16ca",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 272,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "same as above, rename to something self describing",
+      "range": {
+        "startLine": 272,
+        "startChar": 37,
+        "endLine": 272,
+        "endChar": 45
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9ab8dda7_c7679ee9",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-10T12:45:33Z",
+      "side": 1,
+      "message": "rename please",
+      "range": {
+        "startLine": 284,
+        "startChar": 38,
+        "endLine": 284,
+        "endChar": 46
+      },
+      "revId": "cc2f886759dba33c4ed9e9f3f297d40da36a9f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
