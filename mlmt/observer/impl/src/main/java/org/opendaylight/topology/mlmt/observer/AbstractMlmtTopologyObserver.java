@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -43,24 +44,27 @@ import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyBuilder;
 import org.opendaylight.topology.mlmt.utility.MlmtProviderFactory;
 import org.opendaylight.topology.mlmt.utility.MlmtConsequentAction;
+import org.opendaylight.topology.mlmt.utility.MlmtDataChangeObserver;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractMlmtTopologyObserver implements DataChangeListener, MlmtTopologyProvider {
+public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObserver, MlmtTopologyProvider {
 
     protected static final Logger LOG = LoggerFactory.getLogger(AbstractMlmtTopologyObserver.class);
     protected InstanceIdentifier<Topology> mlmtTopologyId;
-    protected ListenerRegistration<DataChangeListener> listenerRegistration;
     protected DataBroker dataBroker;
     protected MlmtTopologyBuilder mlmtTopologyBuilder;
     protected MlmtProviderFactory mlmtProviderFactory;
     protected List<MlmtTopologyProvider> mlmtProviders;
+    protected List<MlmtDataChangeEventListener> mapConfigurationDataChangeObserver;
+    protected List<MlmtDataChangeEventListener> mapOperationalDataChangeObserver;
 
     protected List<String> underlayTopologies;
-    protected static final String MLMT = "mlmt:1";
+    protected static String MLMT = "mlmt:1";
 
     public enum MlmtDataChangeEventType {
         CREATED,
@@ -80,8 +84,20 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
         }
     }
 
-    public abstract void init(DataBroker dataBroker, RpcProviderRegistry rpcRegistry);
+    public abstract void init(DataBroker dataBroker, RpcProviderRegistry rpcRegistry,
+            String topologyName, List<String> underlyingTopologyName);
 
+    protected void registerDataChangeEventListener(Logger log, LogicalDatastoreType type,
+            InstanceIdentifier<Topology> topologyIid) {
+        MlmtDataChangeEventListener dataChangeObserver = new MlmtDataChangeEventListener();
+        dataChangeObserver.init(log, type, dataBroker, topologyIid);
+        dataChangeObserver.registerObserver(this);
+        if (type == LogicalDatastoreType.CONFIGURATION) {
+            mapConfigurationDataChangeObserver.add(dataChangeObserver);
+        } else {
+            mapOperationalDataChangeObserver.add(dataChangeObserver);
+        }
+    }
     protected InstanceIdentifier<Topology> buildTopologyIid(final String topologyName) {
         TopologyId tid = new TopologyId(topologyName);
         TopologyKey key = new TopologyKey(Preconditions.checkNotNull(tid));
@@ -146,7 +162,7 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
 
     protected void onObservedTopologyCreated(final LogicalDatastoreType type,
         final InstanceIdentifier<Topology> topologyInstanceId, final Topology topology) {
-        LOG.info("MlmtTopologyObserver.onObservedTopologyCreated topologyInstanceId " + topologyInstanceId.toString());
+        LOG.debug("MlmtTopologyObserver.onObservedTopologyCreated topologyInstanceId " + topologyInstanceId.toString());
         MlmtConsequentAction mlmtConsequentAction = MlmtConsequentAction.BUILD;
         if (topology.getTopologyTypes() != null) {
             mlmtConsequentAction = mlmtProviderFactory.consequentAction(topology.getTopologyTypes());
@@ -155,6 +171,10 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
              buildTopology(type, mlmtTopologyId, topology);
         } else if (mlmtConsequentAction == MlmtConsequentAction.COPY) {
              copyTopology(type, mlmtTopologyId, topology);
+             return;
+        }
+        for (MlmtTopologyProvider provider : mlmtProviders) {
+            provider.onTopologyCreated(type, topologyInstanceId, topology);
         }
     }
 
@@ -180,11 +200,11 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
                 underlayTopologies.add(topologyName);
                 TopologyId topologyId = new TopologyId(topologyName);
                 TopologyKey key = new TopologyKey(Preconditions.checkNotNull(topologyId));
-                InstanceIdentifier<Topology> topologyIid = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
-                listenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                        topologyIid, this, DataBroker.DataChangeScope.SUBTREE);
-                listenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                        topologyIid, this, DataBroker.DataChangeScope.SUBTREE);
+                InstanceIdentifier<Topology> topologyIid = InstanceIdentifier.create(NetworkTopology.class)
+                        .child(Topology.class, key);
+
+                registerDataChangeEventListener(LOG, LogicalDatastoreType.CONFIGURATION, topologyIid);
+                registerDataChangeEventListener(LOG, LogicalDatastoreType.OPERATIONAL, topologyIid);
             }
         }
     }
@@ -204,21 +224,27 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
 
     protected MlmtConsequentAction getMlmtConsequentAction (final InstanceIdentifier<Topology> topologyInstanceId) {
         MlmtConsequentAction mlmtConsequentAction = MlmtConsequentAction.BUILD;
+        InstanceIdentifier<TopologyTypes> topologyTypesIid = topologyInstanceId.child(TopologyTypes.class);
+        TopologyTypes rxTopologyTypes = null;
         try {
             ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
-            Optional<Topology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, topologyInstanceId).get();
+            Optional<TopologyTypes> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, topologyTypesIid).get();
             if (optional.isPresent()) {
-                Topology rxTopology = optional.get();
-                if (rxTopology != null && rxTopology.getTopologyTypes() != null) {
-                    mlmtConsequentAction = mlmtProviderFactory.consequentAction(rxTopology.getTopologyTypes());
+                rxTopologyTypes = optional.get();
+                if (rxTopologyTypes != null) {
+                    LOG.info("MlmtTopologyObserver.getMlmtConsequentAction: configured topology found: " +
+                            rxTopologyTypes.toString());
+                    mlmtConsequentAction = mlmtProviderFactory.consequentAction(rxTopologyTypes);
                 }
             }
             else {
-                optional = rTx.read(LogicalDatastoreType.OPERATIONAL, topologyInstanceId).get();
+                optional = rTx.read(LogicalDatastoreType.OPERATIONAL, topologyTypesIid).get();
                 if (optional.isPresent()) {
-                    Topology rxTopology = optional.get();
-                    if (rxTopology != null && rxTopology.getTopologyTypes() != null) {
-                        mlmtConsequentAction = mlmtProviderFactory.consequentAction(rxTopology.getTopologyTypes());
+                    rxTopologyTypes = optional.get();
+                    if (rxTopologyTypes != null) {
+                        LOG.info("MlmtTopologyObserver.getMlmtConsequentAction: operational topology found: " +
+                                rxTopologyTypes.toString());
+                        mlmtConsequentAction = mlmtProviderFactory.consequentAction(rxTopologyTypes);
                     }
                 }
             }
@@ -227,7 +253,7 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
         } catch (ExecutionException e) {
           LOG.error("MlmtTopologyObserver.getMlmtConsequentAction execution exception", e);
         }
-
+        LOG.info("MlmtTopologyObserver.getMlmtConsequentAction: " + mlmtConsequentAction.toString());
         return mlmtConsequentAction;
     }
 
@@ -351,8 +377,10 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
         for (MlmtTopologyProvider provider : mlmtProviders) {
             provider.onTopologyDeleted(type, topologyInstanceId);
         }
-        mlmtTopologyBuilder.deleteTopology(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId);
-        mlmtTopologyBuilder.copyTopology(LogicalDatastoreType.CONFIGURATION, mlmtTopologyId, LogicalDatastoreType.OPERATIONAL);
+        if (topologyInstanceId.equals(mlmtTopologyId)) {
+            mlmtTopologyBuilder.deleteTopology(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId);
+            mlmtTopologyBuilder.copyTopology(LogicalDatastoreType.CONFIGURATION, mlmtTopologyId, LogicalDatastoreType.OPERATIONAL);
+        }
     }
 
     @Override
@@ -363,7 +391,10 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
          for (MlmtTopologyProvider provider : mlmtProviders) {
              provider.onNodeDeleted(type, topologyInstanceId, nodeKey);
          }
-         mlmtTopologyBuilder.deleteNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, nodeKey);
+         MlmtConsequentAction mlmtConsequentAction = getMlmtConsequentAction(topologyInstanceId);
+         if (mlmtConsequentAction != MlmtConsequentAction.CORRELATE) {
+             mlmtTopologyBuilder.deleteNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, nodeKey);
+         }
     }
 
     @Override
@@ -396,7 +427,7 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
                 InstanceIdentifier<?> iid = iter.next();
                 LOG.debug("Key: " + iid);
                 DataObject d = Preconditions.checkNotNull(map.get(iid));
-                if (d instanceof java.io.Serializable) {
+                if (d != null && d instanceof java.io.Serializable) {
                     LOG.debug("Value: " + d.toString());
                 }
             } catch (final IllegalArgumentException e ) {
@@ -413,7 +444,8 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
     /*
      * create and update events
      */
-    protected void handleData(final Map<InstanceIdentifier<?>, DataObject> c , final MlmtDataChangeEventType type) {
+    protected synchronized void handleCreatedData(LogicalDatastoreType storageType,
+            final Map<InstanceIdentifier<?>, DataObject> c , final MlmtDataChangeEventType type) {
         Iterator<InstanceIdentifier<?>> iter = c.keySet().iterator();
         String changeType = type.toString();
         while (iter.hasNext()) {
@@ -421,122 +453,188 @@ public abstract class AbstractMlmtTopologyObserver implements DataChangeListener
             TopologyKey topologyKey = iid.firstKeyOf(Topology.class, TopologyKey.class);
             String topologyName = topologyKey.getTopologyId().getValue();
             LOG.info("MlmtTopologyObserver.handleData " + changeType + " topologyName " + topologyName);
+            InstanceIdentifier<Topology> topologyInstanceId =
+                    InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
             if (iid.getTargetType().equals(Topology.class)) {
                 Topology topology = (Topology)c.get(iid);
-                InstanceIdentifier<Topology> topologyInstanceId =
-                        InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
+                if (underlayTopologies.contains(topologyName)) {
+                    onTopologyCreated(storageType, topologyInstanceId, topology);
+                }
+                if (topologyName.equals(MLMT)) {
+                    onTopologyCreated(LogicalDatastoreType.CONFIGURATION, mlmtTopologyId, topology);
+                }
+            } else if (iid.getTargetType().equals(Node.class)) {
+                LOG.info("MlmtTopologyObserver.onDataChanged " + changeType +
+                        " Node.class Topology Key " + topologyKey.toString());
+                if (underlayTopologies.contains(topologyName)) {
+                    final Node node = (Node)c.get(iid);
+                    final NodeId nodeId = node.getNodeId();
+                    LOG.info("MlmtTopologyObserver.handleData Node class changeType " + changeType +
+                            " Node Id " +  nodeId.toString());
+                    onNodeCreated(storageType, topologyInstanceId, node);
+                }
+            } else if (iid.getTargetType().equals(TerminationPoint.class)) {
+                NodeKey nodeKey = iid.firstKeyOf(Node.class, NodeKey.class);
+                LOG.info("MlmtTopologyObserver.handleData TerminationPoint class changeType " + changeType +
+                       " Topology Key " + topologyKey.toString() +
+                       " Node Key " + nodeKey.toString());
+                if (underlayTopologies.contains(topologyName)) {
+                     final TerminationPoint tp = (TerminationPoint)c.get(iid);
+                     final TpId tpId = tp.getTpId();
+                     LOG.info("MlmtTopologyObserver.onDataChanged " + changeType +
+                             " TerminationPoint.class Tp Id " +  tpId.toString());
+                    onTpCreated(storageType, topologyInstanceId, nodeKey, tp);
+                }
+            } else if (iid.getTargetType().equals(Link.class)) {
+                LinkKey linkKey = iid.firstKeyOf(Link.class, LinkKey.class);
+                LOG.info("MlmtTopologyObserver.handleData Link.class changeType" + changeType +
+                        " Topology Key " + topologyKey.toString() +
+                        " Link Key " + linkKey.toString());
+                if (underlayTopologies.contains(topologyName)) {
+                    final Link link = (Link)c.get(iid);
+                    final LinkId linkId = link.getLinkId();
+                    LOG.debug("MlmtTopologyObserver.handleData Link.class type " + type.toString() +
+                            " linkId " + linkId.toString());
+                    onLinkCreated(storageType, topologyInstanceId, link);
+                }
+            }
+        }
+    }
+
+   /*
+     * create and update events
+     */
+    protected synchronized void handleUpdatedData(LogicalDatastoreType storageType,
+            final Map<InstanceIdentifier<?>, DataObject> c , final MlmtDataChangeEventType type) {
+        String changeType = type.toString();
+
+        Iterator<InstanceIdentifier<?>> iter = c.keySet().iterator();
+        while (iter.hasNext()) {
+            InstanceIdentifier<?> iid = iter.next();
+            TopologyKey topologyKey = iid.firstKeyOf(Topology.class, TopologyKey.class);
+            String topologyName = topologyKey.getTopologyId().getValue();
+            LOG.info("MlmtTopologyObserver.handleData " + changeType + " topologyName " + topologyName);
+            InstanceIdentifier<Topology> topologyInstanceId =
+                    InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
+            if (iid.getTargetType().equals(TerminationPoint.class)) {
+                NodeKey nodeKey = iid.firstKeyOf(Node.class, NodeKey.class);
+                LOG.info("MlmtTopologyObserver.handleData TerminationPoint class changeType " + changeType +
+                       " Topology Key " + topologyKey.toString() +
+                       " Node Key " + nodeKey.toString());
+                if (underlayTopologies.contains(topologyName)) {
+                     final TerminationPoint tp = (TerminationPoint)c.get(iid);
+                     final TpId tpId = tp.getTpId();
+                     LOG.info("MlmtTopologyObserver.onDataChanged " + changeType +
+                             " TerminationPoint.class Tp Id " +  tpId.toString());
+                    onTpCreated(storageType, topologyInstanceId, nodeKey, tp);
+                }
+            } else if (iid.getTargetType().equals(Node.class)) {
+                LOG.info("MlmtTopologyObserver.onDataChanged " + changeType +
+                        " Node.class Topology Key " + topologyKey.toString());
+                if (underlayTopologies.contains(topologyName)) {
+                    final Node node = (Node)c.get(iid);
+                    final NodeId nodeId = node.getNodeId();
+                    LOG.info("MlmtTopologyObserver.handleData Node class changeType " + changeType +
+                            " Node Id " +  nodeId.toString());
+                    onNodeCreated(storageType, topologyInstanceId, node);
+                }
+            } else if (iid.getTargetType().equals(Link.class)) {
+                LinkKey linkKey = iid.firstKeyOf(Link.class, LinkKey.class);
+                LOG.info("MlmtTopologyObserver.handleData Link.class changeType" + changeType +
+                        " Topology Key " + topologyKey.toString() +
+                        " Link Key " + linkKey.toString());
+                if (underlayTopologies.contains(topologyName)) {
+                    final Link link = (Link)c.get(iid);
+                    final LinkId linkId = link.getLinkId();
+                    LOG.debug("MlmtTopologyObserver.handleData Link.class type " + type.toString() +
+                            " linkId " + linkId.toString());
+                    onLinkCreated(storageType, topologyInstanceId, link);
+                 }
+            } else if (iid.getTargetType().equals(Topology.class)) {
+                Topology topology = (Topology)c.get(iid);
                 if (underlayTopologies.contains(topologyName)) {
                     LOG.info("MlmtTopologyObserver.handleData " + changeType + " Topology Id " + MLMT);
-                    onTopologyCreated(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, topology);
+                    onTopologyCreated(storageType, topologyInstanceId, topology);
                 }
                 if (topologyName.equals(MLMT)) {
                     LOG.info("MlmtTopologyObserver.handleData " + changeType + " Topology Id " + MLMT);
                     onTopologyCreated(LogicalDatastoreType.CONFIGURATION, mlmtTopologyId, topology);
                 }
             }
-            else if (iid.getTargetType().equals(Node.class)) {
-                LOG.info("MlmtTopologyObserver.onDataChanged " + changeType +
-                        " Node.class Topology Key " + topologyKey.toString());
-                if (underlayTopologies.contains(topologyName)) {
-                    InstanceIdentifier<Topology> topologyInstanceId =
-                            InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
-                    final Node node = (Node)c.get(iid);
-                    final NodeId nodeId = node.getNodeId();
-                    LOG.info("MlmtTopologyObserver.handleData Node class changeType " + changeType +
-                            " Node Id " +  nodeId.toString());
-                    onNodeCreated(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, node);
-                } // end if
-            } // end if target == Node.class
-            else if (iid.getTargetType().equals(TerminationPoint.class)) {
-                NodeKey nodeKey = iid.firstKeyOf(Node.class, NodeKey.class);
-                LOG.info("MlmtTopologyObserver.handleData TerminationPoint class changeType " + changeType +
-                       " Topology Key " + topologyKey.toString() +
-                       " Node Key " + nodeKey.toString());
-                if (underlayTopologies.contains(topologyName)) {
-                     InstanceIdentifier<Topology> topologyInstanceId =
-                             InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
-                     final TerminationPoint tp = (TerminationPoint)c.get(iid);
-                     final TpId tpId = tp.getTpId();
-                     LOG.info("MlmtTopologyObserver.onDataChanged Node Id " + changeType +
-                             " Node.class Node Id " +  tpId.toString());
-                     onTpCreated(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, nodeKey, tp);
-                } // end underlayTopologies
-            } // end if target == TerminationPoint.class
-            else if (iid.getTargetType().equals(Link.class)) {
-                LinkKey linkKey = iid.firstKeyOf(Link.class, LinkKey.class);
-                LOG.info("MlmtTopologyObserver.handleData Link.class changeType" + changeType +
-                        " Topology Key " + topologyKey.toString() +
-                        " Link Key " + linkKey.toString());
-                if (underlayTopologies.contains(topologyName)) {
-                    InstanceIdentifier<Topology> topologyInstanceId =
-                            InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
-                    final Link link = (Link)c.get(iid);
-                    final LinkId linkId = link.getLinkId();
-                    LOG.debug("MlmtTopologyObserver.handleData Link.class type " + type.toString() +
-                            " linkId " + linkId.toString());
-                    onLinkCreated(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, link);
-                 } // end if underlayTopologies
-            } // end if target == Link.class
-        } // end while
+        }
     }
 
     /*
      * delete events
      */
-    protected void handleData(final Set<InstanceIdentifier<?>> c) {
+    protected synchronized void handleRemovedData(LogicalDatastoreType storageType, final Set<InstanceIdentifier<?>> c) {
         Iterator<InstanceIdentifier<?>> iter = c.iterator();
         while (iter.hasNext()) {
             InstanceIdentifier<?> iid = iter.next();
             TopologyKey topologyKey = iid.firstKeyOf(Topology.class, TopologyKey.class);
-            LOG.info("Removed Key " + iid.toString());
-            if (iid.getTargetType().equals(Topology.class)) {
-                LOG.info("MlmtTopologyObserver removed Key Topology.class");
-                InstanceIdentifier<Topology> topologyInstanceId =
-                        InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
-                onTopologyDeleted(LogicalDatastoreType.OPERATIONAL, topologyInstanceId);
-            }
-            else if (iid.getTargetType().equals(Node.class)) {
-                LOG.info("MlmtTopologyObserver removed Key Node.class");
-                NodeKey nodeKey = iid.firstKeyOf(Node.class, NodeKey.class);
-                InstanceIdentifier<Topology> topologyInstanceId =
-                        InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
-                onNodeDeleted(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, nodeKey);
-            }
-            else if (iid.getTargetType().equals(TerminationPoint.class)) {
-                LOG.info("MlmtTopologyObserver removed Key Tp.class");
+            String topologyName = topologyKey.getTopologyId().getValue();
+            InstanceIdentifier<Topology> topologyInstanceId =
+                    InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
+            if (iid.getTargetType().equals(Link.class)) {
+                LOG.info("MlmtTopologyObserver.handleData removed Key Link.class topologyName: " + topologyName +
+                        " Key: " + iid.toString());
+                LinkKey linkKey = iid.firstKeyOf(Link.class, LinkKey.class);
+                onLinkDeleted(storageType, topologyInstanceId, linkKey);
+            } else if (iid.getTargetType().equals(TerminationPoint.class)) {
                 NodeKey nodeKey = iid.firstKeyOf(Node.class, NodeKey.class);
                 TerminationPointKey tpKey = iid.firstKeyOf(TerminationPoint.class, TerminationPointKey.class);
-                InstanceIdentifier<Topology> topologyInstanceId =
-                        InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
-                onTpDeleted(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, nodeKey, tpKey);
-            }
-            else if (iid.getTargetType().equals(Link.class)) {
-                LOG.info("MlmtTopologyObserver removed Key Link.class");
-                InstanceIdentifier<Topology> topologyInstanceId =
-                        InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, topologyKey);
-                LinkKey linkKey = iid.firstKeyOf(Link.class, LinkKey.class);
-                onLinkDeleted(LogicalDatastoreType.OPERATIONAL, topologyInstanceId, linkKey);
+                LOG.info("MlmtTopologyObserver.handleData removed Key TerminationPoint.class topologyName: "
+                        + topologyName + " Key: " + iid.toString());
+                onTpDeleted(storageType, topologyInstanceId, nodeKey, tpKey);
+            } else if (iid.getTargetType().equals(Node.class)) {
+                NodeKey nodeKey = iid.firstKeyOf(Node.class, NodeKey.class);
+                LOG.info("MlmtTopologyObserver.handleData removed Key Node.class topologyName: "
+                        + topologyName + " Key: " + iid.toString());
+                onNodeDeleted(storageType, topologyInstanceId, nodeKey);
+            } else if (iid.getTargetType().equals(Topology.class)) {
+                LOG.info("MlmtTopologyObserver.handleData removed Key Topology.class key ", iid.toString());
+                onTopologyDeleted(storageType, topologyInstanceId);
             }
         }
     }
 
     @Override
-    public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-        LOG.info("MlmtTopologyObserver.onDataChanged");
-        Preconditions.checkNotNull(change);
-        Map<InstanceIdentifier<?>, DataObject> c = change.getCreatedData();
-        if (c != null) {
-            this.dumpMap(c, MlmtDataChangeEventType.CREATED);
-            handleData(c, MlmtDataChangeEventType.CREATED);
+    public void onDataChanged(LogicalDatastoreType type, AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+        synchronized( this ) {
+            try {
+                LOG.info("MlmtTopologyObserver.onDataChanged");
+                Preconditions.checkNotNull(change);
+
+                Set<InstanceIdentifier<?>> r = change.getRemovedPaths();
+                if (r != null) {
+                    handleRemovedData(type, r);
+                }
+
+                Map<InstanceIdentifier<?>, DataObject> c = change.getCreatedData();
+                if (c != null) {
+                    this.dumpMap(c, MlmtDataChangeEventType.CREATED);
+                    handleCreatedData(type, c, MlmtDataChangeEventType.CREATED);
+                }
+
+                c = change.getUpdatedData();
+                if (c != null) {
+                    this.dumpMap(c, MlmtDataChangeEventType.UPDATED);
+                    handleUpdatedData(type, c, MlmtDataChangeEventType.UPDATED);
+                }
+            } catch (final Exception e) {
+                LOG.error("AbstractMlmtTopologyObserver.onDataChanged: ", e);
+            }
         }
-        c = change.getUpdatedData();
-        if (c != null) {
-            this.dumpMap(c, MlmtDataChangeEventType.UPDATED);
-            handleData(c, MlmtDataChangeEventType.UPDATED);
+    }
+
+    @Override
+    public void closeListeners() {
+        for (MlmtDataChangeEventListener listener : mapConfigurationDataChangeObserver) {
+            listener.close();
         }
-        Set<InstanceIdentifier<?>> r = change.getRemovedPaths();
-        if (r != null) {
-            handleData(r);
+        for (MlmtDataChangeEventListener listener : mapOperationalDataChangeObserver) {
+            listener.close();
         }
     }
 }
+
