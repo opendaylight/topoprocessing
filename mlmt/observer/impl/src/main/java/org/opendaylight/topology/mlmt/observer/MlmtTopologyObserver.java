@@ -21,13 +21,15 @@ import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.topology.mlmt.factory.MlmtProviderFactoryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.mlmt.topology.observer.impl.rev150122.MlmtTopologyObserverRuntimeMXBean;
 
-public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implements AutoCloseable, MlmtTopologyObserverRuntimeMXBean {
+public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implements AutoCloseable,
+        MlmtTopologyObserverRuntimeMXBean {
 
     private MlmtOperationProcessor processor;
     private Thread thread;
 
     @Override
-    public void init(DataBroker dataBroker, RpcProviderRegistry rpcRegistry) {
+    public void init(DataBroker dataBroker, RpcProviderRegistry rpcRegistry,
+            String topologyName, List<String> underlyingTopologyName) {
         LOG.info("MlmtTopologyObserver.init");
         this.dataBroker = dataBroker;
         processor = new MlmtOperationProcessor(dataBroker);
@@ -35,6 +37,10 @@ public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implement
         thread.setDaemon(true);
         thread.setName("MlmtOperationProcessor");
         thread.start();
+
+        if (topologyName != null) {
+            MLMT = topologyName;
+        }
 
         mlmtTopologyId = buildTopologyIid(MLMT);
         mlmtTopologyBuilder = new MlmtTopologyBuilder();
@@ -46,21 +52,16 @@ public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implement
                 mlmtProviderFactory.createProvidersMap(rpcRegistry, dataBroker, LOG, processor, MLMT);
         mlmtProviders = providersMap.get(MLMT);
 
-        listenerRegistration = dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                mlmtTopologyId, this, DataBroker.DataChangeScope.SUBTREE);
+        mapConfigurationDataChangeObserver = new ArrayList<MlmtDataChangeEventListener>();
+        mapOperationalDataChangeObserver = new ArrayList<MlmtDataChangeEventListener>();
+
+        registerDataChangeEventListener(LOG, LogicalDatastoreType.CONFIGURATION, mlmtTopologyId);
     }
 
     @Override
     public synchronized void close() throws InterruptedException {
         LOG.info("MlmtTopologyObserver stopped.");
-        if (this.listenerRegistration != null) {
-            try {
-                this.listenerRegistration.close();
-            } catch (final Exception e) {
-                LOG.error("Failed to close listener registration", e);
-            }
-            listenerRegistration = null;
-        }
+        closeListeners();
         if (thread != null) {
             thread.interrupt();
             thread.join();
