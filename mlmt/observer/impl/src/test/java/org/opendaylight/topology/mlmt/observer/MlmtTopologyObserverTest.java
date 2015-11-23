@@ -64,6 +64,9 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.multitechnology.topology.type.MultitechnologyTopologyBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.multitechnology.topology.type.MultitechnologyTopology;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyType;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -123,13 +126,19 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         return InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
     }
 
-    private Topology buildUnderlayTopology(final String topologyName) {
+    private Topology buildUnderlayTopology(final String topologyName, boolean multitechFlag) {
         TopologyId topologyId = new TopologyId(topologyName);
         TopologyKey key = new TopologyKey(Preconditions.checkNotNull(topologyId));
         final TopologyBuilder tbuilder = new TopologyBuilder();
         tbuilder.setKey(key);
         tbuilder.setTopologyId(topologyId);
         final TopologyTypesBuilder topologyTypesBuilder = new TopologyTypesBuilder();
+        if (multitechFlag) {
+            final MultitechnologyTopologyBuilder multitechnologyTopologyBuilder = new MultitechnologyTopologyBuilder();
+            final MtTopologyTypeBuilder mtTopologyTypeBuilder = new MtTopologyTypeBuilder();
+            mtTopologyTypeBuilder.setMultitechnologyTopology(multitechnologyTopologyBuilder.build());
+            topologyTypesBuilder.addAugmentation(MtTopologyType.class, mtTopologyTypeBuilder.build());
+        }
         final Topology top = tbuilder.setTopologyTypes(topologyTypesBuilder.build())
                 .setServerProvided(Boolean.FALSE).build();
 
@@ -176,7 +185,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
     public void setUp() throws Exception {
         MlmtRpcProviderRegistryMock rpcRegistry = new MlmtRpcProviderRegistryMock();
         this.observer = new MlmtTopologyObserver();
-        this.observer.init(dataBroker, rpcRegistry);
+        this.observer.init(dataBroker, rpcRegistry, null, null);
 
         /*
          * It is necessary to create the network-topology containers in
@@ -240,6 +249,11 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
 
     @Test(timeout = 10000)
     public void testOnUnderlayTopologyCreated() throws Exception {
+        handleTestOnUnderlayTopologyCreated(false);
+        handleTestOnUnderlayTopologyCreated(true);
+   }
+
+    private void handleTestOnUnderlayTopologyCreated(boolean multitechFlag) throws Exception {
         InstanceIdentifier<Topology> mlmtTopologyIid = buildTopologyIid(MLMT);
         Topology wrTopology = buildMlmtTopology(MLMT);
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
@@ -254,12 +268,16 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         }
 
         InstanceIdentifier<Topology> exampleIid = buildTopologyIid(EXAMPLE);
-        wrTopology = buildUnderlayTopology(EXAMPLE);
+        wrTopology = buildUnderlayTopology(EXAMPLE, multitechFlag);
         rwTx = dataBroker.newWriteOnlyTransaction();
         rwTx.merge(LogicalDatastoreType.OPERATIONAL, exampleIid, wrTopology, true);
         assertCommit(rwTx.submit());
         MlmtConsequentAction mlmtConsequentAction = observer.getMlmtConsequentAction(exampleIid);
-        assertEquals(mlmtConsequentAction, MlmtConsequentAction.BUILD);
+        if (multitechFlag) {
+            assertEquals(mlmtConsequentAction, MlmtConsequentAction.COPY);
+        } else {
+            assertEquals(mlmtConsequentAction, MlmtConsequentAction.BUILD);
+        }
 
         String nodeName1 = "node:1";
         NodeBuilder nodeBuilder = new NodeBuilder();
@@ -407,7 +425,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         InstanceIdentifier<Node> nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
         rTx = dataBroker.newReadOnlyTransaction();
         Optional<Node> optionalNode = rTx.read(LogicalDatastoreType.OPERATIONAL, nodeIid).get();
-        if (optionalNode != null) {
+        if (optionalNode != null && !optionalNode.isPresent()) {
             assertFalse("Operational mlmt:1 topology node ", optionalNode.isPresent());
         }
 
@@ -419,7 +437,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
         rTx = dataBroker.newReadOnlyTransaction();
         optionalNode = rTx.read(LogicalDatastoreType.OPERATIONAL, nodeIid).get();
-        if (optionalNode != null) {
+        if (optionalNode != null && !optionalNode.isPresent()) {
             assertFalse("Operational mlmt:1 topology node ", optionalNode.isPresent());
         }
 
