@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aade967_141dbd66",
+        "filename": "mlmt/observer/impl/src/main/java/org/opendaylight/topology/mlmt/observer/AbstractMlmtTopologyObserver.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 459,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-24T12:31:32Z",
+      "side": 1,
+      "message": "I think this can also be before if else statement.",
+      "range": {
+        "startLine": 458,
+        "startChar": 16,
+        "endLine": 459,
+        "endChar": 108
+      },
+      "revId": "2b675d896bf44a68161ef83939dd66fc9c446684",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_f42b4180",
+        "filename": "mlmt/observer/impl/src/main/java/org/opendaylight/topology/mlmt/observer/AbstractMlmtTopologyObserver.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 473,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-24T12:31:32Z",
+      "side": 1,
+      "message": "If you put this before first if in while loop as I wrote in comment above, than this can be removed. This apply to all occurrences in all three methods.",
+      "range": {
+        "startLine": 472,
+        "startChar": 20,
+        "endLine": 473,
+        "endChar": 112
+      },
+      "revId": "2b675d896bf44a68161ef83939dd66fc9c446684",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
