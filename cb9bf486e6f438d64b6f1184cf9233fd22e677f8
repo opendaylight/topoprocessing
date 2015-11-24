@@ -1,0 +1,136 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7aade967_b1871b0f",
+        "filename": "mlmt/observer/impl/src/main/java/org/opendaylight/topology/mlmt/observer/AbstractMlmtTopologyObserver.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 203,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-24T09:52:09Z",
+      "side": 1,
+      "message": "Please fix line length in this file.",
+      "range": {
+        "startLine": 203,
+        "startChar": 16,
+        "endLine": 203,
+        "endChar": 135
+      },
+      "revId": "cb9bf486e6f438d64b6f1184cf9233fd22e677f8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_91821fff",
+        "filename": "mlmt/observer/impl/src/main/java/org/opendaylight/topology/mlmt/observer/AbstractMlmtTopologyObserver.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 535,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-24T09:52:09Z",
+      "side": 1,
+      "message": "I think this can be one while loop. Have you a reason to split it?",
+      "range": {
+        "startLine": 450,
+        "startChar": 8,
+        "endLine": 535,
+        "endChar": 22
+      },
+      "revId": "cb9bf486e6f438d64b6f1184cf9233fd22e677f8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_7148c32d",
+        "filename": "mlmt/observer/impl/src/main/java/org/opendaylight/topology/mlmt/observer/AbstractMlmtTopologyObserver.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 631,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-24T09:52:09Z",
+      "side": 1,
+      "message": "These while loops share many common lines. If you have not reason for do it like this, I prefer to do it in one loop with few if conditions.",
+      "range": {
+        "startLine": 546,
+        "startChar": 8,
+        "endLine": 631,
+        "endChar": 9
+      },
+      "revId": "cb9bf486e6f438d64b6f1184cf9233fd22e677f8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_11be2f00",
+        "filename": "mlmt/observer/impl/src/main/java/org/opendaylight/topology/mlmt/observer/AbstractMlmtTopologyObserver.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 696,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-24T09:52:09Z",
+      "side": 1,
+      "message": "These while loops look almost the same. I think you can do it in one while loop with a few if conditions. I think you should avoid duplicated code. Or is there some reason for do it like this? Maybe unit tests?",
+      "range": {
+        "startLine": 640,
+        "startChar": 8,
+        "endLine": 696,
+        "endChar": 9
+      },
+      "revId": "cb9bf486e6f438d64b6f1184cf9233fd22e677f8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_517ca720",
+        "filename": "mlmt/observer/impl/src/main/java/org/opendaylight/topology/mlmt/observer/MlmtDataChangeEventListener.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-24T09:52:09Z",
+      "side": 1,
+      "message": "Please fix line length",
+      "range": {
+        "startLine": 41,
+        "startChar": 8,
+        "endLine": 41,
+        "endChar": 135
+      },
+      "revId": "cb9bf486e6f438d64b6f1184cf9233fd22e677f8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7aade967_31732b4f",
+        "filename": "mlmt/observer/impl/src/main/java/org/opendaylight/topology/mlmt/observer/MlmtTopologyObserver.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2015-11-24T09:52:09Z",
+      "side": 1,
+      "message": "Please fix line length",
+      "revId": "cb9bf486e6f438d64b6f1184cf9233fd22e677f8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
