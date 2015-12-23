@@ -162,19 +162,6 @@
                 <artifactId>features-test</artifactId>
                 <version>${features.test.version}</version>
             </dependency>
-
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.core</artifactId>
-                <version>5.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit.version}</version>
-                <scope>test</scope>
-                <optional>true</optional>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
