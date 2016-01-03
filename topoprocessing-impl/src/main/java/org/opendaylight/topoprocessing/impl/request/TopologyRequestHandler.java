@@ -76,6 +76,7 @@ import com.google.common.base.Preconditions;
  * listeners, aggregators.
  * @author michal.polkorab
  */
+// this class should contain SPI implementations should look simpler - nobody knows that new topos need to extend this
 public abstract class TopologyRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);

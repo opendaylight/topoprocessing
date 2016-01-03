@@ -31,6 +31,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 /**
  * @author matej.perina
  */
+// this looks like SPI for 3rd party models - why is it located in impl?
 public interface ModelAdapter {
 
     /**

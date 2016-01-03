@@ -120,6 +120,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
     @Override
     public void registerModelAdapter(Class<? extends Model> model, Object modelAdapter) {
+        // this assumption looks ugly
         if(modelAdapter instanceof ModelAdapter) {
             ModelAdapter adapter = (ModelAdapter) modelAdapter;
             modelAdapters.put(model, adapter);

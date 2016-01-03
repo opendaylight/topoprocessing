@@ -94,6 +94,7 @@ public class TopologyWriter implements TransactionChainListener {
     public TopologyWriter(String topologyId, Class<? extends Model> model) {
         this.topologyId = topologyId;
         this.model = model;
+        // too restricted assumption - if i2rs else network-topo  - difficult to extend with 3rd party modules
         if (model.equals(I2rsModel.class)) {
             topologyIdentifier = YangInstanceIdentifier.builder(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER)
                     .nodeWithKey(Network.QNAME, TopologyQNames.I2RS_NETWORK_ID_QNAME, topologyId).build();
