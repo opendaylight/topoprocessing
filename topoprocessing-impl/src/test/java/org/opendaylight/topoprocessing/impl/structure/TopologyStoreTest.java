@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import java.util.concurrent.ConcurrentHashMap;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -39,7 +39,7 @@ public class TopologyStoreTest {
     public void testInitialization() {
         boolean aggregateInside = true;
         topologyStore = new TopologyStore(TOPOLOGY_ID , aggregateInside ,
-                new HashMap<YangInstanceIdentifier, UnderlayItem>());
+                new ConcurrentHashMap<YangInstanceIdentifier, UnderlayItem>());
     }
 
     @Test

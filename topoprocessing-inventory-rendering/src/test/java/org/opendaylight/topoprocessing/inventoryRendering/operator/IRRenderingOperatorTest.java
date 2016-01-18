@@ -8,7 +8,6 @@
 package org.opendaylight.topoprocessing.inventoryRendering.operator;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -16,10 +15,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +40,7 @@ public class IRRenderingOperatorTest {
     private TopologyManager managerMock;
     private TopoStoreProvider topoStoreProviderMock;
     private TopologyStore topologyStoreMock;
-    private Map<YangInstanceIdentifier, UnderlayItem> items;
+    private ConcurrentMap<YangInstanceIdentifier, UnderlayItem> items;
     private YangInstanceIdentifier yangInstanceIdentifierMock;
     private UnderlayItem underlayItemMock;
     private String topologyId;
@@ -52,7 +50,7 @@ public class IRRenderingOperatorTest {
         managerMock = mock(TopologyManager.class);
         topoStoreProviderMock = mock(TopoStoreProvider.class);
         topologyStoreMock = mock(TopologyStore.class);
-        items = new HashMap<>();
+        items = new ConcurrentHashMap<>();
         yangInstanceIdentifierMock = mock(YangInstanceIdentifier.class);
         underlayItemMock = mock(UnderlayItem.class);
         topologyId = "some id";
