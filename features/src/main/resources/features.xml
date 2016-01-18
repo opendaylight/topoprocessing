@@ -16,6 +16,7 @@
         <feature version='${config.version}'>odl-config-api</feature>
         <feature version='${mdsal.version}'>odl-mdsal-common</feature>
         <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
+        <bundle>mvn:org.opendaylight.controller.thirdparty/net.sf.jung2/{{jung2.version}}</bundle>
         <bundle>mvn:org.opendaylight.controller.model/model-inventory/${mdsal.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-api/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-impl/${project.version}</bundle>
