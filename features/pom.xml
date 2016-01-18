@@ -25,6 +25,7 @@
         <karaf.empty.version>1.7.0-SNAPSHOT</karaf.empty.version>
         <features.file>features.xml</features.file>
         <surefire.version>2.16</surefire.version>
+        <jung2.version>2.0.1</jung2.version>
     </properties>
 
     <dependencies>
@@ -226,6 +227,11 @@
             <artifactId>opendaylight-karaf-empty</artifactId>
             <version>${karaf.empty.version}</version>
             <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.controller.thirdparty</groupId>
+            <artifactId>net.sf.jung2</artifactId>
+            <version>${jung2.version}</version>
         </dependency>
     </dependencies>
 
