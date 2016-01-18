@@ -33,6 +33,7 @@ module topology-link-computation {
 
     grouping link-computation-grouping {
         container link-computation {
+            presence "Configuration for link computation";
             leaf output-model {
                 type identityref {
                     base topo-corr:model;
