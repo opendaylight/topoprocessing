@@ -8,19 +8,16 @@
 
 package org.opendaylight.topoprocessing.impl.writer;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
@@ -52,10 +49,6 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableCo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.CheckedFuture;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-
 /**
  * @author michal.polkorab
  *
@@ -78,7 +71,7 @@ public class TopologyWriter implements TransactionChainListener {
 
     private static final AtomicIntegerFieldUpdater<TopologyWriter> WRITE_SCHEDULED_UPDATER =
             AtomicIntegerFieldUpdater.newUpdater(TopologyWriter.class, "writeScheduled");
-    private volatile int writeScheduled = 0;
+    private volatile int writeScheduled = 0; //do not delete it is used above in WRITE_SCHEDULED_UPDATER
 
     private final Runnable writeTask = new Runnable() {
         @Override
@@ -115,81 +108,6 @@ public class TopologyWriter implements TransactionChainListener {
         pool = new ScheduledThreadPoolExecutor(EXECUTOR_POOL_THREADS);
     }
 
-    /**
-     * Updates existing data in operational DataStore
-     * @param dataToUpdate data to be updated
-     */
-    public void updateData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> dataToUpdate) {
-        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
-        Iterator<Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator =
-                dataToUpdate.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry = iterator.next();
-            transaction.merge(LogicalDatastoreType.OPERATIONAL, entry.getKey(), entry.getValue());
-        }
-        CheckedFuture<Void,TransactionCommitFailedException> commitFuture = transaction.submit();
-        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(Void empty) {
-                LOGGER.debug("Data updated successfully");
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                LOGGER.warn("Failed to update transaction data");
-            }
-        });
-    }
-
-    /**
-     * Writes / creates new data in operational DataStore
-     * @param dataToCreate data to be created
-     */
-    public void writeCreatedData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> dataToCreate) {
-        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
-        Iterator<Entry<YangInstanceIdentifier, NormalizedNode<?, ?>>> iterator =
-                dataToCreate.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry = iterator.next();
-            transaction.put(LogicalDatastoreType.OPERATIONAL, entry.getKey(), entry.getValue());
-        }
-        CheckedFuture<Void,TransactionCommitFailedException> commitFuture = transaction.submit();
-        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(Void empty) {
-                LOGGER.debug("Data written successfully");
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                LOGGER.warn("Failed to write new transaction data");
-            }
-        });
-    }
-
-    /**
-     * Removed specified data from operational DataStore
-     * @param dataToRemove data to be removed
-     */
-    public void deleteData(Set<YangInstanceIdentifier> dataToRemove) {
-        DOMDataWriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
-        Iterator<YangInstanceIdentifier> iterator = dataToRemove.iterator();
-        while (iterator.hasNext()) {
-            transaction.delete(LogicalDatastoreType.OPERATIONAL, iterator.next());
-        }
-        CheckedFuture<Void,TransactionCommitFailedException> commitFuture = transaction.submit();
-        Futures.addCallback(commitFuture, new FutureCallback<Void>() {
-            @Override
-            public void onSuccess(Void empty) {
-                LOGGER.debug("Data successfully removed");
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                LOGGER.warn("Failed to remove transaction data");
-            }
-        });
-    }
 
     /**
      * Writes empty overlay topology with provided topologyId. Also writes empty {@link Link}
@@ -235,7 +153,7 @@ public class TopologyWriter implements TransactionChainListener {
      */
     public void writeItem(final OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
         NormalizedNode<?, ?> node = translator.translate(wrapper);
-        preparedOperations.add(new PutOperation(createItemIdentifier(wrapper, itemType), node));
+        preparedOperations.add(new MergeOperation(createItemIdentifier(wrapper, itemType), node));
         scheduleWrite();
     }
 

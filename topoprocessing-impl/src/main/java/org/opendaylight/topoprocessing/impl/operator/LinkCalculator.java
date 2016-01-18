@@ -8,6 +8,7 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import com.google.common.base.Optional;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.topoprocessing.api.structure.ComputedLink;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -36,8 +37,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 /**
  * @author martin.uhlir
@@ -64,7 +63,7 @@ public class LinkCalculator implements TopologyOperator {
      */
     public LinkCalculator(String topologyId, Class<? extends Model> outputModel) {
         storedOverlayNodes = new TopologyStore(topologyId, false,
-                new HashMap<YangInstanceIdentifier, UnderlayItem>());
+                new ConcurrentHashMap<YangInstanceIdentifier, UnderlayItem>());
         this.outputModel = outputModel;
     }
 

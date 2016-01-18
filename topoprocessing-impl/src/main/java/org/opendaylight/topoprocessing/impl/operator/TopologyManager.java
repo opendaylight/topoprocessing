@@ -8,11 +8,12 @@
 package org.opendaylight.topoprocessing.impl.operator;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
+import java.util.concurrent.ConcurrentLinkedDeque;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
@@ -40,8 +41,8 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyManager.class);
 
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
-    private List<OverlayItemWrapper> nodeWrappers = new ArrayList<>();
-    private List<OverlayItemWrapper> linkWrappers = new ArrayList<>();
+    private Deque<OverlayItemWrapper> nodeWrappers = new ConcurrentLinkedDeque<>();
+    private Deque<OverlayItemWrapper> linkWrappers = new ConcurrentLinkedDeque<>();
     private TopologyWriter writer;
     private RpcServices rpcServices;
     private Collection<DOMRpcIdentifier> availableRpcs;
@@ -68,7 +69,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
      * For testing purpose only
      * @return All overlayItem wrappers
      */
-    public List<OverlayItemWrapper> getNodeWrappers(){
+    public Deque<OverlayItemWrapper> getNodeWrappers(){
         return nodeWrappers;
     }
 
@@ -197,8 +198,8 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
         }
     }
 
-    private List<OverlayItemWrapper> getWrappersList(CorrelationItemEnum correlationItem) {
-        List<OverlayItemWrapper> resultList = null;
+    private Deque<OverlayItemWrapper> getWrappersList(CorrelationItemEnum correlationItem) {
+        Deque<OverlayItemWrapper> resultList = null;
         switch (correlationItem) {
         case Node:
         case TerminationPoint:
