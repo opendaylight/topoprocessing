@@ -97,7 +97,12 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
                 }
             }
             // create new overlay item wrapper with unique id and add the overlay item into it
-            String wrapperId = idGenerator.getNextIdentifier(newOverlayItem.getCorrelationItem());
+            String wrapperId;
+            if (newOverlayItem.getCorrelationItem().equals(CorrelationItemEnum.TerminationPoint)) {
+                wrapperId = idGenerator.getNextIdentifier(CorrelationItemEnum.Node);
+            } else {
+                wrapperId = idGenerator.getNextIdentifier(newOverlayItem.getCorrelationItem());
+            }
             OverlayItemWrapper newWrapper = new OverlayItemWrapper(wrapperId, newOverlayItem);
             getWrappersList(newOverlayItem.getCorrelationItem()).add(newWrapper);
             writer.writeItem(newWrapper, newOverlayItem.getCorrelationItem());
