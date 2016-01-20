@@ -8,9 +8,9 @@
 
 package org.opendaylight.topoprocessing.impl.listener;
 
+import com.google.common.base.Optional;
 import java.util.Collection;
 import java.util.Iterator;
-
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -29,8 +29,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNod
 import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 
 /**
@@ -112,17 +110,22 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
             if (pathIdentifier != null) {
                 // AGGREGATION
                 LeafNode<?> leafnode = null;
-                LOGGER.debug("Finding leafnode: {}", pathIdentifier);
-                Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry, pathIdentifier);
-                if (node.isPresent()) {
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("Found node: {}", node.get());
-                    }
-                    leafnode = (LeafNode<?>) node.get();
+                if (correlationItem == CorrelationItemEnum.TerminationPoint) {
                     underlayItem = new UnderlayItem(entry, leafnode, underlayTopologyId, itemId,
                             correlationItem);
                 } else {
-                    return;
+                    LOGGER.debug("Finding target field");
+                    Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry, pathIdentifier);
+                    if (node.isPresent()) {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("Found target field: {}", node.get());
+                        }
+                        leafnode = (LeafNode<?>) node.get();
+                        underlayItem = new UnderlayItem(entry, leafnode, underlayTopologyId, itemId,
+                                correlationItem);
+                    } else {
+                        return;
+                    }
                 }
             } else {
                 // FILTRATION or opendaylight-inventory model is used - doesn't contain leafNode
