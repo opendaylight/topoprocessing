@@ -1,8 +1,8 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
+import com.google.common.base.Optional;
 import java.util.ArrayList;
 import java.util.Collection;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,8 +36,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLeafSetEntryNodeBuilder;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLeafSetNodeBuilder;
-
-import com.google.common.base.Optional;
 
 /**
  * @author matus.marko
@@ -187,23 +185,28 @@ public class TerminationPointAggregatorTest {
         for (MapEntryNode mapEntryNode : mapEntryNodes) {
             Optional<DataContainerChild<? extends PathArgument, ?>> tpRefsOpt = mapEntryNode.getChild(new NodeIdentifier(TopologyQNames.TP_REF));
             Assert.assertTrue("TP Entry should have some REFs", tpRefsOpt.isPresent());
-            ArrayList<LeafSetEntryNode> tpRefs = new ArrayList<>((Collection) tpRefsOpt.get().getValue());
+            Collection<LeafSetEntryNode<String>> tpRefs = ((LeafSetNode<String>) tpRefsOpt.get()).getValue();
             if (3 == tpRefs.size()) {
 //                TP entry node 1
                 ArrayList<String> stack = new ArrayList<>();
                 stack.add(TP_ID1);
                 stack.add(TP_ID3);
                 stack.add(TP_ID5);
-                Assert.assertNotNull("TP1 reference1", stack.remove(((LeafSetEntryNode) tpRefs.get(0).getValue()).getValue()));
-                Assert.assertNotNull("TP1 reference2", stack.remove(((LeafSetEntryNode) tpRefs.get(1).getValue()).getValue()));
-                Assert.assertNotNull("TP1 reference3", stack.remove(((LeafSetEntryNode) tpRefs.get(2).getValue()).getValue()));
+                int i = 1;
+                for (LeafSetEntryNode<String> tpRef : tpRefs) {
+                    Assert.assertNotNull("TP1 reference" + i, stack.remove(((String) tpRef.getValue())));
+                    i++;
+                }
             } else if (2 == tpRefs.size()) {
 //                TP entry map node 2
                 ArrayList<String> stack = new ArrayList<>();
                 stack.add(TP_ID2);
                 stack.add(TP_ID4);
-                Assert.assertNotNull("TP2 reference1", stack.remove(((LeafSetEntryNode) tpRefs.get(0).getValue()).getValue()));
-                Assert.assertNotNull("TP2 reference2", stack.remove(((LeafSetEntryNode) tpRefs.get(1).getValue()).getValue()));
+                int i = 1;
+                for (LeafSetEntryNode<String> tpRef : tpRefs) {
+                    Assert.assertNotNull("TP2 reference" + i, stack.remove(((String) tpRef.getValue())));
+                    i++;
+                }
             } else {
                 Assert.fail("Unexpected number of TP References");
             }
