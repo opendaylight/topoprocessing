@@ -43,7 +43,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
     public TopologyAggregator(TopoStoreProvider topoStoreProvider) {
         this.topoStoreProvider = topoStoreProvider;
     }
-    
+
     protected TopoStoreProvider getTopoStoreProvider() {
         return topoStoreProvider;
     }
