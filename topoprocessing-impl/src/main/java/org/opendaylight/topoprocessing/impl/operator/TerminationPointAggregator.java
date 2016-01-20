@@ -8,12 +8,12 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import com.google.common.base.Optional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
@@ -24,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
-import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafSetEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
@@ -39,8 +38,6 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableMa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-
 /**
  * @author matus.marko
  */
@@ -54,7 +51,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
     public TerminationPointAggregator(TopoStoreProvider topoStoreProvider) {
         super(topoStoreProvider);
     }
-    
+
     private class TemporaryTerminationPoint {
         private NormalizedNode<?, ?> targetField;
         private String tpId;
@@ -242,19 +239,22 @@ public class TerminationPointAggregator extends UnificationAggregator {
     }
 
     private MapEntryNode createTpEntry(TemporaryTerminationPoint tmpTp) {
-        ListNodeBuilder<Object, LeafSetEntryNode<Object>> leafListBuilder = ImmutableLeafSetNodeBuilder.create()
+        ListNodeBuilder<String, LeafSetEntryNode<String>> leafListBuilder = ImmutableLeafSetNodeBuilder.<String>create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(TopologyQNames.TP_REF));
+        List<LeafSetEntryNode<String>> tpRefs = new ArrayList<>();
         for (MapEntryNode mapEntryNode : tmpTp.getEntries()) {
             Optional<DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?>> leaf
-                    = mapEntryNode.<LeafNode>getChild(new YangInstanceIdentifier.NodeIdentifier(
+                    = mapEntryNode.getChild(new YangInstanceIdentifier.NodeIdentifier(
                     TopologyQNames.NETWORK_TP_ID_QNAME));
             if (leaf.isPresent()) {
-                Object value = leaf.get().getValue();
-                leafListBuilder.withChildValue(ImmutableLeafSetEntryNodeBuilder.create()
-                        .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue(
-                                TopologyQNames.TP_REF, value)).withValue(value).build());
+                String value = (String) leaf.get().getValue();
+                LeafSetEntryNode<String> tpRef = ImmutableLeafSetEntryNodeBuilder.<String>create()
+                        .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue<String>(
+                                TopologyQNames.TP_REF, value)).withValue(value).build();
+                tpRefs.add(tpRef);
             }
         }
+        leafListBuilder.withValue(tpRefs);
         return ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tmpTp.getTpId())
                 .withChild(leafListBuilder.build()).build();
     }
