@@ -46,7 +46,7 @@ public class SpecificValueFiltrator<T> implements Filtrator {
         Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node, pathIdentifier);
         if (leafNode.isPresent()) {
             T value = (T) ((LeafNode) leafNode.get()).getValue();
-            if (this.value.equals(value)) {
+            if (this.value.toString().equals(value.toString())) {
                 return false;
             }
         }
