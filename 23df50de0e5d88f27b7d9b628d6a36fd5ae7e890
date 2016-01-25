@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_b6ca504d",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 4
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-01-25T10:43:05Z",
+      "side": 1,
+      "message": "I am not sure, but this probably should be ${jung2.version}. Maybe then it pass verify.",
+      "range": {
+        "startLine": 19,
+        "startChar": 72,
+        "endLine": 19,
+        "endChar": 83
+      },
+      "revId": "23df50de0e5d88f27b7d9b628d6a36fd5ae7e890",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
