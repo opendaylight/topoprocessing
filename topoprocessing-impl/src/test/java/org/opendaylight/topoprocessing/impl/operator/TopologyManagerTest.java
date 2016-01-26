@@ -200,7 +200,7 @@ public class TopologyManagerTest {
         Mockito.reset(writer);
 
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        physicalNodes.add(logicalNode.getUnderlayItems().get(0));
+        physicalNodes.add(logicalNode.getUnderlayItems().peek());
         OverlayItem nodeToRemove = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
         manager.removeOverlayItem(nodeToRemove);

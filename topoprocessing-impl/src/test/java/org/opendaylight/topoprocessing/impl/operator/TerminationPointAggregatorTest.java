@@ -176,7 +176,7 @@ public class TerminationPointAggregatorTest {
         // check results
         Assert.assertNotNull("Manager should contain some changes", topoManager.getNewOverlayItem());
         Assert.assertNotNull("OverlayItem should contain some nodes", topoManager.getNewOverlayItem().getUnderlayItems());
-        NormalizedNode<?, ?> node = topoManager.getNewOverlayItem().getUnderlayItems().get(0).getItem();
+        NormalizedNode<?, ?> node = topoManager.getNewOverlayItem().getUnderlayItems().peek().getItem();
         Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(node,
                 YangInstanceIdentifier.of(TerminationPoint.QNAME));
         Assert.assertTrue("Node should contain TerminationPointMap", tpMapNodeOpt.isPresent());
@@ -245,7 +245,7 @@ public class TerminationPointAggregatorTest {
 
         Assert.assertNotNull("Manager should contain some changes", topoManager.getOldOverlayItem());
         Assert.assertNotNull("OverlayItem should contain some nodes", topoManager.getOldOverlayItem().getUnderlayItems());
-        NormalizedNode<?, ?> node = topoManager.getOldOverlayItem().getUnderlayItems().get(0).getItem();
+        NormalizedNode<?, ?> node = topoManager.getOldOverlayItem().getUnderlayItems().peek().getItem();
         Collection<MapEntryNode> tpMapNodes = ((MapNode) NormalizedNodes.findNode(node,
                 YangInstanceIdentifier.of(TerminationPoint.QNAME)).get()).getValue();
         Assert.assertEquals("Number of Termination Points", 3, tpMapNodes.size());

@@ -15,7 +15,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.junit.Before;
@@ -94,7 +94,7 @@ public class IRRenderingOperatorTest {
         when(underlayItemMock2.getOverlayItem()).thenReturn(overlayItemMock);
 
         operator.processUpdatedChanges(yangInstanceIdentifierMock, underlayItemMock, topologyId);
-        verify(overlayItemMock, times(1)).setUnderlayItems(any(List.class));
+        verify(overlayItemMock, times(1)).setUnderlayItems(any(Queue.class));
         verify(underlayItemMock, times(1)).setOverlayItem(overlayItemMock);
         assertEquals(1, items.size());
         assertEquals(underlayItemMock, items.get(yangInstanceIdentifierMock));

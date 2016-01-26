@@ -8,6 +8,11 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -15,11 +20,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author matus.marko
@@ -35,11 +35,11 @@ public class TopologyFiltrator implements TopologyOperator {
     public TopologyFiltrator(TopoStoreProvider topoStoreProvider) {
         this.topoStoreProvider = topoStoreProvider;
     }
-    
+
     protected TopoStoreProvider getTopoStoreProvider() {
             return topoStoreProvider;
     }
-    
+
 
     @Override
     public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdItem, String topologyId) {
@@ -70,7 +70,9 @@ public class TopologyFiltrator implements TopologyOperator {
                 topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, updatedItem);
                 OverlayItem overlayItem = oldItem.getOverlayItem();
                 updatedItem.setOverlayItem(overlayItem);
-                overlayItem.setUnderlayItems(Collections.singletonList(updatedItem));
+                Queue<UnderlayItem> underlayItems = new ConcurrentLinkedQueue<>();
+                underlayItems.add(updatedItem);
+                overlayItem.setUnderlayItems(underlayItems);
                 manager.updateOverlayItem(overlayItem);
             } else {
                 // filtered out
@@ -94,7 +96,7 @@ public class TopologyFiltrator implements TopologyOperator {
     public void setTopologyManager(TopologyManager topologyManager) {
         this.manager = topologyManager;
     }
-    
+
     /**
      * Add new filtrator
      * @param filter Node Ip Filtrator

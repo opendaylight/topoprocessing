@@ -8,8 +8,10 @@
 package org.opendaylight.topoprocessing.impl.structure;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,7 +49,7 @@ public class LogicalNodeTest {
         physicalNodes.add(physicalNode);
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
         Assert.assertEquals(1, logicalNode.getUnderlayItems().size());
-        Assert.assertTrue(physicalNodeEquals(physicalNode, logicalNode.getUnderlayItems().get(0)));
+        Assert.assertTrue(physicalNodeEquals(physicalNode, logicalNode.getUnderlayItems().peek()));
     }
 
     @Test
@@ -60,7 +62,9 @@ public class LogicalNodeTest {
         physicalNode2 = new UnderlayItem(mockNormalizedNode2, mockLeafNode2, TOPOLOGY2, NODE_ID2, CorrelationItemEnum.Node);
         logicalNode.addUnderlayItem(physicalNode2);
         Assert.assertEquals(2, logicalNode.getUnderlayItems().size());
-        Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getUnderlayItems().get(1)));
+        Iterator<UnderlayItem> iterator = logicalNode.getUnderlayItems().iterator();
+        iterator.next();
+        Assert.assertTrue(physicalNodeEquals(physicalNode2, iterator.next()));
     }
 
     @Test
@@ -69,7 +73,7 @@ public class LogicalNodeTest {
 
         logicalNode.removeUnderlayItem(physicalNode);
         Assert.assertEquals(1, logicalNode.getUnderlayItems().size());
-        Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getUnderlayItems().get(0)));
+        Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getUnderlayItems().peek()));
     }
 
     @Test
@@ -79,16 +83,16 @@ public class LogicalNodeTest {
         physicalNode2 = new UnderlayItem(mockNormalizedNode2, mockLeafNode2, TOPOLOGY2, NODE_ID2, CorrelationItemEnum.Node);
         logicalNode.updateUnderlayItem(physicalNode, physicalNode2);
         Assert.assertEquals(1, logicalNode.getUnderlayItems().size());
-        Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getUnderlayItems().get(0)));
+        Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getUnderlayItems().peek()));
     }
 
     @Test
     public void testGetPhysicalNodes() {
         testLogicalNodeCreation();
 
-        List<UnderlayItem> physicalNodes = logicalNode.getUnderlayItems();
+        Queue<UnderlayItem> physicalNodes = logicalNode.getUnderlayItems();
         Assert.assertEquals(1, physicalNodes.size());
-        Assert.assertTrue(physicalNodeEquals(physicalNode, physicalNodes.get(0)));
+        Assert.assertTrue(physicalNodeEquals(physicalNode, physicalNodes.peek()));
     }
 
     @Test
@@ -97,13 +101,13 @@ public class LogicalNodeTest {
 
         UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, mockLeafNode1, TOPOLOGY2, NODE_ID3,
                 CorrelationItemEnum.Node);
-        List<UnderlayItem> newPhysicalNodes = new ArrayList<>();
+        Queue<UnderlayItem> newPhysicalNodes = new ConcurrentLinkedQueue<>();
         newPhysicalNodes.add(physicalNode3);
 
         logicalNode.setUnderlayItems(newPhysicalNodes);
 
         Assert.assertEquals(1, logicalNode.getUnderlayItems().size());
-        Assert.assertTrue(physicalNodeEquals(physicalNode3, logicalNode.getUnderlayItems().get(0)));
+        Assert.assertTrue(physicalNodeEquals(physicalNode3, logicalNode.getUnderlayItems().peek()));
     }
 
     @Test(expected=NullPointerException.class)
