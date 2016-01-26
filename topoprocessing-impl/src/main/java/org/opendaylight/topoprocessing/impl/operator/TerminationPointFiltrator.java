@@ -9,19 +9,23 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import com.google.common.base.Optional;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.*;
+import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
+import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.CollectionNodeBuilder;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableMapEntryNodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * @author matus.marko
@@ -65,7 +69,9 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         }
         UnderlayItem oldUnderlayItem = oldUnderlayItems.get(identifier);
         overlayItem = oldUnderlayItem.getOverlayItem();
-        overlayItem.setUnderlayItems(Collections.singletonList(newUnderlayItem));
+        Queue<UnderlayItem> underlayItems = new ConcurrentLinkedQueue<>();
+        underlayItems.add(newUnderlayItem);
+        overlayItem.setUnderlayItems(underlayItems);
         manager.addOverlayItem(overlayItem);
     }
 
