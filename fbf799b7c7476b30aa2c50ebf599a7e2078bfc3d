@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_b6f9ab4f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 4674
+      },
+      "writtenOn": "2016-01-26T08:23:19Z",
+      "side": 1,
+      "message": "you are assigning null value here... do we want that?",
+      "range": {
+        "startLine": 114,
+        "startChar": 59,
+        "endLine": 114,
+        "endChar": 67
+      },
+      "revId": "fbf799b7c7476b30aa2c50ebf599a7e2078bfc3d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
