@@ -8,24 +8,24 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import org.opendaylight.topoprocessing.impl.structure.ScriptResult;
-
-import javax.script.ScriptException;
-import javax.script.ScriptEngine;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.Scripting;
-import javax.script.ScriptEngineManager;
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.topoprocessing.impl.structure.ScriptResult;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.Scripting;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Preconditions;
 
 /**
  * Class handling aggregation correlation
@@ -171,7 +171,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
     private void removeUnderlayItemFromOverlayItem(UnderlayItem itemToRemove) {
         OverlayItem overlayItemIdentifier = itemToRemove.getOverlayItem();
         if (null != overlayItemIdentifier) {
-            List<UnderlayItem> underlayItems = overlayItemIdentifier.getUnderlayItems();
+            Queue<UnderlayItem> underlayItems = overlayItemIdentifier.getUnderlayItems();
             underlayItems.remove(itemToRemove);
             itemToRemove.setOverlayItem(null);
             if (underlayItems.size() < getMinUnderlayItems()) {

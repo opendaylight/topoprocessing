@@ -11,7 +11,8 @@ package org.opendaylight.topoprocessing.inventoryRendering.operator;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.TopoStoreProvider;
@@ -56,7 +57,9 @@ public class IRRenderingOperator implements TopologyOperator {
                     topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems();
             UnderlayItem oldItem = items.get(identifier);
             OverlayItem item = oldItem.getOverlayItem();
-            item.setUnderlayItems(Collections.singletonList(updatedEntry));
+            Queue<UnderlayItem> underlayItems = new ConcurrentLinkedQueue<>();
+            underlayItems.add(updatedEntry);
+            item.setUnderlayItems(underlayItems);
             updatedEntry.setOverlayItem(item);
             items.put(identifier, updatedEntry);
             manager.updateOverlayItem(item);

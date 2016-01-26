@@ -8,12 +8,11 @@
 
 package org.opendaylight.topoprocessing.api.structure;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-
 import com.google.common.base.Preconditions;
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 
 /**
  * @author matus.marko
@@ -21,7 +20,7 @@ import com.google.common.base.Preconditions;
  */
 public class OverlayItem {
 
-    private List<UnderlayItem> underlayItems = new ArrayList<>();
+    private Queue<UnderlayItem> underlayItems = new ConcurrentLinkedQueue<>();
     private CorrelationItemEnum correlationItem;
 
     /**
@@ -71,7 +70,7 @@ public class OverlayItem {
     /**
      * @return {@link UnderlayItem}s (underlay items)
      */
-    public List<UnderlayItem> getUnderlayItems() {
+    public Queue<UnderlayItem> getUnderlayItems() {
         return underlayItems;
     }
 
@@ -79,7 +78,7 @@ public class OverlayItem {
      * Sets {@link UnderlayItem}s
      * @param underlayItems underlay items
      */
-    public void setUnderlayItems(List<UnderlayItem> underlayItems) {
+    public void setUnderlayItems(Queue<UnderlayItem> underlayItems) {
         Preconditions.checkNotNull(underlayItems, "underlayItems parameter cannot be null");
         this.underlayItems = underlayItems;
     }
