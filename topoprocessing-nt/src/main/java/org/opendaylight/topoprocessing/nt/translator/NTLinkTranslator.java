@@ -58,7 +58,8 @@ public class NTLinkTranslator implements LinkTranslator{
                     writtenLinks.add(underlayItem);
                     // prepare supporting nodes
                     supportingLinks.withChild(ImmutableNodes.mapEntryBuilder(SupportingLink.QNAME,
-                            TopologyQNames.LINK_REF, underlayItem.getItemId()).build());
+                            TopologyQNames.LINK_REF, "network-topology:network-topology/topology/" +
+                                    underlayItem.getTopologyId() + "/link/" + underlayItem.getItemId()).build());
                 }
             }
         }
