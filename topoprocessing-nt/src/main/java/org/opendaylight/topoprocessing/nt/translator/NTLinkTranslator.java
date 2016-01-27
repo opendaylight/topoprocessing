@@ -16,9 +16,11 @@ import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.translator.LinkTranslator;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Destination;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Source;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SupportingLink;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
@@ -57,8 +59,14 @@ public class NTLinkTranslator implements LinkTranslator{
                 if (! writtenLinks.contains(underlayItem)) {
                     writtenLinks.add(underlayItem);
                     // prepare supporting nodes
+                    StringBuilder linkRef = new StringBuilder();
+                    linkRef.append("/").append(NetworkTopology.QNAME.getLocalName()).append("/")
+                            .append(Topology.QNAME.getLocalName()).append("/")
+                            .append(underlayItem.getTopologyId()).append("/")
+                            .append(Link.QNAME.getLocalName()).append("/")
+                            .append(underlayItem.getItemId());
                     supportingLinks.withChild(ImmutableNodes.mapEntryBuilder(SupportingLink.QNAME,
-                            TopologyQNames.LINK_REF, underlayItem.getItemId()).build());
+                            TopologyQNames.LINK_REF, linkRef.toString()).build());
                 }
             }
         }

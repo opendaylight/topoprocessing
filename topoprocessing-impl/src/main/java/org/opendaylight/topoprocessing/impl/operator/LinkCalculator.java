@@ -169,7 +169,7 @@ public class LinkCalculator implements TopologyOperator {
         NormalizedNode<?, ?> destNode = getLinkDestNode(link);
         if (sourceNode != null && destNode != null) {
             ComputedLink computedLink = new ComputedLink(link.getItem(), null, null,
-                    storedOverlayNodes.getId(), link.getItemId(), CorrelationItemEnum.Link);
+                    link.getTopologyId(), link.getItemId(), CorrelationItemEnum.Link);
             boolean srcFound = false;
             boolean dstFound = false;
             Iterator<Entry<YangInstanceIdentifier, UnderlayItem>> overlayNodesIterator =

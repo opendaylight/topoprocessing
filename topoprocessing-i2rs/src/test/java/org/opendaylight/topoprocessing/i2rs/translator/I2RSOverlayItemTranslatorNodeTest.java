@@ -254,6 +254,6 @@ public class I2RSOverlayItemTranslatorNodeTest {
 
         Collection value = (Collection) ((MapEntryNode) normalizedNode).getChild(
                 new NodeIdentifier(TerminationPoint.QNAME)).get().getValue();
-        Assert.assertEquals("OverlayNode contains wrong amount of TerminationPoints", 4, value.size());
+        Assert.assertEquals("OverlayNode contains wrong amount of TerminationPoints", 6, value.size());
     }
 }
