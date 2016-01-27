@@ -62,7 +62,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
             this.tpId = idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint);
         }
 
-        public MapEntryNode getByIdentifie(YangInstanceIdentifier.NodeIdentifierWithPredicates nodeIdentifier) {
+        public MapEntryNode getByIdentifier(YangInstanceIdentifier.NodeIdentifierWithPredicates nodeIdentifier) {
             for (MapEntryNode tp : list) {
                 if (nodeIdentifier.equals(tp.getIdentifier())) {
                     return tp;
@@ -75,7 +75,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
             return list;
         }
 
-        public void setEntires(List<MapEntryNode> list) {
+        public void setEntries(List<MapEntryNode> list) {
             this.list = list;
         }
 
@@ -114,7 +114,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
             List<TemporaryTerminationPoint> tmpTpList = addTerminationPoints(tpMapNode);
             // add Temporary TP to map
             tpStore.put(identifier, tmpTpList);
-            createdEntry.setItem(setTpToNode(tmpTpList, newNode));
+            createdEntry.setItem(setTpToNode(tmpTpList, newNode, topologyId, createdEntry.getItemId()));
         }
         OverlayItem overlayItem = new OverlayItem(
                 Collections.singletonList(createdEntry), CorrelationItemEnum.TerminationPoint);
@@ -141,7 +141,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
             removeTerminationPoints(newTpMap, nodeTps);
             updateTerminationPoints(newTpMap, nodeTps);
         }
-        underlayItem.setItem(setTpToNode(nodeTps, newNode));
+        underlayItem.setItem(setTpToNode(nodeTps, newNode, topologyId, underlayItem.getItemId()));
         topologyManager.updateOverlayItem(underlayItem.getOverlayItem());
     }
 
@@ -185,7 +185,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
             if (targetFieldOpt.isPresent()) {
                 isNew = true;
                 for (TemporaryTerminationPoint tmpTp : tempTpList) {
-                    MapEntryNode oldTpEntry = tmpTp.getByIdentifie(newTpEntry.getIdentifier());
+                    MapEntryNode oldTpEntry = tmpTp.getByIdentifier(newTpEntry.getIdentifier());
                     // check if node with same ID exists in TP-store
                     if (null != oldTpEntry) {
                         // if nodes are equal
@@ -206,7 +206,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
                 }
                 if (isNew) {
                     TemporaryTerminationPoint ttp = new TemporaryTerminationPoint(targetFieldOpt.get());
-                    ttp.setEntires(Collections.singletonList(newTpEntry));
+                    ttp.setEntries(Collections.singletonList(newTpEntry));
                     tempTpList.add(ttp);
                 }
             }
@@ -223,22 +223,19 @@ public class TerminationPointAggregator extends UnificationAggregator {
         }
     }
 
-    private MapEntryNode setTpToNode(List<TemporaryTerminationPoint> tempTpList, NormalizedNode<?, ?> node) {
+    private MapEntryNode setTpToNode(List<TemporaryTerminationPoint> tempTpList, NormalizedNode<?, ?> node,
+            String topologyId, String nodeId) {
         // create TP MapNode Builder
         CollectionNodeBuilder<MapEntryNode, MapNode> tpBuilder = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME);
         // set children (TPs)
         for (TemporaryTerminationPoint tmpTp : tempTpList) {
-            if (1 < tmpTp.getEntries().size()) {
-                tpBuilder.addChild(createTpEntry(tmpTp));
-            } else {
-                tpBuilder.addChild(tmpTp.getEntries().iterator().next());
-            }
+            tpBuilder.addChild(createTpEntry(tmpTp, topologyId, nodeId));
         }
         // create clone from old Node and set new TP MapNode to it
         return ImmutableMapEntryNodeBuilder.create((MapEntryNode) node).withChild(tpBuilder.build()).build();
     }
 
-    private MapEntryNode createTpEntry(TemporaryTerminationPoint tmpTp) {
+    private MapEntryNode createTpEntry(TemporaryTerminationPoint tmpTp, String topologyId, String nodeId) {
         ListNodeBuilder<String, LeafSetEntryNode<String>> leafListBuilder = ImmutableLeafSetNodeBuilder.<String>create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(TopologyQNames.TP_REF));
         List<LeafSetEntryNode<String>> tpRefs = new ArrayList<>();
@@ -247,7 +244,9 @@ public class TerminationPointAggregator extends UnificationAggregator {
                     = mapEntryNode.getChild(new YangInstanceIdentifier.NodeIdentifier(
                     TopologyQNames.NETWORK_TP_ID_QNAME));
             if (leaf.isPresent()) {
-                String value = (String) leaf.get().getValue();
+                String value = "/network-topology:network-topology/topology/" + topologyId +
+                        "/node/" + nodeId +
+                        "/termination-point/" + (String) leaf.get().getValue();
                 LeafSetEntryNode<String> tpRef = ImmutableLeafSetEntryNodeBuilder.<String>create()
                         .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue<String>(
                                 TopologyQNames.TP_REF, value)).withValue(value).build();
@@ -255,7 +254,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
             }
         }
         leafListBuilder.withValue(tpRefs);
-        return ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tmpTp.getTpId())
-                .withChild(leafListBuilder.build()).build();
+        return ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME,
+                tmpTp.getTpId()).withChild(leafListBuilder.build()).build();
     }
 }
