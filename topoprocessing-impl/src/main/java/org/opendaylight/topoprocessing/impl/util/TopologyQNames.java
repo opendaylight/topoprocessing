@@ -41,10 +41,14 @@ public final class TopologyQNames {
     public static final QName I2RS_NODE_ID_QNAME = QName.create(
             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
             .network.rev150608.network.Node.QNAME, "node-id");
-    /** I2RS model link-ref QName */
+    /** I2RS model supporting-link link-ref QName */
     public static final QName I2RS_LINK_REF = QName.create(
             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-            .network.topology.rev150608.network.Link.QNAME , "link-ref");
+            .network.topology.rev150608.network.link.SupportingLink.QNAME , "link-ref");
+    /** I2RS model supporting-link network-ref QName */
+    public static final QName I2RS_LINK_NETWORK_REF = QName.create(
+            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+            .network.topology.rev150608.network.link.SupportingLink.QNAME , "network-ref");
     /** I2RS model link-id QName */
     public static final QName I2RS_LINK_ID_QNAME = QName.create(
             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
@@ -53,10 +57,18 @@ public final class TopologyQNames {
     public static final QName I2RS_TP_ID_QNAME = QName.create(
             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
             .network.topology.rev150608.network.node.TerminationPoint.QNAME , "tp-id");
-    /** I2RS model tp-ref QName */
+    /** I2RS model supporting-termination-point tp-ref QName */
     public static final QName I2RS_TP_REF = QName.create(
             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-            .network.topology.rev150608.network.node.TerminationPoint.QNAME , "tp-ref");
+            .network.topology.rev150608.network.node.termination.point.SupportingTerminationPoint.QNAME, "tp-ref");
+    /** I2RS model supporting-termination-point network-ref QName */
+    public static final QName I2RS_TP_NETWORK_REF = QName.create(
+            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+            .network.topology.rev150608.network.node.termination.point.SupportingTerminationPoint.QNAME, "network-ref");
+    /** I2RS model supporting-termination-point node-ref QName */
+    public static final QName I2RS_TP_NODE_REF = QName.create(
+            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+            .network.topology.rev150608.network.node.termination.point.SupportingTerminationPoint.QNAME, "node-ref");
     /**I2RS source-node QName**/
     public static final QName I2RS_LINK_SOURCE_NODE_QNAME = QName.create(
             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf

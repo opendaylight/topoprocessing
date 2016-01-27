@@ -16,6 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
@@ -39,10 +40,25 @@ public final class InstanceIdentifiers {
                         YangInstanceIdentifier.of(TopologyQNames.NETWORK_LINK_ID_QNAME);
     private static final YangInstanceIdentifier RELATIVE_TP_ID_IDENTIFIER =
                         YangInstanceIdentifier.of(TopologyQNames.NETWORK_TP_ID_QNAME);
+    public static final YangInstanceIdentifier NT_TERMINATION_POINT =
+            YangInstanceIdentifier.of(TerminationPoint.QNAME);
+    public static final YangInstanceIdentifier NT_TP_ID_IDENTIFIER =
+            YangInstanceIdentifier.of(TopologyQNames.NETWORK_TP_ID_QNAME);
+    public static final YangInstanceIdentifier NT_TP_IDENTIFIER = YangInstanceIdentifier.of(org.opendaylight.yang.gen
+            .v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node
+            .TerminationPoint.QNAME);
     //I2RS
     /** I2RS model {@link Network} (MapNode) identifier */
     public static final YangInstanceIdentifier I2RS_NETWORK_IDENTIFIER =
             YangInstanceIdentifier.of(Network.QNAME);
+    public static final YangInstanceIdentifier I2RS_TERMINATION_POINT =
+            YangInstanceIdentifier.of(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.
+                    ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME);
+    public static final YangInstanceIdentifier I2RS_TP_ID_IDENTIFIER =
+            YangInstanceIdentifier.of(TopologyQNames.I2RS_TP_ID_QNAME);
+    public static final YangInstanceIdentifier I2RS_TP_IDENTIFIER =
+            YangInstanceIdentifier.of(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.
+                    ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME);
     private static final YangInstanceIdentifier I2RS_RELATIVE_NODE_ID_IDENTIFIER =
                         YangInstanceIdentifier.of(TopologyQNames.I2RS_NODE_ID_QNAME);
     private static final YangInstanceIdentifier I2RS_RELATIVE_LINK_ID_IDENTIFIER =

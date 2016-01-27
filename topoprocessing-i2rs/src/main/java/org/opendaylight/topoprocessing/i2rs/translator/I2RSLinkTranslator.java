@@ -9,7 +9,6 @@ package org.opendaylight.topoprocessing.i2rs.translator;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opendaylight.topoprocessing.api.structure.ComputedLink;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -48,14 +47,16 @@ public class I2RSLinkTranslator implements LinkTranslator {
                 ImmutableNodes.mapEntryBuilder(Link.QNAME, TopologyQNames.I2RS_LINK_ID_QNAME, wrapper.getId());
         // iterate through overlay items containing lists
         for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
-            // TODO - add source and destination translation
             // iterate through underlay items
             for (UnderlayItem underlayItem : overlayItem.getUnderlayItems()) {
                 if (! writtenLinks.contains(underlayItem)) {
                     writtenLinks.add(underlayItem);
                     // prepare supporting nodes
                     supportingLinks.withChild(ImmutableNodes.mapEntryBuilder(SupportingLink.QNAME,
-                            TopologyQNames.I2RS_LINK_REF, underlayItem.getItemId()).build());
+                            TopologyQNames.I2RS_LINK_REF, underlayItem.getItemId())
+                                    .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_LINK_NETWORK_REF,
+                                            underlayItem.getTopologyId()))
+                            .build());
                 }
             }
         }

@@ -253,8 +253,14 @@ public abstract class TopologyRequestHandler {
         CorrelationItemEnum correlationItem = correlation.getCorrelationItem();
         Aggregation aggregation = correlation.getAggregation();
         TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
-        TopologyAggregator aggregator = createAggregator(aggregation.getAggregationType(),
-                correlationItem, topoStoreProvider);
+        TopologyAggregator aggregator;
+        if (!aggregation.getMapping().isEmpty()) {
+            aggregator = createAggregator(aggregation.getAggregationType(),
+                    correlationItem, topoStoreProvider, aggregation.getMapping().get(0).getInputModel());
+        } else {
+            aggregator = createAggregator(aggregation.getAggregationType(),
+                    correlationItem, topoStoreProvider, null);
+        }
         aggregator.setTopologyManager(topologyManager);
         if (aggregation.getScripting() != null) {
             aggregator.initCustomAggregation(aggregation.getScripting());
@@ -396,10 +402,10 @@ public abstract class TopologyRequestHandler {
     }
 
     private TopologyAggregator createAggregator(Class<? extends AggregationBase> type, CorrelationItemEnum item,
-            TopoStoreProvider topoStoreProvider) {
+            TopoStoreProvider topoStoreProvider, Class<? extends Model> model) {
         TopologyAggregator aggregator;
         if (CorrelationItemEnum.TerminationPoint.equals(item)) {
-            aggregator = new TerminationPointAggregator(topoStoreProvider);
+            aggregator = new TerminationPointAggregator(topoStoreProvider, model);
         } else if (Equality.class.equals(type)) {
             aggregator = new EqualityAggregator(topoStoreProvider);
         } else if (Unification.class.equals(type)) {

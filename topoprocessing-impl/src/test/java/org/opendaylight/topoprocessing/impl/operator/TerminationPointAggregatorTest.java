@@ -3,6 +3,7 @@ package org.opendaylight.topoprocessing.impl.operator;
 import com.google.common.base.Optional;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -138,7 +139,7 @@ public class TerminationPointAggregatorTest {
 
         // aggregator
         TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
-        aggregator = new TerminationPointAggregator(topoStoreProvider);
+        aggregator = new TerminationPointAggregator(topoStoreProvider, NetworkTopologyModel.class);
         aggregator.setTargetField(targetField);
         aggregator.setTopologyManager(topoManager);
         aggregator.getTopoStoreProvider().initializeStore(TOPOLOGY_NAME, false);
@@ -255,21 +256,39 @@ public class TerminationPointAggregatorTest {
         ArrayList<MapEntryNode> mapEntryNodes = new ArrayList<>(tpMapNodes);
 
         for (MapEntryNode mapEntryNode : mapEntryNodes) {
-            Optional<DataContainerChild<? extends PathArgument, ?>> tpId
-                    = mapEntryNode.getChild(new NodeIdentifier(TopologyQNames.NETWORK_TP_ID_QNAME));
-            Assert.assertTrue("TP should contain tp-id", tpId.isPresent());
-            switch ((String) tpId.get().getValue()) {
-                case "tp:1":
-                case "tp:2":
-                break;
-                case TP_ID5:
-                Optional<DataContainerChild<? extends PathArgument, ?>> tpRefs
-                        = mapEntryNode.getChild(new NodeIdentifier(TopologyQNames.TP_REF));
-                Assert.assertFalse("Termination Point 3 should not contains TP-REFS", tpRefs.isPresent());
-                break;
-                default:
-                    Assert.fail("TP Node should not contain other TPs");
+            Optional<DataContainerChild<? extends PathArgument, ?>> tpRefs
+                    = mapEntryNode.getChild(new NodeIdentifier(TopologyQNames.TP_REF));
+            Assert.assertTrue("TP should contain tp-id", tpRefs.isPresent());
+            List<LeafSetEntryNode<String>> tpRefEntries = new ArrayList<>(((LeafSetNode<String>) tpRefs.get()).getValue());
+            if (tpRefEntries.get(0).getValue().contains("tp:1")) {
+                Assert.assertTrue(tpRefEntries.get(1).getValue().contains("tp:3"));
+                Assert.assertEquals("", 2, tpRefEntries.size());
+            } else if (tpRefEntries.get(0).getValue().contains("tp:3")) {
+                Assert.assertTrue(tpRefEntries.get(1).getValue().contains("tp:1"));
+                Assert.assertEquals("", 2, tpRefEntries.size());
+            } else if (tpRefEntries.get(0).getValue().contains("tp:2")) {
+                Assert.assertTrue(tpRefEntries.get(1).getValue().contains("tp:4"));
+                Assert.assertEquals("", 2, tpRefEntries.size());
+            } else if (tpRefEntries.get(0).getValue().contains("tp:4")) {
+                Assert.assertTrue(tpRefEntries.get(1).getValue().contains("tp:2"));
+                Assert.assertEquals("", 2, tpRefEntries.size());
+            } else if (tpRefEntries.get(0).getValue().contains("tp:5")) {
+                Assert.assertEquals("", 1, tpRefEntries.size());
             }
+            /*
+                switch ((String) tpRef.getValue()) {
+                    case "tp:1":
+                    case "tp:2":
+                    break;
+                    case TP_ID5:
+                    Optional<DataContainerChild<? extends PathArgument, ?>> tpRefs
+                            = mapEntryNode.getChild(new NodeIdentifier(TopologyQNames.TP_REF));
+                    Assert.assertTrue("Termination Point 3 should not contains TP-REFS", tpRefs.isPresent());
+                    break;
+                    default:
+                        Assert.fail("TP Node should not contain other TPs" + tpRef.get().getValue());
+                }
+                */
         }
     }
 
