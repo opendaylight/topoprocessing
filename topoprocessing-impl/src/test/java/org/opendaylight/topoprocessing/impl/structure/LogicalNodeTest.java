@@ -145,7 +145,7 @@ public class LogicalNodeTest {
 
     private static boolean physicalNodeEquals(UnderlayItem node1, UnderlayItem node2) {
         if (node1.getItem().equals(node2.getItem())
-                && node1.getLeafNode().equals(node2.getLeafNode())
+                && node1.getLeafNodes().equals(node2.getLeafNodes())
                 && node1.getTopologyId().equals(node2.getTopologyId())
                 && node1.getItemId().equals(node2.getItemId())) {
             return true;

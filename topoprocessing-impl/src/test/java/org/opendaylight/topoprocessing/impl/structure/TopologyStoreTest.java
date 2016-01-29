@@ -78,7 +78,7 @@ public class TopologyStoreTest {
             Entry<YangInstanceIdentifier, UnderlayItem> actual = actualIterator.next();
             if (expected.getKey().equals(actual.getKey()) &&
                     expected.getValue().getItem().equals(actual.getValue().getItem()) &&
-                    expected.getValue().getLeafNode().equals(actual.getValue().getLeafNode()) &&
+                    expected.getValue().getLeafNodes().equals(actual.getValue().getLeafNodes()) &&
                     expected.getValue().getTopologyId().equals(actual.getValue().getTopologyId()) &&
                     expected.getValue().getItemId().equals(actual.getValue().getItemId())) {
                 return true;

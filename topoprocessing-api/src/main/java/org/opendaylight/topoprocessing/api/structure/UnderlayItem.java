@@ -62,14 +62,14 @@ public class UnderlayItem {
     /**
      * @return node specified in target-field (in mapping)
      */
-    public Map<Integer, NormalizedNode<?, ?>> getLeafNode() {
+    public Map<Integer, NormalizedNode<?, ?>> getLeafNodes() {
         return leafNodes;
     }
 
     /**
      * @param leafNodes node specified in target-field (in mapping)
      */
-    public void setLeafNode(Map<Integer, NormalizedNode<?, ?>> leafNodes) {
+    public void setLeafNodes(Map<Integer, NormalizedNode<?, ?>> leafNodes) {
         this.leafNodes = leafNodes;
     }
 

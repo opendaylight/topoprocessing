@@ -17,10 +17,12 @@ import java.util.Queue;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import org.opendaylight.topoprocessing.api.structure.ComputedLink;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.ScriptResult;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.Scripting;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -60,8 +62,10 @@ public abstract class TopologyAggregator implements TopologyOperator {
     public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdItem,
                                                 final String topologyId) {
         LOG.trace("Processing createdChanges");
+        if(createdItem.getCorrelationItem() == CorrelationItemEnum.Link) {
+        }
         for (TopologyStore ts : topoStoreProvider.getTopologyStores()) {
-            if (ts.getId().equals(topologyId)) {
+            if (ts.getId().equals(topologyId) || createdItem.getCorrelationItem() == CorrelationItemEnum.Link) {
                 ts.getUnderlayItems().put(identifier, createdItem);
             }
         }
@@ -78,15 +82,20 @@ public abstract class TopologyAggregator implements TopologyOperator {
             if ((! ts.getId().equals(topologyId)) || ts.isAggregateInside()) {
                 for (Entry<YangInstanceIdentifier, UnderlayItem> topoStoreEntry : ts.getUnderlayItems().entrySet()) {
                     UnderlayItem topoStoreItem = topoStoreEntry.getValue();
-                    if (scriptEngine != null) {
-                        if (aggregableWithScript(newItem, topoStoreItem)) {
+                    if(newItem.getCorrelationItem() == CorrelationItemEnum.Link) {
+                        checkForPossibleAggregationOfLinks(newItem, topoStoreItem);
+                    }
+                    else {
+                        if (scriptEngine != null) {
+                            if (aggregableWithScript(newItem, topoStoreItem)) {
+                                aggregateItems(newItem, topoStoreItem);
+                                return;
+                            }
+                        } else if (! newItem.equals(topoStoreItem) && matchTargetFields(newItem, topoStoreItem)) {
+                            // no previous aggregation on this node
                             aggregateItems(newItem, topoStoreItem);
                             return;
                         }
-                    } else if (! newItem.equals(topoStoreItem) && matchTargetFields(newItem, topoStoreItem)) {
-                        // no previous aggregation on this node
-                        aggregateItems(newItem, topoStoreItem);
-                        return;
                     }
                 }
             }
@@ -100,12 +109,35 @@ public abstract class TopologyAggregator implements TopologyOperator {
         }
     }
 
+    private void checkForPossibleAggregationOfLinks(UnderlayItem newItem, UnderlayItem topoStoreItem)
+    {
+        if(newItem instanceof ComputedLink && topoStoreItem instanceof ComputedLink)
+        {
+            ComputedLink newLink = (ComputedLink) newItem;
+            ComputedLink topoStoreLink = (ComputedLink) topoStoreItem;
+            if (scriptEngine != null) {
+                if (aggregableWithScript(newItem, topoStoreItem) &&
+                        newLink.getSrcNode().equals(topoStoreLink.getSrcNode()) &&
+                        newLink.getDstNode().equals(topoStoreLink.getDstNode())) {
+                    aggregateItems(newItem, topoStoreItem);
+                    return;
+                }
+            } else if (! newItem.equals(topoStoreItem) && matchTargetFields(newItem, topoStoreItem) &&
+                    newLink.getSrcNode().equals(topoStoreLink.getSrcNode()) &&
+                    newLink.getDstNode().equals(topoStoreLink.getDstNode())) {
+                // no previous aggregation on this link
+                aggregateItems(newItem, topoStoreItem);
+                return;
+            }
+        }
+    }
+
     private boolean matchTargetFields(UnderlayItem item1, UnderlayItem item2) {
         boolean targetFieldsMatch = false;
-        if (item1.getLeafNode().size() == item2.getLeafNode().size()) {
+        if (item1.getLeafNodes().size() == item2.getLeafNodes().size()) {
             targetFieldsMatch = true;
-            for (Entry<Integer, NormalizedNode<?, ?>> targetFieldEntryOfItem1 : item1.getLeafNode().entrySet()) {
-                NormalizedNode<?, ?> targetFieldOfItem2 = item2.getLeafNode().get(targetFieldEntryOfItem1.getKey());
+            for (Entry<Integer, NormalizedNode<?, ?>> targetFieldEntryOfItem1 : item1.getLeafNodes().entrySet()) {
+                NormalizedNode<?, ?> targetFieldOfItem2 = item2.getLeafNodes().get(targetFieldEntryOfItem1.getKey());
                 if (!targetFieldEntryOfItem1.getValue().equals(targetFieldOfItem2)) {
                     return false;
                 }
@@ -197,18 +229,42 @@ public abstract class TopologyAggregator implements TopologyOperator {
                 UnderlayItem underlayItem = ts.getUnderlayItems().get(identifier);
                 Preconditions.checkNotNull(underlayItem, "Updated underlay item not found in the Topology store");
                 underlayItem.setItem(updatedItem.getItem());
-                // if Leaf Node was changed
-                if (! matchTargetFields(underlayItem, updatedItem)) {
-                    underlayItem.setLeafNode(updatedItem.getLeafNode());
-                    if (underlayItem.getOverlayItem() != null) {
-                        removeUnderlayItemFromOverlayItem(underlayItem);
+                if(underlayItem.getCorrelationItem() == CorrelationItemEnum.Link) {
+                    if(underlayItem instanceof ComputedLink && updatedItem instanceof ComputedLink)
+                    {
+                        ComputedLink underlayLink = (ComputedLink) underlayItem;
+                        ComputedLink updatedLink = (ComputedLink) updatedItem;
+                        if (! matchTargetFields(underlayItem, updatedItem) ||
+                                ! underlayLink.getSrcNode().equals(updatedLink.getSrcNode()) ||
+                                ! underlayLink.getDstNode().equals(updatedLink.getDstNode())) {
+                            underlayLink.setLeafNodes(updatedLink.getLeafNodes());
+                            underlayLink.setSrcNode(updatedLink.getSrcNode());
+                            underlayLink.setDstNode(updatedLink.getDstNode());
+                            if (underlayItem.getOverlayItem() != null) {
+                                removeUnderlayItemFromOverlayItem(underlayItem);
+                            }
+                            checkForPossibleAggregationOfLinks(updatedLink, underlayLink);
+                        } else if (underlayItem.getOverlayItem() != null) {
+                            // in case that only Link value was changed
+                            topologyManager.updateOverlayItem(underlayItem.getOverlayItem());
+                        }
+                        break;
                     }
-                    checkForPossibleAggregation(underlayItem, topologyId);
-                } else if (underlayItem.getOverlayItem() != null) {
-                    // in case that only Node value was changed
-                    topologyManager.updateOverlayItem(underlayItem.getOverlayItem());
                 }
-                break;
+                else {
+                    // if Leaf Node was changed
+                    if (! matchTargetFields(underlayItem, updatedItem)) {
+                        underlayItem.setLeafNodes(updatedItem.getLeafNodes());
+                        if (underlayItem.getOverlayItem() != null) {
+                            removeUnderlayItemFromOverlayItem(underlayItem);
+                        }
+                        checkForPossibleAggregation(underlayItem, topologyId);
+                    } else if (underlayItem.getOverlayItem() != null) {
+                        // in case that only Node value was changed
+                        topologyManager.updateOverlayItem(underlayItem.getOverlayItem());
+                    }
+                    break;
+                }
             }
         }
     }
