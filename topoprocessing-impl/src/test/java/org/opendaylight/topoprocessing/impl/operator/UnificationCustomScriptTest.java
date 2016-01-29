@@ -65,8 +65,8 @@ public class UnificationCustomScriptTest {
         aggregator = new UnificationAggregator(topoStoreProvider);
         topoStoreProvider.initializeStore(TOPO1, false);
         topoStoreProvider.initializeStore(TOPO2, false);
-        String script = "if (originalItem.getLeafNode().get(0).getValue() ==="
-                + "        newItem.getLeafNode().get(0).getValue()) {"
+        String script = "if (originalItem.getLeafNodes().get(java.lang.Integer.valueOf('0')).getValue() ==="
+                + "        newItem.getLeafNodes().get(java.lang.Integer.valueOf('0')).getValue()) {"
                 + "    aggregable.setResult(true);"
                 + "} else {"
                 + "    aggregable.setResult(false);"

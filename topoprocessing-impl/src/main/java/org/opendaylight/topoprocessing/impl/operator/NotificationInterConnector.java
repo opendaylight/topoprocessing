@@ -72,11 +72,11 @@ public class NotificationInterConnector implements TopologyOperator {
                 UnderlayItem combinedItem = null;
                 LOGGER.debug("Created changes - item exists");
                 if (item.getItem() != null) {
-                    combinedItem = new UnderlayItem(item.getItem(), createdEntry.getLeafNode(),
+                    combinedItem = new UnderlayItem(item.getItem(), createdEntry.getLeafNodes(),
                             topologyId, item.getItemId(), item.getCorrelationItem());
                 } else {
                     UnderlayItem newItem = createdEntry;
-                    combinedItem = new UnderlayItem(newItem.getItem(), item.getLeafNode(), topologyId,
+                    combinedItem = new UnderlayItem(newItem.getItem(), item.getLeafNodes(), topologyId,
                             newItem.getItemId(), newItem.getCorrelationItem());
                 }
                 items.put(key, combinedItem);
@@ -110,7 +110,7 @@ public class NotificationInterConnector implements TopologyOperator {
             if (item != null) {
                 UnderlayItem resultingItem = null;
                 LOGGER.debug("Updated changes - item exists");
-                if ((item.getItem() != null) && (item.getLeafNode() != null)) {
+                if ((item.getItem() != null) && (item.getLeafNodes() != null)) {
                     resultingItem = updateItemFields(item, updatedItem);
                     operator.processUpdatedChanges(key, resultingItem, topologyId);
                 } else {
@@ -193,8 +193,8 @@ public class NotificationInterConnector implements TopologyOperator {
         if (newItem.getItem() != null) {
             oldItem.setItem(newItem.getItem());
         }
-        if (newItem.getLeafNode() != null) {
-            oldItem.setLeafNode(newItem.getLeafNode());
+        if (newItem.getLeafNodes() != null) {
+            oldItem.setLeafNodes(newItem.getLeafNodes());
         }
         return oldItem;
     }
