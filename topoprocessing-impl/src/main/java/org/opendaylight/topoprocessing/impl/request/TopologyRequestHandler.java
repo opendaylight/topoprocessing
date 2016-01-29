@@ -172,6 +172,7 @@ public abstract class TopologyRequestHandler {
         LOG.debug("Processing overlay topology creation request");
         Correlations correlations = getCorrelations(fromNormalizedNode);
         LinkComputation linkComputation = getLinkComputation(fromNormalizedNode);
+        boolean linkAggregation = false;
         Preconditions.checkNotNull(correlations, "Received correlations can't be null");
         try {
             LOG.debug("Processing correlation configuration");
@@ -183,6 +184,9 @@ public abstract class TopologyRequestHandler {
                     initFiltration(correlation);
                 } else if (AggregationOnly.class.equals(correlation.getType())) {
                     initAggregation(correlation, false);
+                    if(correlation.getCorrelationItem() == CorrelationItemEnum.Link) {
+                        linkAggregation = true;
+                    }
                 } else if (RenderingOnly.class.equals(correlation.getType())){
                     initRendering(correlation);
                 } else {
@@ -190,7 +194,7 @@ public abstract class TopologyRequestHandler {
                 }
             }
             if (linkComputation != null) {
-                initLinkComputation(linkComputation);
+                initLinkComputation(linkComputation, linkAggregation);
             }
             LOG.debug("Correlation configuration successfully read");
         } catch (Exception e) {
@@ -337,7 +341,7 @@ public abstract class TopologyRequestHandler {
         }
     }
 
-    private LinkCalculator initLinkComputation(LinkComputation linkComputation) {
+    private LinkCalculator initLinkComputation(LinkComputation linkComputation, boolean linkAggregation) {
         LinkCalculator calculator = null;
         List<LinkInfo> linksInformations = linkComputation.getLinkInfo();
         if (linksInformations != null && !linksInformations.isEmpty()) {
@@ -348,6 +352,11 @@ public abstract class TopologyRequestHandler {
             for (LinkInfo linkInfo : linksInformations) {
                 String underlayTopologyId = linkInfo.getLinkTopology();
                 Class<? extends Model> inputModel = linkInfo.getInputModel();
+                if(linkAggregation) {
+                    TopoStoreProvider storeProvider = new TopoStoreProvider();
+                    storeProvider.initializeStore(underlayTopologyId, true);
+                    calculator.setTopologyAggregator(new UnificationAggregator(storeProvider));
+                }
                 UnderlayTopologyListener listener = modelAdapters.get(inputModel)
                         .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
                                 CorrelationItemEnum.Link, datastoreType, calculator, listeners, null);

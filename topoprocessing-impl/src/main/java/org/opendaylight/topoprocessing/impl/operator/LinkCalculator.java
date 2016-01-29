@@ -51,7 +51,7 @@ public class LinkCalculator implements TopologyOperator {
             .of(QName.create(Link.QNAME, "destination")).node(QName.create(Destination.QNAME, "dest-node"));
 
     protected TopologyManager manager;
-
+    private TopologyAggregator aggregator;
     private TopologyStore storedOverlayNodes;
     private Class<? extends Model> outputModel;
     private Map<YangInstanceIdentifier, ComputedLink> matchedLinks = new HashMap<>();
@@ -168,7 +168,7 @@ public class LinkCalculator implements TopologyOperator {
         NormalizedNode<?, ?> sourceNode = getLinkSourceNode(link);
         NormalizedNode<?, ?> destNode = getLinkDestNode(link);
         if (sourceNode != null && destNode != null) {
-            ComputedLink computedLink = new ComputedLink(link.getItem(), null, null,
+            ComputedLink computedLink = new ComputedLink(link.getItem(), link.getLeafNode(), null, null,
                     storedOverlayNodes.getId(), link.getItemId(), CorrelationItemEnum.Link);
             boolean srcFound = false;
             boolean dstFound = false;
@@ -219,8 +219,13 @@ public class LinkCalculator implements TopologyOperator {
             if (srcFound && dstFound) {
                 // link is put into matchedLinks map
                 matchedLinks.put(linkId, computedLink);
-                OverlayItem overlayItem = wrapUnderlayItem(computedLink);
-                manager.addOverlayItem(overlayItem);
+                if(aggregator != null) {
+                     aggregator.processCreatedChanges(linkId, computedLink, computedLink.getTopologyId());
+                }
+                else {
+                    OverlayItem overlayItem = wrapUnderlayItem(computedLink);
+                    manager.addOverlayItem(overlayItem);
+                }
                 // if the waitingList map contains the link it will be removed
                 return true;
             } else {
@@ -316,6 +321,10 @@ public class LinkCalculator implements TopologyOperator {
         OverlayItem overlayItem = new OverlayItem(underlayItems, underlayItem.getCorrelationItem());
         underlayItem.setOverlayItem(overlayItem);
         return overlayItem;
+    }
+
+    public void setTopologyAggregator(TopologyAggregator aggregator){
+        this.aggregator = aggregator;
     }
 
 }

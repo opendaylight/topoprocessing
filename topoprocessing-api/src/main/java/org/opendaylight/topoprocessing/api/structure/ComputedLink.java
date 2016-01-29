@@ -20,19 +20,22 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 public class ComputedLink extends UnderlayItem {
 
     private NormalizedNode<?, ?> dstNode;
+    private NormalizedNode<?, ?> srcNode;
 
     /**
      * @param link              Link of Underlay topology
+     * @param leafNode          denoting target field
      * @param srcNode           denoting source
      * @param dstNode           denoting destination
      * @param topologyId        identifier of {@link Topology}
      * @param linkId            identifier of the {@link Link}
      * @param correlationItem   {@link Link}
      */
-    public ComputedLink(NormalizedNode<?, ?> link,
+    public ComputedLink(NormalizedNode<?, ?> link, NormalizedNode<?, ?> leafNode,
             NormalizedNode<?, ?> srcNode, NormalizedNode<?, ?> dstNode, String topologyId, String linkId,
             CorrelationItemEnum correlationItem) {
-        super(link, srcNode, topologyId, linkId, correlationItem);
+        super(link, leafNode, topologyId, linkId, correlationItem);
+        this.srcNode = srcNode;
         this.dstNode = dstNode;
     }
 
@@ -40,7 +43,14 @@ public class ComputedLink extends UnderlayItem {
      * @return the srcNode
      */
     public NormalizedNode<?, ?> getSrcNode() {
-        return getLeafNode();
+        return srcNode;
+    }
+
+    /**
+     * @param srcNode the srcNode to set
+     */
+    public void setSrcNode(NormalizedNode<?, ?> srcNode) {
+        this.srcNode = srcNode;
     }
 
     /**
@@ -50,12 +60,6 @@ public class ComputedLink extends UnderlayItem {
         return dstNode;
     }
 
-    /**
-     * @param srcNode the srcNode to set
-     */
-    public void setSrcNode(NormalizedNode<?, ?> srcNode) {
-        setLeafNode(srcNode);
-    }
 
     /**
      * @param dstNode the dstNode to set
