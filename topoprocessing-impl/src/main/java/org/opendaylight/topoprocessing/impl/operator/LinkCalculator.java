@@ -51,7 +51,7 @@ public class LinkCalculator implements TopologyOperator {
             .of(QName.create(Link.QNAME, "destination")).node(QName.create(Destination.QNAME, "dest-node"));
 
     protected TopologyManager manager;
-
+    private TopologyAggregator aggregator;
     private TopologyStore storedOverlayNodes;
     private Class<? extends Model> outputModel;
     private Map<YangInstanceIdentifier, ComputedLink> matchedLinks = new HashMap<>();
@@ -78,13 +78,13 @@ public class LinkCalculator implements TopologyOperator {
                         waitingLinks.entrySet().iterator();
                 while (waitingLinksIterator.hasNext()) {
                     Entry<YangInstanceIdentifier, UnderlayItem> waitingLink = waitingLinksIterator.next();
-                    if (calculatePossibleLink(waitingLink.getKey(),waitingLink.getValue())) {
+                    if (calculatePossibleLink(waitingLink.getKey(),waitingLink.getValue(), false)) {
                         waitingLinksIterator.remove();
                     }
                 }
             } else if (CorrelationItemEnum.Link.equals(item.getCorrelationItem())) {
                 // process links from underlay topology
-                calculatePossibleLink(itemIdentifier,item);
+                calculatePossibleLink(itemIdentifier,item, false);
             }
         }
     }
@@ -115,14 +115,14 @@ public class LinkCalculator implements TopologyOperator {
                     manager.updateOverlayItem(overlayItem);
                 }
             } else if (waitingLinks.containsKey(itemIdentifier)) {
-                calculatePossibleLink(itemIdentifier, item);
+                calculatePossibleLink(itemIdentifier, item, true);
             } else if (storedOverlayNodes.getUnderlayItems().containsKey(itemIdentifier)) {
                 storedOverlayNodes.getUnderlayItems().put(itemIdentifier, item);
                 Iterator<Entry<YangInstanceIdentifier, UnderlayItem>> waitingLinksIterator =
                         waitingLinks.entrySet().iterator();
                 while (waitingLinksIterator.hasNext()) {
                     Entry<YangInstanceIdentifier, UnderlayItem> waitingLink = waitingLinksIterator.next();
-                    calculatePossibleLink(waitingLink.getKey(),waitingLink.getValue());
+                    calculatePossibleLink(waitingLink.getKey(),waitingLink.getValue(), true);
                 }
             }
         }
@@ -143,7 +143,12 @@ public class LinkCalculator implements TopologyOperator {
                             || removedOverlayNode.getItem().equals(matchedLink.getValue().getDstNode())) {
                         // remove calculated link
                         waitingLinks.put(matchedLink.getKey(), matchedLink.getValue());
-                        manager.removeOverlayItem(matchedLink.getValue().getOverlayItem());
+                        if (aggregator != null) {
+                            aggregator.processRemovedChanges(matchedLink.getKey(),
+                                    matchedLink.getValue().getTopologyId());
+                        } else {
+                            manager.removeOverlayItem(matchedLink.getValue().getOverlayItem());
+                        }
                         matchedLinksIterator.remove();
                     }
                 }
@@ -160,16 +165,20 @@ public class LinkCalculator implements TopologyOperator {
     private void removeMatchedLink(YangInstanceIdentifier itemIdentifier) {
         ComputedLink overlayLink = matchedLinks.remove(itemIdentifier);
         if (null != overlayLink) {
-            manager.removeOverlayItem(overlayLink.getOverlayItem());
+            if (aggregator != null) {
+                aggregator.processRemovedChanges(itemIdentifier, matchedLinks.get(itemIdentifier).getTopologyId());
+            } else {
+                manager.removeOverlayItem(overlayLink.getOverlayItem());
+            }
         }
     }
 
-    private boolean calculatePossibleLink(YangInstanceIdentifier linkId, UnderlayItem link) {
+    private boolean calculatePossibleLink(YangInstanceIdentifier linkId, UnderlayItem link, boolean update) {
         NormalizedNode<?, ?> sourceNode = getLinkSourceNode(link);
         NormalizedNode<?, ?> destNode = getLinkDestNode(link);
         if (sourceNode != null && destNode != null) {
-            ComputedLink computedLink = new ComputedLink(link.getItem(), null, null,
-                    link.getTopologyId(), link.getItemId(), CorrelationItemEnum.Link);
+            ComputedLink computedLink = new ComputedLink(link.getItem(), link.getLeafNodes(), null, null,
+                    storedOverlayNodes.getId(), link.getItemId(), CorrelationItemEnum.Link);
             boolean srcFound = false;
             boolean dstFound = false;
             Iterator<Entry<YangInstanceIdentifier, UnderlayItem>> overlayNodesIterator =
@@ -219,8 +228,17 @@ public class LinkCalculator implements TopologyOperator {
             if (srcFound && dstFound) {
                 // link is put into matchedLinks map
                 matchedLinks.put(linkId, computedLink);
-                OverlayItem overlayItem = wrapUnderlayItem(computedLink);
-                manager.addOverlayItem(overlayItem);
+                if (aggregator != null) {
+                    if (update) {
+                        aggregator.processUpdatedChanges(linkId, computedLink, computedLink.getTopologyId());
+                    } else {
+                        aggregator.processCreatedChanges(linkId, computedLink, computedLink.getTopologyId());
+                    }
+                }
+                else {
+                    OverlayItem overlayItem = wrapUnderlayItem(computedLink);
+                    manager.addOverlayItem(overlayItem);
+                }
                 // if the waitingList map contains the link it will be removed
                 return true;
             } else {
@@ -316,6 +334,10 @@ public class LinkCalculator implements TopologyOperator {
         OverlayItem overlayItem = new OverlayItem(underlayItems, underlayItem.getCorrelationItem());
         underlayItem.setOverlayItem(overlayItem);
         return overlayItem;
+    }
+
+    public void setTopologyAggregator(TopologyAggregator aggregator){
+        this.aggregator = aggregator;
     }
 
 }

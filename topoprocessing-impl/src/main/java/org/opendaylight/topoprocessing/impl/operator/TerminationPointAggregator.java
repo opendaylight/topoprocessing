@@ -126,7 +126,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
             // set TPMapNode to Items leafnode for further looking for changes
             Map<Integer, NormalizedNode<?, ?>> terminationPointMapNode = new HashMap<>(1);
             terminationPointMapNode.put(0, tpMapNode);
-            createdEntry.setLeafNode(terminationPointMapNode);
+            createdEntry.setLeafNodes(terminationPointMapNode);
             // aggregate Termination points to Temporary TP
             List<TemporaryTerminationPoint> tmpTpList = addTerminationPoints(tpMapNode);
             // add Temporary TP to map
@@ -156,11 +156,11 @@ public class TerminationPointAggregator extends UnificationAggregator {
         // if node contains Termination points
         // and those TP have some changes inside
         if (updatedTpMapNode.isPresent()
-                && (! underlayItem.getLeafNode().equals(updatedTpMapNode.get()))) {
+                && (! underlayItem.getLeafNodes().equals(updatedTpMapNode.get()))) {
             MapNode newTpMap = (MapNode) updatedTpMapNode.get();
             Map<Integer, NormalizedNode<?, ?>> terminationPointMapNode = new HashMap<>(1);
             terminationPointMapNode.put(0, newTpMap);
-            underlayItem.setLeafNode(terminationPointMapNode);
+            underlayItem.setLeafNodes(terminationPointMapNode);
             removeTerminationPoints(newTpMap, nodeTps);
             updateTerminationPoints(newTpMap, nodeTps);
         }
