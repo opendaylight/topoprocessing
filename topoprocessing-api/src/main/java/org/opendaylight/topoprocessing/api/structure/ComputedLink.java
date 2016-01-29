@@ -7,7 +7,6 @@
  */
 package org.opendaylight.topoprocessing.api.structure;
 
-import java.util.HashMap;
 import java.util.Map;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -21,28 +20,37 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 public class ComputedLink extends UnderlayItem {
 
     private NormalizedNode<?, ?> dstNode;
+    private NormalizedNode<?, ?> srcNode;
 
     /**
      * @param link              Link of Underlay topology
+     * @param leafNodes         denoting target fields
      * @param srcNode           denoting source
      * @param dstNode           denoting destination
      * @param topologyId        identifier of {@link Topology}
      * @param linkId            identifier of the {@link Link}
      * @param correlationItem   {@link Link}
      */
-    public ComputedLink(NormalizedNode<?, ?> link,
+    public ComputedLink(NormalizedNode<?, ?> link, Map<Integer, NormalizedNode<?, ?>> leafNodes,
             NormalizedNode<?, ?> srcNode, NormalizedNode<?, ?> dstNode, String topologyId, String linkId,
             CorrelationItemEnum correlationItem) {
-        super(link, null, topologyId, linkId, correlationItem);
+        super(link, leafNodes, topologyId, linkId, correlationItem);
+        this.srcNode = srcNode;
         this.dstNode = dstNode;
-        setSrcNode(srcNode);
     }
 
     /**
      * @return the srcNode
      */
     public NormalizedNode<?, ?> getSrcNode() {
-        return getLeafNode().get(0);
+        return srcNode;
+    }
+
+    /**
+     * @param srcNode the srcNode to set
+     */
+    public void setSrcNode(NormalizedNode<?, ?> srcNode) {
+        this.srcNode = srcNode;
     }
 
     /**
@@ -50,15 +58,6 @@ public class ComputedLink extends UnderlayItem {
      */
     public NormalizedNode<?, ?> getDstNode() {
         return dstNode;
-    }
-
-    /**
-     * @param srcNode the srcNode to set
-     */
-    public void setSrcNode(NormalizedNode<?, ?> srcNode) {
-        Map<Integer, NormalizedNode<?, ?>> srcNodeMap = new HashMap<>(1);
-        srcNodeMap.put(0, srcNode);
-        setLeafNode(srcNodeMap);
     }
 
     /**

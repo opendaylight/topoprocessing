@@ -172,17 +172,23 @@ public abstract class TopologyRequestHandler {
         LOG.debug("Processing overlay topology creation request");
         Correlations correlations = getCorrelations(fromNormalizedNode);
         LinkComputation linkComputation = getLinkComputation(fromNormalizedNode);
+        Aggregation linkAggregation = null;
         Preconditions.checkNotNull(correlations, "Received correlations can't be null");
         try {
             LOG.debug("Processing correlation configuration");
             List<Correlation> correlationList = correlations.getCorrelation();
+            //this allow only one correlation of links in request
             for (Correlation correlation : correlationList) {
                 if (FiltrationAggregation.class.equals(correlation.getType())) {
                     initAggregation(correlation, true);
                 } else if (FiltrationOnly.class.equals(correlation.getType())) {
                     initFiltration(correlation);
                 } else if (AggregationOnly.class.equals(correlation.getType())) {
-                    initAggregation(correlation, false);
+                    if(correlation.getCorrelationItem() == CorrelationItemEnum.Link) {
+                        linkAggregation = correlation.getAggregation();
+                    } else {
+                        initAggregation(correlation, false);
+                    }
                 } else if (RenderingOnly.class.equals(correlation.getType())){
                     initRendering(correlation);
                 } else {
@@ -190,7 +196,7 @@ public abstract class TopologyRequestHandler {
                 }
             }
             if (linkComputation != null) {
-                initLinkComputation(linkComputation);
+                initLinkComputation(linkComputation, linkAggregation);
             }
             LOG.debug("Correlation configuration successfully read");
         } catch (Exception e) {
@@ -348,7 +354,7 @@ public abstract class TopologyRequestHandler {
         }
     }
 
-    private LinkCalculator initLinkComputation(LinkComputation linkComputation) {
+    private LinkCalculator initLinkComputation(LinkComputation linkComputation, Aggregation linkAggregation) {
         LinkCalculator calculator = null;
         List<LinkInfo> linksInformations = linkComputation.getLinkInfo();
         if (linksInformations != null && !linksInformations.isEmpty()) {
@@ -356,12 +362,29 @@ public abstract class TopologyRequestHandler {
             calculator = new LinkCalculator(overlayTopologyId, outputModel);
             calculator.setTopologyManager(topologyManager);
             //register underlay listeners
+            if (linkAggregation != null) {
+                TopoStoreProvider storeProvider = new TopoStoreProvider();
+                storeProvider.initializeStore(overlayTopologyId, true);
+                UnificationAggregator aggregator = new UnificationAggregator(storeProvider);
+                aggregator.setTopologyManager(topologyManager);
+                calculator.setTopologyAggregator(aggregator);
+            }
             for (LinkInfo linkInfo : linksInformations) {
                 String underlayTopologyId = linkInfo.getLinkTopology();
+                Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>();
+                for (Mapping mapping : linkAggregation.getMapping()) {
+                    if(mapping.getUnderlayTopology().equals(underlayTopologyId)) {
+                        for (TargetField targetField : mapping.getTargetField()) {
+                            pathIdentifiers.put(targetField.getMatchingKey(), translator.translate(
+                                            targetField.getTargetFieldPath().getValue(), CorrelationItemEnum.Link,
+                                            schemaHolder, mapping.getInputModel()));
+                        }
+                    }
+                }
                 Class<? extends Model> inputModel = linkInfo.getInputModel();
                 UnderlayTopologyListener listener = modelAdapters.get(inputModel)
                         .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
-                                CorrelationItemEnum.Link, datastoreType, calculator, listeners, null);
+                                CorrelationItemEnum.Link, datastoreType, calculator, listeners, pathIdentifiers);
                 InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
                         .createTopologyIdentifier(underlayTopologyId);
                 YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
