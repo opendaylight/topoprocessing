@@ -87,7 +87,7 @@ public class IRNodeTranslator implements NodeTranslator {
         // in this case, we always have only one overlay item with one underlay item
         OverlayItem overlayItem = wrapper.getOverlayItems().get(0);
         UnderlayItem underlayItem = overlayItem.getUnderlayItems().peek();
-        NormalizedNode<?, ?> inventoryItemNode = underlayItem.getLeafNode().get(0);
+        NormalizedNode<?, ?> inventoryItemNode = underlayItem.getLeafNodes().get(0);
         // prepare termination points
         Optional<NormalizedNode<?, ?>> nodeConnectorNode = NormalizedNodes.findNode(
                 inventoryItemNode, IRInstanceIdentifiers.NODE_CONNECTOR_IDENTIFIER);
