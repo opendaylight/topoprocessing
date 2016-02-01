@@ -7,8 +7,8 @@
  */
 package org.opendaylight.topoprocessing.impl.operator;
 
-import java.util.List;
-
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +18,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
-import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestNodeCreator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -45,15 +44,8 @@ public class UnificationAggregatorTest {
     private static final String TOPO3 = "topo3";
     private static final String TOPO4 = "topo4";
 
-    private static final String TOPO5 = "topo5";
-
-    private static final String TOPOLOGY1 = "openflow:1";
-    private static final String TOPOLOGY2 = "bgp:1";
-
     private TopologyAggregator aggregator;
-    private List<TopologyStore> topologyStores;
-    private YangInstanceIdentifier leafYiid11, leafYiid12, leafYiid21, leafYiid22, leafYiid23;
-    private LeafNode<Object> leafNode11;
+    private YangInstanceIdentifier leafYiid21, leafYiid22, leafYiid23;
 
     @Mock
     private NormalizedNode<?,?> mockNormalizedNode1, mockNormalizedNode2;
@@ -112,12 +104,16 @@ public class UnificationAggregatorTest {
 
         leafYiid22 = testNodeCreator.createNodeIdYiid("22");
         LeafNode<String> leafNode22 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.3");
-        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, leafNode21, TOPO2, "21", CorrelationItemEnum.Node);
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, leafNode22, TOPO2, "22", CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields1 = new HashMap<>(1);
+        targetFields1.put(0, leafNode21);
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, targetFields1, TOPO2, "21", CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields2 = new HashMap<>(1);
+        targetFields2.put(0, leafNode22);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, targetFields2, TOPO2, "22", CorrelationItemEnum.Node);
 
         aggregator.processCreatedChanges(leafYiid21, physicalNode1, TOPO2);
         aggregator.processCreatedChanges(leafYiid22, physicalNode2, TOPO2);
-        
+
         Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
         // checks that two nodes have been correctly added into topology TOPO2
         Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
@@ -135,7 +131,9 @@ public class UnificationAggregatorTest {
         LeafNode<Object> leafNode23 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.1").build();
-        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, leafNode23, TOPO3, "23", CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields3 = new HashMap<>(1);
+        targetFields3.put(0, leafNode23);
+        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, targetFields3, TOPO3, "23", CorrelationItemEnum.Node);
 
         aggregator.processCreatedChanges(leafYiid23, physicalNode3, TOPO3);
 
@@ -204,7 +202,9 @@ public class UnificationAggregatorTest {
         LeafNode<Object> leafNode31 = ImmutableLeafNodeBuilder.create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(QNAME_LEAF_IP))
                 .withValue("192.168.1.3").build();
-        UnderlayItem physicalNode31 = new UnderlayItem(mockNormalizedNode1, leafNode31, TOPO2, "31", CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, leafNode31);
+        UnderlayItem physicalNode31 = new UnderlayItem(mockNormalizedNode1, targetFields, TOPO2, "31", CorrelationItemEnum.Node);
         aggregator.processUpdatedChanges(leafYiid21, physicalNode31, TOPO2);
 
         // one new logical node has been created

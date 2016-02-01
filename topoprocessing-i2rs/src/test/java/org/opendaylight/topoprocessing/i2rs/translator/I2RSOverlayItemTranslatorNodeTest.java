@@ -240,13 +240,14 @@ public class I2RSOverlayItemTranslatorNodeTest {
                 .build();
         final MapEntryNode node3 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, physicalName3)
                 .withChild(terminationPoints3).build();
-
+        final Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, mockNormalizedNode);
         OverlayItem logicalNode1 = new OverlayItem(new ArrayList<UnderlayItem>() {{
-            add(new UnderlayItem(node1, mockNormalizedNode, TOPOLOGY_NAME, physicalName1, CorrelationItemEnum.Node));
-            add(new UnderlayItem(node2, mockNormalizedNode, TOPOLOGY_NAME, physicalName2, CorrelationItemEnum.Node));
+            add(new UnderlayItem(node1, targetFields, TOPOLOGY_NAME, physicalName1, CorrelationItemEnum.Node));
+            add(new UnderlayItem(node2, targetFields, TOPOLOGY_NAME, physicalName2, CorrelationItemEnum.Node));
         }}, CorrelationItemEnum.Node);
         OverlayItem logicalNode2 = new OverlayItem(Collections.singletonList(
-                new UnderlayItem(node3, mockNormalizedNode, TOPOLOGY_NAME, physicalName3, CorrelationItemEnum.Node)
+                new UnderlayItem(node3, targetFields, TOPOLOGY_NAME, physicalName3, CorrelationItemEnum.Node)
         ), CorrelationItemEnum.Node);
         OverlayItemWrapper wrapper = new OverlayItemWrapper(logicalName, logicalNode1);
         wrapper.addOverlayItem(logicalNode2);

@@ -7,7 +7,8 @@
  */
 package org.opendaylight.topoprocessing.api.structure;
 
-import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import java.util.HashMap;
+import java.util.Map;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
@@ -32,15 +33,16 @@ public class ComputedLink extends UnderlayItem {
     public ComputedLink(NormalizedNode<?, ?> link,
             NormalizedNode<?, ?> srcNode, NormalizedNode<?, ?> dstNode, String topologyId, String linkId,
             CorrelationItemEnum correlationItem) {
-        super(link, srcNode, topologyId, linkId, correlationItem);
+        super(link, null, topologyId, linkId, correlationItem);
         this.dstNode = dstNode;
+        setSrcNode(srcNode);
     }
 
     /**
      * @return the srcNode
      */
     public NormalizedNode<?, ?> getSrcNode() {
-        return getLeafNode();
+        return getLeafNode().get(0);
     }
 
     /**
@@ -54,7 +56,9 @@ public class ComputedLink extends UnderlayItem {
      * @param srcNode the srcNode to set
      */
     public void setSrcNode(NormalizedNode<?, ?> srcNode) {
-        setLeafNode(srcNode);
+        Map<Integer, NormalizedNode<?, ?>> srcNodeMap = new HashMap<>(1);
+        srcNodeMap.put(0, srcNode);
+        setLeafNode(srcNodeMap);
     }
 
     /**

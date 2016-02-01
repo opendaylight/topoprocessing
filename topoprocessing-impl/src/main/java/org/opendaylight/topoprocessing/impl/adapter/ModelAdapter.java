@@ -46,7 +46,8 @@ public interface ModelAdapter {
      */
     UnderlayTopologyListener registerUnderlayTopologyListener(PingPongDataBroker dataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem, DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners, YangInstanceIdentifier pathIdentifier);
+            ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
+            Map<Integer, YangInstanceIdentifier> pathIdentifier);
 
     /**
      * Create model specific TopologyRequestListener

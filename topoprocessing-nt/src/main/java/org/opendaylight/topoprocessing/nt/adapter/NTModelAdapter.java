@@ -45,11 +45,12 @@ public class NTModelAdapter implements ModelAdapter {
 
     @Override
     public UnderlayTopologyListener registerUnderlayTopologyListener(PingPongDataBroker dataBroker,
-            String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners, YangInstanceIdentifier pathIdentifier) {
+            String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType,
+            TopologyOperator operator, List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
+            Map<Integer, YangInstanceIdentifier> pathIdentifiers) {
 
         NTUnderlayTopologyListener listener = new NTUnderlayTopologyListener(dataBroker, underlayTopologyId, correlationItem);
-        listener.setPathIdentifier(pathIdentifier);
+        listener.setPathIdentifier(pathIdentifiers);
         listener.registerTopologyOperator(operator);
         return listener;
     }

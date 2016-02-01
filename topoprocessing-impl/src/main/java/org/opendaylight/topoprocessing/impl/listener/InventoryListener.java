@@ -9,9 +9,12 @@
 package org.opendaylight.topoprocessing.impl.listener;
 
 
+import com.google.common.base.Optional;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
-
+import java.util.Map;
+import java.util.Map.Entry;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
@@ -30,8 +33,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-
 /**
  * @author michal.polkorab
  *
@@ -45,7 +46,7 @@ public class InventoryListener implements DOMDataTreeChangeListener {
     private TopologyOperator operator;
     private String topologyId;
 
-    private YangInstanceIdentifier pathIdentifier;
+    private Map<Integer, YangInstanceIdentifier> pathIdentifiers;
 
     /**
      * Default constructor
@@ -83,14 +84,20 @@ public class InventoryListener implements DOMDataTreeChangeListener {
     private void proceedChangeRequest(YangInstanceIdentifier identifier,
             NormalizedNode<?, ?> entry, ModificationType modificationType) {
         if (entry instanceof MapEntryNode && entry.getNodeType().equals(Node.QNAME)) {
-            Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry, pathIdentifier);
-            if (node.isPresent()) {
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Found node: {}", node.get());
+            Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+            for (Entry<Integer, YangInstanceIdentifier> pathIdentifierEntry : pathIdentifiers.entrySet()) {
+                Optional<NormalizedNode<?, ?>> targetFieldOpt =
+                        NormalizedNodes.findNode(entry, pathIdentifierEntry.getValue());
+                if (targetFieldOpt.isPresent()) {
+                    targetFields.put(pathIdentifierEntry.getKey(), targetFieldOpt.get());
                 }
-                NormalizedNode<?, ?> leafnode = node.get();
+            }
+            if (!targetFields.isEmpty()) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("Found target fields: {}", targetFields);
+                }
                 UnderlayItem underlayItem =
-                        new UnderlayItem(null, leafnode, topologyId, null, CorrelationItemEnum.Node);
+                        new UnderlayItem(null, targetFields, topologyId, null, CorrelationItemEnum.Node);
                 if (modificationType.equals(ModificationType.WRITE)) {
                     operator.processCreatedChanges(identifier, underlayItem, topologyId);
                 } else if (modificationType.equals(ModificationType.SUBTREE_MODIFIED)) {
@@ -121,9 +128,9 @@ public class InventoryListener implements DOMDataTreeChangeListener {
     }
 
     /**
-     * @param pathIdentifier identifies leaf (node), which aggregation / filtering will be based on
+     * @param pathIdentifiers identifies leaf (node), which aggregation / filtering will be based on
      */
-    public void setPathIdentifier(YangInstanceIdentifier pathIdentifier) {
-        this.pathIdentifier = pathIdentifier;
+    public void setPathIdentifier(Map<Integer, YangInstanceIdentifier> pathIdentifiers) {
+        this.pathIdentifiers = pathIdentifiers;
     }
 }

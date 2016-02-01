@@ -8,8 +8,9 @@
 package org.opendaylight.topoprocessing.impl.structure;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +43,9 @@ public class LogicalNodeTest {
 
     @Test
     public void testLogicalNodeCreation() {
-        physicalNode = new UnderlayItem(mockNormalizedNode1, mockLeafNode1, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, mockLeafNode1);
+        physicalNode = new UnderlayItem(mockNormalizedNode1, targetFields, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
         List<UnderlayItem> physicalNodes = new ArrayList<>();
         physicalNodes.add(physicalNode);
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
@@ -52,12 +55,16 @@ public class LogicalNodeTest {
 
     @Test
     public void testAddPhysicalNode() {
-        physicalNode = new UnderlayItem(mockNormalizedNode1, mockLeafNode1, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields1 = new HashMap<>(1);
+        targetFields1.put(0, mockLeafNode1);
+        physicalNode = new UnderlayItem(mockNormalizedNode1, targetFields1, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
         List<UnderlayItem> physicalNodes = new ArrayList<>();
         physicalNodes.add(physicalNode);
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
-        physicalNode2 = new UnderlayItem(mockNormalizedNode2, mockLeafNode2, TOPOLOGY2, NODE_ID2, CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields2 = new HashMap<>(1);
+        targetFields2.put(0, mockLeafNode2);
+        physicalNode2 = new UnderlayItem(mockNormalizedNode2, targetFields2, TOPOLOGY2, NODE_ID2, CorrelationItemEnum.Node);
         logicalNode.addUnderlayItem(physicalNode2);
         Assert.assertEquals(2, logicalNode.getUnderlayItems().size());
         Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getUnderlayItems().get(1)));
@@ -76,7 +83,9 @@ public class LogicalNodeTest {
     public void testUpdatePhysicalNode() {
         testLogicalNodeCreation();
 
-        physicalNode2 = new UnderlayItem(mockNormalizedNode2, mockLeafNode2, TOPOLOGY2, NODE_ID2, CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, mockLeafNode2);
+        physicalNode2 = new UnderlayItem(mockNormalizedNode2, targetFields, TOPOLOGY2, NODE_ID2, CorrelationItemEnum.Node);
         logicalNode.updateUnderlayItem(physicalNode, physicalNode2);
         Assert.assertEquals(1, logicalNode.getUnderlayItems().size());
         Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getUnderlayItems().get(0)));
@@ -95,7 +104,9 @@ public class LogicalNodeTest {
     public void testSetPhysicalNodes() {
         testAddPhysicalNode();
 
-        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, mockLeafNode1, TOPOLOGY2, NODE_ID3,
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, mockLeafNode1);
+        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, targetFields, TOPOLOGY2, NODE_ID3,
                 CorrelationItemEnum.Node);
         List<UnderlayItem> newPhysicalNodes = new ArrayList<>();
         newPhysicalNodes.add(physicalNode3);

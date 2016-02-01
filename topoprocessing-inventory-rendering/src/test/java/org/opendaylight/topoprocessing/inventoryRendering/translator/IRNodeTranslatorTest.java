@@ -10,8 +10,10 @@ package org.opendaylight.topoprocessing.inventoryRendering.translator;
 import com.google.common.base.Optional;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
@@ -62,7 +64,9 @@ public class IRNodeTranslatorTest {
                         .network.topology.topology.Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, "undItem")
                 .withChild(createTerminationPoints())
                 .build();
-        UnderlayItem underlayItem = new UnderlayItem(networkTopologyNode, inventoryNode, "topology:1",
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, inventoryNode);
+        UnderlayItem underlayItem = new UnderlayItem(networkTopologyNode, targetFields, "topology:1",
                 "undItem", CorrelationItemEnum.Node);
         List<UnderlayItem> underlayItems = new ArrayList<UnderlayItem>();
         underlayItems.add(underlayItem);
