@@ -8,13 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.junit.Assert;
@@ -30,12 +25,14 @@ import org.opendaylight.topoprocessing.impl.testUtilities.TestNodeCreator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableAugmentationNodeBuilder;
 
@@ -82,7 +79,9 @@ public class NotificationInterConnectorTest {
         String leafValue = "10.0.0.1";
         YangInstanceIdentifier invNodeId = createInvNodeIdentifier(nodeId);
         LeafNode<String> leafNode = ImmutableNodes.leafNode(leafQname, leafValue);
-        UnderlayItem item = new UnderlayItem(null, leafNode, TOPOLOGY_ID, null, CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, leafNode);
+        UnderlayItem item = new UnderlayItem(null, targetFields, TOPOLOGY_ID, null, CorrelationItemEnum.Node);
         connector.processCreatedChanges(invNodeId, item, TOPOLOGY_ID);
         Mockito.verifyZeroInteractions(operator);
     }
@@ -95,7 +94,9 @@ public class NotificationInterConnectorTest {
         String leafValue = "10.0.0.1";
         YangInstanceIdentifier invNodeId = createInvNodeIdentifier(node1);
         LeafNode<String> leafNode = ImmutableNodes.leafNode(leafQname, leafValue);
-        UnderlayItem item1 = new UnderlayItem(null, leafNode, TOPOLOGY_ID, null, CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, leafNode);
+        UnderlayItem item1 = new UnderlayItem(null, targetFields, TOPOLOGY_ID, null, CorrelationItemEnum.Node);
         connector.processCreatedChanges(invNodeId, item1, TOPOLOGY_ID);
 
         // create topology node
@@ -108,7 +109,7 @@ public class NotificationInterConnectorTest {
         connector.processCreatedChanges(topoNodeId, item2, TOPOLOGY_ID);
 
         // create expected result
-        UnderlayItem comparationItem = new UnderlayItem(topoNode, leafNode, TOPOLOGY_ID, node2,
+        UnderlayItem comparationItem = new UnderlayItem(topoNode, targetFields, TOPOLOGY_ID, node2,
                 CorrelationItemEnum.Node);
         Mockito.verify(operator, Mockito.times(1)).processCreatedChanges(Matchers.refEq(invNodeId),
                 Matchers.refEq(comparationItem),
@@ -123,7 +124,9 @@ public class NotificationInterConnectorTest {
         String leafValue = "10.0.0.1";
         YangInstanceIdentifier invNodeId = createInvNodeIdentifier(node1);
         LeafNode<String> leafNode = ImmutableNodes.leafNode(leafQname, leafValue);
-        UnderlayItem item1 = new UnderlayItem(null, leafNode, TOPOLOGY_ID, null, CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, leafNode);
+        UnderlayItem item1 = new UnderlayItem(null, targetFields, TOPOLOGY_ID, null, CorrelationItemEnum.Node);
 
         // create topology node
         String node2 = "node:2";
@@ -140,7 +143,7 @@ public class NotificationInterConnectorTest {
         connector.processCreatedChanges(invNodeId, item1, TOPOLOGY_ID);
 
         // create expected result
-        UnderlayItem comparationItem = new UnderlayItem(topoNode, leafNode, TOPOLOGY_ID, node2,
+        UnderlayItem comparationItem = new UnderlayItem(topoNode, targetFields, TOPOLOGY_ID, node2,
                 CorrelationItemEnum.Node);
         Mockito.verify(operator, Mockito.times(1)).processCreatedChanges(Matchers.refEq(invNodeId),
                 Matchers.refEq(comparationItem),
@@ -200,12 +203,14 @@ public class NotificationInterConnectorTest {
         String leafValue = "10.0.0.2";
         YangInstanceIdentifier invNodeId = createInvNodeIdentifier(node1);
         LeafNode<String> leafNode = ImmutableNodes.leafNode(leafQname, leafValue);
-        UnderlayItem item1 = new UnderlayItem(null, leafNode, TOPOLOGY_ID, null, CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, leafNode);
+        UnderlayItem item1 = new UnderlayItem(null, targetFields, TOPOLOGY_ID, null, CorrelationItemEnum.Node);
         connector.processUpdatedChanges(invNodeId, item1, TOPOLOGY_ID);
 
         // create expected result
         UnderlayItem item = topoStoreProvider.getTopologyStore(TOPOLOGY_ID).getUnderlayItems().get(invNodeId);
-        UnderlayItem comparationItem = new UnderlayItem(item.getItem(), leafNode, TOPOLOGY_ID, item.getItemId(),
+        UnderlayItem comparationItem = new UnderlayItem(item.getItem(), targetFields, TOPOLOGY_ID, item.getItemId(),
                 CorrelationItemEnum.Node);
         Mockito.verify(operator, Mockito.times(1)).processUpdatedChanges(Matchers.refEq(invNodeId),
                 Matchers.refEq(comparationItem),
@@ -233,7 +238,9 @@ public class NotificationInterConnectorTest {
         connector.processUpdatedChanges(topoNodeId, item2, TOPOLOGY_ID);
 
         // create expected result
-        UnderlayItem comparationItem = new UnderlayItem(topoNode, leafNode, TOPOLOGY_ID, node2,
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, leafNode);
+        UnderlayItem comparationItem = new UnderlayItem(topoNode, targetFields, TOPOLOGY_ID, node2,
                 CorrelationItemEnum.Node);
         Mockito.verify(operator, Mockito.times(1)).processCreatedChanges(Matchers.refEq(invNodeId),
                 Matchers.refEq(comparationItem),

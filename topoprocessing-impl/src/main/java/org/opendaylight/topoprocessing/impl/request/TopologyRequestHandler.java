@@ -9,11 +9,12 @@
 package org.opendaylight.topoprocessing.impl.request;
 
 
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
@@ -57,6 +58,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.Filtration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.Rendering;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.aggregation.Mapping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.aggregation.mapping.TargetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.rev150824.link.computation.grouping.LinkComputation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.rev150824.link.computation.grouping.link.computation.LinkInfo;
@@ -69,8 +71,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgum
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
 /**
  * Picks up information from topology request, engages corresponding
  * listeners, aggregators.
@@ -218,12 +218,13 @@ public abstract class TopologyRequestHandler {
         }
         filtrator.setTopologyManager(topologyManager);
         for (Filter filter : filtration.getFilter()) {
-            YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
-            correlation.getCorrelationItem(), schemaHolder, filter.getInputModel());
-            addFiltrator(filtrator, filter, pathIdentifier);
+            Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>();
+            pathIdentifiers. put(1, translator.translate(filter.getTargetField().getValue(),
+                    correlation.getCorrelationItem(), schemaHolder, filter.getInputModel()));
+            addFiltrator(filtrator, filter, pathIdentifiers.get(1));
             UnderlayTopologyListener listener = modelAdapters.get(filter.getInputModel()).
                     registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
-                    correlationItem, datastoreType, filtrator, listeners, pathIdentifier);
+                    correlationItem, datastoreType, filtrator, listeners, pathIdentifiers);
 
             InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(filter.getInputModel())
                     .createTopologyIdentifier(underlayTopologyId);
@@ -268,8 +269,12 @@ public abstract class TopologyRequestHandler {
         for (Mapping mapping : aggregation.getMapping()) {
             String underlayTopologyId = mapping.getUnderlayTopology();
             topoStoreProvider.initializeStore(underlayTopologyId, mapping.isAggregateInside());
-            YangInstanceIdentifier pathIdentifier = translator.translate(mapping.getTargetField().getValue(),
-                    correlationItem, schemaHolder, mapping.getInputModel());
+            Map<Integer, YangInstanceIdentifier> pathIdentifier = new HashMap<>();
+            for (TargetField targetField : mapping.getTargetField()) {
+                pathIdentifier.put(targetField.getMatchingKey(), translator.translate(
+                        targetField.getTargetFieldPath().getValue(), correlationItem,
+                        schemaHolder, mapping.getInputModel()));
+            }
             if (aggregator instanceof TerminationPointAggregator) {
                 ((TerminationPointAggregator) aggregator).setTargetField(pathIdentifier);
             }
