@@ -8,10 +8,11 @@
 
  package org.opendaylight.topoprocessing.inventory.listener;
 
+import com.google.common.base.Optional;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,8 +29,6 @@ import org.opendaylight.topoprocessing.impl.testUtilities.TestDataTreeCandidateN
 import org.opendaylight.topoprocessing.impl.testUtilities.TestingDOMDataBroker;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -43,8 +42,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNode;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
-
-import com.google.common.base.Optional;
 
 /**
  * @author matus.marko
@@ -90,9 +87,13 @@ public class InvUnderlayTopologyListenerTest {
         UnderlayTopologyListener listener = new InvUnderlayTopologyListener(dataBroker, TOPOLOGY_ID,
                 CorrelationItemEnum.Node);
         listener.setOperator(mockOperator);
-        listener.setPathIdentifier(pathIdentifier);
+        Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>(1);
+        pathIdentifiers.put(0, pathIdentifier);
+        listener.setPathIdentifier(pathIdentifiers);
 
-        UnderlayItem physicalNode = new UnderlayItem(nodeValueWithIp, nodeIpValue, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, nodeIpValue);
+        UnderlayItem physicalNode = new UnderlayItem(nodeValueWithIp, targetFields, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
         NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
 
@@ -196,7 +197,9 @@ public class InvUnderlayTopologyListenerTest {
         UnderlayTopologyListener listener = new InvUnderlayTopologyListener(dataBroker, TOPOLOGY_ID,
                 CorrelationItemEnum.Node);
         listener.setOperator(mockOperator);
-        listener.setPathIdentifier(nodeYiid);
+        Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>(1);
+        pathIdentifiers.put(0, nodeYiid);
+        listener.setPathIdentifier(pathIdentifiers);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
         NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
 

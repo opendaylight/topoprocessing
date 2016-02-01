@@ -47,7 +47,7 @@ public class I2RSModelAdapter implements ModelAdapter {
     public UnderlayTopologyListener registerUnderlayTopologyListener(PingPongDataBroker dataBroker,
             String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType,
             TopologyOperator operator, List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
-            YangInstanceIdentifier pathIdentifier) {
+            Map<Integer, YangInstanceIdentifier> pathIdentifiers) {
 
         I2RSUnderlayTopologyListener listener =
                 new I2RSUnderlayTopologyListener(dataBroker, underlayTopologyId, correlationItem);

@@ -8,7 +8,7 @@
 package org.opendaylight.topoprocessing.inventory.listener;
 
 import java.util.List;
-
+import java.util.Map;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
@@ -50,7 +50,8 @@ public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
     }
 
     public void registerUnderlayTopologyListener(DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners, YangInstanceIdentifier invPathIdentifier){
+            ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
+            Map<Integer, YangInstanceIdentifier> invPathIdentifiers){
         if (correlationItem.equals(CorrelationItemEnum.Node)) {
             TopoStoreProvider connTopoStoreProvider = new TopoStoreProvider();
             NotificationInterConnector connector = new NotificationInterConnector(underlayTopologyId,
@@ -59,7 +60,7 @@ public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
             this.setOperator(connector);
             InventoryListener invListener = new InventoryListener(underlayTopologyId);
             invListener.setOperator(connector);
-            invListener.setPathIdentifier(invPathIdentifier);
+            invListener.setPathIdentifier(invPathIdentifiers);
             YangInstanceIdentifier invId = YangInstanceIdentifier.of(Nodes.QNAME)
                     .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME);
             DOMDataTreeIdentifier treeId;

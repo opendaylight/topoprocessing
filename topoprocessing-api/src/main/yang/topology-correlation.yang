@@ -185,15 +185,22 @@ module topology-correlation {
                     }
                     uses scripting-grouping;
                     list mapping {
-                        key "underlay-topology target-field";
+                        key "underlay-topology";
                         uses input-model-grouping;
                         leaf underlay-topology {
                             type string;
                             description "Input topology which will be used for aggregation.";
                         }
-                        leaf target-field {
-                            type leaf-path;
-                            description "Path to target field";
+                        list target-field {
+                            key "target-field-path";
+                            leaf target-field-path {
+                                type leaf-path;
+                                description "Path to target field";
+                            }
+                            leaf matching-key {
+                                type uint16;
+                                description "Which target-fields in different mappings should be compared";
+                            }
                         }
                         leaf aggregate-inside {
                             type boolean;

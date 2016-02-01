@@ -8,10 +8,11 @@
 
 package org.opendaylight.topoprocessing.inventoryRendering.listener;
 
+import com.google.common.base.Optional;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,8 +40,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNode;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
-
-import com.google.common.base.Optional;
 
 /**
  *
@@ -143,7 +142,9 @@ public class IRUnderlayTopologyListenerTest {
         UnderlayTopologyListener listener = new IRUnderlayTopologyListener(dataBroker, TOPOLOGY_ID,
                 CorrelationItemEnum.Node);
         listener.setOperator(mockOperator);
-        listener.setPathIdentifier(nodeYiid);
+        Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>(1);
+        pathIdentifiers.put(0, nodeYiid);
+        listener.setPathIdentifier(pathIdentifiers);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
         NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
 

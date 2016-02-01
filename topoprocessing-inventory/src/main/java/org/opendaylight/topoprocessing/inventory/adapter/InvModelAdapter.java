@@ -45,11 +45,12 @@ public class InvModelAdapter implements ModelAdapter {
 
     @Override
     public UnderlayTopologyListener registerUnderlayTopologyListener(PingPongDataBroker dataBroker,
-            String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners, YangInstanceIdentifier pathIdentifier) {
+            String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType,
+            TopologyOperator operator, List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
+            Map<Integer, YangInstanceIdentifier> pathIdentifiers) {
 
         InvUnderlayTopologyListener listener = new InvUnderlayTopologyListener(dataBroker, underlayTopologyId, correlationItem);
-        listener.registerUnderlayTopologyListener(datastoreType,operator,listeners,pathIdentifier);
+        listener.registerUnderlayTopologyListener(datastoreType,operator,listeners,pathIdentifiers);
         return listener;
     }
 

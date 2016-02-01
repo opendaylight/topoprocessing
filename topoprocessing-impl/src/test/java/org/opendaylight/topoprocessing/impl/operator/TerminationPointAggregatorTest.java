@@ -3,7 +3,9 @@ package org.opendaylight.topoprocessing.impl.operator;
 import com.google.common.base.Optional;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -140,7 +142,9 @@ public class TerminationPointAggregatorTest {
         // aggregator
         TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
         aggregator = new TerminationPointAggregator(topoStoreProvider, NetworkTopologyModel.class);
-        aggregator.setTargetField(targetField);
+        Map<Integer, YangInstanceIdentifier> targetFields = new HashMap<>(1);
+        targetFields.put(0, targetField);
+        aggregator.setTargetField(targetFields);
         aggregator.setTopologyManager(topoManager);
         aggregator.getTopoStoreProvider().initializeStore(TOPOLOGY_NAME, false);
     }
