@@ -49,6 +49,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.FiltrationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.Rendering;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.aggregation.Mapping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.aggregation.mapping.TargetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.aggregation.mapping.TargetFieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.rev150824.link.computation.grouping.LinkComputation;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -124,7 +126,12 @@ public class TopologyRequestHandlerTest {
         when(mappingMock.getUnderlayTopology()).thenReturn("topo1");
         when(mappingMock.isAggregateInside()).thenReturn(true);
 
-        when(mappingMock.getTargetField()).thenReturn(leafpathMock);
+        TargetFieldBuilder targetFieldBuider = new TargetFieldBuilder()
+                .setTargetFieldPath(leafpathMock)
+                .setMatchingKey(0);
+        List<TargetField> targetFields = new ArrayList<>(1);
+        targetFields.add(targetFieldBuider.build());
+        when(mappingMock.getTargetField()).thenReturn(targetFields);
         when(leafpathMock.getValue()).thenReturn("f1");
         when(mappingMock.getInputModel()).thenReturn(null);
 
@@ -163,7 +170,12 @@ public class TopologyRequestHandlerTest {
         when(mappingMock.getUnderlayTopology()).thenReturn("topo1");
         when(mappingMock.isAggregateInside()).thenReturn(true);
 
-        when(mappingMock.getTargetField()).thenReturn(leafpathMock);
+        TargetFieldBuilder targetFieldBuider = new TargetFieldBuilder()
+                .setTargetFieldPath(leafpathMock)
+                .setMatchingKey(0);
+        List<TargetField> targetFields = new ArrayList<>(1);
+        targetFields.add(targetFieldBuider.build());
+        when(mappingMock.getTargetField()).thenReturn(targetFields);
         when(leafpathMock.getValue()).thenReturn("f1");
         when(mappingMock.getInputModel()).thenReturn(null);
 
@@ -213,7 +225,7 @@ public class TopologyRequestHandlerTest {
         when(rpcServicesMock.getRpcService()).thenReturn(domRpcServiceMock);
         when(modelAdapterMock.registerUnderlayTopologyListener((PingPongDataBroker)any(),(String) any(),
                 (CorrelationItemEnum) any(),(DatastoreType) any(),(TopologyAggregator) any(),(List) any(),
-                (YangInstanceIdentifier) any())).thenReturn(underlayTopologyListenerMock);
+                (Map<Integer, YangInstanceIdentifier>) any())).thenReturn(underlayTopologyListenerMock);
         when(pathTranslatorMock.translate("f1",CorrelationItemEnum.Node,
                 schemaHolderMock,null)).thenReturn(yangInstanceIdentifierMock);
         handler.setModelAdapters(modelAdaptersMock);

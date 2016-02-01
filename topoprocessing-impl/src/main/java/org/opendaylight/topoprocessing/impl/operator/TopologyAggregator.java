@@ -83,8 +83,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
                             aggregateItems(newItem, topoStoreItem);
                             return;
                         }
-                    } else if (! newItem.equals(topoStoreItem) &&
-                            topoStoreItem.getLeafNode().getValue().equals(newItem.getLeafNode().getValue())) {
+                    } else if (! newItem.equals(topoStoreItem) && matchTargetFields(newItem, topoStoreItem)) {
                         // no previous aggregation on this node
                         aggregateItems(newItem, topoStoreItem);
                         return;
@@ -99,6 +98,20 @@ public abstract class TopologyAggregator implements TopologyOperator {
             newItem.setOverlayItem(overlayItem);
             topologyManager.addOverlayItem(overlayItem);
         }
+    }
+
+    private boolean matchTargetFields(UnderlayItem item1, UnderlayItem item2) {
+        boolean targetFieldsMatch = false;
+        if (item1.getLeafNode().size() == item2.getLeafNode().size()) {
+            targetFieldsMatch = true;
+            for (Entry<Integer, NormalizedNode<?, ?>> targetFieldEntryOfItem1 : item1.getLeafNode().entrySet()) {
+                NormalizedNode<?, ?> targetFieldOfItem2 = item2.getLeafNode().get(targetFieldEntryOfItem1.getKey());
+                if (!targetFieldEntryOfItem1.getValue().equals(targetFieldOfItem2)) {
+                    return false;
+                }
+            }
+        }
+        return targetFieldsMatch;
     }
 
     private boolean aggregableWithScript(UnderlayItem newItem, UnderlayItem topoStoreItem) {
@@ -184,9 +197,8 @@ public abstract class TopologyAggregator implements TopologyOperator {
                 UnderlayItem underlayItem = ts.getUnderlayItems().get(identifier);
                 Preconditions.checkNotNull(underlayItem, "Updated underlay item not found in the Topology store");
                 underlayItem.setItem(updatedItem.getItem());
-                NormalizedNode<?, ?> leafNode = underlayItem.getLeafNode();
                 // if Leaf Node was changed
-                if (! leafNode.equals(updatedItem.getLeafNode())) {
+                if (! matchTargetFields(underlayItem, updatedItem)) {
                     underlayItem.setLeafNode(updatedItem.getLeafNode());
                     if (underlayItem.getOverlayItem() != null) {
                         removeUnderlayItemFromOverlayItem(underlayItem);

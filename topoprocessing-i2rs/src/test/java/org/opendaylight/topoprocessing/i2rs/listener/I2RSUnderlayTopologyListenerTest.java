@@ -10,7 +10,9 @@ package org.opendaylight.topoprocessing.i2rs.listener;
 import com.google.common.base.Optional;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -82,9 +84,13 @@ public class I2RSUnderlayTopologyListenerTest {
         UnderlayTopologyListener listener = new I2RSUnderlayTopologyListener(dataBroker, TOPOLOGY_ID,
                 CorrelationItemEnum.Node);
         listener.setOperator(mockOperator);
-        listener.setPathIdentifier(pathIdentifier);
+        Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>(1);
+        pathIdentifiers.put(0, pathIdentifier);
+        listener.setPathIdentifier(pathIdentifiers);
 
-        UnderlayItem physicalNode = new UnderlayItem(nodeValueWithIp, nodeIpValue,
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, nodeIpValue);
+        UnderlayItem physicalNode = new UnderlayItem(nodeValueWithIp, targetFields,
                 TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
         NodeIdentifierWithPredicates nodePathArgument =
                 new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, nodeName);
@@ -195,7 +201,9 @@ public class I2RSUnderlayTopologyListenerTest {
         UnderlayTopologyListener listener = new I2RSUnderlayTopologyListener(dataBroker, TOPOLOGY_ID,
                 CorrelationItemEnum.Node);
         listener.setOperator(mockOperator);
-        listener.setPathIdentifier(nodeYiid);
+        Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>(1);
+        pathIdentifiers.put(0, nodeYiid);
+        listener.setPathIdentifier(pathIdentifiers);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
         NodeIdentifierWithPredicates nodePathArgument =
                 new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, nodeName);

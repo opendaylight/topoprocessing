@@ -84,10 +84,11 @@ public class IRInventoryListener implements DOMDataTreeChangeListener {
 
     private void proceedChangeRequest(YangInstanceIdentifier identifier, NormalizedNode<?, ?> entry,
             ModificationType requestAction) {
-        Map<YangInstanceIdentifier, UnderlayItem> resultEntries = new HashMap<>();
         if (entry instanceof MapEntryNode && entry.getNodeType().equals(Node.QNAME)) {
+            Map<Integer, NormalizedNode<?, ?>> leafNode = new HashMap<>(1);
+            leafNode.put(0, entry);
             UnderlayItem underlayItem =
-                    new UnderlayItem(null, entry, topologyId, null, CorrelationItemEnum.Node);
+                    new UnderlayItem(null, leafNode, topologyId, null, CorrelationItemEnum.Node);
             if (requestAction == ModificationType.WRITE) {
                 operator.processCreatedChanges(identifier, underlayItem, topologyId);
             } else if (requestAction == ModificationType.SUBTREE_MODIFIED) {

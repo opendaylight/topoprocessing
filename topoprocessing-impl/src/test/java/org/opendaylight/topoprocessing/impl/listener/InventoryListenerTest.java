@@ -10,9 +10,11 @@ package org.opendaylight.topoprocessing.impl.listener;
 
 import static org.mockito.Matchers.any;
 
+import com.google.common.base.Optional;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
-
+import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -36,8 +38,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNode;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
-
-import com.google.common.base.Optional;
 
 /**
  * @author michal.polkorab
@@ -77,9 +77,13 @@ public class InventoryListenerTest {
         YangInstanceIdentifier pathIdentifier = YangInstanceIdentifier.of(leafQname);
         TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
         listener.setOperator(mockOperator);
-        listener.setPathIdentifier(pathIdentifier);
+        Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>(1);
+        pathIdentifiers.put(0, pathIdentifier);
+        listener.setPathIdentifier(pathIdentifiers);
 
-        UnderlayItem physicalNode = new UnderlayItem(null, leafNodeValue, TOPOLOGY_ID, null, CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, leafNodeValue);
+        UnderlayItem physicalNode = new UnderlayItem(null, targetFields, TOPOLOGY_ID, null, CorrelationItemEnum.Node);
         NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME,
                 TopologyQNames.INVENTORY_NODE_ID_QNAME, nodeName);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
@@ -132,13 +136,14 @@ public class InventoryListenerTest {
     @Test
     public void testMissingLeafNode() {
         String nodeName = "node:1";
-        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.of(Node.QNAME);
         MapEntryNode testNode = ImmutableNodes.mapEntryBuilder(Node.QNAME, nodeIdQname, nodeName).build();
 
         YangInstanceIdentifier pathIdentifier = YangInstanceIdentifier.of(leafQname);
         TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
         listener.setOperator(mockOperator);
-        listener.setPathIdentifier(pathIdentifier);
+        Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>(1);
+        pathIdentifiers.put(0, pathIdentifier);
+        listener.setPathIdentifier(pathIdentifiers);
         NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, leafQname);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
 

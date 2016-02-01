@@ -10,7 +10,10 @@ package org.opendaylight.topoprocessing.impl.listener;
 
 import com.google.common.base.Optional;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -41,7 +44,7 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
     protected final PingPongDataBroker dataBroker;
 
     private TopologyOperator operator;
-    private YangInstanceIdentifier pathIdentifier;
+    private Map<Integer, YangInstanceIdentifier> pathIdentifiers;
     protected String underlayTopologyId;
     protected YangInstanceIdentifier itemIdentifier;
     protected YangInstanceIdentifier relativeItemIdIdentifier;
@@ -107,21 +110,25 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
             UnderlayItem underlayItem = null;
             // in case that operator is instance of TopologyAggregator or PreAggregationFiltrator
             // but not TerminationPointAggregator
-            if (pathIdentifier != null) {
+            if (pathIdentifiers != null) {
                 // AGGREGATION
-                LeafNode<?> leafnode = null;
                 if (correlationItem == CorrelationItemEnum.TerminationPoint) {
-                    underlayItem = new UnderlayItem(entry, null, underlayTopologyId, itemId,
-                            correlationItem);
+                    underlayItem = new UnderlayItem(entry, null, underlayTopologyId, itemId, correlationItem);
                 } else {
-                    LOGGER.debug("Finding target field");
-                    Optional<NormalizedNode<?, ?>> node = NormalizedNodes.findNode(entry, pathIdentifier);
-                    if (node.isPresent()) {
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("Found target field: {}", node.get());
+                    LOGGER.debug("Finding target fields");
+                    Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(pathIdentifiers.size());
+                    for (Entry<Integer, YangInstanceIdentifier> pathIdentifierEntry : pathIdentifiers.entrySet()) {
+                        Optional<NormalizedNode<?, ?>> targetFieldOpt =
+                                NormalizedNodes.findNode(entry, pathIdentifierEntry.getValue());
+                        if (targetFieldOpt.isPresent()) {
+                            targetFields.put(pathIdentifierEntry.getKey(), targetFieldOpt.get());
                         }
-                        leafnode = (LeafNode<?>) node.get();
-                        underlayItem = new UnderlayItem(entry, leafnode, underlayTopologyId, itemId,
+                    }
+                    if (!targetFields.isEmpty()) {
+                        if (LOGGER.isDebugEnabled()) {
+                            LOGGER.debug("Found target fields: {}", targetFields);
+                        }
+                        underlayItem = new UnderlayItem(entry, targetFields, underlayTopologyId, itemId,
                                 correlationItem);
                     } else {
                         return;
@@ -162,10 +169,10 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
     }
 
     /**
-     * @param pathIdentifier identifies leaf (node), which aggregation / filtering will be based on
+     * @param pathIdentifiers identifies leaf (node), which aggregation / filtering will be based on
      */
-    public void setPathIdentifier(YangInstanceIdentifier pathIdentifier) {
-        this.pathIdentifier = pathIdentifier;
+    public void setPathIdentifier(Map<Integer, YangInstanceIdentifier> pathIdentifiers) {
+        this.pathIdentifiers = pathIdentifiers;
     }
 
     public String getUnderlayTopologyId() {

@@ -8,9 +8,11 @@
 
 package org.opendaylight.topoprocessing.inventoryRendering.listener;
 
+import com.google.common.base.Optional;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
-
+import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -33,8 +35,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNode;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
-
-import com.google.common.base.Optional;
 
 /**
  * @author michal.polkorab
@@ -74,7 +74,9 @@ public class IRInventoryListenerTest {
         TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
         listener.setOperator(mockOperator);
 
-        UnderlayItem physicalNode = new UnderlayItem(null, testNode, TOPOLOGY_ID, null, CorrelationItemEnum.Node);
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, testNode);
+        UnderlayItem physicalNode = new UnderlayItem(null, targetFields, TOPOLOGY_ID, null, CorrelationItemEnum.Node);
         NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME,
                 TopologyQNames.INVENTORY_NODE_ID_QNAME, nodeName);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();

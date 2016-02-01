@@ -9,12 +9,13 @@ package org.opendaylight.topoprocessing.i2rs.request;
 
 import static org.mockito.Matchers.any;
 
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.CheckedFuture;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,6 +71,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.FiltrationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.aggregation.Mapping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.aggregation.MappingBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.aggregation.mapping.TargetField;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.aggregation.mapping.TargetFieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.Filter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.FilterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.correlation.filtration.filter.filter.type.body.Ipv4AddressFilterTypeBuilder;
@@ -79,9 +82,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
-
-import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.CheckedFuture;
 
 /**
  * @author andrej.zan
@@ -252,7 +252,13 @@ public class I2RSTopologyRequestHandlerTest {
         ArrayList<Mapping> mappings = new ArrayList<>();
         MappingBuilder mappingBuilder1 = new MappingBuilder();
         mappingBuilder1.setUnderlayTopology("pcep-topology:1");
-        mappingBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
+        TargetFieldBuilder targetFieldBuider = new TargetFieldBuilder()
+                .setTargetFieldPath(
+                        new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"))
+                .setMatchingKey(0);
+        List<TargetField> targetFields = new ArrayList<>(1);
+        targetFields.add(targetFieldBuider.build());
+        mappingBuilder1.setTargetField(targetFields);
         mappingBuilder1.setInputModel(I2rsModel.class);
         mappingBuilder1.setAggregateInside(false);
         mappings.add(mappingBuilder1.build());
@@ -278,7 +284,13 @@ public class I2RSTopologyRequestHandlerTest {
         ArrayList<Mapping> mappings = new ArrayList<>();
         MappingBuilder mappingBuilder1 = new MappingBuilder();
         mappingBuilder1.setUnderlayTopology("pcep-topology:1");
-        mappingBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
+        TargetFieldBuilder targetFieldBuider = new TargetFieldBuilder()
+                .setTargetFieldPath(
+                        new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"))
+                .setMatchingKey(0);
+        List<TargetField> targetFields = new ArrayList<>(1);
+        targetFields.add(targetFieldBuider.build());
+        mappingBuilder1.setTargetField(targetFields);
         mappingBuilder1.setInputModel(I2rsModel.class);
         mappingBuilder1.setAggregateInside(false);
         mappings.add(mappingBuilder1.build());
@@ -325,7 +337,13 @@ public class I2RSTopologyRequestHandlerTest {
         ArrayList<Mapping> mappings = new ArrayList<>();
         MappingBuilder mappingBuilder1 = new MappingBuilder();
         mappingBuilder1.setUnderlayTopology("pcep-topology:1");
-        mappingBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
+        TargetFieldBuilder targetFieldBuider = new TargetFieldBuilder()
+                .setTargetFieldPath(
+                        new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"))
+                .setMatchingKey(0);
+        List<TargetField> targetFields = new ArrayList<>(1);
+        targetFields.add(targetFieldBuider.build());
+        mappingBuilder1.setTargetField(targetFields);
         mappingBuilder1.setInputModel(I2rsModel.class);
         mappingBuilder1.setAggregateInside(false);
         mappings.add(mappingBuilder1.build());
