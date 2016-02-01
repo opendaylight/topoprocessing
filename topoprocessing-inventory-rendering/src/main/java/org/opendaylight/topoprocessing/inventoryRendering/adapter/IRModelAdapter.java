@@ -46,7 +46,7 @@ public class IRModelAdapter implements ModelAdapter {
     public UnderlayTopologyListener registerUnderlayTopologyListener(PingPongDataBroker dataBroker,
             String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType,
             TopologyOperator operator, List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
-            YangInstanceIdentifier pathIdentifier) {
+            Map<Integer, YangInstanceIdentifier> pathIdentifier) {
 
         IRUnderlayTopologyListener listener =
                 new IRUnderlayTopologyListener(dataBroker, underlayTopologyId, correlationItem);

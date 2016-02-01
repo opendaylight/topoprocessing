@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
@@ -52,7 +53,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
     private static final Logger LOG = LoggerFactory.getLogger(TerminationPointAggregator.class);
     private static final QName I2RS_TERMINATION_POINT_QNAME = org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.
             ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME;
-    private YangInstanceIdentifier leafPath;
+    private Map<Integer, YangInstanceIdentifier> leafPaths;
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
     private Map<YangInstanceIdentifier, List<TemporaryTerminationPoint>> tpStore = new HashMap<>();
     private Class<? extends Model> model;
@@ -63,17 +64,17 @@ public class TerminationPointAggregator extends UnificationAggregator {
     }
 
     private class TemporaryTerminationPoint {
-        private NormalizedNode<?, ?> targetField;
+        private Map<Integer, NormalizedNode<?, ?>> targetFields;
         private String tpId;
-        private List<MapEntryNode> list = new ArrayList<>();
+        private List<MapEntryNode> terminationPointEntries = new ArrayList<>();
 
-        public TemporaryTerminationPoint(NormalizedNode<?, ?> targetField) {
-            this.targetField = targetField;
+        public TemporaryTerminationPoint(Map<Integer, NormalizedNode<?, ?>> targetFields) {
+            this.targetFields = targetFields;
             this.tpId = idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint);
         }
 
         public MapEntryNode getByIdentifier(YangInstanceIdentifier.NodeIdentifierWithPredicates nodeIdentifier) {
-            for (MapEntryNode tp : list) {
+            for (MapEntryNode tp : terminationPointEntries) {
                 if (nodeIdentifier.equals(tp.getIdentifier())) {
                     return tp;
                 }
@@ -82,15 +83,15 @@ public class TerminationPointAggregator extends UnificationAggregator {
         }
 
         public List<MapEntryNode> getEntries() {
-            return list;
+            return terminationPointEntries;
         }
 
-        public void setEntries(List<MapEntryNode> list) {
-            this.list = list;
+        public void setEntries(List<MapEntryNode> terminationPointEntries) {
+            this.terminationPointEntries = terminationPointEntries;
         }
 
-        public NormalizedNode<?, ?> getTargetField() {
-            return targetField;
+        public Map<Integer, NormalizedNode<?, ?>> getTargetFields() {
+            return targetFields;
         }
 
         public String getTpId() {
@@ -102,8 +103,8 @@ public class TerminationPointAggregator extends UnificationAggregator {
      * Set path to the leaf which includes data necessary for comparing
      * @param path {@link LeafPath}
      */
-    public void setTargetField(YangInstanceIdentifier path) {
-        this.leafPath = path;
+    public void setTargetField(Map<Integer, YangInstanceIdentifier> path) {
+        this.leafPaths = path;
     }
 
     @Override
@@ -116,14 +117,16 @@ public class TerminationPointAggregator extends UnificationAggregator {
         NormalizedNode<?, ?> newNode = createdEntry.getItem();
         Optional<NormalizedNode<?, ?>> tpMapNodeOpt;
         if (model.equals(NetworkTopologyModel.class)) {
-            tpMapNodeOpt = NormalizedNodes.findNode(newNode, InstanceIdentifiers.NT_TERMINATION_POINT);
+            tpMapNodeOpt = NormalizedNodes.findNode(newNode, NT_TERMINATION_POINT);
         } else {
-            tpMapNodeOpt = NormalizedNodes.findNode(newNode, InstanceIdentifiers.I2RS_TERMINATION_POINT);
+            tpMapNodeOpt = NormalizedNodes.findNode(newNode, I2RS_TERMINATION_POINT);
         }
         if (tpMapNodeOpt.isPresent()) {
             MapNode tpMapNode = (MapNode) tpMapNodeOpt.get();
             // set TPMapNode to Items leafnode for further looking for changes
-            createdEntry.setLeafNode(tpMapNode);
+            Map<Integer, NormalizedNode<?, ?>> terminationPointMapNode = new HashMap<>(1);
+            terminationPointMapNode.put(0, tpMapNode);
+            createdEntry.setLeafNode(terminationPointMapNode);
             // aggregate Termination points to Temporary TP
             List<TemporaryTerminationPoint> tmpTpList = addTerminationPoints(tpMapNode);
             // add Temporary TP to map
@@ -146,34 +149,23 @@ public class TerminationPointAggregator extends UnificationAggregator {
         MapEntryNode newNode = (MapEntryNode) updatedEntry.getItem();
         Optional<NormalizedNode<?, ?>> updatedTpMapNode;
         if (model.equals(NetworkTopologyModel.class)) {
-            updatedTpMapNode = NormalizedNodes.findNode(newNode, InstanceIdentifiers.NT_TERMINATION_POINT);
+            updatedTpMapNode = NormalizedNodes.findNode(newNode, NT_TERMINATION_POINT);
         } else {
-            updatedTpMapNode = NormalizedNodes.findNode(newNode, InstanceIdentifiers.I2RS_TERMINATION_POINT);
+            updatedTpMapNode = NormalizedNodes.findNode(newNode, I2RS_TERMINATION_POINT);
         }
         // if node contains Termination points
         // and those TP have some changes inside
         if (updatedTpMapNode.isPresent()
                 && (! underlayItem.getLeafNode().equals(updatedTpMapNode.get()))) {
             MapNode newTpMap = (MapNode) updatedTpMapNode.get();
-            underlayItem.setLeafNode(newTpMap);
+            Map<Integer, NormalizedNode<?, ?>> terminationPointMapNode = new HashMap<>(1);
+            terminationPointMapNode.put(0, newTpMap);
+            underlayItem.setLeafNode(terminationPointMapNode);
             removeTerminationPoints(newTpMap, nodeTps);
             updateTerminationPoints(newTpMap, nodeTps);
         }
         underlayItem.setItem(setTpToNode(nodeTps, newNode, topologyId, underlayItem.getItemId(), model));
         topologyManager.updateOverlayItem(underlayItem.getOverlayItem());
-    }
-
-    private void addItemToList(MapEntryNode tpMapEntry, NormalizedNode<?, ?> targetField,
-                               List<TemporaryTerminationPoint> tempTpList) {
-        for (TemporaryTerminationPoint item : tempTpList) {
-            if (item.getTargetField().equals(targetField)) {
-                item.getEntries().add(tpMapEntry);
-                return;
-            }
-        }
-        TemporaryTerminationPoint tmpTp = new TemporaryTerminationPoint(targetField);
-        tmpTp.getEntries().add(tpMapEntry);
-        tempTpList.add(tmpTp);
     }
 
     private boolean mapContainsEntry(MapNode newMapNode, MapEntryNode oldEntry) {
@@ -188,9 +180,20 @@ public class TerminationPointAggregator extends UnificationAggregator {
     private List<TemporaryTerminationPoint> addTerminationPoints(MapNode tpMapNode) {
         List<TemporaryTerminationPoint> terminationPointList = new ArrayList<>();
         for (MapEntryNode tpMapEntry : tpMapNode.getValue()) {
-            Optional<NormalizedNode<?, ?>> targetField = NormalizedNodes.findNode(tpMapEntry, leafPath);
-            if (targetField.isPresent()) {
-                addItemToList(tpMapEntry, targetField.get(), terminationPointList);
+            Map<Integer, NormalizedNode<?, ?>> targetFields = getTargetFields(tpMapEntry);
+            boolean isNew = true;
+            for (TemporaryTerminationPoint item : terminationPointList) {
+                boolean targetFieldsMatch = matchTargetFields(item, targetFields);
+                if (targetFieldsMatch) {
+                    item.getEntries().add(tpMapEntry);
+                    isNew = false;
+                    break;
+                }
+            }
+            if (isNew) {
+                TemporaryTerminationPoint tmpTp = new TemporaryTerminationPoint(targetFields);
+                tmpTp.getEntries().add(tpMapEntry);
+                terminationPointList.add(tmpTp);
             }
         }
         return terminationPointList;
@@ -199,36 +202,66 @@ public class TerminationPointAggregator extends UnificationAggregator {
     private void updateTerminationPoints(MapNode newTpMap, List<TemporaryTerminationPoint> tempTpList) {
         boolean isNew;
         for (MapEntryNode newTpEntry : newTpMap.getValue()) {
-            Optional<NormalizedNode<?, ?>> targetFieldOpt = NormalizedNodes.findNode(newTpEntry, leafPath);
-            if (targetFieldOpt.isPresent()) {
+            Map<Integer, NormalizedNode<?, ?>> targetFields = getTargetFields(newTpEntry);
+            if (!targetFields.isEmpty()) {
                 isNew = true;
                 for (TemporaryTerminationPoint tmpTp : tempTpList) {
                     MapEntryNode oldTpEntry = tmpTp.getByIdentifier(newTpEntry.getIdentifier());
                     // check if node with same ID exists in TP-store
                     if (null != oldTpEntry) {
-                        // if nodes are equal
+                        // if nodes are equal do nothing
                         if (newTpEntry.equals(oldTpEntry)) {
                             isNew = false;
                         } else {
-                            // remove it
+                            // remove it from tmpTp and look if updated newTpEntry should be added to tmpTp
                             tempTpList.remove(oldTpEntry);
-                            if (targetFieldOpt.get().equals(tmpTp.getTargetField())) {
+                            if (matchTargetFields(tmpTp, targetFields)) {
                                 isNew = false;
                                 tmpTp.getEntries().add(newTpEntry);
                             }
                         }
-                    } else if (targetFieldOpt.get().equals(tmpTp.getTargetField())) {
+                    } else if (matchTargetFields(tmpTp, targetFields)) {
                         isNew = false;
                         tmpTp.getEntries().add(newTpEntry);
                     }
                 }
                 if (isNew) {
-                    TemporaryTerminationPoint ttp = new TemporaryTerminationPoint(targetFieldOpt.get());
+                    TemporaryTerminationPoint ttp = new TemporaryTerminationPoint(targetFields);
                     ttp.setEntries(Collections.singletonList(newTpEntry));
                     tempTpList.add(ttp);
                 }
             }
         }
+    }
+
+    private boolean matchTargetFields(TemporaryTerminationPoint tempTerminationPoint,
+            Map<Integer, NormalizedNode<?, ?>> targetFields) {
+        boolean targetFieldsMatch = false;
+        if (targetFields.size() == tempTerminationPoint.getTargetFields().size()) {
+            targetFieldsMatch = true;
+            for (Entry<Integer, NormalizedNode<?, ?>> targetFieldEntry : tempTerminationPoint.getTargetFields()
+                    .entrySet()) {
+                NormalizedNode<?, ?> terminationPointToAddTargetField =
+                        targetFields.get(targetFieldEntry.getKey());
+                if (!targetFieldEntry.getValue().equals(terminationPointToAddTargetField)) {
+                    targetFieldsMatch = false;
+                    break;
+                }
+            }
+        }
+        return targetFieldsMatch;
+    }
+
+    private Map<Integer, NormalizedNode<?, ?>> getTargetFields(MapEntryNode terminationPoint) {
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(leafPaths.size());
+        for (Entry<Integer, YangInstanceIdentifier> leafPathEntry : leafPaths.entrySet()) {
+            Optional<NormalizedNode<?, ?>> targetFieldOpt =
+                    NormalizedNodes.findNode(terminationPoint, leafPathEntry.getValue());
+            if (targetFieldOpt.isPresent()) {
+                targetFields.put(leafPathEntry.getKey(), targetFieldOpt.get());
+            }
+        }
+        return targetFields;
     }
 
     private void removeTerminationPoints(MapNode newTpMap, List<TemporaryTerminationPoint> tempTpList) {
