@@ -97,6 +97,7 @@ public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyPro
     public void onNodeUpdated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Node node) {
+        handleNodeAttributes(type, topologyInstanceId, node);
     }
 
     @Override
@@ -104,6 +105,7 @@ public class InventoryTopologyProvider implements AutoCloseable, MlmtTopologyPro
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey,
             final TerminationPoint tp) {
+        handleTpAttributes(type, topologyInstanceId, nodeKey, tp);
     }
 
     @Override
