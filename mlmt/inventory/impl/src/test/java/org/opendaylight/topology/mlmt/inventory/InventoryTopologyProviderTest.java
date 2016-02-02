@@ -328,6 +328,10 @@ public class InventoryTopologyProviderTest extends AbstractDataBrokerTest {
         NodeRef nodeRef = new NodeRef(inventoryIid);
         InventoryNodeBuilder inventoryNodeBuilder = new InventoryNodeBuilder();
         inventoryNodeBuilder.setInventoryNodeRef(nodeRef);
+
+        provider.onNodeCreated(LogicalDatastoreType.OPERATIONAL,
+                mlmtTopologyIid, nodeBuilder.build());
+
         nodeBuilder.addAugmentation(InventoryNode.class, inventoryNodeBuilder.build());
 
         provider.onNodeCreated(LogicalDatastoreType.OPERATIONAL,
