@@ -37,7 +37,7 @@ public class ScriptFiltrator implements Filtrator {
     /**
      * Creates {@link ScriptFiltrator} instance
      * @param scripting script configuration - defines script language and script used
-     * @param pathIdentifier path to node that the filtration 
+     * @param pathIdentifier path to node that the filtration
      */
     public ScriptFiltrator(Scripting scripting, YangInstanceIdentifier pathIdentifier) {
         Preconditions.checkNotNull(scripting, "Scripting configuration can't be null.");
@@ -56,23 +56,16 @@ public class ScriptFiltrator implements Filtrator {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Item received: {}", node);
         }
-        Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node, pathIdentifier);
-        if (leafNode.isPresent()) {
-            ScriptResult filterOut = new ScriptResult();
-            engine.put("filterOut", filterOut);
-            engine.put("node", leafNode.get());
-            try {
-                engine.eval(script);
-                LOGGER.debug("Item filtered out: {}", filterOut.getResult());
-                return filterOut.getResult();
-            } catch (ScriptException e) {
-                throw new IllegalStateException("Problem while evaluating script: " + script, e);
-            }
+        ScriptResult filterOut = new ScriptResult();
+        engine.put("filterOut", filterOut);
+        engine.put("node", node);
+        try {
+            engine.eval(script);
+            LOGGER.debug("Item filtered out: {}", filterOut.getResult());
+            return filterOut.getResult();
+        } catch (ScriptException e) {
+            throw new IllegalStateException("Problem while evaluating script: " + script, e);
         }
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Item with value {} was filtered out", node);
-        }
-        return true;
     }
 
 }

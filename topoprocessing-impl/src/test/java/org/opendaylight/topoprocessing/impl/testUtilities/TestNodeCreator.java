@@ -13,6 +13,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 
 import static org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers.NODE_IDENTIFIER;
@@ -34,9 +35,7 @@ public class TestNodeCreator {
         return ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeId).build();
     }
 
-    public MapEntryNode createMapEntryNodeWithIpAddress(String nodeId, String ipAddress) {
-        return ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeId)
-                .withChild(ImmutableNodes.leafNode(IP_ADDRESS_QNAME, ipAddress))
-                .build();
+    public NormalizedNode createLeafNodeWithIpAddress(String ipAddress) {
+        return ImmutableNodes.leafNode(IP_ADDRESS_QNAME, ipAddress);
     }
 }

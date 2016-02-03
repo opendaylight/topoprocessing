@@ -78,6 +78,7 @@ public class TerminationPointFiltratorTest {
         RangeNumberFiltrator filter = new RangeNumberFiltrator(MIN, MAX, path);
         filtrator.addFilter(filter);
         filtrator.setTopologyManager(manager);
+        filtrator.setPathIdentifier(path);
     }
 
     @Test

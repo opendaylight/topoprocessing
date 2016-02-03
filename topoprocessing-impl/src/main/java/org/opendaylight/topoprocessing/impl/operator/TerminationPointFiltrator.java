@@ -34,6 +34,8 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TerminationPointFiltrator.class);
 
+    private YangInstanceIdentifier pathIdentifier;
+
     public TerminationPointFiltrator(TopoStoreProvider topoStoreProvider) {
         super(topoStoreProvider);
     }
@@ -79,11 +81,18 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         CollectionNodeBuilder<MapEntryNode, MapNode> tpBuilder = ImmutableNodes.mapNodeBuilder(
                 TerminationPoint.QNAME);
         for (MapEntryNode tpMapEntryNode : tpMapNode.getValue()) {
-            if (passedFiltration(tpMapEntryNode)) {
-                tpBuilder.addChild(tpMapEntryNode);
+            Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(tpMapEntryNode, pathIdentifier);
+            if (leafNode.isPresent()) {
+                if (passedFiltration(leafNode.get())) {
+                    tpBuilder.addChild(tpMapEntryNode);
+                }
             }
         }
         node = ImmutableMapEntryNodeBuilder.create((MapEntryNode) node).withChild(tpBuilder.build()).build();
         return node;
+    }
+
+    public void setPathIdentifier(YangInstanceIdentifier pathIdentifier) {
+        this.pathIdentifier = pathIdentifier;
     }
 }
