@@ -41,12 +41,9 @@ public class RangeStringFiltrator implements Filtrator {
 
     @Override
     public boolean isFiltered(NormalizedNode<?, ?> node) {
-        Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node, pathIdentifier);
-        if (leafNode.isPresent()) {
-            String value = (String) ((LeafNode) leafNode.get()).getValue();
-            if (0 <= value.compareTo(this.min) && 0 >= value.compareTo(this.max)) {
-                return false;
-            }
+        String value = (String) ((LeafNode) node).getValue();
+        if (0 <= value.compareTo(this.min) && 0 >= value.compareTo(this.max)) {
+            return false;
         }
         if (LOG.isDebugEnabled()) {
             LOG.debug("Node with value {} was filtered out", node);

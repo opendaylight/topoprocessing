@@ -14,8 +14,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public class Ipv6AddressFiltratorTest {
 
-    private static final String NODE_ID = "mynode:1";
-
     private static final QName ROOT_QNAME = Node.QNAME;
     private static final QName IP_QNAME = QName.create(ROOT_QNAME, "ip-address");
     private final YangInstanceIdentifier path = YangInstanceIdentifier.builder().node(IP_QNAME).build();
@@ -26,7 +24,7 @@ public class Ipv6AddressFiltratorTest {
         IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0:0:0:0:0:0:0:0/0"));
         Ipv6AddressFiltrator nodeIpv6 = new Ipv6AddressFiltrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered1 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cdef:0123:4567:89ab:cdef"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
     }
@@ -36,11 +34,11 @@ public class Ipv6AddressFiltratorTest {
         IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:0:0:0:0:0:0:0/16"));
         Ipv6AddressFiltrator nodeIpv6 = new Ipv6AddressFiltrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered1 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cdef:0123:4567:89ab:cdef"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered2 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0124:4567:89ab:cdef:0123:4567:89ab:cdef"));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
     }
@@ -50,11 +48,11 @@ public class Ipv6AddressFiltratorTest {
         IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:0:0:0:0:0:0/32"));
         Ipv6AddressFiltrator nodeIpv6 = new Ipv6AddressFiltrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered1 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cdef:0123:4567:89ab:cdef"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered2 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4568:89ab:cdef:0123:4567:89ab:cdef"));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
     }
@@ -64,11 +62,11 @@ public class Ipv6AddressFiltratorTest {
         IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:89ab:0:0:0:0:0/48"));
         Ipv6AddressFiltrator nodeIpv6 = new Ipv6AddressFiltrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered1 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cdef:0123:4567:89ab:cdef"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered2 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ac:cdef:0123:4567:89ab:cdef"));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
     }
@@ -78,11 +76,11 @@ public class Ipv6AddressFiltratorTest {
         IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:89ab:cdef:0:0:0:0/64"));
         Ipv6AddressFiltrator nodeIpv6 = new Ipv6AddressFiltrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered1 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cdef:0123:4567:89ab:cdef"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered2 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cde0:0123:4567:89ab:cdef"));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
     }
@@ -92,11 +90,11 @@ public class Ipv6AddressFiltratorTest {
         IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:89ab:cdef:0123:0:0:0/80"));
         Ipv6AddressFiltrator nodeIpv6 = new Ipv6AddressFiltrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered1 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cdef:0123:4567:89ab:cdef"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered2 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cdef:0124:4567:89ab:cdef"));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
     }
@@ -106,11 +104,11 @@ public class Ipv6AddressFiltratorTest {
         IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:89ab:cdef:0123:4567:0:0/96"));
         Ipv6AddressFiltrator nodeIpv6 = new Ipv6AddressFiltrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered1 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cdef:0123:4567:89ab:cdef"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered2 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cdef:0123:4568:89ab:cdef"));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
     }
@@ -120,11 +118,11 @@ public class Ipv6AddressFiltratorTest {
         IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:89ab:cdef:0123:4567:89ab:0/112"));
         Ipv6AddressFiltrator nodeIpv6 = new Ipv6AddressFiltrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered1 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cdef:0123:4567:89ab:cdef"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered2 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cdef:0123:4567:89ac:cdef"));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
     }
@@ -134,11 +132,11 @@ public class Ipv6AddressFiltratorTest {
         IpPrefix ipPrefix = new IpPrefix(Ipv6Prefix.getDefaultInstance("0123:4567:89ab:cdef:0123:4567:89ab:cdef/128"));
         Ipv6AddressFiltrator nodeIpv6 = new Ipv6AddressFiltrator(ipPrefix, path);
 
-        boolean filtered1 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered1 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cdef:0123:4567:89ab:cdef"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = nodeIpv6.isFiltered(creator.createMapEntryNodeWithIpAddress(NODE_ID,
+        boolean filtered2 = nodeIpv6.isFiltered(creator.createLeafNodeWithIpAddress(
                         "0123:4567:89ab:cdef:0123:4567:89ab:cde0"));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
     }
