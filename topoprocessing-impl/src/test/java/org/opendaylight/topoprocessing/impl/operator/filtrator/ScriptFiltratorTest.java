@@ -17,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 
 /**
  * @author michal.polkorab
@@ -24,7 +25,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
  */
 public class ScriptFiltratorTest {
 
-    private static final String NODE_ID = "mynode:1";
     private static final QName ROOT_QNAME = Node.QNAME;
     private static final QName IP_QNAME = QName.create(ROOT_QNAME, "ip-address");
     private final YangInstanceIdentifier path = YangInstanceIdentifier.builder().node(IP_QNAME).build();
@@ -49,11 +49,11 @@ public class ScriptFiltratorTest {
         Scripting scripting = scriptingBuilder.build();
         filtrator = new ScriptFiltrator(scripting, path);
 
-        MapEntryNode node = creator.createMapEntryNodeWithIpAddress(NODE_ID, "192.168.1.1");
+        NormalizedNode node = creator.createLeafNodeWithIpAddress("192.168.1.1");
         Assert.assertFalse("Node should pass the filtrator", filtrator.isFiltered(node));
-        node = creator.createMapEntryNodeWithIpAddress(NODE_ID, "192.168.1.2");
+        node = creator.createLeafNodeWithIpAddress("192.168.1.2");
         Assert.assertTrue("Node should not pass the filtrator", filtrator.isFiltered(node));
-        node = creator.createMapEntryNodeWithIpAddress(NODE_ID, "");
+        node = creator.createLeafNodeWithIpAddress("");
         Assert.assertTrue("Node should not pass the filtrator", filtrator.isFiltered(node));
     }
 

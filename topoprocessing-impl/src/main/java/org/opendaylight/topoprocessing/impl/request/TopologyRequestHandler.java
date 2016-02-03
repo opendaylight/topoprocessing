@@ -227,6 +227,9 @@ public abstract class TopologyRequestHandler {
             Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>();
             pathIdentifiers. put(1, translator.translate(filter.getTargetField().getValue(),
                     correlation.getCorrelationItem(), schemaHolder, filter.getInputModel()));
+            if (filtrator instanceof TerminationPointFiltrator) {
+                ((TerminationPointFiltrator) filtrator).setPathIdentifier(pathIdentifiers.get(1));
+            }
             addFiltrator(filtrator, filter, pathIdentifiers.get(1));
             UnderlayTopologyListener listener = modelAdapters.get(filter.getInputModel()).
                     registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
