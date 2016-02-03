@@ -13,11 +13,8 @@ import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
  */
 public class SpecificValueFiltratorTest {
 
-    private static final String NODE_ID = "mynode:1";
-
-    private static final QName ROOT_QNAME = Node.QNAME;
-    private static final QName NUMBER_QNAME = QName.create(ROOT_QNAME, "number");
-    private static final QName STRING_QNAME = QName.create(ROOT_QNAME, "string");
+    private static final QName NUMBER_QNAME = QName.create(Node.QNAME, "number");
+    private static final QName STRING_QNAME = QName.create(Node.QNAME, "string");
     private final YangInstanceIdentifier path = YangInstanceIdentifier.builder().node(STRING_QNAME).build();
     private final YangInstanceIdentifier numberPath = YangInstanceIdentifier.builder().node(NUMBER_QNAME).build();
 
@@ -28,14 +25,10 @@ public class SpecificValueFiltratorTest {
     public void testSpecificNumber() {
         SpecificValueFiltrator<Integer> filtrator = new SpecificValueFiltrator<>(56, numberPath);
 
-        boolean filtered1 = filtrator.isFiltered(
-                ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID).withChild(
-                        ImmutableNodes.leafNode(NUMBER_QNAME, 56)).build());
+        boolean filtered1 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, 56));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = filtrator.isFiltered(
-                ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID).withChild(
-                        ImmutableNodes.leafNode(NUMBER_QNAME, 16)).build());
+        boolean filtered2 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, 16));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
     }
 
@@ -46,14 +39,10 @@ public class SpecificValueFiltratorTest {
     public void testSpecificString() {
         SpecificValueFiltrator<String> filtrator = new SpecificValueFiltrator<>("fooBar", path);
 
-        boolean filtered1 = filtrator.isFiltered(
-                ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID).withChild(
-                        ImmutableNodes.leafNode(STRING_QNAME, "fooBar")).build());
+        boolean filtered1 = filtrator.isFiltered(ImmutableNodes.leafNode(STRING_QNAME, "fooBar"));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = filtrator.isFiltered(
-                ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID).withChild(
-                        ImmutableNodes.leafNode(STRING_QNAME, "lopata")).build());
+        boolean filtered2 = filtrator.isFiltered(ImmutableNodes.leafNode(STRING_QNAME, "lopata"));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
     }
 }

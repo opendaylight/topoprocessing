@@ -49,12 +49,9 @@ public class Ipv4AddressFiltrator implements Filtrator {
     @Override
     public boolean isFiltered(NormalizedNode<?, ?> node) {
         try {
-            Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node, pathIdentifier);
-            if (leafNode.isPresent()) {
-                int value = ipToInt((String) ((LeafNode) leafNode.get()).getValue());
-                if (maskedValue == (value & mask)) {
-                    return false;
-                }
+            int value = ipToInt((String) ((LeafNode) node).getValue());
+            if (maskedValue == (value & mask)) {
+                return false;
             }
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Item with value {} was filtered out", node);
