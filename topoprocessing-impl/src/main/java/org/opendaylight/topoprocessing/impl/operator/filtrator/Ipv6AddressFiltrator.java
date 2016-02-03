@@ -50,14 +50,11 @@ public class Ipv6AddressFiltrator implements Filtrator {
     @Override
     public boolean isFiltered(NormalizedNode<?, ?> node) {
         try {
-            Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(node, pathIdentifier);
-            if (leafNode.isPresent()) {
-                byte[] address = InetAddress.getByName((String) ((LeafNode) leafNode.get()).getValue()).getAddress();
-                BitSet bitSet = BitSet.valueOf(address);
-                bitSet.and(mask);
-                if (maskedValue.equals(bitSet)) {
-                    return false;
-                }
+            byte[] address = InetAddress.getByName((String) ((LeafNode) node).getValue()).getAddress();
+            BitSet bitSet = BitSet.valueOf(address);
+            bitSet.and(mask);
+            if (maskedValue.equals(bitSet)) {
+                return false;
             }
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Node with value {} was filtered out", node);
