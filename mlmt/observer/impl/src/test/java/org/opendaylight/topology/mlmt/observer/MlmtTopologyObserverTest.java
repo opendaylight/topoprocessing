@@ -126,7 +126,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         return InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
     }
 
-    private Topology buildUnderlayTopology(final String topologyName, boolean multitechFlag) {
+    private TopologyBuilder buildUnderlayTopology(final String topologyName, boolean multitechFlag) {
         TopologyId topologyId = new TopologyId(topologyName);
         TopologyKey key = new TopologyKey(Preconditions.checkNotNull(topologyId));
         final TopologyBuilder tbuilder = new TopologyBuilder();
@@ -139,10 +139,10 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
             mtTopologyTypeBuilder.setMultitechnologyTopology(multitechnologyTopologyBuilder.build());
             topologyTypesBuilder.addAugmentation(MtTopologyType.class, mtTopologyTypeBuilder.build());
         }
-        final Topology top = tbuilder.setTopologyTypes(topologyTypesBuilder.build())
-                .setServerProvided(Boolean.FALSE).build();
 
-        return top;
+        tbuilder.setTopologyTypes(topologyTypesBuilder.build()).setServerProvided(Boolean.FALSE);
+
+        return tbuilder;
     }
 
     private TopologyBuilder buildMlmtTopology(final String topologyName) {
@@ -267,7 +267,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         }
 
         InstanceIdentifier<Topology> exampleIid = buildTopologyIid(EXAMPLE);
-        wrTopology = buildUnderlayTopology(EXAMPLE, multitechFlag);
+        wrTopology = buildUnderlayTopology(EXAMPLE, multitechFlag).build();
         rwTx = dataBroker.newWriteOnlyTransaction();
         rwTx.merge(LogicalDatastoreType.OPERATIONAL, exampleIid, wrTopology, true);
         assertCommit(rwTx.submit());
@@ -451,14 +451,9 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         assertTrue("Operational mlmt:1 topology node ", optionalTopology.isPresent());
     }
 
-    @Test(timeout = 10000)
-    public void testOnObservedTopologyCreated() throws Exception {
+    private void handleObservedTopologyCreated(boolean multitech) throws Exception {
         InstanceIdentifier<Topology> exampleIid = buildTopologyIid(EXAMPLE);
-        TopologyId topologyId = new TopologyId(EXAMPLE);
-        TopologyKey key = new TopologyKey(Preconditions.checkNotNull(topologyId));
-        final TopologyBuilder tbuilder = new TopologyBuilder();
-        tbuilder.setKey(key);
-        tbuilder.setTopologyId(topologyId);
+        final TopologyBuilder tbuilder = buildUnderlayTopology(EXAMPLE, multitech);
 
         String nodeName1 = "node:1";
         NodeBuilder nodeBuilder = new NodeBuilder();
@@ -466,11 +461,66 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         NodeKey nodeKey = new NodeKey(nodeId);
         nodeBuilder.setKey(nodeKey);
         nodeBuilder.setNodeId(nodeId);
+
+        TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
+        String tpName1 = "1:1";
+        TpId tpId = new TpId(tpName1);
+        TerminationPointKey tpKey = new TerminationPointKey(tpId);
+        tpBuilder.setKey(tpKey);
+        tpBuilder.setTpId(tpId);
+        List<TerminationPoint> lTp = new ArrayList<TerminationPoint>();
+        lTp.add(tpBuilder.build());
+        nodeBuilder.setTerminationPoint(lTp);
+
         List<Node> lNode = new ArrayList<Node>();
         lNode.add(nodeBuilder.build());
 
+        String nodeName2 = "node:2";
+        nodeBuilder = new NodeBuilder();
+        nodeId = new NodeId(nodeName2);
+        nodeKey = new NodeKey(nodeId);
+        nodeBuilder.setKey(nodeKey);
+        nodeBuilder.setNodeId(nodeId);
+
+        tpBuilder = new TerminationPointBuilder();
+        String tpName2 = "2:1";
+        tpId = new TpId(tpName2);
+        tpKey = new TerminationPointKey(tpId);
+        tpBuilder.setKey(tpKey);
+        tpBuilder.setTpId(tpId);
+        lTp = new ArrayList<TerminationPoint>();
+        lTp.add(tpBuilder.build());
+        nodeBuilder.setTerminationPoint(lTp);
+        lNode.add(nodeBuilder.build());
+
         tbuilder.setNode(lNode);
-        final Topology wrTopology = tbuilder.setServerProvided(Boolean.FALSE).build();
+
+        LinkBuilder linkBuilder = new LinkBuilder();
+        String linkName1 = "link:1";
+        LinkId linkId = new LinkId(linkName1);
+        LinkKey linkKey = new LinkKey(linkId);
+        linkBuilder.setKey(linkKey);
+        linkBuilder.setLinkId(linkId);
+
+        SourceBuilder sourceBuilder = new SourceBuilder();
+        nodeId = new NodeId(nodeName1);
+        sourceBuilder.setSourceNode(nodeId);
+        tpId = new TpId(tpName1);
+        sourceBuilder.setSourceTp(tpId);
+        linkBuilder.setSource(sourceBuilder.build());
+
+        DestinationBuilder destinationBuilder = new DestinationBuilder();
+        nodeId = new NodeId(nodeName2);
+        destinationBuilder.setDestNode(nodeId);
+        tpId = new TpId(tpName2);
+        destinationBuilder.setDestTp(tpId);
+        linkBuilder.setDestination(destinationBuilder.build());
+        List<Link> lLink = new ArrayList<Link>();
+        lLink.add(linkBuilder.build());
+
+        tbuilder.setLink(lLink);
+
+        final Topology wrTopology = tbuilder.build();
 
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
         rwTx.merge(LogicalDatastoreType.OPERATIONAL, exampleIid, wrTopology, true);
@@ -486,6 +536,12 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         if (optionalNode != null) {
             assertFalse("Operational mlmt:1 topology node ", optionalNode.isPresent());
         }
+    }
+
+    @Test(timeout = 10000)
+    public void testOnObservedTopologyCreated() throws Exception {
+        handleObservedTopologyCreated(false);
+        handleObservedTopologyCreated(true);
     }
 
     @Test(timeout = 10000)
