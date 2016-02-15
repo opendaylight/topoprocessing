@@ -64,7 +64,7 @@ public class InvLinkTranslator implements LinkTranslator{
         }
         linkNode.withChild(supportingLinks.build());
 
-        UnderlayItem link = wrapper.getOverlayItems().get(0).getUnderlayItems().peek();
+        UnderlayItem link = wrapper.getOverlayItems().peek().getUnderlayItems().peek();
         if(link instanceof ComputedLink) {
             ComputedLink computedLink = (ComputedLink) link;
             ContainerNode sourceNode = ImmutableContainerNodeBuilder.create()

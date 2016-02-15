@@ -7,8 +7,8 @@
  */
 package org.opendaylight.topoprocessing.impl.structure;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 
@@ -17,7 +17,7 @@ import org.opendaylight.topoprocessing.api.structure.OverlayItem;
  *
  */
 public class OverlayItemWrapper {
-    private List<OverlayItem> overlayItems = new ArrayList<>();
+    private Queue<OverlayItem> overlayItems = new ConcurrentLinkedQueue<>();
     private String id;
 
     /**
@@ -40,14 +40,14 @@ public class OverlayItemWrapper {
     /**
      * @return all overlay items wrapped by this wrapper
      */
-    public List<OverlayItem> getOverlayItems() {
+    public Queue<OverlayItem> getOverlayItems() {
         return overlayItems;
     }
 
     /**
      * @param overlayItems sets overlay items wrapped by this wrapper
      */
-    public void setLogicalNodes(List<OverlayItem> overlayItems) {
+    public void setLogicalNodes(Queue<OverlayItem> overlayItems) {
         this.overlayItems = overlayItems;
     }
 
