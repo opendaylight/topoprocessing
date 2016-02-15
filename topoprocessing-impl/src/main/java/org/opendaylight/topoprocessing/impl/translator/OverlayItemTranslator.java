@@ -8,7 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.translator;
 
-import java.util.List;
+import java.util.Queue;
+
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -34,9 +35,9 @@ public class OverlayItemTranslator {
     public NormalizedNode<?, ?> translate(OverlayItemWrapper wrapper) {
         NormalizedNode<?, ?> result = null;
         if (wrapper != null) {
-            List<OverlayItem> overlayItems = wrapper.getOverlayItems();
+            Queue<OverlayItem> overlayItems = wrapper.getOverlayItems();
             if (!overlayItems.isEmpty()) {
-                CorrelationItemEnum correlationItem = overlayItems.get(0).getCorrelationItem();
+                CorrelationItemEnum correlationItem = overlayItems.peek().getCorrelationItem();
                 switch (correlationItem) {
                 case Node:
                 case TerminationPoint:
