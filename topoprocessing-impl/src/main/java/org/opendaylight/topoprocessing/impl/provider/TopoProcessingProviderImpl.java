@@ -30,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoproc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -125,7 +126,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
             modelAdapters.put(model, adapter);
             if (model.equals(I2rsModel.class)) {
                 registerTopologyRequestListener(adapter, InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER);
-            } else {
+            } else if (model.equals(NetworkTopologyModel.class)){
                 registerTopologyRequestListener(adapter, InstanceIdentifiers.TOPOLOGY_IDENTIFIER);
             }
         }
