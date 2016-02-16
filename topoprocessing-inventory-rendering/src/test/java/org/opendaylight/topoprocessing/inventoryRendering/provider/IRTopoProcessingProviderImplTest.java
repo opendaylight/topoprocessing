@@ -68,15 +68,9 @@ public class IRTopoProcessingProviderImplTest {
         TopoProcessingProviderIR InvProvider = new TopoProcessingProviderIR();
         InvProvider.startup(topoProcessingProvider);
         Mockito.verify(schemaService).registerSchemaContextListener((SchemaContextListener) Matchers.any());
-        Mockito.verify(dataBroker).registerDataChangeListener(
-                Matchers.eq(LogicalDatastoreType.CONFIGURATION),
-                Matchers.eq(InstanceIdentifiers.TOPOLOGY_IDENTIFIER),
-                Matchers.any(TopologyRequestListener.class),
-                Matchers.eq(DataChangeScope.ONE));
 
         // close
         topoProcessingProvider.close();
         Mockito.verify(schemaContextListenerRegistration).close();
-        Mockito.verify(topologyRequestListenerRegistration).close();
     }
 }

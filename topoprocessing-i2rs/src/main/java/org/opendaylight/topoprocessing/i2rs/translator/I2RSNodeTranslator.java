@@ -78,20 +78,23 @@ public class I2RSNodeTranslator implements NodeTranslator{
                                 InstanceIdentifiers.NT_TP_IDENTIFIER);
                     }
                     if (terminationPointMapNode.isPresent()) {
-                        if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint) {
+                        /*
+                        if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint
+                                && model.equals(I2rsModel.class)) {
                             Collection<MapEntryNode> terminationPointMapEntries =
                                     ((MapNode) terminationPointMapNode.get()).getValue();
                             for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
                                 terminationPoints.addChild(terminationPointMapEntry);
                             }
                         } else {
+                        */
                             List<MapEntryNode> terminationPointEntries = createTerminationPoint(
                                     (MapNode) terminationPointMapNode.get(), underlayItem.getTopologyId(),
                                     underlayItem.getItemId(), idGenerator, model);
                             for (MapEntryNode terminationPointMapEntry : terminationPointEntries) {
                                 terminationPoints.addChild(terminationPointMapEntry);
                             }
-                        }
+                        //}
                     }
                 }
             }
