@@ -119,36 +119,10 @@ public class InvTopoProcessingProviderImplTest {
         TopoProcessingProviderInv invProvider = new TopoProcessingProviderInv();
         invProvider.startup(topoProcessingProvider);
         Mockito.verify(schemaService).registerSchemaContextListener((SchemaContextListener) Matchers.any());
-        Mockito.verify(dataBroker).registerDataChangeListener(
-                Matchers.eq(LogicalDatastoreType.CONFIGURATION),
-                Matchers.eq(InstanceIdentifiers.TOPOLOGY_IDENTIFIER),
-                Matchers.any(TopologyRequestListener.class),
-                Matchers.eq(DataChangeScope.ONE));
 
         // close
         topoProcessingProvider.close();
         Mockito.verify(schemaContextListenerRegistration).close();
-        Mockito.verify(topologyRequestListenerRegistration).close();
-    }
-
-    @Test
-    public void testRegisterModelAdapter() {
-        Mockito.when(mockInvModelAdapter.createTopologyRequestListener((DOMDataBroker) Matchers.any(),
-                (BindingNormalizedNodeSerializer) Matchers.any(),
-                (GlobalSchemaContextHolder) Matchers.any(),
-                (RpcServices) Matchers.any(),
-                (Map<Class<? extends Model>, ModelAdapter>) Matchers.any())).thenReturn(mockTopoRequestListener);
-        topoProcessingProvider = new TopoProcessingProviderImpl(
-                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
-        topoProcessingProvider.registerModelAdapter(OpendaylightInventoryModel.class, mockInvModelAdapter);
-        
-        Map<Class<? extends Model>, ModelAdapter> expectedModelAdapters = new HashMap<>();
-        expectedModelAdapters.put(OpendaylightInventoryModel.class, mockInvModelAdapter);
-        Mockito.verify(mockInvModelAdapter).createTopologyRequestListener((DOMDataBroker) Matchers.any(),
-                (BindingNormalizedNodeSerializer) Matchers.any(),
-                (GlobalSchemaContextHolder) Matchers.any(),
-                (RpcServices) Matchers.any(),
-                Matchers.eq(expectedModelAdapters));
     }
 
 }
