@@ -44,7 +44,7 @@ public class TopologyFiltrator implements TopologyOperator {
     @Override
     public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdItem, String topologyId) {
         LOGGER.trace("Processing createdChanges");
-        if (passedFiltration(createdItem.getLeafNodes().get(0))) {
+        if (passedFiltration(createdItem.getLeafNodes().values().iterator().next())) {
             topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, createdItem);
             OverlayItem overlayItem = wrapUnderlayItem(createdItem);
             manager.addOverlayItem(overlayItem);
