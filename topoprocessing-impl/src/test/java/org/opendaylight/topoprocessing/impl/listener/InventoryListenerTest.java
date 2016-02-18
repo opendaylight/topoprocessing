@@ -55,7 +55,7 @@ public class InventoryListenerTest {
     @Mock private Collection<DataTreeCandidateNode> mockDataTreeCandidateNodeCollection;
     @Mock private Iterator<DataTreeCandidateNode> mockDataTreeCandidateNodeIterator;
 
-    private InventoryListener listener = new InventoryListener(TOPOLOGY_ID);
+    private InventoryListener listener = new InventoryListener(TOPOLOGY_ID, CorrelationItemEnum.Node);
     private QName leafQname = QName.create(Node.QNAME, "leaf-node");
     private QName nodeIdQname = QName.create(Node.QNAME, "id");
 
