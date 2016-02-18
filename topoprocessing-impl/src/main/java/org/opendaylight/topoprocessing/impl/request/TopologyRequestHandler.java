@@ -218,7 +218,7 @@ public abstract class TopologyRequestHandler {
         TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
         topoStoreProvider.initializeStore(underlayTopologyId, false);
         if (correlationItem.equals(CorrelationItemEnum.TerminationPoint)) {
-            filtrator = new TerminationPointFiltrator(topoStoreProvider);
+            filtrator = new TerminationPointFiltrator(topoStoreProvider, filtration.getFilter().get(0).getInputModel());
         } else {
             filtrator = new TopologyFiltrator(topoStoreProvider);
         }

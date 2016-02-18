@@ -8,6 +8,7 @@
 
 package org.opendaylight.topoprocessing.impl.util;
 
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
@@ -77,12 +78,11 @@ public final class TopologyQNames {
     public static final QName I2RS_LINK_DEST_NODE_QNAME = QName.create(
             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
             .network.topology.rev150608.network.link.Destination.QNAME, "dest-node");
+
     /** Network-topology topology-id QName */
     public static final QName TOPOLOGY_ID_QNAME = QName.create(Topology.QNAME, "topology-id");
     /** Network-topology node-id QName */
     public static final QName NETWORK_NODE_ID_QNAME = QName.create(Node.QNAME, "node-id");
-    /** Opendaylight-inventory node-id QName */
-    public static final QName INVENTORY_NODE_ID_QNAME = QName.create("urn:opendaylight:inventory", "2013-08-19", "id");
     /** Network-topology link-id QName */
     public static final QName NETWORK_LINK_ID_QNAME = QName.create(Link.QNAME, "link-id");
     /** Network-topology tp-id QName */
@@ -95,6 +95,14 @@ public final class TopologyQNames {
     public static final QName LINK_REF = QName.create(Link.QNAME, "link-ref");
     /** Network-topology termination-point tp-ref */
     public static final QName TP_REF = QName.create(TerminationPoint.QNAME, "tp-ref");
+
+    /**Inventory QName */
+    public static final QName NODE_CONNECTOR_ID_QNAME = QName.create(NodeConnector.QNAME, "id");
+    /** Opendaylight-inventory node-id QName */
+    public static final QName INVENTORY_NODE_ID_QNAME = QName.create("urn:opendaylight:inventory", "2013-08-19", "id");
+    public static final QName INVENTORY_NODE_CONNECTOR_REF_QNAME =
+            QName.create("urn:opendaylight:model:topology:inventory", "2013-10-30", "inventory-node-connector-ref");
+
     /**Correlation augment QName**/
     public static final QName TOPOLOGY_CORRELATION_AUGMENT =
             QName.create("urn:opendaylight:topology:correlation", "2015-01-21", "correlations");
