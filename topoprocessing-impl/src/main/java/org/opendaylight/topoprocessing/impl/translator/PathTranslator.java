@@ -14,6 +14,7 @@ import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
@@ -24,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.util.DataSchemaContextNode;
 import org.opendaylight.yangtools.yang.data.util.DataSchemaContextTree;
 import org.opendaylight.yangtools.yang.model.api.Module;
@@ -85,12 +87,16 @@ public class PathTranslator {
         YangInstanceIdentifier itemIdentifier;
         // if inputModel == null, than use network-topology model as default
         if (OpendaylightInventoryModel.class.equals(inputModel)) {
-            itemIdentifier = YangInstanceIdentifier.builder()
+            InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
                     .node(Nodes.QNAME)
                     .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME)
                     .nodeWithKey(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME,
-                            TopologyQNames.INVENTORY_NODE_ID_QNAME, "")
-                    .build();
+                            TopologyQNames.INVENTORY_NODE_ID_QNAME, "");
+            if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
+                itemIdentifierBuilder.node(NodeConnector.QNAME)
+                        .nodeWithKey(NodeConnector.QNAME, TopologyQNames.NODE_CONNECTOR_ID_QNAME, "");
+            }
+            itemIdentifier = itemIdentifierBuilder.build();
         } else if (NetworkTopologyModel.class.equals(inputModel)){
             YangInstanceIdentifier.InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
                     .node(NetworkTopology.QNAME)
