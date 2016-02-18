@@ -8,7 +8,6 @@
 
 package org.opendaylight.topoprocessing.impl.listener;
 
-
 import com.google.common.base.Optional;
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,11 +41,10 @@ public class InventoryListener implements DOMDataTreeChangeListener {
     private static final Logger LOGGER = LoggerFactory.getLogger(InventoryListener.class);
     private static final YangInstanceIdentifier itemIdentifier =
             YangInstanceIdentifier.of(Nodes.QNAME).node(Node.QNAME);
-
     private TopologyOperator operator;
     private String topologyId;
-
     private Map<Integer, YangInstanceIdentifier> pathIdentifiers;
+    private CorrelationItemEnum correlationItem;
 
     /**
      * Default constructor
@@ -54,6 +52,11 @@ public class InventoryListener implements DOMDataTreeChangeListener {
      */
     public InventoryListener(String underlayTopologyId) {
         this.topologyId = underlayTopologyId;
+    }
+
+    public InventoryListener(String underlayTopologyId, CorrelationItemEnum correlationItem) {
+        this(underlayTopologyId);
+        this.correlationItem = correlationItem;
     }
 
     @Override
@@ -85,11 +88,16 @@ public class InventoryListener implements DOMDataTreeChangeListener {
             NormalizedNode<?, ?> entry, ModificationType modificationType) {
         if (entry instanceof MapEntryNode && entry.getNodeType().equals(Node.QNAME)) {
             Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(pathIdentifiers.size());
-            for (Entry<Integer, YangInstanceIdentifier> pathIdentifierEntry : pathIdentifiers.entrySet()) {
-                Optional<NormalizedNode<?, ?>> targetFieldOpt =
-                        NormalizedNodes.findNode(entry, pathIdentifierEntry.getValue());
-                if (targetFieldOpt.isPresent()) {
-                    targetFields.put(pathIdentifierEntry.getKey(), targetFieldOpt.get());
+
+            if (correlationItem.equals(CorrelationItemEnum.TerminationPoint)) {
+                targetFields.put(0, entry);
+            } else {
+                for (Entry<Integer, YangInstanceIdentifier> pathIdentifierEntry : pathIdentifiers.entrySet()) {
+                    Optional<NormalizedNode<?, ?>> targetFieldOpt =
+                            NormalizedNodes.findNode(entry, pathIdentifierEntry.getValue());
+                    if (targetFieldOpt.isPresent()) {
+                        targetFields.put(pathIdentifierEntry.getKey(), targetFieldOpt.get());
+                    }
                 }
             }
             if (!targetFields.isEmpty()) {

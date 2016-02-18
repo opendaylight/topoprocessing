@@ -9,6 +9,7 @@
 package org.opendaylight.topoprocessing.impl.util;
 
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
@@ -65,7 +66,11 @@ public final class InstanceIdentifiers {
                         YangInstanceIdentifier.of(TopologyQNames.I2RS_LINK_ID_QNAME);
     private static final YangInstanceIdentifier I2RS_RELATIVE_TP_ID_IDENTIFIER =
                         YangInstanceIdentifier.of(TopologyQNames.I2RS_TP_ID_QNAME);
-
+    //Inventory
+    public static final YangInstanceIdentifier INVENTORY_NODE_ID_IDENTIFIER =
+                        YangInstanceIdentifier.of(TopologyQNames.NODE_CONNECTOR_ID_QNAME);
+    public static final YangInstanceIdentifier INVENTORY_NODE_CONNECTOR_IDENTIFIER =
+                        YangInstanceIdentifier.of(NodeConnector.QNAME);
     private InstanceIdentifiers() {
         throw new UnsupportedOperationException("InstanceIdentifiers can't be instantiated.");
     }
