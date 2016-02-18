@@ -66,6 +66,10 @@ public final class InstanceIdentifiers {
     private static final YangInstanceIdentifier I2RS_RELATIVE_TP_ID_IDENTIFIER =
                         YangInstanceIdentifier.of(TopologyQNames.I2RS_TP_ID_QNAME);
 
+    //Inventory
+    public static final YangInstanceIdentifier INVENTORY_NODE_ID_IDENTIFIER =
+                        YangInstanceIdentifier.of(TopologyQNames.NODE_CONNECTOR_ID_QNAME);
+
     private InstanceIdentifiers() {
         throw new UnsupportedOperationException("InstanceIdentifiers can't be instantiated.");
     }

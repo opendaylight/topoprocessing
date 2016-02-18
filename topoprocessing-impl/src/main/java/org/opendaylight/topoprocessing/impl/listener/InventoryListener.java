@@ -48,6 +48,8 @@ public class InventoryListener implements DOMDataTreeChangeListener {
 
     private Map<Integer, YangInstanceIdentifier> pathIdentifiers;
 
+    private CorrelationItemEnum correlationItem;
+
     /**
      * Default constructor
      * @param underlayTopologyId underlay topology id
@@ -55,6 +57,12 @@ public class InventoryListener implements DOMDataTreeChangeListener {
     public InventoryListener(String underlayTopologyId) {
         this.topologyId = underlayTopologyId;
     }
+
+    public InventoryListener(String underlayTopologyId, CorrelationItemEnum correlationItem) {
+        this(underlayTopologyId);
+        this.correlationItem = correlationItem;
+    }
+
 
     @Override
     public void onDataTreeChanged(Collection<DataTreeCandidate> dataTreeCandidates) {
@@ -85,11 +93,16 @@ public class InventoryListener implements DOMDataTreeChangeListener {
             NormalizedNode<?, ?> entry, ModificationType modificationType) {
         if (entry instanceof MapEntryNode && entry.getNodeType().equals(Node.QNAME)) {
             Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(pathIdentifiers.size());
-            for (Entry<Integer, YangInstanceIdentifier> pathIdentifierEntry : pathIdentifiers.entrySet()) {
-                Optional<NormalizedNode<?, ?>> targetFieldOpt =
-                        NormalizedNodes.findNode(entry, pathIdentifierEntry.getValue());
-                if (targetFieldOpt.isPresent()) {
-                    targetFields.put(pathIdentifierEntry.getKey(), targetFieldOpt.get());
+
+            if (correlationItem.equals(CorrelationItemEnum.TerminationPoint)) {
+                targetFields.put(0, entry);
+            } else {
+                for (Entry<Integer, YangInstanceIdentifier> pathIdentifierEntry : pathIdentifiers.entrySet()) {
+                    Optional<NormalizedNode<?, ?>> targetFieldOpt =
+                            NormalizedNodes.findNode(entry, pathIdentifierEntry.getValue());
+                    if (targetFieldOpt.isPresent()) {
+                        targetFields.put(pathIdentifierEntry.getKey(), targetFieldOpt.get());
+                    }
                 }
             }
             if (!targetFields.isEmpty()) {

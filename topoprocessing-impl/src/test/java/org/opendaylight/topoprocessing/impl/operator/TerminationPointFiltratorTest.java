@@ -73,7 +73,7 @@ public class TerminationPointFiltratorTest {
         Mockito.when(rpcServicesMock.getRpcService()).thenReturn(domRpcServiceMock);
         manager = new TestManager();
         TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
-        filtrator = new TerminationPointFiltrator(topoStoreProvider);
+        filtrator = new TerminationPointFiltrator(topoStoreProvider, NetworkTopologyModel.class);
         topoStoreProvider.initializeStore(TOPOLOGY_ID, false);
         RangeNumberFiltrator filter = new RangeNumberFiltrator(MIN, MAX, path);
         filtrator.addFilter(filter);
