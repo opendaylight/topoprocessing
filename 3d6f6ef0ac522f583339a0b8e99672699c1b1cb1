@@ -1,0 +1,124 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_8df876c4",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/InventoryListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-19T14:49:28Z",
+      "side": 1,
+      "message": "Please remove unnecessary empty rows.",
+      "revId": "3d6f6ef0ac522f583339a0b8e99672699c1b1cb1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_6d25325b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/InventoryListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-19T14:49:28Z",
+      "side": 1,
+      "message": "Remove empty row",
+      "revId": "3d6f6ef0ac522f583339a0b8e99672699c1b1cb1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_4d2aee2c",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/InventoryListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-19T14:49:28Z",
+      "side": 1,
+      "message": "remove empty row",
+      "revId": "3d6f6ef0ac522f583339a0b8e99672699c1b1cb1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_ad229a4f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-19T14:49:28Z",
+      "side": 1,
+      "message": "remove empty rows",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 41
+      },
+      "revId": "3d6f6ef0ac522f583339a0b8e99672699c1b1cb1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_60a41908",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-19T14:49:28Z",
+      "side": 1,
+      "message": "put this to InstanceIdentifiers class",
+      "range": {
+        "startLine": 71,
+        "startChar": 65,
+        "endLine": 71,
+        "endChar": 111
+      },
+      "revId": "3d6f6ef0ac522f583339a0b8e99672699c1b1cb1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_8de6b613",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-19T14:49:28Z",
+      "side": 1,
+      "message": "this would be probably better with iterator, so we will not be affected if someone change key.",
+      "range": {
+        "startLine": 71,
+        "startChar": 58,
+        "endLine": 71,
+        "endChar": 64
+      },
+      "revId": "3d6f6ef0ac522f583339a0b8e99672699c1b1cb1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
