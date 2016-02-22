@@ -26,6 +26,7 @@ import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -99,6 +100,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev1501
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.HeadEnd;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.TailEnd;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaEndPoint;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaOperStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.end.point.StitchingPoint;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.AnnouncementContextBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.HeadEndBuilder;
@@ -141,17 +143,20 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         public MlmtRpcProviderRegistryMock() { }
 
         @Override
-        public <T extends RpcService> BindingAwareBroker.RpcRegistration<T> addRpcImplementation(Class<T> serviceInterface, T implementation) throws IllegalStateException {
+        public <T extends RpcService> BindingAwareBroker.RpcRegistration<T>
+                addRpcImplementation(Class<T> serviceInterface, T implementation) throws IllegalStateException {
             return Mockito.mock(RoutedRpcRegistration.class);
         }
 
         @Override
-        public <T extends RpcService> BindingAwareBroker.RoutedRpcRegistration<T> addRoutedRpcImplementation(Class<T> serviceInterface, T implementation) throws IllegalStateException {
+        public <T extends RpcService> BindingAwareBroker.RoutedRpcRegistration<T>
+                addRoutedRpcImplementation(Class<T> serviceInterface, T implementation) throws IllegalStateException {
             return Mockito.mock(RoutedRpcRegistration.class);
         }
 
         @Override
-        public <L extends RouteChangeListener<RpcContextIdentifier, InstanceIdentifier<?>>> ListenerRegistration<L> registerRouteChangeListener(L listener) {
+        public <L extends RouteChangeListener<RpcContextIdentifier, InstanceIdentifier<?>>> ListenerRegistration<L>
+                registerRouteChangeListener(L listener) {
             return Mockito.mock(ListenerRegistration.class);
         }
 
@@ -238,7 +243,8 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
         NetworkTopology networkTopology = nb.build();
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), networkTopology);
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class),
+                networkTopology);
         assertCommit(rwTx.submit());
 
         dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
@@ -279,7 +285,8 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         MtTopologyType mtTopologyType = topologyTypes.getAugmentation(MtTopologyType.class);
         assertNotNull(mtTopologyType);
 
-        MlTopologyType mlTopologyTypes = mtTopologyType.getMultitechnologyTopology().getAugmentation(MlTopologyType.class);
+        MlTopologyType mlTopologyTypes = mtTopologyType.getMultitechnologyTopology().getAugmentation(
+                MlTopologyType.class);
         assertNotNull(mlTopologyTypes);
     }
 
@@ -577,7 +584,8 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         /*
          * Forwarding Adjacency announce
          */
-        ForwardingAdjAnnounceInputBuilder forwardingAdjAnnounceInputBuilder = new ForwardingAdjAnnounceInputBuilder();
+        ForwardingAdjAnnounceInputBuilder forwardingAdjAnnounceInputBuilder = 
+                new ForwardingAdjAnnounceInputBuilder();
         AnnouncementContextBuilder announcementContextBuilder = new AnnouncementContextBuilder();
         announcementContextBuilder.setId(new Uri("test"));
         HeadEndBuilder headEndBuilder = new HeadEndBuilder();
@@ -651,18 +659,27 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         forwardingAdjAnnounceInputBuilder.setHeadEnd(headEndBuilder.build());
         forwardingAdjAnnounceInputBuilder.setTailEnd(tailEndBuilder.build());
         forwardingAdjAnnounceInputBuilder.setNetworkTopologyRef(networkTopologyRef);
+        forwardingAdjAnnounceInputBuilder.setOperStatus(FaOperStatus.Up);
 
         Future<RpcResult<ForwardingAdjAnnounceOutput>> futureAnnounce =
                 provider.forwardingAdjAnnounce(forwardingAdjAnnounceInputBuilder.build());
         RpcResult<ForwardingAdjAnnounceOutput> output = futureAnnounce.get();
         assertNotNull(output);
         ForwardingAdjAnnounceOutput resultAnnounceOutput = output.getResult();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.announce.output.Result
-                resultOutput = resultAnnounceOutput.getResult();
-        boolean b = resultOutput instanceof FaId;
-        assertTrue(b);
+        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123
+                .forwarding.adj.announce.output.Result resultOutput = resultAnnounceOutput.getResult();
+        assertTrue(resultOutput instanceof FaId);
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaId faId = ((FaId)resultOutput).getFaId();
+        forwardingAdjAnnounceInputBuilder.setOperStatus(FaOperStatus.Up);
+        futureAnnounce = provider.forwardingAdjAnnounce(forwardingAdjAnnounceInputBuilder.build());
+        output = futureAnnounce.get();
+        assertNotNull(output);
+        resultAnnounceOutput = output.getResult();
+        resultOutput = resultAnnounceOutput.getResult();
+        assertTrue(resultOutput instanceof FaId);
+
+        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaId faId =
+                ((FaId)resultOutput).getFaId();
 
         /*
          * Forwarding Adjacency update
@@ -692,22 +709,24 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
          attributeKey = new AttributeKey(uri);
          attributeBuilder.setKey(attributeKey);
          forwardingAdjUpdateInputBuilder.setAttribute(lAttribute);
+         forwardingAdjUpdateInputBuilder.setOperStatus(FaOperStatus.Up);
 
          Future<RpcResult<ForwardingAdjUpdateOutput>> futureUpdate =
                  provider.forwardingAdjUpdate(forwardingAdjUpdateInputBuilder.build());
          RpcResult<ForwardingAdjUpdateOutput> update = futureUpdate.get();
          assertNotNull(update);
          ForwardingAdjUpdateOutput resultUpdateOutput = update.getResult();
-         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.update.output.Result
-                 resultUpdate = resultUpdateOutput.getResult();
+         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.update
+                 .output.Result resultUpdate = resultUpdateOutput.getResult();
          assertNotNull(resultUpdate);
-         b = resultUpdate instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.update.output.result.Ok;
-         assertTrue(b);
+         assertTrue(resultUpdate instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer
+                 .rev150123.forwarding.adj.update.output.result.Ok);
 
          /*
           * Forwarding Adjacency withdraw
          */
-        ForwardingAdjWithdrawInputBuilder forwardingAdjWithdrawInputBuilder = new ForwardingAdjWithdrawInputBuilder();
+        ForwardingAdjWithdrawInputBuilder forwardingAdjWithdrawInputBuilder = 
+                new ForwardingAdjWithdrawInputBuilder();
         forwardingAdjWithdrawInputBuilder.setFaId(faId);
         forwardingAdjWithdrawInputBuilder.setNetworkTopologyRef(networkTopologyRef);
 
@@ -716,10 +735,10 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         RpcResult<ForwardingAdjWithdrawOutput> withdraw = futureWithdraw.get();
         assertNotNull(withdraw);
         ForwardingAdjWithdrawOutput resultAdjWithdraw = withdraw.getResult();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.Result
-                resultWithdraw = resultAdjWithdraw.getResult();
-        b = resultWithdraw instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output.result.Ok;
-        assertTrue(b);
+        org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw
+                .output.Result resultWithdraw = resultAdjWithdraw.getResult();
+        assertTrue(resultWithdraw instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer
+                .rev150123.forwarding.adj.withdraw.output.result.Ok);
     }
 
     @Test(timeout = 10000)

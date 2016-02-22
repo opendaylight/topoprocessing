@@ -26,7 +26,7 @@ module multilayer-topology {
         accompanies this distribution, and is available at
         http://www.eclipse.org/legal/epl-v10.html
 
-        This module introduces multilayer using forwarding adjacency concept 
+        This module introduces multilayer using forwarding adjacency concept
         in network-topology for a SDN context.";
 
     revision "2015-01-23" {
@@ -36,7 +36,7 @@ module multilayer-topology {
 
     grouping multilayer-topology-type {
         container multilayer-topology {
-            presence 
+            presence
                 "Indicates a multilayer topology based on forwarding adjacency.";
         }
     }
@@ -73,10 +73,6 @@ module multilayer-topology {
         ext:context-instance "multilayer-topology-context";
     }
 
-    //
-    // .
-    //
-
     typedef fa-id {
         type inet:uri;
         description
@@ -91,32 +87,32 @@ module multilayer-topology {
         }
         leaf-list supporting-tp {
             type nt:tp-ref;
-            description 
+            description
                 "List of termination points that support end point TP.
-                If forwarding adjacency announcement triggers termination point 
+                If forwarding adjacency announcement triggers termination point
                 creation, this list is used to fill tp-ref attribute.";
         }
         leaf tp-id {
             type nt:tp-id;
-            description 
+            description
                 "Forwarding adjacency interface unique identifier.
-                If forwarding adjacency announcement triggers termination point 
+                If forwarding adjacency announcement triggers termination point
                 creation, this id is used for TP creation.";
         }
         container stitching-point {
-            description 
+            description
                 "Traffic patch to end-point.
                 If present, forwarding adjacency announcement refers to a FA segment.
                 If present, termination point may not be created.";
             leaf-list supporting-tp {
-                description 
+                description
                     "List of termination points that support stiching point TP.
-                    If forwarding adjacency announcement triggers termination point 
+                    If forwarding adjacency announcement triggers termination point
                     creation, this list is used to fill tp-ref attribute.";
                 type nt:tp-ref;
             }
             leaf tp-id {
-                description 
+                description
                     "Forwarding adjacency stitching TP unique identifier.";
                 type nt:tp-id;
             }
@@ -155,8 +151,32 @@ module multilayer-topology {
         }
     }
 
+    typedef fa-oper-status {
+        description "Providing the type definition of the forwarding adjacency operative status
+                     based on a subset of all potential values in general.";
+        type enumeration {
+            enum up {
+               value 1;
+               description
+                 "The forwarding adjacency is ready to pass traffic";
+            }
+            enum down {
+                value 2;
+                description
+                 "The forwarding adjacency is not ready to pass traffic";
+            }
+        }
+    }
+
+    grouping oper-status {
+        leaf oper-status {
+            type fa-oper-status;
+            description "Forwarding adjacency operative status.";
+        }
+    }
+
     grouping forwarding-adjacency-attributes {
-    
+
         container head-end {
             description "Head-point description of the forwarding adjacency.";
             uses fa-end-point;
@@ -167,12 +187,13 @@ module multilayer-topology {
         }
 
         uses fa-parameters;
+        uses oper-status;
 
         container announcement-context {
             description "Optional information";
             leaf id {
                 type inet:uri;
-                description 
+                description
                     "An identifier for the entity announcing/providing
                      forwarding adjacency.";
             }
@@ -180,8 +201,8 @@ module multilayer-topology {
                 ordered-by user;
                 key "resource";
                 leaf resource {
-                    description 
-                        "An ordered list from head-end to tail-end of 
+                    description
+                        "An ordered list from head-end to tail-end of
                          supporting resources.";
                     type instance-identifier;
                 }
@@ -189,11 +210,32 @@ module multilayer-topology {
         }
     }
 
+    grouping fa-stitched-end-point {
+        leaf node {
+            mandatory true;
+            type nt:node-id;
+            description "Forwarding adjacency node end point identifier resulting afterwards stiching occured";
+        }
+        leaf tp-id {
+            description "Forwarding adjacency stitching TP unique identifier resulting afterwards stiching occured";
+            type nt:tp-id;
+        }
+    }
+
+    grouping fa-stitched-end-point-pair {
+        container stitched-head-end {
+            uses fa-stitched-end-point;
+        }
+        container stitched-tail-end {
+            uses fa-stitched-end-point;
+        }
+    }
+
     rpc forwarding-adj-announce {
         input {
             uses network-topology-reference {
-                description 
-                    "The context of the announcement: 
+                description
+                    "The context of the announcement:
                      the network topology where forwarding adjacency is announced.";
             }
             uses forwarding-adjacency-attributes;
@@ -204,6 +246,7 @@ module multilayer-topology {
                     leaf fa-id {
                         type fa-id;
                     }
+                    uses fa-stitched-end-point-pair;
                 }
                 case none {
                     leaf none {
@@ -217,8 +260,8 @@ module multilayer-topology {
     rpc forwarding-adj-withdraw {
         input {
             uses network-topology-reference {
-                description 
-                    "The network topology where to apply the withdrawal, the 
+                description
+                    "The network topology where to apply the withdrawal, the
                      same to which forwarding adjacency has been announced.";
             }
             leaf fa-id {
@@ -243,8 +286,8 @@ module multilayer-topology {
     rpc forwarding-adj-update {
         input {
             uses network-topology-reference {
-                description 
-                    "The network topology to which forwarding adjacency has 
+                description
+                    "The network topology to which forwarding adjacency has
                      been announced.";
             }
             leaf fa-id {
