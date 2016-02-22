@@ -232,7 +232,7 @@ public class MultilayerAttributesParserImplTest {
         String tp1 = "tp:1";
         String tp2 = "tp:2";
         LinkBuilder linkBuilder = buildLinkBuilder(node1, tp1, node2, tp2);
-        LinkBuilder swappedLinkBuilder = parser.swapSourceDestination(linkBuilder);
+        LinkBuilder swappedLinkBuilder = parser.swapSourceDestination(linkBuilder, true);
         assertEquals(swappedLinkBuilder.getSource().getSourceNode().getValue().toString(), node2);
         assertEquals(swappedLinkBuilder.getSource().getSourceTp().getValue().toString(), tp2);
         assertEquals(swappedLinkBuilder.getDestination().getDestNode().getValue().toString(), node1);
