@@ -73,10 +73,6 @@ module multilayer-topology {
         ext:context-instance "multilayer-topology-context";
     }
 
-    //
-    // .
-    //
-
     typedef fa-id {
         type inet:uri;
         description
@@ -155,8 +151,32 @@ module multilayer-topology {
         }
     }
 
+    typedef fa-oper-status {
+        description "Providing the type definition of the forwarding adjacency operative status
+                     based on a subset of all potential values in general.";
+        type enumeration {
+            enum up {
+               value 1;
+               description
+                 "The forwarding adjacency is ready to pass traffic";
+            }
+            enum down {
+                value 2;
+                description
+                 "The forwarding adjacency is not ready to pass traffic";
+            }
+        }
+    }
+
+    grouping oper-status {
+        leaf oper-status {
+            type fa-oper-status;
+            description "Forwarding adjacency operative status.";
+        }
+    }
+
     grouping forwarding-adjacency-attributes {
-    
+
         container head-end {
             description "Head-point description of the forwarding adjacency.";
             uses fa-end-point;
@@ -167,6 +187,7 @@ module multilayer-topology {
         }
 
         uses fa-parameters;
+        uses oper-status;
 
         container announcement-context {
             description "Optional information";
@@ -189,6 +210,27 @@ module multilayer-topology {
         }
     }
 
+    grouping fa-stitched-end-point {
+        leaf node {
+            mandatory true;
+            type nt:node-id;
+            description "Forwarding adjacency node end point identifier resulting afterwards stiching occured";
+        }
+        leaf tp-id {
+            description "Forwarding adjacency stitching TP unique identifier resulting afterwards stiching occured";
+            type nt:tp-id;
+        }
+    }
+
+    grouping fa-stitched-end-point-pair {
+        container stitched-head-end {
+            uses fa-stitched-end-point;
+        }
+        container stitched-tail-end {
+            uses fa-stitched-end-point;
+        }
+    }
+
     rpc forwarding-adj-announce {
         input {
             uses network-topology-reference {
@@ -204,6 +246,7 @@ module multilayer-topology {
                     leaf fa-id {
                         type fa-id;
                     }
+                    uses fa-stitched-end-point-pair;
                 }
                 case none {
                     leaf none {
