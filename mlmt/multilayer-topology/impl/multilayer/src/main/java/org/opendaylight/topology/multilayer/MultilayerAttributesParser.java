@@ -46,7 +46,7 @@ public interface MultilayerAttributesParser {
 
     TerminationPointBuilder parseTerminationPointBuilder(FaEndPoint faEndPoint);
 
-    LinkBuilder swapSourceDestination(LinkBuilder linkBuilder);
+    LinkBuilder swapSourceDestination(LinkBuilder linkBuilder, boolean secondLeg);
 
     DirectionalityInfo parseDirection(FaId faId);
 }

@@ -26,6 +26,7 @@ import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -99,6 +100,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev1501
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.HeadEnd;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.TailEnd;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaEndPoint;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaOperStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.end.point.StitchingPoint;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.AnnouncementContextBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.HeadEndBuilder;
@@ -651,6 +653,7 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         forwardingAdjAnnounceInputBuilder.setHeadEnd(headEndBuilder.build());
         forwardingAdjAnnounceInputBuilder.setTailEnd(tailEndBuilder.build());
         forwardingAdjAnnounceInputBuilder.setNetworkTopologyRef(networkTopologyRef);
+        forwardingAdjAnnounceInputBuilder.setOperStatus(FaOperStatus.Up);
 
         Future<RpcResult<ForwardingAdjAnnounceOutput>> futureAnnounce =
                 provider.forwardingAdjAnnounce(forwardingAdjAnnounceInputBuilder.build());
@@ -660,6 +663,15 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.announce.output.Result
                 resultOutput = resultAnnounceOutput.getResult();
         boolean b = resultOutput instanceof FaId;
+        assertTrue(b);
+
+        forwardingAdjAnnounceInputBuilder.setOperStatus(FaOperStatus.Up);
+        futureAnnounce = provider.forwardingAdjAnnounce(forwardingAdjAnnounceInputBuilder.build());
+        output = futureAnnounce.get();
+        assertNotNull(output);
+        resultAnnounceOutput = output.getResult();
+        resultOutput = resultAnnounceOutput.getResult();
+        b = resultOutput instanceof FaId;
         assertTrue(b);
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaId faId = ((FaId)resultOutput).getFaId();
@@ -692,6 +704,7 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
          attributeKey = new AttributeKey(uri);
          attributeBuilder.setKey(attributeKey);
          forwardingAdjUpdateInputBuilder.setAttribute(lAttribute);
+         forwardingAdjUpdateInputBuilder.setOperStatus(FaOperStatus.Up);
 
          Future<RpcResult<ForwardingAdjUpdateOutput>> futureUpdate =
                  provider.forwardingAdjUpdate(forwardingAdjUpdateInputBuilder.build());

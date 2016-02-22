@@ -149,7 +149,7 @@ public class MultilayerAttributesParserTest implements MultilayerAttributesParse
     }
 
     private LinkId buildLinkId(String uuId, boolean secondLeg) {
-		String strLinkId = uuId + FA_ID_ITEM_SEP + getLinkSubId(secondLeg);
+        String strLinkId = uuId + FA_ID_ITEM_SEP + getLinkSubId(secondLeg);
         return new LinkId(strLinkId);
     }
 
@@ -160,7 +160,7 @@ public class MultilayerAttributesParserTest implements MultilayerAttributesParse
 
     @Override
     public LinkId parseLinkId(FaId faId, boolean secondLeg) {
-		String uuId = extractUuIdFromFaId(faId.getValue().toString());
+        String uuId = extractUuIdFromFaId(faId.getValue().toString());
         return parseLinkId(uuId, secondLeg);
     }
 
@@ -253,7 +253,7 @@ public class MultilayerAttributesParserTest implements MultilayerAttributesParse
     }
 
     @Override
-    public LinkBuilder swapSourceDestination(LinkBuilder linkBuilder) {
+    public LinkBuilder swapSourceDestination(LinkBuilder linkBuilder, boolean secondLeg) {
         Source source = linkBuilder.getSource();
         Destination destination = linkBuilder.getDestination();
         final SourceBuilder sourceBuilder = new SourceBuilder();
@@ -263,7 +263,7 @@ public class MultilayerAttributesParserTest implements MultilayerAttributesParse
         linkBuilder.setDestination(destinationBuilder.build());
         linkBuilder.setSource(sourceBuilder.build());
         String uuId = extractUuIdFromLink(linkBuilder.getLinkId().getValue().toString());
-        LinkId linkId = buildLinkId(uuId, true);
+        LinkId linkId = buildLinkId(uuId, secondLeg);
         LinkKey linkKey = new LinkKey(linkId);
         linkBuilder.setKey(linkKey);
 
