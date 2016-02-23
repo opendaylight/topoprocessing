@@ -121,7 +121,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
                     aggregateItems(newItem, topoStoreItem);
                     return;
                 }
-            } else if (! newItem.equals(topoStoreItem) && matchTargetFields(newItem, topoStoreItem) &&
+            } else if ((!newItem.equals(topoStoreItem)) && matchTargetFields(newItem, topoStoreItem) &&
                     newLink.getSrcNode().equals(topoStoreLink.getSrcNode()) &&
                     newLink.getDstNode().equals(topoStoreLink.getDstNode())) {
                 // no previous aggregation on this link
@@ -137,7 +137,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
             targetFieldsMatch = true;
             for (Entry<Integer, NormalizedNode<?, ?>> targetFieldEntryOfItem1 : item1.getLeafNodes().entrySet()) {
                 NormalizedNode<?, ?> targetFieldOfItem2 = item2.getLeafNodes().get(targetFieldEntryOfItem1.getKey());
-                if (!targetFieldEntryOfItem1.getValue().equals(targetFieldOfItem2)) {
+                if (!targetFieldEntryOfItem1.getValue().getValue().equals(targetFieldOfItem2.getValue())) {
                     return false;
                 }
             }
