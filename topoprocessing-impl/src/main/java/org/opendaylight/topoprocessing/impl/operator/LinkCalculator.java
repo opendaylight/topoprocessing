@@ -153,7 +153,7 @@ public class LinkCalculator implements TopologyOperator {
                     }
                 }
             } else if (matchedLinks.containsKey(itemIdentifier)) {
-                // removed item was mmatched link
+                // removed item was matched link
                 removeMatchedLink(itemIdentifier);
             } else if (waitingLinks.containsKey(itemIdentifier)) {
                 // removed item was waiting link

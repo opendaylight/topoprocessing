@@ -375,19 +375,27 @@ public abstract class TopologyRequestHandler {
             for (LinkInfo linkInfo : linksInformations) {
                 String underlayTopologyId = linkInfo.getLinkTopology();
                 Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>();
-                for (Mapping mapping : linkAggregation.getMapping()) {
-                    if(mapping.getUnderlayTopology().equals(underlayTopologyId)) {
-                        for (TargetField targetField : mapping.getTargetField()) {
-                            pathIdentifiers.put(targetField.getMatchingKey(), translator.translate(
-                                            targetField.getTargetFieldPath().getValue(), CorrelationItemEnum.Link,
-                                            schemaHolder, mapping.getInputModel()));
+                UnderlayTopologyListener listener = null;
+                Class<? extends Model> inputModel = linkInfo.getInputModel();
+                if(linkAggregation != null)
+                {
+                    for (Mapping mapping : linkAggregation.getMapping()) {
+                        if(mapping.getUnderlayTopology().equals(underlayTopologyId)) {
+                            for (TargetField targetField : mapping.getTargetField()) {
+                                pathIdentifiers.put(targetField.getMatchingKey(), translator.translate(
+                                                targetField.getTargetFieldPath().getValue(), CorrelationItemEnum.Link,
+                                                schemaHolder, mapping.getInputModel()));
+                            }
                         }
                     }
+                    listener = modelAdapters.get(inputModel)
+                            .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
+                                    CorrelationItemEnum.Link, datastoreType, calculator, listeners, pathIdentifiers);
+                } else {
+                    listener = modelAdapters.get(inputModel)
+                            .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
+                                    CorrelationItemEnum.Link, datastoreType, calculator, listeners, null);
                 }
-                Class<? extends Model> inputModel = linkInfo.getInputModel();
-                UnderlayTopologyListener listener = modelAdapters.get(inputModel)
-                        .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
-                                CorrelationItemEnum.Link, datastoreType, calculator, listeners, pathIdentifiers);
                 InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
                         .createTopologyIdentifier(underlayTopologyId);
                 YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
