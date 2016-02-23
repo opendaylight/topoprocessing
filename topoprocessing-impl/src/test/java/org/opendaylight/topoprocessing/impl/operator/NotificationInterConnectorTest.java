@@ -56,7 +56,7 @@ public class NotificationInterConnectorTest {
     @Before
     public void setUp() {
         operator = Mockito.mock(TopologyOperator.class);
-        connector = new NotificationInterConnector(TOPOLOGY_ID, CorrelationItemEnum.Node,topoStoreProvider);
+        connector = new NotificationInterConnector(CorrelationItemEnum.Node,topoStoreProvider);
         topoStoreProvider.initializeStore(TOPOLOGY_ID, false);
         connector.setOperator(operator);
     }
@@ -161,7 +161,7 @@ public class NotificationInterConnectorTest {
         connector.processRemovedChanges(invNodeId, TOPOLOGY_ID);
         Mockito.verify(operator, Mockito.times(1)).processRemovedChanges(
                 Matchers.eq(invNodeId), Matchers.eq(TOPOLOGY_ID));
-        Assert.assertNull("Item should have been removed",
+        Assert.assertNotNull("Item should have been removed",
                 topoStoreProvider.getTopologyStore(TOPOLOGY_ID).getUnderlayItems().get(invNodeId));
 
         // remove with topology identifier
@@ -185,7 +185,7 @@ public class NotificationInterConnectorTest {
         connector.processRemovedChanges(topoNodeId, TOPOLOGY_ID);
         Mockito.verify(operator, Mockito.times(1)).processRemovedChanges(
                 Matchers.eq(invNodeId), Matchers.eq(TOPOLOGY_ID));
-        Assert.assertNull("Item should have been removed",
+        Assert.assertNotNull("Item should have been removed",
                 topoStoreProvider.getTopologyStore(TOPOLOGY_ID).getUnderlayItems().get(invNodeId));
 
         // remove with inventory identifier
@@ -242,7 +242,7 @@ public class NotificationInterConnectorTest {
         targetFields.put(0, leafNode);
         UnderlayItem comparationItem = new UnderlayItem(topoNode, targetFields, TOPOLOGY_ID, node2,
                 CorrelationItemEnum.Node);
-        Mockito.verify(operator, Mockito.times(1)).processCreatedChanges(Matchers.refEq(invNodeId),
+        Mockito.verify(operator, Mockito.times(1)).processUpdatedChanges(Matchers.refEq(invNodeId),
                 Matchers.refEq(comparationItem),
                 Matchers.eq(TOPOLOGY_ID));
     }

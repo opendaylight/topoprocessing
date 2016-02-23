@@ -72,9 +72,10 @@ public class InventoryListener implements DOMDataTreeChangeListener {
                 if ((modificationType.equals(ModificationType.WRITE)
                         || modificationType.equals(ModificationType.SUBTREE_MODIFIED))
                         && dataTreeCandidateNode.getDataAfter().isPresent()) {
+                    boolean updated = dataTreeCandidateNode.getDataBefore().isPresent() ||
+                            modificationType.equals(ModificationType.SUBTREE_MODIFIED);
                     proceedChangeRequest(itemIdentifier.node(dataTreeCandidateNode.getIdentifier()),
-                            dataTreeCandidateNode.getDataAfter().get(),
-                            modificationType);
+                            dataTreeCandidateNode.getDataAfter().get(), updated);
                 } else if (modificationType.equals(ModificationType.DELETE)) {
                     processRemovedChanges(dataTreeCandidateNode.getIdentifier());
                 } else if (modificationType.equals(ModificationType.UNMODIFIED)) {
@@ -85,7 +86,7 @@ public class InventoryListener implements DOMDataTreeChangeListener {
     }
 
     private void proceedChangeRequest(YangInstanceIdentifier identifier,
-            NormalizedNode<?, ?> entry, ModificationType modificationType) {
+            NormalizedNode<?, ?> entry, boolean updated) {
         if (entry instanceof MapEntryNode && entry.getNodeType().equals(Node.QNAME)) {
             Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(pathIdentifiers.size());
             if (correlationItem.equals(CorrelationItemEnum.TerminationPoint)) {
@@ -105,9 +106,9 @@ public class InventoryListener implements DOMDataTreeChangeListener {
                 }
                 UnderlayItem underlayItem =
                         new UnderlayItem(null, targetFields, topologyId, null, CorrelationItemEnum.Node);
-                if (modificationType.equals(ModificationType.WRITE)) {
+                if (!updated) {
                     operator.processCreatedChanges(identifier, underlayItem, topologyId);
-                } else if (modificationType.equals(ModificationType.SUBTREE_MODIFIED)) {
+                } else {
                     operator.processUpdatedChanges(identifier, underlayItem, topologyId);
                 }
             } else {

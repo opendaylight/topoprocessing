@@ -300,11 +300,13 @@ public abstract class TopologyRequestHandler {
             }
             UnderlayTopologyListener listener;
             if(filtrator == null) {
-                listener = modelAdapters.get(mapping.getInputModel()).registerUnderlayTopologyListener(pingPongDataBroker,
-                                underlayTopologyId, correlationItem, datastoreType, aggregator, listeners, pathIdentifier);
+                listener = modelAdapters.get(mapping.getInputModel()).registerUnderlayTopologyListener(
+                        pingPongDataBroker, underlayTopologyId, correlationItem, datastoreType, aggregator,
+                        listeners, pathIdentifier);
             } else {
-                listener = modelAdapters.get(mapping.getInputModel()).registerUnderlayTopologyListener(pingPongDataBroker,
-                                underlayTopologyId, correlationItem, datastoreType, filtrator, listeners, pathIdentifier);
+                listener = modelAdapters.get(mapping.getInputModel()).registerUnderlayTopologyListener(
+                        pingPongDataBroker, underlayTopologyId, correlationItem, datastoreType, filtrator,
+                        listeners, pathIdentifier);
             }
 
             InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(mapping.getInputModel())
