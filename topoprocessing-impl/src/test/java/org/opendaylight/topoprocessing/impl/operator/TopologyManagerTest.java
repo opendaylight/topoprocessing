@@ -35,10 +35,8 @@ import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -73,8 +71,9 @@ public class TopologyManagerTest {
     @Mock private DOMRpcImplementation mockDomRpcImplementation;
     @Mock private DOMRpcIdentifier mockDomRpcIdentifier;
     TopologyManager manager;
-    private YangInstanceIdentifier identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-            .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY1).build();
+    private YangInstanceIdentifier identifier = YangInstanceIdentifier
+            .builder(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER)
+            .nodeWithKey(Network.QNAME, TopologyQNames.I2RS_NETWORK_ID_QNAME, TOPOLOGY1).build();
     private OverlayItem logicalNode;
     private OverlayItem logicalNode2;
 
@@ -86,7 +85,7 @@ public class TopologyManagerTest {
         Mockito.when(mockRpcServices.getRpcService()).thenReturn(mockDOMRpcService);
         Mockito.when(mockRpcServices.getRpcService().registerRpcListener((DOMRpcAvailabilityListener)any()))
             .thenReturn(mockListenerRegistration);
-        manager = new TopologyManager(mockRpcServices, mockSchemaHolder, identifier, NetworkTopologyModel.class);
+        manager = new TopologyManager(mockRpcServices, mockSchemaHolder, identifier);
         manager.setWriter(writer);
     }
 
@@ -105,7 +104,8 @@ public class TopologyManagerTest {
     @Test
     public void addLogicalNode() {
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1,
+                NODE_ID1, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode);
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
@@ -120,9 +120,11 @@ public class TopologyManagerTest {
     @Test
     public void addLogicalNodeWithTwoPhysicalNodes() {
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1,
+                NODE_ID1, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1,
+                NODE_ID2, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode2);
 
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
@@ -139,13 +141,15 @@ public class TopologyManagerTest {
     @Test
     public void addTwoLogicalNodesInTwoCalls() {
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1,
+                NODE_ID1, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
         manager.addOverlayItem(logicalNode);
 
         physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1,
+                NODE_ID2, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode2);
         logicalNode2 = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
         manager.addOverlayItem(logicalNode2);
@@ -161,13 +165,15 @@ public class TopologyManagerTest {
     @Test
     public void addTwoSameLogicalNodesInTwoCalls() {
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1,
+                NODE_ID1, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
         OverlayItem newLogicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
         manager.addOverlayItem(newLogicalNode);
 
         physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1,
+                NODE_ID1, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode2);
         newLogicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
@@ -230,15 +236,18 @@ public class TopologyManagerTest {
     @Test
     public void removeOneOfTwoLogicalNodesOfTheSameWrapper() {
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1,
+                NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1,
+                NODE_ID2, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
         physicalNodes.add(physicalNode2);
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
         manager.addOverlayItem(logicalNode);
 
         physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID3, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1,
+                NODE_ID3, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
         physicalNodes.add(physicalNode3);
         logicalNode2 = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
@@ -263,20 +272,25 @@ public class TopologyManagerTest {
                 (DOMRpcImplementation) any(),(DOMRpcIdentifier) any()))
                 .thenReturn(mockDomRpcImplementationRegistration);
 
-        YangInstanceIdentifier contextReference = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY1)
-                .node(Node.QNAME)
-                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID1)
+        YangInstanceIdentifier contextReference = YangInstanceIdentifier
+                .builder(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER)
+                .nodeWithKey(Network.QNAME, TopologyQNames.I2RS_NETWORK_ID_QNAME, TOPOLOGY1)
+                .node(org.opendaylight.yang.gen.v1.urn.ietf.params
+                        .xml.ns.yang.ietf.network.rev150608.network.Node.QNAME)
+                .nodeWithKey(org.opendaylight.yang.gen.v1.urn.ietf.params
+                        .xml.ns.yang.ietf.network.rev150608.network.Node.QNAME,
+                        TopologyQNames.I2RS_NODE_ID_QNAME, NODE_ID1)
                 .build();
 
-        SchemaPath schemaPath = SchemaPath.create(true, TopologyQNames.NETWORK_NODE_ID_QNAME);
+        SchemaPath schemaPath = SchemaPath.create(true, TopologyQNames.I2RS_NODE_ID_QNAME);
         DOMRpcIdentifier domRpcIdentifier = DOMRpcIdentifier.create(schemaPath, contextReference);
         Collection<DOMRpcIdentifier> rpcs = new ArrayList<>();
         rpcs.add(domRpcIdentifier);
         manager.onRpcAvailable(rpcs);
 
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1,
+                NODE_ID1, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode);
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
@@ -291,7 +305,8 @@ public class TopologyManagerTest {
         addLogicalNode();
         Mockito.reset(writer);
 
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1,
+                NODE_ID2, CorrelationItemEnum.Node);
         physicalNode2.setOverlayItem(logicalNode);
         logicalNode.getUnderlayItems().add(physicalNode2);
         manager.updateOverlayItem(logicalNode);
@@ -304,7 +319,8 @@ public class TopologyManagerTest {
         Mockito.reset(writer);
 
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1,
+                NODE_ID2, CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode2);
         logicalNode2 = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 

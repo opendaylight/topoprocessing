@@ -16,6 +16,7 @@ import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsCorrelationAugment;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.Correlations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.rev150824.I2rsLinkComputationAugment;
@@ -31,8 +32,7 @@ public class I2RSTopologyRequestHandler extends TopologyRequestHandler {
     }
     @Override
     protected Class<? extends Model> getModel(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
-        return ((Network) fromNormalizedNode.getValue()).getAugmentation(I2rsCorrelationAugment.class)
-                .getCorrelations().getOutputModel();
+        return I2rsModel.class;
     }
 
     @Override

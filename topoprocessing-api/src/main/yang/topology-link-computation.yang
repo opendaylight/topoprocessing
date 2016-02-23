@@ -34,12 +34,6 @@ module topology-link-computation {
     grouping link-computation-grouping {
         container link-computation {
             presence "Configuration for link computation";
-            leaf output-model {
-                type identityref {
-                    base topo-corr:model;
-                }
-                description "Desired output model for computed links.";
-            }
             container node-info {
                 leaf node-topology {
                     type string;
