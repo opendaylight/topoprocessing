@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_1480e1be",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 395,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-23T13:39:00Z",
+      "side": 1,
+      "message": "Please join these two lines",
+      "range": {
+        "startLine": 394,
+        "startChar": 17,
+        "endLine": 395,
+        "endChar": 22
+      },
+      "revId": "0c0456bba6ae6772e8ef6b63af2eb5bd9bc332e0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
