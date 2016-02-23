@@ -52,10 +52,11 @@ public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
     public void registerUnderlayTopologyListener(DatastoreType datastoreType, TopologyOperator operator
             ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
             Map<Integer, YangInstanceIdentifier> invPathIdentifiers){
-        if (correlationItem.equals(CorrelationItemEnum.Node) || correlationItem.equals(CorrelationItemEnum.TerminationPoint)) {
+        if (correlationItem.equals(CorrelationItemEnum.Node) ||
+                correlationItem.equals(CorrelationItemEnum.TerminationPoint)) {
             TopoStoreProvider connTopoStoreProvider = new TopoStoreProvider();
-            NotificationInterConnector connector = new NotificationInterConnector(underlayTopologyId,
-                    correlationItem,connTopoStoreProvider);
+            NotificationInterConnector connector =
+                    new NotificationInterConnector(correlationItem,connTopoStoreProvider);
             connTopoStoreProvider.initializeStore(underlayTopologyId, false);
             this.setOperator(connector);
             InventoryListener invListener = new InventoryListener(underlayTopologyId, correlationItem);

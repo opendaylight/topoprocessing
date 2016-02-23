@@ -254,6 +254,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
                     // if Leaf Node was changed
                     if (! matchTargetFields(underlayItem, updatedItem)) {
                         underlayItem.setLeafNodes(updatedItem.getLeafNodes());
+                        underlayItem.setItemId(updatedItem.getItemId());
                         if (underlayItem.getOverlayItem() != null) {
                             removeUnderlayItemFromOverlayItem(underlayItem);
                         }
