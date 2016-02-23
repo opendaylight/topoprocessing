@@ -79,9 +79,9 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
                 if ((modificationType.equals(ModificationType.WRITE)
                         || modificationType.equals(ModificationType.SUBTREE_MODIFIED))
                         && dataTreeCandidateNode.getDataAfter().isPresent()) {
+                    boolean updated = dataTreeCandidateNode.getDataBefore().isPresent();
                     proceedChangeRequest(itemIdentifier.node(dataTreeCandidateNode.getIdentifier()),
-                            dataTreeCandidateNode.getDataAfter().get(),
-                            modificationType);
+                            dataTreeCandidateNode.getDataAfter().get(), updated);
                 } else if (modificationType.equals(ModificationType.DELETE)) {
                     proceedDeletionRequest(dataTreeCandidateNode.getIdentifier());
                 } else if (modificationType.equals(ModificationType.UNMODIFIED)) {
@@ -93,7 +93,7 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
     }
 
     private void proceedChangeRequest(YangInstanceIdentifier identifier,
-            NormalizedNode<?,?> entry, ModificationType modificationType) {
+            NormalizedNode<?,?> entry, boolean updated) {
         if ((entry instanceof MapEntryNode) && entry.getNodeType().equals(itemQName)) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Processing entry: {}", entry);
@@ -141,9 +141,9 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
                         correlationItem);
             }
             LOGGER.debug("underlayItem created");
-            if (modificationType.equals(ModificationType.WRITE)) {
+            if (!updated) {
                 operator.processCreatedChanges(identifier, underlayItem, underlayTopologyId);
-            } else if (modificationType.equals(ModificationType.SUBTREE_MODIFIED)) {
+            } else {
                 operator.processUpdatedChanges(identifier, underlayItem, underlayTopologyId);
             }
         }
