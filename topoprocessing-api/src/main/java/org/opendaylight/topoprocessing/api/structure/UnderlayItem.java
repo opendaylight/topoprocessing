@@ -60,6 +60,13 @@ public class UnderlayItem {
     }
 
     /**
+     * @param itemId
+     */
+    public void setItemId(String itemId) {
+        this.itemId = itemId;
+    }
+
+    /**
      * @return node specified in target-field (in mapping)
      */
     public Map<Integer, NormalizedNode<?, ?>> getLeafNodes() {

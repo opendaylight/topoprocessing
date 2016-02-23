@@ -61,8 +61,8 @@ public class IRUnderlayTopologyListener extends UnderlayTopologyListener{
             renderingTopoProvider.initializeStore(underlayTopologyId, false);
             IRRenderingOperator operator = new IRRenderingOperator();
             operator.setTopoStoreProvider(renderingTopoProvider);
-            NotificationInterConnector connector = new NotificationInterConnector(underlayTopologyId,
-                    correlationItem,connTopoStoreProvider);
+            NotificationInterConnector connector =
+                    new NotificationInterConnector(correlationItem,connTopoStoreProvider);
             connector.setOperator(operator);
             this.setOperator(connector);
             IRInventoryListener invListener = new IRInventoryListener(underlayTopologyId);
