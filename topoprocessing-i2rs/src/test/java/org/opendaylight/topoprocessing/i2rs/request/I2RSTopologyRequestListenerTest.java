@@ -130,7 +130,6 @@ public class I2RSTopologyRequestListenerTest {
                 return I2rsModel.class;
             }
         };
-        Mockito.when(mockCorrelations.getOutputModel()).then(answer);
         // topology
         NetworkBuilder networkBuilder = new NetworkBuilder();
         NetworkId networkId = NetworkId.getDefaultInstance(TOPO_NAME);

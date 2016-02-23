@@ -39,6 +39,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
+import org.opendaylight.topoprocessing.i2rs.adapter.I2RSModelAdapter;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
@@ -58,6 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.LeafPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
@@ -108,7 +110,6 @@ public class NTTopologyRequestHandlerTest {
     @Mock private Map.Entry<InstanceIdentifier<?>,DataObject> mockFromNormalizedNode;
 
     private YangInstanceIdentifier pathIdentifier;
-    private Topology topology;
     private TopologyRequestHandler handler;
     private InstanceIdentifier<?> identifier = InstanceIdentifier.create(Topology.class);
 
@@ -161,7 +162,6 @@ public class NTTopologyRequestHandlerTest {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = new CorrelationAugmentBuilder();
         CorrelationsBuilder cBuilder = new CorrelationsBuilder();
-        cBuilder.setOutputModel(NetworkTopologyModel.class);
         correlationAugmentBuilder.setCorrelations(cBuilder.build());
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
@@ -182,7 +182,6 @@ public class NTTopologyRequestHandlerTest {
         correlations.add(cBuilder.build());
         CorrelationsBuilder correlationsBuilder = new CorrelationsBuilder();
         correlationsBuilder.setCorrelation(correlations);
-        correlationsBuilder.setOutputModel(NetworkTopologyModel.class);
         CorrelationAugmentBuilder correlationAugmentBuilder = new CorrelationAugmentBuilder();
         correlationAugmentBuilder.setCorrelations(correlationsBuilder.build());
         return correlationAugmentBuilder;
@@ -307,6 +306,7 @@ public class NTTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(NetworkTopologyModel.class, new NTModelAdapter());
+        modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
         // CONFIGURATION listener registration
         handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
@@ -362,12 +362,13 @@ public class NTTopologyRequestHandlerTest {
         mappingBuilder1.setAggregateInside(false);
         mappings.add(mappingBuilder1.build());
         aggBuilder.setMapping(mappings);
-        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null, aggBuilder.build(),
-                CorrelationItemEnum.Node);
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
+                aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(NetworkTopologyModel.class, new NTModelAdapter());
+        modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
         handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
@@ -393,7 +394,8 @@ public class NTTopologyRequestHandlerTest {
         fBuilder.setUnderlayTopology("pcep-topology:1");
         ArrayList<Filter> filters = new ArrayList<>();
         FilterBuilder filterBuilder1 = new FilterBuilder();
-        filterBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
+        filterBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/"
+                + "network-topology-pcep:ip-address"));
         filterBuilder1.setInputModel(NetworkTopologyModel.class);
         Ipv4Prefix ipv4prefix = new Ipv4Prefix("192.168.0.1/24");
         IpPrefix ipPrefix = new IpPrefix(ipv4prefix);
@@ -411,6 +413,7 @@ public class NTTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(NetworkTopologyModel.class, new NTModelAdapter());
+        modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
         handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);

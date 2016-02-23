@@ -49,6 +49,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationAggregation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.RenderingOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
@@ -92,7 +93,6 @@ public abstract class TopologyRequestHandler {
     private Map<Class<? extends Model>, ModelAdapter> modelAdapters;
     private Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode;
     private TopologyManager topologyManager;
-    private Class<? extends Model> outputModel;
 
     /**
      * Default constructor
@@ -113,8 +113,7 @@ public abstract class TopologyRequestHandler {
         this.rpcServices = rpcServices;
         this.fromNormalizedNode = fromNormalizedNode;
         this.topologyId = getTopologyId(fromNormalizedNode);
-        outputModel = getModel(fromNormalizedNode);
-        writer = new TopologyWriter(topologyId, outputModel);
+        writer = new TopologyWriter(topologyId);
     }
 
     protected abstract Class<? extends Model> getModel(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
@@ -153,11 +152,11 @@ public abstract class TopologyRequestHandler {
 
     public void setModelAdapters(Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
         this.modelAdapters = modelAdapters;
-        writer.setTranslator(modelAdapters.get(outputModel).createOverlayItemTranslator());
+        writer.setTranslator(modelAdapters.get(I2rsModel.class).createOverlayItemTranslator());
         transactionChain = pingPongDataBroker.createTransactionChain(writer);
         writer.setTransactionChain(transactionChain);
         topologyManager = new TopologyManager(rpcServices, schemaHolder,
-                modelAdapters.get(outputModel).createTopologyIdentifier(topologyId).build(), outputModel);
+                modelAdapters.get(I2rsModel.class).createTopologyIdentifier(topologyId).build());
         topologyManager.setWriter(writer);
         writer.initOverlayTopology();
 
@@ -362,7 +361,7 @@ public abstract class TopologyRequestHandler {
         List<LinkInfo> linksInformations = linkComputation.getLinkInfo();
         if (linksInformations != null && !linksInformations.isEmpty()) {
             String overlayTopologyId = linkComputation.getNodeInfo().getNodeTopology();
-            calculator = new LinkCalculator(overlayTopologyId, outputModel);
+            calculator = new LinkCalculator(overlayTopologyId);
             calculator.setTopologyManager(topologyManager);
             //register underlay listeners
             if (linkAggregation != null) {
@@ -413,12 +412,12 @@ public abstract class TopologyRequestHandler {
                 listeners.add(listenerRegistration);
             }
             //register overlay listener
-            UnderlayTopologyListener listener = modelAdapters.get(outputModel)
+            UnderlayTopologyListener listener = modelAdapters.get(I2rsModel.class)
                     .registerUnderlayTopologyListener(pingPongDataBroker, topologyId,
                             CorrelationItemEnum.Node, datastoreType, calculator, listeners, null);
-            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(outputModel)
+            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(I2rsModel.class)
                     .createTopologyIdentifier(overlayTopologyId);
-            YangInstanceIdentifier itemIdentifier = modelAdapters.get(outputModel)
+            YangInstanceIdentifier itemIdentifier = modelAdapters.get(I2rsModel.class)
                     .buildItemIdentifier(topologyIdentifier, CorrelationItemEnum.Node);
             LOG.debug("Registering link calculation overlay topology listener for topology: {}", overlayTopologyId);
             DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
