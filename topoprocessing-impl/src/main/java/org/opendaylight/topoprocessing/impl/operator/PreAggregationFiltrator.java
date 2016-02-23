@@ -21,7 +21,7 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PreAggregationFiltrator.class);
     protected TopologyAggregator aggregator;
-    
+
     public PreAggregationFiltrator(TopoStoreProvider topoStoreProvider) {
             super(topoStoreProvider);
     }
@@ -29,7 +29,7 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
     @Override
     public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry, String topologyId) {
         LOGGER.trace("Processing createdChanges");
-        if (passedFiltration(createdEntry.getItem())) {
+        if (passedFiltration(createdEntry.getLeafNodes().values().iterator().next())) {
             aggregator.processCreatedChanges(identifier, createdEntry, topologyId);
         }
     }
