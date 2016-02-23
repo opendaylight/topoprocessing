@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationAggregation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.LeafPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
@@ -213,7 +214,7 @@ public class TopologyRequestHandlerTest {
 
     private void setTestHandler(){
         when(modelAdaptersMock.get(null)).thenReturn(modelAdapterMock);
-        when(modelAdaptersMock.get(NetworkTopologyModel.class)).thenReturn(modelAdapterMock);
+        when(modelAdaptersMock.get(I2rsModel.class)).thenReturn(modelAdapterMock);
         when(modelAdapterMock.createOverlayItemTranslator()).thenReturn(overlayItemTranslatorMock);
         InstanceIdentifierBuilder instanceIdentifierBuilderMock = mock(InstanceIdentifierBuilder.class);
         when(modelAdapterMock.createTopologyIdentifier("topo1")).thenReturn(instanceIdentifierBuilderMock);

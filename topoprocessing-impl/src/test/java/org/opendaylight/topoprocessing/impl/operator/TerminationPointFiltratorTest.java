@@ -54,7 +54,7 @@ public class TerminationPointFiltratorTest {
         private MapEntryNode output;
 
         public TestManager() {
-            super(rpcServicesMock, schemaHolderMock, topologyIdentifierMock, NetworkTopologyModel.class);
+            super(rpcServicesMock, schemaHolderMock, topologyIdentifierMock);
         }
 
         public void setOutput(MapEntryNode output) {

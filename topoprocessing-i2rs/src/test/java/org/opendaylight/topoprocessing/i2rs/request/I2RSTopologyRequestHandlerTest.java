@@ -155,7 +155,6 @@ public class I2RSTopologyRequestHandlerTest {
         NetworkBuilder networkBuilder = createNetworkBuilder(TOPO1);
         I2rsCorrelationAugmentBuilder correlationAugmentBuilder = new I2rsCorrelationAugmentBuilder();
         CorrelationsBuilder cBuilder = new CorrelationsBuilder();
-        cBuilder.setOutputModel(I2rsModel.class);
         correlationAugmentBuilder.setCorrelations(cBuilder.build());
         networkBuilder.addAugmentation(I2rsCorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
@@ -176,7 +175,6 @@ public class I2RSTopologyRequestHandlerTest {
         correlations.add(cBuilder.build());
         CorrelationsBuilder correlationsBuilder = new CorrelationsBuilder();
         correlationsBuilder.setCorrelation(correlations);
-        correlationsBuilder.setOutputModel(I2rsModel.class);
         I2rsCorrelationAugmentBuilder correlationAugmentBuilder = new I2rsCorrelationAugmentBuilder();
         correlationAugmentBuilder.setCorrelations(correlationsBuilder.build());
         return correlationAugmentBuilder;

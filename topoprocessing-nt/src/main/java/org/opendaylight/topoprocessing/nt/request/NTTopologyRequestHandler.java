@@ -15,6 +15,7 @@ import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.Correlations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.rev150824.LinkComputationAugment;
@@ -46,8 +47,7 @@ public class NTTopologyRequestHandler extends TopologyRequestHandler{
 
     @Override
     protected Class<? extends Model> getModel(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
-        return ((Topology) fromNormalizedNode.getValue()).getAugmentation(CorrelationAugment.class)
-                .getCorrelations().getOutputModel();
+          return I2rsModel.class;
     }
 
     @Override

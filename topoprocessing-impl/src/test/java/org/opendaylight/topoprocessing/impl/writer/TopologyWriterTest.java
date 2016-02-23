@@ -12,18 +12,14 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.network.Node;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.topology.rev150608.network.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
-import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableContainerNodeBuilder;
 
 import com.google.common.util.concurrent.CheckedFuture;
 
@@ -35,10 +31,9 @@ public class TopologyWriterTest {
 
     private final static String TOPOLOGY_ID = "mytopo:1";
     private TopologyWriter topologyWriter;
-    private final YangInstanceIdentifier topologyIdentifier = YangInstanceIdentifier
-            .builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-            .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY_ID).build();
-
+    private final YangInstanceIdentifier topologyIdentifier =  YangInstanceIdentifier
+            .builder(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER)
+            .nodeWithKey(Network.QNAME, TopologyQNames.I2RS_NETWORK_ID_QNAME, TOPOLOGY_ID).build();
     @Mock private DOMTransactionChain transactionChain;
     @Mock private DOMDataWriteTransaction transaction;
     @Mock private CheckedFuture<Void,TransactionCommitFailedException> submit;
@@ -50,7 +45,7 @@ public class TopologyWriterTest {
      */
     @Before
     public void setUp() {
-        topologyWriter = new TopologyWriter(TOPOLOGY_ID, NetworkTopologyModel.class);
+        topologyWriter = new TopologyWriter(TOPOLOGY_ID);
         topologyWriter.setTransactionChain(transactionChain);
     }
 
@@ -64,18 +59,15 @@ public class TopologyWriterTest {
         Mockito.when(transaction.submit()).thenReturn(submit);
         topologyWriter.initOverlayTopology();
 
-        YangInstanceIdentifier networkId = YangInstanceIdentifier.of(NetworkTopology.QNAME);
-
+        YangInstanceIdentifier networkId = YangInstanceIdentifier.of(Network.QNAME);
         MapNode nodeMapNode = ImmutableNodes.mapNodeBuilder(Node.QNAME).build();
         MapNode linkMapNode = ImmutableNodes.mapNodeBuilder(Link.QNAME).build();
-        ContainerNode networkNode = ImmutableContainerNodeBuilder.create()
-                .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(NetworkTopology.QNAME))
-                .withChild(ImmutableNodes.mapNodeBuilder(Topology.QNAME)
-                        .withChild(ImmutableNodes.mapEntryBuilder(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY_ID)
+        MapNode networkNode = ImmutableNodes.mapNodeBuilder(Network.QNAME)
+                        .withChild(ImmutableNodes.mapEntryBuilder(Network.QNAME,
+                                TopologyQNames.I2RS_NETWORK_ID_QNAME, TOPOLOGY_ID)
                                 .withChild(nodeMapNode)
                                 .withChild(linkMapNode).build())
-                        .build())
-                .build();
+                        .build();
 
         try {
             Thread.sleep(500);
