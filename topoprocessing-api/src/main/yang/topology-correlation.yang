@@ -157,12 +157,6 @@ module topology-correlation {
 
     grouping correlations-grouping {
         container correlations {
-            leaf output-model {
-                type identityref {
-                    base model;
-                }
-                description "Desired model for output from correlation.";
-            }
             list correlation {
                 key correlation-id;
                 leaf correlation-id {

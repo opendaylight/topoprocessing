@@ -75,7 +75,7 @@ public class TerminationPointAggregatorTest {
         public OverlayItem newOverlayItem;
 
         public TpTestTopologyManager() {
-            super(rpcServices, schemaHolder, topologyIdentifier, NetworkTopologyModel.class);
+            super(rpcServices, schemaHolder, topologyIdentifier);
         }
 
         @Override

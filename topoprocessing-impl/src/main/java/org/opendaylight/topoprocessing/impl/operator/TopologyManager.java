@@ -26,7 +26,7 @@ import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
@@ -48,7 +48,6 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
     private Collection<DOMRpcIdentifier> availableRpcs;
     private YangInstanceIdentifier topologyIdentifier;
     private GlobalSchemaContextHolder schemaHolder;
-    private Class<? extends Model> outputModel;
 
     /**
      * @param rpcServices used for rpc republishing
@@ -56,13 +55,12 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
      * @param topologyIdentifier topology identifier
      */
     public TopologyManager(RpcServices rpcServices, GlobalSchemaContextHolder schemaHolder,
-            YangInstanceIdentifier topologyIdentifier, Class<? extends Model> outputModel) {
+            YangInstanceIdentifier topologyIdentifier) {
         this.rpcServices = rpcServices;
         this.schemaHolder = schemaHolder;
         this.topologyIdentifier = topologyIdentifier;
         availableRpcs = new HashSet<>();
         this.rpcServices.getRpcService().registerRpcListener(this);
-        this.outputModel = outputModel;
     }
 
     /**
@@ -172,8 +170,8 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
      */
     private void registerOverlayRpcs(OverlayItemWrapper wrapper, OverlayItem overlayItem) {
         LOGGER.trace("Registering overlay RPCs");
-        QName itemQName = TopologyQNames.buildItemQName(overlayItem.getCorrelationItem(), outputModel);
-        QName itemIdQName = TopologyQNames.buildItemIdQName(overlayItem.getCorrelationItem(), outputModel);
+        QName itemQName = TopologyQNames.buildItemQName(overlayItem.getCorrelationItem(), I2rsModel.class);
+        QName itemIdQName = TopologyQNames.buildItemIdQName(overlayItem.getCorrelationItem(), I2rsModel.class);
         YangInstanceIdentifier contextIdentifier = YangInstanceIdentifier.builder(topologyIdentifier)
                 .node(itemQName)
                 .nodeWithKey(itemQName, itemIdQName, wrapper.getId()).build();

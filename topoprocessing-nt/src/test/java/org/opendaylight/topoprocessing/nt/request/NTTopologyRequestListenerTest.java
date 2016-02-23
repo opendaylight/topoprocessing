@@ -32,6 +32,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
+import org.opendaylight.topoprocessing.i2rs.adapter.I2RSModelAdapter;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
@@ -43,6 +44,7 @@ import org.opendaylight.topoprocessing.nt.adapter.NTModelAdapter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.Correlations;
@@ -99,6 +101,7 @@ public class NTTopologyRequestListenerTest {
     public void setUp() {
         pingPongBroker = new PingPongDataBroker(mockBroker);
         modelAdapters.put( NetworkTopologyModel.class, new NTModelAdapter());
+        modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
         listener = new NTTopologyRequestListener(pingPongBroker, mockNodeSerializer, mockSchemaHolder, mockRpcServices, modelAdapters);
         listener.setDatastoreType(DatastoreType.OPERATIONAL);
 
@@ -127,10 +130,10 @@ public class NTTopologyRequestListenerTest {
             @Override
             public Class<? extends Model> answer(InvocationOnMock invocation)
                     throws Throwable {
-                return NetworkTopologyModel.class;
+                return I2rsModel.class;
             }
         };
-        Mockito.when(mockCorrelations.getOutputModel()).then(answer);
+
         // topology
         TopologyBuilder topoBuilder = new TopologyBuilder();
         TopologyId topoId = TopologyId.getDefaultInstance(TOPO_NAME);

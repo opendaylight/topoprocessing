@@ -49,6 +49,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationAggregation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.RenderingOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
@@ -113,8 +114,8 @@ public abstract class TopologyRequestHandler {
         this.rpcServices = rpcServices;
         this.fromNormalizedNode = fromNormalizedNode;
         this.topologyId = getTopologyId(fromNormalizedNode);
-        outputModel = getModel(fromNormalizedNode);
-        writer = new TopologyWriter(topologyId, outputModel);
+        outputModel = I2rsModel.class;
+        writer = new TopologyWriter(topologyId);
     }
 
     protected abstract Class<? extends Model> getModel(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
@@ -157,7 +158,7 @@ public abstract class TopologyRequestHandler {
         transactionChain = pingPongDataBroker.createTransactionChain(writer);
         writer.setTransactionChain(transactionChain);
         topologyManager = new TopologyManager(rpcServices, schemaHolder,
-                modelAdapters.get(outputModel).createTopologyIdentifier(topologyId).build(), outputModel);
+                modelAdapters.get(outputModel).createTopologyIdentifier(topologyId).build());
         topologyManager.setWriter(writer);
         writer.initOverlayTopology();
 
@@ -362,7 +363,7 @@ public abstract class TopologyRequestHandler {
         List<LinkInfo> linksInformations = linkComputation.getLinkInfo();
         if (linksInformations != null && !linksInformations.isEmpty()) {
             String overlayTopologyId = linkComputation.getNodeInfo().getNodeTopology();
-            calculator = new LinkCalculator(overlayTopologyId, outputModel);
+            calculator = new LinkCalculator(overlayTopologyId);
             calculator.setTopologyManager(topologyManager);
             //register underlay listeners
             if (linkAggregation != null) {

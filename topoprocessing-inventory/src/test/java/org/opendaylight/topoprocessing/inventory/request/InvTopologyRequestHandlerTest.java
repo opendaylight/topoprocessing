@@ -39,6 +39,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
+import org.opendaylight.topoprocessing.i2rs.adapter.I2RSModelAdapter;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
@@ -58,6 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.LeafPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
@@ -159,7 +161,6 @@ public class InvTopologyRequestHandlerTest {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = new CorrelationAugmentBuilder();
         CorrelationsBuilder cBuilder = new CorrelationsBuilder();
-        cBuilder.setOutputModel(invModel);
         correlationAugmentBuilder.setCorrelations(cBuilder.build());
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
@@ -180,7 +181,6 @@ public class InvTopologyRequestHandlerTest {
         correlations.add(cBuilder.build());
         CorrelationsBuilder correlationsBuilder = new CorrelationsBuilder();
         correlationsBuilder.setCorrelation(correlations);
-        correlationsBuilder.setOutputModel(invModel);
         CorrelationAugmentBuilder correlationAugmentBuilder = new CorrelationAugmentBuilder();
         correlationAugmentBuilder.setCorrelations(correlationsBuilder.build());
         return correlationAugmentBuilder;
@@ -305,6 +305,7 @@ public class InvTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(invModel, new InvModelAdapter());
+        modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
         // CONFIGURATION listener registration
         handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
@@ -366,6 +367,7 @@ public class InvTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(invModel, new InvModelAdapter());
+        modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
         handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
@@ -409,6 +411,7 @@ public class InvTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(invModel, new InvModelAdapter());
+        modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
         handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);

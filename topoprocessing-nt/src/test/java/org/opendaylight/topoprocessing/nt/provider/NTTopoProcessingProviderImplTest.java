@@ -28,6 +28,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
+import org.opendaylight.topoprocessing.nt.provider.TopoProcessingProviderNT;
 import org.opendaylight.topoprocessing.impl.provider.TopoProcessingProviderImpl;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
@@ -132,7 +133,7 @@ public class NTTopoProcessingProviderImplTest {
         topoProcessingProvider = new TopoProcessingProviderImpl(
                 schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
         topoProcessingProvider.registerModelAdapter(NetworkTopologyModel.class, mockNTModelAdapter);
-        
+
         Map<Class<? extends Model>, ModelAdapter> expectedModelAdapters = new HashMap<>();
         expectedModelAdapters.put(NetworkTopologyModel.class, mockNTModelAdapter);
         Mockito.verify(mockNTModelAdapter).createTopologyRequestListener((DOMDataBroker) Matchers.any(),

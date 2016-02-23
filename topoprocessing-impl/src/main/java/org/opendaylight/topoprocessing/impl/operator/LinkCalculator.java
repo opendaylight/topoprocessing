@@ -23,12 +23,9 @@ import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Destination;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Source;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNode;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
@@ -53,7 +50,6 @@ public class LinkCalculator implements TopologyOperator {
     protected TopologyManager manager;
     private TopologyAggregator aggregator;
     private TopologyStore storedOverlayNodes;
-    private Class<? extends Model> outputModel;
     private Map<YangInstanceIdentifier, ComputedLink> matchedLinks = new HashMap<>();
     private Map<YangInstanceIdentifier, UnderlayItem> waitingLinks = new HashMap<>();
 
@@ -61,10 +57,9 @@ public class LinkCalculator implements TopologyOperator {
      * Constructor
      * @param topologyId overlayTopologyId
      */
-    public LinkCalculator(String topologyId, Class<? extends Model> outputModel) {
+    public LinkCalculator(String topologyId) {
         storedOverlayNodes = new TopologyStore(topologyId, false,
                 new ConcurrentHashMap<YangInstanceIdentifier, UnderlayItem>());
-        this.outputModel = outputModel;
     }
 
     @Override
@@ -187,26 +182,14 @@ public class LinkCalculator implements TopologyOperator {
             while (overlayNodesIterator.hasNext()) {
                 Entry<YangInstanceIdentifier, UnderlayItem> overlayNodeEntry = overlayNodesIterator.next();
                 NormalizedNode<?, ?> overlayNode = overlayNodeEntry.getValue().getItem();
-                Collection<?> supportingNodes = null;
-                if (outputModel.equals(I2rsModel.class)) {
-                supportingNodes = (Collection<?>) ((MapEntryNode) overlayNode)
+                Collection<?> supportingNodes = (Collection<?>) ((MapEntryNode) overlayNode)
                         .getChild(new NodeIdentifier(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
                                 .network.rev150608.network.node.SupportingNode.QNAME)).get().getValue();
-                } else {
-                    supportingNodes = (Collection<?>) ((MapEntryNode) overlayNode)
-                            .getChild(new NodeIdentifier(SupportingNode.QNAME)).get().getValue();
-                }
                 Iterator<?> supportingNodesIterator = supportingNodes.iterator();
                 while (supportingNodesIterator.hasNext()) {
                     NormalizedNode<?, ?> supportingNode = (NormalizedNode<?, ?>) supportingNodesIterator.next();
-                    YangInstanceIdentifier yiidNodeRef = null;
-                    if (outputModel.equals(I2rsModel.class)) {
-                        yiidNodeRef = YangInstanceIdentifier.builder()
-                            .node(TopologyQNames.I2RS_NODE_REF).build();
-                    } else {
-                        yiidNodeRef = YangInstanceIdentifier.builder()
-                                .node(TopologyQNames.NODE_REF).build();
-                    }
+                     YangInstanceIdentifier yiidNodeRef = YangInstanceIdentifier.builder()
+                             .node(TopologyQNames.I2RS_NODE_REF).build();
                     Optional<NormalizedNode<?, ?>> supportingNodeNodeRefOptional =
                             NormalizedNodes.findNode(supportingNode, yiidNodeRef);
                     if (supportingNodeNodeRefOptional.isPresent()) {
@@ -261,26 +244,14 @@ public class LinkCalculator implements TopologyOperator {
             while (overlayNodesIterator.hasNext()) {
                 Entry<YangInstanceIdentifier, UnderlayItem> overlayNodeEntry = overlayNodesIterator.next();
                 NormalizedNode<?, ?> overlayNode = overlayNodeEntry.getValue().getItem();
-                Collection<?> supportingNodes = null;
-                if (outputModel.equals(I2rsModel.class)) {
-                supportingNodes = (Collection<?>) ((MapEntryNode) overlayNode)
+                Collection<?> supportingNodes = (Collection<?>) ((MapEntryNode) overlayNode)
                         .getChild(new NodeIdentifier(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
                                 .network.rev150608.network.node.SupportingNode.QNAME)).get().getValue();
-                } else {
-                    supportingNodes = (Collection<?>) ((MapEntryNode) overlayNode)
-                            .getChild(new NodeIdentifier(SupportingNode.QNAME)).get().getValue();
-                }
                 Iterator<?> supportingNodesIterator = supportingNodes.iterator();
                 while (supportingNodesIterator.hasNext()) {
                     NormalizedNode<?, ?> supportingNode = (NormalizedNode<?, ?>) supportingNodesIterator.next();
-                    YangInstanceIdentifier yiidNodeRef = null;
-                    if (outputModel.equals(I2rsModel.class)) {
-                        yiidNodeRef = YangInstanceIdentifier.builder()
+                     YangInstanceIdentifier yiidNodeRef = YangInstanceIdentifier.builder()
                             .node(TopologyQNames.I2RS_NODE_REF).build();
-                    } else {
-                        yiidNodeRef = YangInstanceIdentifier.builder()
-                                .node(TopologyQNames.NODE_REF).build();
-                    }
                     Optional<NormalizedNode<?, ?>> supportingNodeNodeRefOptional =
                             NormalizedNodes.findNode(supportingNode, yiidNodeRef);
                     if (supportingNodeNodeRefOptional.isPresent()) {

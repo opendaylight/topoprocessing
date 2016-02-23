@@ -39,6 +39,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
+import org.opendaylight.topoprocessing.i2rs.adapter.I2RSModelAdapter;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
@@ -58,6 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.LeafPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
@@ -87,7 +89,7 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.model.api.SchemaContext;
+import org.opendaylight.yangtools.yang.model.api.SchemaContext;;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NTTopologyRequestHandlerTest {
@@ -161,7 +163,6 @@ public class NTTopologyRequestHandlerTest {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = new CorrelationAugmentBuilder();
         CorrelationsBuilder cBuilder = new CorrelationsBuilder();
-        cBuilder.setOutputModel(NetworkTopologyModel.class);
         correlationAugmentBuilder.setCorrelations(cBuilder.build());
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
@@ -182,7 +183,6 @@ public class NTTopologyRequestHandlerTest {
         correlations.add(cBuilder.build());
         CorrelationsBuilder correlationsBuilder = new CorrelationsBuilder();
         correlationsBuilder.setCorrelation(correlations);
-        correlationsBuilder.setOutputModel(NetworkTopologyModel.class);
         CorrelationAugmentBuilder correlationAugmentBuilder = new CorrelationAugmentBuilder();
         correlationAugmentBuilder.setCorrelations(correlationsBuilder.build());
         return correlationAugmentBuilder;
@@ -307,6 +307,7 @@ public class NTTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(NetworkTopologyModel.class, new NTModelAdapter());
+        modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
         // CONFIGURATION listener registration
         handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
@@ -368,6 +369,7 @@ public class NTTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(NetworkTopologyModel.class, new NTModelAdapter());
+        modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
         handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
@@ -411,6 +413,7 @@ public class NTTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(NetworkTopologyModel.class, new NTModelAdapter());
+        modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
         handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);

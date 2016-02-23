@@ -30,22 +30,16 @@ import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
-import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
-import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableContainerNodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +61,6 @@ public class TopologyWriter implements TransactionChainListener {
     private YangInstanceIdentifier linkIdentifier;
     private Queue<TransactionOperation> preparedOperations;
     private ThreadPoolExecutor pool;
-    private Class<? extends Model> model;
 
     private static final AtomicIntegerFieldUpdater<TopologyWriter> WRITE_SCHEDULED_UPDATER =
             AtomicIntegerFieldUpdater.newUpdater(TopologyWriter.class, "writeScheduled");
@@ -84,26 +77,18 @@ public class TopologyWriter implements TransactionChainListener {
      * Default constructor
      * @param topologyId topologyId of overlay topology
      */
-    public TopologyWriter(String topologyId, Class<? extends Model> model) {
+    public TopologyWriter(String topologyId) {
         this.topologyId = topologyId;
-        this.model = model;
-        if (model.equals(I2rsModel.class)) {
-            topologyIdentifier = YangInstanceIdentifier.builder(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER)
-                    .nodeWithKey(Network.QNAME, TopologyQNames.I2RS_NETWORK_ID_QNAME, topologyId).build();
-            nodeIdentifier = YangInstanceIdentifier.builder(topologyIdentifier)
-                    .node(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608
-                            .network.Node.QNAME)
-                    .build();
-            linkIdentifier = YangInstanceIdentifier.builder(topologyIdentifier)
-                    .node(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.topology.rev150608
-                            .network.Link.QNAME)
-                    .build();
-        } else {
-            topologyIdentifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
-                    .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, topologyId).build();
-            nodeIdentifier = YangInstanceIdentifier.builder(topologyIdentifier).node(Node.QNAME).build();
-            linkIdentifier = YangInstanceIdentifier.builder(topologyIdentifier).node(Link.QNAME).build();
-        }
+        topologyIdentifier = YangInstanceIdentifier.builder(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER)
+                .nodeWithKey(Network.QNAME, TopologyQNames.I2RS_NETWORK_ID_QNAME, topologyId).build();
+        nodeIdentifier = YangInstanceIdentifier.builder(topologyIdentifier)
+                .node(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608
+                        .network.Node.QNAME)
+                .build();
+        linkIdentifier = YangInstanceIdentifier.builder(topologyIdentifier)
+                .node(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.topology.rev150608
+                        .network.Link.QNAME)
+                .build();
         preparedOperations = new ConcurrentLinkedQueue<>();
         pool = new ScheduledThreadPoolExecutor(EXECUTOR_POOL_THREADS);
     }
@@ -114,36 +99,18 @@ public class TopologyWriter implements TransactionChainListener {
      * and {@link Node} mapnode.
      */
     public void initOverlayTopology() {
-        if (model.equals(I2rsModel.class)) {
-            YangInstanceIdentifier networkId = YangInstanceIdentifier.of(Network.QNAME);
-
-            MapNode nodeMapNode = ImmutableNodes.mapNodeBuilder(org.opendaylight.yang.gen.v1.urn.ietf.params
-                    .xml.ns.yang.ietf.network.rev150608.network.Node.QNAME).build();
-            MapNode linkMapNode = ImmutableNodes.mapNodeBuilder(org.opendaylight.yang.gen.v1.urn.ietf.params
-                    .xml.ns.yang.ietf.network.topology.rev150608.network.Link.QNAME).build();
-            MapNode networkNode = ImmutableNodes.mapNodeBuilder(Network.QNAME)
-                            .withChild(ImmutableNodes.mapEntryBuilder(Network.QNAME,
-                                    TopologyQNames.I2RS_NETWORK_ID_QNAME, topologyId)
-                                    .withChild(nodeMapNode)
-                                    .withChild(linkMapNode).build())
-                            .build();
-            preparedOperations.add(new MergeOperation(networkId, networkNode));
-        } else {
-            YangInstanceIdentifier networkId = YangInstanceIdentifier.of(NetworkTopology.QNAME);
-
-            MapNode nodeMapNode = ImmutableNodes.mapNodeBuilder(Node.QNAME).build();
-            MapNode linkMapNode = ImmutableNodes.mapNodeBuilder(Link.QNAME).build();
-            ContainerNode networkNode = ImmutableContainerNodeBuilder.create()
-                    .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(NetworkTopology.QNAME))
-                    .withChild(ImmutableNodes.mapNodeBuilder(Topology.QNAME)
-                            .withChild(ImmutableNodes.mapEntryBuilder(Topology.QNAME,
-                                    TopologyQNames.TOPOLOGY_ID_QNAME, topologyId)
-                                    .withChild(nodeMapNode)
-                                    .withChild(linkMapNode).build())
-                            .build())
-                    .build();
-            preparedOperations.add(new MergeOperation(networkId, networkNode));
-        }
+        YangInstanceIdentifier networkId = YangInstanceIdentifier.of(Network.QNAME);
+        MapNode nodeMapNode = ImmutableNodes.mapNodeBuilder(org.opendaylight.yang.gen.v1.urn.ietf.params
+                .xml.ns.yang.ietf.network.rev150608.network.Node.QNAME).build();
+        MapNode linkMapNode = ImmutableNodes.mapNodeBuilder(org.opendaylight.yang.gen.v1.urn.ietf.params
+                .xml.ns.yang.ietf.network.topology.rev150608.network.Link.QNAME).build();
+        MapNode networkNode = ImmutableNodes.mapNodeBuilder(Network.QNAME)
+                        .withChild(ImmutableNodes.mapEntryBuilder(Network.QNAME,
+                                TopologyQNames.I2RS_NETWORK_ID_QNAME, topologyId)
+                                .withChild(nodeMapNode)
+                                .withChild(linkMapNode).build())
+                        .build();
+        preparedOperations.add(new MergeOperation(networkId, networkNode));
         scheduleWrite();
     }
 
@@ -287,8 +254,7 @@ public class TopologyWriter implements TransactionChainListener {
 
     private YangInstanceIdentifier buildDatastoreIdentifier(String itemId, CorrelationItemEnum correlationItem) {
         InstanceIdentifierBuilder builder = null;
-        if (model.equals(I2rsModel.class)) {
-            switch (correlationItem) {
+        switch (correlationItem) {
             case Node:
             case TerminationPoint:
                 builder = YangInstanceIdentifier.builder(nodeIdentifier)
@@ -303,23 +269,6 @@ public class TopologyWriter implements TransactionChainListener {
             default:
                 throw new IllegalArgumentException("Wrong Correlation item set: "
                         + correlationItem);
-            }
-
-        } else {
-            switch (correlationItem) {
-            case Node:
-            case TerminationPoint:
-                builder = YangInstanceIdentifier.builder(nodeIdentifier)
-                            .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, itemId);
-                break;
-            case Link:
-                builder = YangInstanceIdentifier.builder(linkIdentifier)
-                        .nodeWithKey(Link.QNAME, TopologyQNames.NETWORK_LINK_ID_QNAME, itemId);
-                break;
-            default:
-                throw new IllegalArgumentException("Wrong Correlation item set: "
-                        + correlationItem);
-            }
         }
         return builder.build();
     }
