@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_3e8a1c1b",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/test/java/org/opendaylight/topology/multilayer/MultilayerTopologyProviderTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 666,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-24T15:30:26Z",
+      "side": 1,
+      "message": "what does \"b\" mean? I think it is not necessary. Why didn\u0027t you put istanceof directly to assertTrue method?",
+      "range": {
+        "startLine": 665,
+        "startChar": 8,
+        "endLine": 666,
+        "endChar": 22
+      },
+      "revId": "4b04db49cb3f0b8f6af1515e835be93c381a2ab4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_7e8024f7",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/test/java/org/opendaylight/topology/multilayer/MultilayerTopologyProviderTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 675,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-24T15:30:26Z",
+      "side": 1,
+      "message": "Same as above",
+      "range": {
+        "startLine": 674,
+        "startChar": 8,
+        "endLine": 675,
+        "endChar": 22
+      },
+      "revId": "4b04db49cb3f0b8f6af1515e835be93c381a2ab4",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
