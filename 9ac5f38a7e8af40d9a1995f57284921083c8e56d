@@ -1,0 +1,326 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_801946d9",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/main/java/org/opendaylight/topology/multilayer/MultilayerTopologyProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 132,
+        "startChar": 3,
+        "endLine": 132,
+        "endChar": 125
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_c00fce86",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/main/java/org/opendaylight/topology/multilayer/MultilayerTopologyProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 398,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 398,
+        "startChar": 4,
+        "endLine": 398,
+        "endChar": 127
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_20283ae1",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/main/java/org/opendaylight/topology/multilayer/MultilayerTopologyProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 544,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 540,
+        "startChar": 12,
+        "endLine": 544,
+        "endChar": 12
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_00253608",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/main/java/org/opendaylight/topology/multilayer/MultilayerTopologyProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 594,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 590,
+        "startChar": 7,
+        "endLine": 594,
+        "endChar": 8
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_601ec2bc",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/main/java/org/opendaylight/topology/multilayer/MultilayerTopologyProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 682,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 682,
+        "startChar": 16,
+        "endLine": 682,
+        "endChar": 130
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_401bbec9",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/main/java/org/opendaylight/topology/multilayer/MultilayerTopologyProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 697,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 697,
+        "startChar": 16,
+        "endLine": 697,
+        "endChar": 121
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_a07baaf3",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/main/java/org/opendaylight/topology/multilayer/MultilayerTopologyProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 702,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 702,
+        "startChar": 20,
+        "endLine": 702,
+        "endChar": 125
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_808026c1",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/main/java/org/opendaylight/topology/multilayer/MultilayerTopologyProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 727,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 725,
+        "startChar": 8,
+        "endLine": 727,
+        "endChar": 8
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_e08132c4",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/main/java/org/opendaylight/topology/multilayer/MultilayerTopologyProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 748,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 740,
+        "startChar": 0,
+        "endLine": 748,
+        "endChar": 7
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_206f9a2c",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/main/java/org/opendaylight/topology/multilayer/MultilayerTopologyProvider.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 781,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 781,
+        "startChar": 12,
+        "endLine": 781,
+        "endChar": 122
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_006c1634",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/test/java/org/opendaylight/topology/multilayer/MultilayerTopologyProviderTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "change tabs for spaces",
+      "range": {
+        "startLine": 147,
+        "startChar": 0,
+        "endLine": 147,
+        "endChar": 10
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_607522f9",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/test/java/org/opendaylight/topology/multilayer/MultilayerTopologyProviderTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "change tabs for spaces, line length",
+      "range": {
+        "startLine": 153,
+        "startChar": 0,
+        "endLine": 153,
+        "endChar": 112
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_a0628a3b",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/test/java/org/opendaylight/topology/multilayer/MultilayerTopologyProviderTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "change tabs for spaces",
+      "range": {
+        "startLine": 159,
+        "startChar": 0,
+        "endLine": 159,
+        "endChar": 9
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_8067864c",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/test/java/org/opendaylight/topology/multilayer/MultilayerTopologyProviderTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 669,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-25T09:53:49Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 669,
+        "startChar": 8,
+        "endLine": 669,
+        "endChar": 121
+      },
+      "revId": "9ac5f38a7e8af40d9a1995f57284921083c8e56d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
