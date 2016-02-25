@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SupportingLink;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SupportingLinkBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SupportingLinkKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
@@ -175,12 +176,13 @@ public class MlmtTopologyBuilder {
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NodeBuilder nbuilder = new NodeBuilder();
                 final NodeKey nodeKey = node.getKey();
+                final NodeId nodeId = node.getNodeId();
                 nbuilder.setKey(nodeKey);
-                nbuilder.setNodeId(node.getNodeId());
+                nbuilder.setNodeId(nodeId);
                 nbuilder.setTerminationPoint(Collections.<TerminationPoint>emptyList());
                 SupportingNodeBuilder supportingNodeBuilder = new SupportingNodeBuilder();
-                supportingNodeBuilder.setNodeRef(node.getNodeId());
-                SupportingNodeKey supportingNodeKey = new SupportingNodeKey(node.getNodeId(), new TopologyId(nodeTopologyId));
+                supportingNodeBuilder.setNodeRef(nodeId);
+                SupportingNodeKey supportingNodeKey = new SupportingNodeKey(nodeId, new TopologyId(nodeTopologyId));
                 supportingNodeBuilder.setKey(supportingNodeKey);
                 List<SupportingNode> lSupporting = new ArrayList<SupportingNode>();
                 lSupporting.add(supportingNodeBuilder.build());
@@ -223,11 +225,25 @@ public class MlmtTopologyBuilder {
         log.info("MlmtTopologyBuilder.copyNode type: " + type + " topologyInstanceId: "
                 + topologyInstanceId.toString() + " TopologyId: " + nodeTopologyId.toString()
                 + " nodeKey: " + node.getKey().toString());
+
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
-                final InstanceIdentifier<Node> path = topologyInstanceId.child(Node.class, node.getKey());
-                transaction.merge(type, path, node);
+                NodeBuilder nbuilder = new NodeBuilder(node);
+                final NodeKey nodeKey = node.getKey();
+                final NodeId nodeId = node.getNodeId();
+                nbuilder.setKey(nodeKey);
+                nbuilder.setNodeId(nodeId);
+                SupportingNodeBuilder supportingNodeBuilder = new SupportingNodeBuilder();
+                supportingNodeBuilder.setNodeRef(nodeId);
+                SupportingNodeKey supportingNodeKey = new SupportingNodeKey(nodeId,
+                        new TopologyId(nodeTopologyId));
+                supportingNodeBuilder.setKey(supportingNodeKey);
+                List<SupportingNode> lSupporting = new ArrayList<SupportingNode>();
+                lSupporting.add(supportingNodeBuilder.build());
+                nbuilder.setSupportingNode(lSupporting);
+                final InstanceIdentifier<Node> path = topologyInstanceId.child(Node.class, nodeKey);
+                transaction.merge(type, path, nbuilder.build());
             }
         });
     }
@@ -265,12 +281,13 @@ public class MlmtTopologyBuilder {
                 + topologyInstanceId.toString() + " nodeKey: " + nodeKey.toString()
                 + " terminationPointKey: " + tpKey.toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
-        @Override
-             public void applyOperation(ReadWriteTransaction transaction) {
-                 InstanceIdentifier<Node> nodeInstanceId = topologyInstanceId.child(Node.class, nodeKey);
-                 InstanceIdentifier<TerminationPoint> tpInstanceId = nodeInstanceId.child(TerminationPoint.class, tpKey);
-                 transaction.delete(type, tpInstanceId);
-             }
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                InstanceIdentifier<Node> nodeInstanceId = topologyInstanceId.child(Node.class, nodeKey);
+                InstanceIdentifier<TerminationPoint> tpInstanceId = 
+                        nodeInstanceId.child(TerminationPoint.class, tpKey);
+                transaction.delete(type, tpInstanceId);
+            }
 
              @Override
              public boolean isCommitNow() { return true; }
@@ -287,9 +304,17 @@ public class MlmtTopologyBuilder {
         processor.enqueueOperation(new MlmtTopologyOperation() {
              @Override
              public void applyOperation(ReadWriteTransaction transaction) {
+                 final TerminationPointKey tpKey = tp.getKey();
+                 final TpId tpId = tp.getTpId();
+                 final TerminationPointBuilder tpBuilder = new TerminationPointBuilder(tp);
+                 tpBuilder.setKey(tpKey);
+                 tpBuilder.setTpId(tpId);
+                 List<TpId> lTpId = new ArrayList<TpId>();
+                 lTpId.add(tpId);
+                 tpBuilder.setTpRef(lTpId);
                  final InstanceIdentifier<TerminationPoint> instanceId = topologyInstanceId
-                           .child(Node.class, nodeKey).child(TerminationPoint.class, tp.getKey());
-                 transaction.merge(type, instanceId, tp);
+                           .child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
+                 transaction.merge(type, instanceId, tpBuilder.build());
              }
         });
     }
@@ -299,27 +324,27 @@ public class MlmtTopologyBuilder {
             final Link link) {
         log.info("MlmtTopologyBuilder.createLink type: " + type + " topologyInstanceId: "
                 + topologyInstanceId.toString() + " linkKey: " + link.getKey().toString());
-         final LinkBuilder linkBuilder = new LinkBuilder();
-         final LinkKey linkKey = link.getKey();
-         final LinkId linkId = link.getLinkId();
 
          processor.enqueueOperation(new MlmtTopologyOperation() {
              @Override
              public void applyOperation(ReadWriteTransaction transaction) {
-                  linkBuilder.setKey(linkKey);
-                  linkBuilder.setLinkId(linkId);
-                  linkBuilder.setSource(link.getSource());
-                  linkBuilder.setDestination(link.getDestination());
-                  SupportingLinkBuilder supportingLinkBuilder = new SupportingLinkBuilder();
-                  supportingLinkBuilder.setLinkRef(linkId);
-                  SupportingLinkKey supportingLinkKey = new SupportingLinkKey(linkId);
-                  supportingLinkBuilder.setKey(supportingLinkKey);
-                  List<SupportingLink> lSupporting = new ArrayList<SupportingLink>();
-                  lSupporting.add(supportingLinkBuilder.build());
-                  linkBuilder.setSupportingLink(lSupporting);
-                  final InstanceIdentifier<Link> instanceId = topologyInstanceId
-                          .child(Link.class, linkKey);
-                  transaction.merge(type, instanceId, linkBuilder.build());
+                 final LinkBuilder linkBuilder = new LinkBuilder();
+                 final LinkKey linkKey = link.getKey();
+                 final LinkId linkId = link.getLinkId();
+                 linkBuilder.setKey(linkKey);
+                 linkBuilder.setLinkId(linkId);
+                 linkBuilder.setSource(link.getSource());
+                 linkBuilder.setDestination(link.getDestination());
+                 SupportingLinkBuilder supportingLinkBuilder = new SupportingLinkBuilder();
+                 supportingLinkBuilder.setLinkRef(linkId);
+                 SupportingLinkKey supportingLinkKey = new SupportingLinkKey(linkId);
+                 supportingLinkBuilder.setKey(supportingLinkKey);
+                 List<SupportingLink> lSupporting = new ArrayList<SupportingLink>();
+                 lSupporting.add(supportingLinkBuilder.build());
+                 linkBuilder.setSupportingLink(lSupporting);
+                 final InstanceIdentifier<Link> instanceId = topologyInstanceId
+                         .child(Link.class, linkKey);
+                 transaction.merge(type, instanceId, linkBuilder.build());
              }
         });
     }
@@ -349,7 +374,19 @@ public class MlmtTopologyBuilder {
         processor.enqueueOperation(new MlmtTopologyOperation() {
              @Override
              public void applyOperation(ReadWriteTransaction transaction) {
-                 InstanceIdentifier<Link> linkInstanceId = topologyInstanceId.child(Link.class, link.getKey());
+                 LinkBuilder linkBuilder = new LinkBuilder(link);
+                 final LinkKey linkKey = link.getKey();
+                 final LinkId linkId = link.getLinkId();
+                 linkBuilder.setKey(linkKey);
+                 linkBuilder.setLinkId(linkId);
+                 SupportingLinkBuilder supportingLinkBuilder = new SupportingLinkBuilder();
+                 supportingLinkBuilder.setLinkRef(linkId);
+                 SupportingLinkKey supportingLinkKey = new SupportingLinkKey(linkId);
+                 supportingLinkBuilder.setKey(supportingLinkKey);
+                 List<SupportingLink> lSupporting = new ArrayList<SupportingLink>();
+                 lSupporting.add(supportingLinkBuilder.build());
+                 linkBuilder.setSupportingLink(lSupporting);
+                 InstanceIdentifier<Link> linkInstanceId = topologyInstanceId.child(Link.class, linkKey);
                  transaction.merge(type, linkInstanceId, link);
              }
         });
