@@ -1,0 +1,464 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_9f0fd887",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/InstanceIdentifiers.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "What is ps? Please use self-explanatory variables.",
+      "range": {
+        "startLine": 25,
+        "startChar": 27,
+        "endLine": 25,
+        "endChar": 29
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_df24c00e",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/InstanceIdentifiers.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please use self-explanatory variables.",
+      "range": {
+        "startLine": 40,
+        "startChar": 27,
+        "endLine": 40,
+        "endChar": 29
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_1f1bc8ca",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/InstanceIdentifiers.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "add space",
+      "range": {
+        "startLine": 43,
+        "startChar": 33,
+        "endLine": 43,
+        "endChar": 35
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_3f1e8cbb",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/InstanceIdentifiers.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please use self-explanatory variables.",
+      "range": {
+        "startLine": 57,
+        "startChar": 27,
+        "endLine": 57,
+        "endChar": 29
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_7fbe5466",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/ItemOfClass.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 4
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_5fc390ec",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/ItemWithKey.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 4
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_bfb45c82",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/MlmtTransformer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 18,
+        "startChar": 84,
+        "endLine": 18,
+        "endChar": 85
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_9fb9987b",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/MlmtTransformer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 31,
+        "startChar": 101,
+        "endLine": 31,
+        "endChar": 102
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_ffb1c48f",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/Transformer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 12,
+        "startChar": 74,
+        "endLine": 12,
+        "endChar": 75
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_dfae802d",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/Transformer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 13,
+        "startChar": 78,
+        "endLine": 13,
+        "endChar": 79
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_3fa84c1f",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/Transformer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 15,
+        "startChar": 2,
+        "endLine": 15,
+        "endChar": 4
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_1fa58846",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/Transformer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 24,
+        "startChar": 6,
+        "endLine": 24,
+        "endChar": 7
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_7f65b41c",
+        "filename": "mlmt/common/impl/src/test/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/InstanceIdentifiersTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 44,
+        "startChar": 54,
+        "endLine": 44,
+        "endChar": 55
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_5f6a70ee",
+        "filename": "mlmt/common/impl/src/test/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/InstanceIdentifiersTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 51,
+        "startChar": 69,
+        "endLine": 51,
+        "endChar": 70
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_bf6bbcef",
+        "filename": "mlmt/common/impl/src/test/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/InstanceIdentifiersTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 67,
+        "startChar": 53,
+        "endLine": 67,
+        "endChar": 54
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_9f7078dd",
+        "filename": "mlmt/common/impl/src/test/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/InstanceIdentifiersTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 77,
+        "startChar": 53,
+        "endLine": 77,
+        "endChar": 54
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_ff78a4c5",
+        "filename": "mlmt/common/impl/src/test/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/InstanceIdentifiersTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 84,
+        "startChar": 66,
+        "endLine": 84,
+        "endChar": 67
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_df75e0cb",
+        "filename": "mlmt/common/impl/src/test/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/InstanceIdentifiersTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 89,
+        "startChar": 53,
+        "endLine": 89,
+        "endChar": 54
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_3f7facac",
+        "filename": "mlmt/common/impl/src/test/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/InstanceIdentifiersTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 96,
+        "startChar": 65,
+        "endLine": 96,
+        "endChar": 66
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_1f7c68b4",
+        "filename": "mlmt/common/impl/src/test/java/org/opendaylight/topology/mlmt/utility/instanceidentifier/InstanceIdentifiersTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-02-29T11:57:20Z",
+      "side": 1,
+      "message": "Please remove trailing spaces",
+      "range": {
+        "startLine": 101,
+        "startChar": 53,
+        "endLine": 101,
+        "endChar": 54
+      },
+      "revId": "39764700ea08e85657e92ab73c4f45271a8bfbf1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
