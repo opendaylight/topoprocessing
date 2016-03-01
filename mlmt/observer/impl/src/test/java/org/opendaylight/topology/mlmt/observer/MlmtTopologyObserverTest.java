@@ -5,6 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.topology.mlmt.observer;
 
 import static org.junit.Assert.assertEquals;
@@ -134,7 +135,8 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         tbuilder.setTopologyId(topologyId);
         final TopologyTypesBuilder topologyTypesBuilder = new TopologyTypesBuilder();
         if (multitechFlag) {
-            final MultitechnologyTopologyBuilder multitechnologyTopologyBuilder = new MultitechnologyTopologyBuilder();
+            final MultitechnologyTopologyBuilder multitechnologyTopologyBuilder =
+                    new MultitechnologyTopologyBuilder();
             final MtTopologyTypeBuilder mtTopologyTypeBuilder = new MtTopologyTypeBuilder();
             mtTopologyTypeBuilder.setMultitechnologyTopology(multitechnologyTopologyBuilder.build());
             topologyTypesBuilder.addAugmentation(MtTopologyType.class, mtTopologyTypeBuilder.build());
@@ -198,7 +200,8 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         assertCommit(rwTx.submit());
 
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), networkTopology);
+        rwTx.put(LogicalDatastoreType.OPERATIONAL,
+                InstanceIdentifier.create(NetworkTopology.class), networkTopology);
         assertCommit(rwTx.submit());
 
         InstanceIdentifier<Topology> topologyIid = buildTopologyIid(MLMT);

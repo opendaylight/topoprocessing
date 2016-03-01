@@ -65,7 +65,6 @@ import org.slf4j.Logger;
 
 public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MlmtTopologyBuilderTest.class);
     private static final String MLMT1 = "mlmt:1";
     private final Object waitObject = new Object();
     private DataBroker dataBroker;
@@ -106,7 +105,8 @@ public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
         NetworkTopology networkTopology = nb.build();
 
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class), networkTopology);
+        rwTx.put(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier
+                .create(NetworkTopology.class), networkTopology);
         assertCommit(rwTx.submit());
         rwTx = dataBroker.newWriteOnlyTransaction();
         rwTx.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), networkTopology);
@@ -114,7 +114,8 @@ public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
 
         mlmtTopologyId = new TopologyId(MLMT1);
         TopologyKey mlmtTopologyKey = new TopologyKey(Preconditions.checkNotNull(mlmtTopologyId));
-        mlmtTopologyInstanceId = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, mlmtTopologyKey);
+        mlmtTopologyInstanceId = InstanceIdentifier.create(NetworkTopology.class)
+                .child(Topology.class, mlmtTopologyKey);
         TopologyBuilder topologyBuilder = new TopologyBuilder();
         topologyBuilder.setKey(mlmtTopologyKey);
 
@@ -130,7 +131,7 @@ public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
         thread.setName("MlmtTopologyBuilderTest");
         thread.start();
         builder = new MlmtTopologyBuilder();
-        builder.init(dataBroker, LOG, processor);
+        builder.init(dataBroker, processor);
     }
 
     private void createTopology(LogicalDatastoreType type) throws Exception {
@@ -166,7 +167,8 @@ public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
     private void createUnderlayTopology(LogicalDatastoreType type, String underlayTopologyName) throws Exception {
         TopologyId underlayTopologyId = new TopologyId(underlayTopologyName);
         TopologyKey key = new TopologyKey(Preconditions.checkNotNull(underlayTopologyId));
-        InstanceIdentifier<Topology> topologyInstanceId = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
+        InstanceIdentifier<Topology> topologyInstanceId =
+                InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
         builder.createUnderlayTopology(type, topologyInstanceId, underlayTopologyId);
     }
 

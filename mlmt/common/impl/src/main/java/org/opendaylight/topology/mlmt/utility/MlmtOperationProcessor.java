@@ -96,6 +96,10 @@ public final class MlmtOperationProcessor implements AutoCloseable, Runnable, Tr
                         transactionChain = dataBroker.createTransactionChain(this);
                         cleanDataStoreOperQueue();
                     }
+
+                    if (Thread.currentThread().isInterrupted()) {
+                        finishing = true;
+                    }
                 } catch (final IllegalStateException e) {
                     LOG.warn("Stat DataStoreOperation unexpected State!", e);
                     transactionChain.close();
@@ -119,8 +123,10 @@ public final class MlmtOperationProcessor implements AutoCloseable, Runnable, Tr
     }
 
     @Override
-    public void onTransactionChainFailed(TransactionChain<?, ?> chain, AsyncTransaction<?, ?> transaction, Throwable cause) {
-        LOG.error("Failed to export Topology manager operations, Transaction {} failed.", transaction.getIdentifier(), cause);
+    public void onTransactionChainFailed(TransactionChain<?, ?> chain, AsyncTransaction<?, ?> transaction,
+            Throwable cause) {
+        LOG.error("Failed to export Topology manager operations, Transaction {} failed.",
+                transaction.getIdentifier(), cause);
         transactionChain.close();
         transactionChain = dataBroker.createTransactionChain(this);
         cleanDataStoreOperQueue();
@@ -136,6 +142,5 @@ public final class MlmtOperationProcessor implements AutoCloseable, Runnable, Tr
         if (transactionChain != null) {
             transactionChain.close();
         }
-
     }
 }
