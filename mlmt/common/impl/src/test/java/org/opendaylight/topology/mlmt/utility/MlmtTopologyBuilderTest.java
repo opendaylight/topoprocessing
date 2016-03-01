@@ -65,7 +65,6 @@ import org.slf4j.Logger;
 
 public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MlmtTopologyBuilderTest.class);
     private static final String MLMT1 = "mlmt:1";
     private final Object waitObject = new Object();
     private DataBroker dataBroker;
@@ -130,7 +129,7 @@ public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
         thread.setName("MlmtTopologyBuilderTest");
         thread.start();
         builder = new MlmtTopologyBuilder();
-        builder.init(dataBroker, LOG, processor);
+        builder.init(dataBroker, processor);
     }
 
     private void createTopology(LogicalDatastoreType type) throws Exception {

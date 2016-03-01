@@ -44,7 +44,7 @@ public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implement
 
         mlmtTopologyId = buildTopologyIid(MLMT);
         mlmtTopologyBuilder = new MlmtTopologyBuilder();
-        mlmtTopologyBuilder.init(dataBroker, LOG, processor);
+        mlmtTopologyBuilder.init(dataBroker, processor);
         underlayTopologies = new ArrayList<String>();
 
         mlmtProviderFactory = new MlmtProviderFactoryImpl();

@@ -19,11 +19,14 @@ import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopologyBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopologyBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopologyKey;
@@ -45,26 +48,28 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
-import org.slf4j.Logger;
+import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MlmtTopologyBuilder {
 
-    private Logger log;
+    private static final Logger LOG = LoggerFactory.getLogger(MlmtTopologyBuilder.class);
     private DataBroker dataBroker;
     private MlmtOperationProcessor processor;
 
-    public void init(final DataBroker dataProvider, Logger logger, MlmtOperationProcessor processor) {
+    public void init(final DataBroker dataProvider, final MlmtOperationProcessor processor) {
         this.dataBroker = dataProvider;
-        this.log = logger;
         this.processor = processor;
     }
 
     public void createUnderlayTopology(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final TopologyId underlayTopologyRef) {
-        log.info("MlmtTopologyBuilder.createUnderlayTopology type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString() + " underlayTopologyRef: " + underlayTopologyRef.toString());
+        LOG.info("MlmtTopologyBuilder.createUnderlayTopology type: {} topologyInstanceId {} underlayTopologyRef: {} ",
+                type, topologyInstanceId.toString(), underlayTopologyRef.toString());
         final UnderlayTopologyBuilder underlayTopologyBuilder = new UnderlayTopologyBuilder();
         final TopologyTypesBuilder topologyTypesBuilder = new TopologyTypesBuilder();
         final TopologyKey key = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
@@ -82,16 +87,65 @@ public class MlmtTopologyBuilder {
                 tbuilder.setKey(key);
                 final Topology top = tbuilder.setServerProvided(Boolean.FALSE)
                         .setTopologyTypes(topologyTypesBuilder.build())
-                        .setUnderlayTopology(lUnderlayTopology).build();
+                                .setUnderlayTopology(lUnderlayTopology).build();
                 transaction.merge(type, topologyInstanceId, top);
             }
         });
     }
 
+    public void createUnderlayTopologyList(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final List<UnderlayTopology> underlayTopologyList) {
+        LOG.info("MlmtTopologyBuilder.createUnderlayTopologyList type {} topologyInstanceId {} underlayTopologies {}",
+                type, topologyInstanceId.toString(), underlayTopologyList.toString());
+        final TopologyKey key = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
+        final TopologyBuilder tbuilder = new TopologyBuilder();
+        tbuilder.setKey(key);
+
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                final Topology top = tbuilder.setUnderlayTopology(underlayTopologyList).build();
+                transaction.merge(type, topologyInstanceId, top);
+            }
+        });
+    }
+
+    public void createTopologyTypes(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final TopologyTypes topologyTypes) {
+        LOG.info("MlmtTopologyBuilder.createTopologyTypes type {} topologyInstanceId {} topologyTypes {}",
+                type, topologyInstanceId.toString(), topologyTypes.toString());
+
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                InstanceIdentifier<TopologyTypes> target =
+                        topologyInstanceId.child(TopologyTypes.class);
+                transaction.merge(type, target, topologyTypes);
+            }
+        });
+    }
+
+    public void createNetworkTopology(final LogicalDatastoreType type) {
+        LOG.info("MlmtTopologyBuilder.createNetworkTopology type {}", type);
+        final NetworkTopologyBuilder networkTopologyBuilder = new NetworkTopologyBuilder();
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                transaction.merge(type, InstanceIdentifier.create(NetworkTopology.class),
+                        networkTopologyBuilder.build());
+            }
+
+            @Override
+            public boolean isCommitNow() { return true; }
+        });
+    }
+
     public void createTopology(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId) {
-        log.info("MlmtTopologyBuilder.createTopology type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString());
+        LOG.info("MlmtTopologyBuilder.createTopology type {} topologyInstanceId {} ",
+                type, topologyInstanceId.toString());
         final TopologyKey key = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
         final TopologyBuilder tbuilder = new TopologyBuilder();
 
@@ -106,45 +160,48 @@ public class MlmtTopologyBuilder {
                         .setLink(Collections.<Link>emptyList())
                         .setNode(Collections.<Node>emptyList()).build();
                 transaction.merge(type, topologyInstanceId, top);
-              }
-         });
-     }
+            }
 
-     public void deleteTopology(final LogicalDatastoreType type,
-             final InstanceIdentifier<Topology> topologyInstanceId) {
-         log.info("MlmtTopologyBuilder.deleteTopology type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString());
+            @Override
+            public boolean isCommitNow() { return true; }
+        });
+    }
+
+    public void deleteTopology(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId) {
+        LOG.info("MlmtTopologyBuilder.deleteTopology type {} topologyInstanceId {}",
+                type, topologyInstanceId.toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
-              @Override
-              public void applyOperation(ReadWriteTransaction transaction) {
-                  transaction.delete(type, topologyInstanceId);
-              }
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                transaction.delete(type, topologyInstanceId);
+            }
 
-              @Override
-              public boolean isCommitNow() { return true; }
-         });
+            @Override
+            public boolean isCommitNow() { return true; }
+        });
     }
 
     public void copyTopology(final LogicalDatastoreType fromType,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final LogicalDatastoreType toType) {
         try {
-            log.info("MlmtTopologyBuilder.copyTopology type: " + fromType + " topologyInstanceId: "
-                    + topologyInstanceId.toString() + " toType: " + toType);
+            LOG.info("MlmtTopologyBuilder.copyTopology type {} topologyInstanceId {} toType {}",
+                  fromType, topologyInstanceId.toString(), toType);
             Optional<Topology> sourceTopologyObject = null;
             final ReadOnlyTransaction rx = dataBroker.newReadOnlyTransaction();
             sourceTopologyObject = rx.read(fromType, topologyInstanceId).get();
             if (sourceTopologyObject == null) {
-                log.info("MlmtTopologyBuilder.copyTopology source topologyObject null");
+                LOG.info("MlmtTopologyBuilder.copyTopology source topologyObject null");
                 return;
             }
             if (sourceTopologyObject.isPresent() == false) {
-                log.info("MlmtTopologyBuilder.copyTopology sourceTopologyObject not present");
+                LOG.info("MlmtTopologyBuilder.copyTopology sourceTopologyObject not present");
                 return;
             }
             final Topology sourceTopology = sourceTopologyObject.get();
             if (sourceTopology == null){
-                log.info("MlmtTopologyBuilder.copyTopology dest sourceTopology is null\n");
+                LOG.info("MlmtTopologyBuilder.copyTopology dest sourceTopology is null");
                 return;
             }
 
@@ -158,19 +215,98 @@ public class MlmtTopologyBuilder {
                 public boolean isCommitNow() { return true; }
             });
         } catch (final InterruptedException e) {
-            log.error("MlmtTopologyBuilder.copyTopology interrupted exception", e);
+            LOG.error("MlmtTopologyBuilder.copyTopology interrupted exception {}", e);
         } catch (final ExecutionException e) {
-            log.error("MlmtTopologyBuilder.copyTopology execution exception", e);
+            LOG.error("MlmtTopologyBuilder.copyTopology execution exception {}", e);
+        }
+    }
+
+    public void copyTopologyTypes(final LogicalDatastoreType fromType,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final LogicalDatastoreType toType) {
+        try {
+            LOG.info("MlmtTopologyBuilder.copyTopologyTypes type {} topologyInstanceId {} toType {}",
+                    fromType, topologyInstanceId.toString(), toType);
+            final InstanceIdentifier<TopologyTypes> topologyTypesIid =
+                    topologyInstanceId.child(TopologyTypes.class);
+            final ReadOnlyTransaction rx = dataBroker.newReadOnlyTransaction();
+            Optional<TopologyTypes> sourceTopologyTypesObject = rx.read(fromType, topologyTypesIid).get();
+            if (sourceTopologyTypesObject == null) {
+                LOG.info("MlmtTopologyBuilder.copyTopologyTypes source topologyObject null");
+                return;
+            }
+            if (sourceTopologyTypesObject.isPresent() == false) {
+                LOG.info("MlmtTopologyBuilder.copyTopologyTypes sourceTopologyObject not present");
+                return;
+            }
+            final TopologyTypes sourceTopologyTypes = sourceTopologyTypesObject.get();
+            if (sourceTopologyTypes == null){
+                LOG.info("MlmtTopologyBuilder.copyTopologyTypes dest sourceTopology is null");
+                return;
+            }
+
+            processor.enqueueOperation(new MlmtTopologyOperation() {
+                @Override
+                public void applyOperation(ReadWriteTransaction transaction) {
+                    transaction.put(toType, topologyTypesIid, sourceTopologyTypes);
+                }
+
+                @Override
+                public boolean isCommitNow() { return true; }
+            });
+        } catch (final InterruptedException e) {
+            LOG.error("MlmtTopologyBuilder.copyTopologyTypes interrupted exception {}", e);
+        } catch (final ExecutionException e) {
+            LOG.error("MlmtTopologyBuilder.copyTopologyTypes execution exception {}", e);
+        }
+    }
+
+    public void copyUnderlayTopology(final LogicalDatastoreType fromType,
+            final InstanceIdentifier<Topology> topologyInstanceId,
+            final LogicalDatastoreType toType) {
+        try {
+            LOG.info("MlmtTopologyBuilder.copyUnderlyingTopologyTypes type {} topologyInstanceId {} toType {}",
+                    fromType, topologyInstanceId.toString(), toType);
+            Optional<UnderlayTopology> sourceUnderlayTopologyObject = null;
+            final InstanceIdentifier<UnderlayTopology> underlayTopologyIid =
+                    topologyInstanceId.child(UnderlayTopology.class);
+            final ReadOnlyTransaction rx = dataBroker.newReadOnlyTransaction();
+            sourceUnderlayTopologyObject = rx.read(fromType, underlayTopologyIid).get();
+            if (sourceUnderlayTopologyObject == null) {
+                LOG.info("MlmtTopologyBuilder.copyTopologyTypes source topologyObject null");
+                return;
+            }
+            if (sourceUnderlayTopologyObject.isPresent() == false) {
+                LOG.info("MlmtTopologyBuilder.copyUnderlayTopology sourceUnderlayTopologyObject not present");
+                return;
+            }
+            final UnderlayTopology sourceUnderlayTopology = sourceUnderlayTopologyObject.get();
+            if (sourceUnderlayTopology == null){
+                LOG.info("MlmtTopologyBuilder.copyUnderlayTopology dest sourceUnderlayTopology is null");
+                return;
+            }
+
+            processor.enqueueOperation(new MlmtTopologyOperation() {
+                @Override
+                public void applyOperation(ReadWriteTransaction transaction) {
+                    transaction.put(toType, underlayTopologyIid, sourceUnderlayTopology);
+                }
+
+                @Override
+                public boolean isCommitNow() { return true; }
+            });
+        } catch (final InterruptedException e) {
+            LOG.error("MlmtTopologyBuilder.copyUnderlayTopology interrupted exception {}", e);
+        } catch (final ExecutionException e) {
+            LOG.error("MlmtTopologyBuilder.copyUnderlayTopology execution exception {}", e);
         }
     }
 
     public void createNode(final LogicalDatastoreType type,
-            final InstanceIdentifier<Topology> topologyInstanceId,
-            final TopologyId nodeTopologyId,
+            final InstanceIdentifier<Topology> topologyInstanceId, final TopologyId nodeTopologyId,
             final Node node) {
-        log.info("MlmtTopologyBuilder.createNode type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString() + " TopologyId: " + nodeTopologyId.toString()
-                + " nodeKey: " + node.getKey().toString());
+        LOG.info("MlmtTopologyBuilder.createNode type {} topologyInstanceId {} nodeTopologyId {} nodeKey {} ",
+                type, topologyInstanceId.toString(), nodeTopologyId.toString(), node.getKey().toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
@@ -182,7 +318,8 @@ public class MlmtTopologyBuilder {
                 nbuilder.setTerminationPoint(Collections.<TerminationPoint>emptyList());
                 SupportingNodeBuilder supportingNodeBuilder = new SupportingNodeBuilder();
                 supportingNodeBuilder.setNodeRef(nodeId);
-                SupportingNodeKey supportingNodeKey = new SupportingNodeKey(nodeId, new TopologyId(nodeTopologyId));
+                SupportingNodeKey supportingNodeKey =
+                        new SupportingNodeKey(nodeId, new TopologyId(nodeTopologyId));
                 supportingNodeBuilder.setKey(supportingNodeKey);
                 List<SupportingNode> lSupporting = new ArrayList<SupportingNode>();
                 lSupporting.add(supportingNodeBuilder.build());
@@ -201,11 +338,9 @@ public class MlmtTopologyBuilder {
     }
 
     public void deleteNode(final LogicalDatastoreType type,
-             final InstanceIdentifier<Topology> topologyInstanceId,
-             final NodeKey nodeKey) {
-        log.info("MlmtTopologyBuilder.deleteNode type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString() + " TopologyId: " + topologyInstanceId.toString()
-                + " nodeKey: " + nodeKey.toString());
+             final InstanceIdentifier<Topology> topologyInstanceId, final NodeKey nodeKey) {
+        LOG.info("MlmtTopologyBuilder.deleteNode type {} topologyInstanceId {} nodeKey {}",
+                type, topologyInstanceId.toString(), nodeKey.toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
@@ -219,12 +354,10 @@ public class MlmtTopologyBuilder {
     }
 
     public void copyNode(final LogicalDatastoreType type,
-            final InstanceIdentifier<Topology> topologyInstanceId,
-            final TopologyId nodeTopologyId,
+            final InstanceIdentifier<Topology> topologyInstanceId, final TopologyId nodeTopologyId,
             final Node node) {
-        log.info("MlmtTopologyBuilder.copyNode type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString() + " TopologyId: " + nodeTopologyId.toString()
-                + " nodeKey: " + node.getKey().toString());
+        LOG.info("MlmtTopologyBuilder.copyNode type {} topologyInstanceId {} nodeKey {}",
+                topologyInstanceId.toString(), nodeTopologyId.toString(), node.getKey().toString());
 
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
@@ -249,12 +382,10 @@ public class MlmtTopologyBuilder {
     }
 
     public void createTp(final LogicalDatastoreType type,
-           final InstanceIdentifier<Topology> topologyInstanceId,
-           final NodeKey nodeKey,
-           final TerminationPoint tp) {
-        log.info("MlmtTopologyBuilder.createTp type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString() + " nodeKey: " + nodeKey.toString()
-                + " terminationPointKey: " + tp.getKey().toString());
+            final InstanceIdentifier<Topology> topologyInstanceId, final NodeKey nodeKey,
+            final TerminationPoint tp) {
+        LOG.info("MlmtTopologyBuilder.createTp type {} topologyInstanceId {} nodeKey {} terminationPointKey {}",
+                type, topologyInstanceId.toString(), nodeKey.toString(), tp.getKey().toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
              @Override
              public void applyOperation(ReadWriteTransaction transaction) {
@@ -277,14 +408,13 @@ public class MlmtTopologyBuilder {
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey,
             final TerminationPointKey tpKey) {
-        log.info("MlmtTopologyBuilder.deleteTp type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString() + " nodeKey: " + nodeKey.toString()
-                + " terminationPointKey: " + tpKey.toString());
+        LOG.info("MlmtTopologyBuilder.deleteTp type {} topologyInstanceId {} nodeKey {} terminationPointKey {}",
+                type, topologyInstanceId.toString(), nodeKey.toString(), tpKey.toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
                 InstanceIdentifier<Node> nodeInstanceId = topologyInstanceId.child(Node.class, nodeKey);
-                InstanceIdentifier<TerminationPoint> tpInstanceId = 
+                InstanceIdentifier<TerminationPoint> tpInstanceId =
                         nodeInstanceId.child(TerminationPoint.class, tpKey);
                 transaction.delete(type, tpInstanceId);
             }
@@ -294,13 +424,11 @@ public class MlmtTopologyBuilder {
         });
     }
 
-   public void copyTp(final LogicalDatastoreType type,
-           final InstanceIdentifier<Topology> topologyInstanceId,
-           final NodeKey nodeKey,
+    public void copyTp(final LogicalDatastoreType type,
+           final InstanceIdentifier<Topology> topologyInstanceId, final NodeKey nodeKey,
            final TerminationPoint tp) {
-        log.info("MlmtTopologyBuilder.copyTp type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString() + " nodeKey: " + nodeKey.toString()
-                + " terminationPointKey: " + tp.getKey().toString());
+        LOG.info("MlmtTopologyBuilder.copyTp type {} topologyInstanceId {} nodeKey {} terminationPointKey {}",
+                type, topologyInstanceId.toString(), nodeKey.toString(), tp.getKey().toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
              @Override
              public void applyOperation(ReadWriteTransaction transaction) {
@@ -320,10 +448,9 @@ public class MlmtTopologyBuilder {
     }
 
     public void createLink(final LogicalDatastoreType type,
-            final InstanceIdentifier<Topology> topologyInstanceId,
-            final Link link) {
-        log.info("MlmtTopologyBuilder.createLink type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString() + " linkKey: " + link.getKey().toString());
+            final InstanceIdentifier<Topology> topologyInstanceId, final Link link) {
+        LOG.info("MlmtTopologyBuilder.createLink type {} topologyInstanceId {} linkKey {}",
+                type, topologyInstanceId.toString(), link.getKey().toString());
 
          processor.enqueueOperation(new MlmtTopologyOperation() {
              @Override
@@ -350,10 +477,9 @@ public class MlmtTopologyBuilder {
     }
 
     public void deleteLink(final LogicalDatastoreType type,
-            final InstanceIdentifier<Topology> topologyInstanceId,
-            final LinkKey linkKey) {
-        log.info("MlmtTopologyBuilder.deleteLink type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString() + " linkKey: " + linkKey.toString());
+            final InstanceIdentifier<Topology> topologyInstanceId, final LinkKey linkKey) {
+        LOG.info("MlmtTopologyBuilder.deleteLink type {} topologyInstanceId {} linkKey {}",
+                type, topologyInstanceId.toString(), linkKey.toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
              @Override
              public void applyOperation(ReadWriteTransaction transaction) {
@@ -367,10 +493,9 @@ public class MlmtTopologyBuilder {
     }
 
     public void copyLink(final LogicalDatastoreType type,
-            final InstanceIdentifier<Topology> topologyInstanceId,
-            final Link link) {
-        log.info("MlmtTopologyBuilder.copyLink type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString() + " linkKey: " + link.getKey().toString());
+            final InstanceIdentifier<Topology> topologyInstanceId, final Link link) {
+        LOG.info("MlmtTopologyBuilder.copyLink type {} topologyInstanceId {} linkKey {}",
+                type, topologyInstanceId.toString(), link.getKey().toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
              @Override
              public void applyOperation(ReadWriteTransaction transaction) {
@@ -389,6 +514,45 @@ public class MlmtTopologyBuilder {
                  InstanceIdentifier<Link> linkInstanceId = topologyInstanceId.child(Link.class, linkKey);
                  transaction.merge(type, linkInstanceId, link);
              }
+        });
+    }
+
+    public void deleteGenericObject(final LogicalDatastoreType type,
+            final InstanceIdentifier<?> instanceId) {
+        LOG.info("MlmtTopologyBuilder.deleteGenericObject type {} topologyInstanceId {}",
+                type, instanceId.toString());
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                transaction.delete(type, instanceId);
+            }
+
+            @Override
+            public boolean isCommitNow() { return true; }
+        });
+    }
+
+    public <T extends DataObject> void createGenericObject(final LogicalDatastoreType type,
+            final InstanceIdentifier<T> instanceId, final T dataSet) {
+        LOG.debug("MlmtTopologyBuilder.createGenericObject type {} topologyInstanceId {}",
+                type, instanceId.toString());
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                transaction.put(type, instanceId, dataSet);
+            }
+        });
+    }
+
+    public <T extends DataObject> void updateGenericObject(final LogicalDatastoreType type,
+            final InstanceIdentifier<T> instanceId, final T dataSet) {
+        LOG.debug("MlmtTopologyBuilder.updateGenericObject type {} topologyInstanceId {}",
+                type, instanceId.toString());
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                transaction.merge(type, instanceId, dataSet);
+            }
         });
     }
 }
