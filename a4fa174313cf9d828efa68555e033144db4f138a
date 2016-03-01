@@ -1,0 +1,372 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_758af51b",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "this can be static and final. You can instantiate it with this:\nLoggerFactory.getLogger(MlmtTopologyBuilder.class);",
+      "range": {
+        "startLine": 63,
+        "startChar": 4,
+        "endLine": 63,
+        "endChar": 23
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_b580fdf7",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "I think logger for this class should be final and static for. Also I don\u0027t see this parameter used anywhere in this method.",
+      "range": {
+        "startLine": 67,
+        "startChar": 51,
+        "endLine": 67,
+        "endChar": 65
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_d5930159",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "AFAIK this is not how you should work with logger. You should probably use something like this instead:\nlog.info(\"MlmtTopologyBuilder.createUnderlayTopologyList type: {} topologyInstanceId: {} underlayTopologyList: {}\", type, topologyInstanceId.toString(), underlayTopologyList.toString());",
+      "range": {
+        "startLine": 104,
+        "startChar": 8,
+        "endLine": 105,
+        "endChar": 111
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_159a896d",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "the same as above",
+      "range": {
+        "startLine": 122,
+        "startChar": 8,
+        "endLine": 123,
+        "endChar": 96
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_1571e943",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "the same as above",
+      "range": {
+        "startLine": 136,
+        "startChar": 8,
+        "endLine": 136,
+        "endChar": 76
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_75915546",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "the same as above. Please fix also other occurrences.",
+      "range": {
+        "startLine": 152,
+        "startChar": 8,
+        "endLine": 153,
+        "endChar": 49
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_5596d13f",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "I think previous indentation was correct",
+      "range": {
+        "startLine": 163,
+        "startChar": 24,
+        "endLine": 166,
+        "endChar": 96
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_f5a445a7",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "I think you can declare this variable directly on line 238",
+      "range": {
+        "startLine": 235,
+        "startChar": 12,
+        "endLine": 235,
+        "endChar": 69
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_35ab4d76",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "the same as above",
+      "range": {
+        "startLine": 275,
+        "startChar": 12,
+        "endLine": 275,
+        "endChar": 75
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_15a8c975",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "change this as mentioned before. But anyway, I personally think, that previous indentation was the correct one.",
+      "range": {
+        "startLine": 313,
+        "startChar": 8,
+        "endLine": 315,
+        "endChar": 67
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_75b835c8",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 327,
+        "startChar": 16,
+        "endLine": 327,
+        "endChar": 116
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_15bf29ab",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 393,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "I think previous indentation was the correct one",
+      "range": {
+        "startLine": 393,
+        "startChar": 12,
+        "endLine": 393,
+        "endChar": 48
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_75df950d",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 426,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "trailing space",
+      "range": {
+        "startLine": 426,
+        "startChar": 67,
+        "endLine": 426,
+        "endChar": 68
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_b5e59ddd",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 555,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "Isn\u0027t it possible to have one generic method instead all these create methods? I am not sure, but maybe something like this can work:\npublic \u003cT\u003e void createSomething(final LogicalDatastoreType type, final InstanceIdentifier\u003cT\u003e instanceId, final T input)\n\nThe same applies to update methods. Maybe it is worth of try.",
+      "range": {
+        "startLine": 545,
+        "startChar": 4,
+        "endLine": 555,
+        "endChar": 5
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_55e411e0",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 569,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 569,
+        "startChar": 4,
+        "endLine": 569,
+        "endChar": 116
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_95ea19aa",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTopologyBuilder.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 643,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-01T10:44:12Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 643,
+        "startChar": 4,
+        "endLine": 643,
+        "endChar": 116
+      },
+      "revId": "a4fa174313cf9d828efa68555e033144db4f138a",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
