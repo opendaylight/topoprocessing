@@ -17,6 +17,7 @@ import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
@@ -71,6 +72,7 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         }
         getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(identifier, createdEntry);
         OverlayItem overlayItem = wrapUnderlayItem(createdEntry);
+        overlayItem.setCorrelationType(FiltrationOnly.class);
         manager.addOverlayItem(overlayItem);
     }
 
@@ -90,6 +92,7 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         }
         UnderlayItem oldUnderlayItem = oldUnderlayItems.get(identifier);
         overlayItem = oldUnderlayItem.getOverlayItem();
+        overlayItem.setCorrelationType(FiltrationOnly.class);
         Queue<UnderlayItem> underlayItems = new ConcurrentLinkedQueue<>();
         underlayItems.add(newUnderlayItem);
         overlayItem.setUnderlayItems(underlayItems);

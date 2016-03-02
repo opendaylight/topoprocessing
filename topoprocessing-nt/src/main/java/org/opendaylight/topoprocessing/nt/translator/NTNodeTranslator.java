@@ -22,6 +22,7 @@ import org.opendaylight.topoprocessing.impl.translator.NodeTranslator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
@@ -90,7 +91,8 @@ public class NTNodeTranslator implements NodeTranslator{
                                 InstanceIdentifiers.I2RS_TP_IDENTIFIER);
                     }
                     if (terminationPointMapNode.isPresent()) {
-                        if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint) {
+                        if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint &&
+                                        !FiltrationOnly.class.equals(overlayItem.getCorrelationType())) {
                             Collection<MapEntryNode> terminationPointMapEntries =
                                     ((MapNode) terminationPointMapNode.get()).getValue();
                             for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
@@ -103,6 +105,7 @@ public class NTNodeTranslator implements NodeTranslator{
                             for (MapEntryNode terminationPointMapEntry : terminationPointEntries) {
                                 terminationPoints.addChild(terminationPointMapEntry);
                             }
+
                         }
                     }
                 }
