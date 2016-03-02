@@ -90,19 +90,11 @@ public class NTNodeTranslator implements NodeTranslator{
                                 InstanceIdentifiers.I2RS_TP_IDENTIFIER);
                     }
                     if (terminationPointMapNode.isPresent()) {
-                        if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint) {
-                            Collection<MapEntryNode> terminationPointMapEntries =
-                                    ((MapNode) terminationPointMapNode.get()).getValue();
-                            for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
-                                terminationPoints.addChild(terminationPointMapEntry);
-                            }
-                        } else {
-                            List<MapEntryNode> terminationPointEntries = createTerminationPoint(
-                                    (MapNode) terminationPointMapNode.get(), underlayItem.getTopologyId(),
-                                    underlayItem.getItemId(), idGenerator, model);
-                            for (MapEntryNode terminationPointMapEntry : terminationPointEntries) {
-                                terminationPoints.addChild(terminationPointMapEntry);
-                            }
+                        List<MapEntryNode> terminationPointEntries = createTerminationPoint(
+                                (MapNode) terminationPointMapNode.get(), underlayItem.getTopologyId(),
+                                underlayItem.getItemId(), idGenerator, model);
+                        for (MapEntryNode terminationPointMapEntry : terminationPointEntries) {
+                            terminationPoints.addChild(terminationPointMapEntry);
                         }
                     }
                 }
