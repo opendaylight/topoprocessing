@@ -12,6 +12,8 @@ import com.google.common.base.Preconditions;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 
 /**
@@ -22,6 +24,7 @@ public class OverlayItem {
 
     private Queue<UnderlayItem> underlayItems = new ConcurrentLinkedQueue<>();
     private CorrelationItemEnum correlationItem;
+    private Class<? extends CorrelationBase> correlationType;
 
     /**
      * Creates overlay item
@@ -88,5 +91,13 @@ public class OverlayItem {
      */
     public CorrelationItemEnum getCorrelationItem() {
         return correlationItem;
+    }
+
+    public Class<? extends CorrelationBase> getCorrelationType() {
+        return correlationType;
+    }
+
+    public void setCorrelationType(Class<? extends CorrelationBase> correlationType) {
+        this.correlationType = correlationType;
     }
 }
