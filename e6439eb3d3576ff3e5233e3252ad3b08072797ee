@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_b68f5e74",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/filtrator/SpecificValueFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-03T22:04:05Z",
+      "side": 1,
+      "message": "if value will be String, but equals condition will be false, then numberEquals will be still called. But it shouldn\u0027t because value is String.",
+      "range": {
+        "startLine": 49,
+        "startChar": 12,
+        "endLine": 49,
+        "endChar": 97
+      },
+      "revId": "e6439eb3d3576ff3e5233e3252ad3b08072797ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_968a1a62",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/filtrator/SpecificValueFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-03T22:04:05Z",
+      "side": 1,
+      "message": "I think this method should be private",
+      "range": {
+        "startLine": 81,
+        "startChar": 4,
+        "endLine": 81,
+        "endChar": 10
+      },
+      "revId": "e6439eb3d3576ff3e5233e3252ad3b08072797ee",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
