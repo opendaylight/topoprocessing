@@ -8,6 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
+import java.math.BigDecimal;
+
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
@@ -44,12 +46,46 @@ public class SpecificValueFiltrator<T> implements Filtrator {
     @Override
     public boolean isFiltered(NormalizedNode<?, ?> node) {
         T value = (T) ((LeafNode) node).getValue();
-        if (this.value.equals(value)) {
-            return false;
+        boolean isFiltered;
+        if (value instanceof String && this.value instanceof String)  {
+            isFiltered =  !this.value.equals(value);
+        } else if(value instanceof Number && this.value instanceof Number){
+            isFiltered =  !numberEquals(value, this.value);
+        } else {
+            isFiltered = false;
+            LOG.warn("One of these types is unsupported: {}; {}", value.getClass().getName(), this.value.getClass().getName());
         }
-        if (LOG.isDebugEnabled()) {
+        if (LOG.isDebugEnabled() && isFiltered) {
             LOG.debug("Node with value {} was filtered out", node);
         }
-        return true;
+        return isFiltered;
+    }
+
+    private BigDecimal createBigDecimal(Number value) {
+        BigDecimal result = null;
+        if (value instanceof Short) {
+            result = BigDecimal.valueOf(value.shortValue());
+        } else if (value instanceof Long) {
+            result = BigDecimal.valueOf(value.longValue());
+        } else if (value instanceof Float) {
+            result = BigDecimal.valueOf(value.floatValue());
+        } else if (value instanceof Double) {
+            result = BigDecimal.valueOf(value.doubleValue());
+        } else if (value instanceof Integer) {
+            result = BigDecimal.valueOf(value.intValue());
+        } else {
+            LOG.warn("Unsupported Number subtype: {}", value.getClass().getName());
+        }
+
+        return result;
+    }
+
+    public boolean numberEquals(T num1, T num2) {
+        BigDecimal bigDecimal1 = createBigDecimal((Number) num1);
+        BigDecimal bigDecimal2 = createBigDecimal((Number) num2);
+        if(bigDecimal1 == null || bigDecimal2 == null) {
+            return false;
+        }
+        return bigDecimal1.compareTo(bigDecimal2) == 0;
     }
 }
