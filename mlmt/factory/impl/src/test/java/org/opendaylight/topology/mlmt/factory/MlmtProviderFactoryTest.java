@@ -69,17 +69,20 @@ public class MlmtProviderFactoryTest extends AbstractDataBrokerTest {
         public MlmtRpcProviderRegistryMock() { }
 
         @Override
-        public <T extends RpcService> BindingAwareBroker.RpcRegistration<T> addRpcImplementation(Class<T> serviceInterface, T implementation) throws IllegalStateException {
+        public <T extends RpcService> BindingAwareBroker.RpcRegistration<T>
+                addRpcImplementation(Class<T> serviceInterface, T implementation) throws IllegalStateException {
             return Mockito.mock(RoutedRpcRegistration.class);
         }
 
         @Override
-        public <T extends RpcService> BindingAwareBroker.RoutedRpcRegistration<T> addRoutedRpcImplementation(Class<T> serviceInterface, T implementation) throws IllegalStateException {
+        public <T extends RpcService> BindingAwareBroker.RoutedRpcRegistration<T> addRoutedRpcImplementation(
+                Class<T> serviceInterface, T implementation) throws IllegalStateException {
             return Mockito.mock(RoutedRpcRegistration.class);
         }
 
         @Override
-        public <L extends RouteChangeListener<RpcContextIdentifier, InstanceIdentifier<?>>> ListenerRegistration<L> registerRouteChangeListener(L listener) {
+        public <L extends RouteChangeListener<RpcContextIdentifier, InstanceIdentifier<?>>> ListenerRegistration<L>
+                registerRouteChangeListener(L listener) {
             return Mockito.mock(ListenerRegistration.class);
         }
 
@@ -132,13 +135,13 @@ public class MlmtProviderFactoryTest extends AbstractDataBrokerTest {
             }
         }
 
-        boolean b = bInventoryTopologyProvider & bMultitechnologyTopologyProvider & bMultilayerTopologyProvider;
-        assertTrue(b);
+        assertTrue(bInventoryTopologyProvider & bMultitechnologyTopologyProvider & bMultilayerTopologyProvider);
     }
 
     @Test
     public void testConsequentAction() throws Exception {
-   final ForwardingAdjacencyTopologyBuilder forwardingAdjacencyTopologyBuilder = new ForwardingAdjacencyTopologyBuilder();
+        final ForwardingAdjacencyTopologyBuilder forwardingAdjacencyTopologyBuilder =
+                new ForwardingAdjacencyTopologyBuilder();
         TopologyTypesBuilder topologyTypesBuilder = new TopologyTypesBuilder();
         MlmtConsequentAction consequentAction = this.providerFactory.consequentAction(topologyTypesBuilder.build());
         assertEquals(consequentAction, MlmtConsequentAction.BUILD);
@@ -168,6 +171,11 @@ public class MlmtProviderFactoryTest extends AbstractDataBrokerTest {
 
         consequentAction = this.providerFactory.consequentAction(topologyTypesBuilder.build());
         assertEquals(consequentAction, MlmtConsequentAction.COPY);
+    }
+
+    @Test
+    public void testconfigTopologyTypes() throws Exception {
+        assertNotNull(providerFactory.configTopologyTypes());
     }
 
     @After
