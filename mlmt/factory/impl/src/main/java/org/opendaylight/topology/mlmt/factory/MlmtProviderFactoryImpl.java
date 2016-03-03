@@ -34,17 +34,31 @@ import org.opendaylight.topology.multilayer.MultilayerTopologyProvider;
 import org.opendaylight.topology.mlmt.parser.InventoryAttributesParserImpl;
 import org.opendaylight.topology.mlmt.parser.MultilayerAttributesParserImpl;
 import org.opendaylight.topology.mlmt.parser.MultitechnologyAttributesParserImpl;
-import org.slf4j.Logger;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.multilayer.topology.type.MultilayerTopologyBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MlTopologyTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MlTopologyType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.forwarding.adjacency.topology.type.ForwardingAdjacencyTopologyBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.FaTopologyTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.FaTopologyType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.MtTopologyOpaqueAttributeTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.MtTopologyOpaqueAttributeType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.multitechnology.topology.opaque.attribute.type.MultitechnologyOpaqueAttributeTopologyBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.multitechnology.topology.type.MultitechnologyTopologyBuilder;
+import org.slf4j.Logger;
 
 public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
 
     @Override
     public Map<String, List<MlmtTopologyProvider>> createProvidersMap(final RpcProviderRegistry rpcProviderRegistry,
-            final DataBroker dataBroker, final Logger logger, MlmtOperationProcessor processor, String mlmtTopologyName) {
+            final DataBroker dataBroker, final Logger logger, final MlmtOperationProcessor processor,
+                    final String mlmtTopologyName) {
         final TopologyId tid = new TopologyId(mlmtTopologyName);
         final TopologyKey key = new TopologyKey(Preconditions.checkNotNull(tid));
-        final InstanceIdentifier<Topology> mlmtTopologyId = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
+        final InstanceIdentifier<Topology> mlmtTopologyId =
+                InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
         Map<String, List<MlmtTopologyProvider>> map = new HashMap();
         List<MlmtTopologyProvider> lProvider = new ArrayList<MlmtTopologyProvider>();
         /*
@@ -59,7 +73,8 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
         /*
          * creating and adding multitechnology provider
          */
-        MultitechnologyAttributesParserImpl multitechnologyAttributesParser = new MultitechnologyAttributesParserImpl();
+        MultitechnologyAttributesParserImpl multitechnologyAttributesParser =
+                new MultitechnologyAttributesParserImpl();
         multitechnologyAttributesParser.init(logger);
         MultitechnologyTopologyProvider multitechnologyTopologyProvider = new MultitechnologyTopologyProvider();
         multitechnologyTopologyProvider.init(logger, processor, mlmtTopologyId, multitechnologyAttributesParser);
@@ -68,7 +83,8 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
         /*
          * creating and adding forwarding adjacency provider
          */
-        ForwardingAdjacencyTopologyProvider forwardingAdjacencyTopologyProvider = new ForwardingAdjacencyTopologyProvider();
+        ForwardingAdjacencyTopologyProvider forwardingAdjacencyTopologyProvider =
+                new ForwardingAdjacencyTopologyProvider();
         forwardingAdjacencyTopologyProvider.init(logger, processor, mlmtTopologyId);
         forwardingAdjacencyTopologyProvider.setDataProvider(dataBroker);
         /*
@@ -77,7 +93,8 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
         MultilayerAttributesParserImpl multilayerAttributesParser = new MultilayerAttributesParserImpl();
         multilayerAttributesParser.init(logger);
         MultilayerTopologyProvider multilayerTopologyProvider = new MultilayerTopologyProvider();
-        multilayerTopologyProvider.init(logger, processor, mlmtTopologyId, multilayerAttributesParser, forwardingAdjacencyTopologyProvider);
+        multilayerTopologyProvider.init(logger, processor, mlmtTopologyId, multilayerAttributesParser,
+                forwardingAdjacencyTopologyProvider);
         multilayerTopologyProvider.setDataProvider(dataBroker);
         multilayerTopologyProvider.registerRpcImpl(rpcProviderRegistry, mlmtTopologyId);
         lProvider.add(multilayerTopologyProvider);
@@ -98,5 +115,39 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
 
         return MlmtConsequentAction.BUILD;
     }
-}
 
+    @Override
+    public TopologyTypesBuilder configTopologyTypes() {
+        final ForwardingAdjacencyTopologyBuilder forwardingAdjacencyTopologyBuilder =
+                new ForwardingAdjacencyTopologyBuilder();
+        final FaTopologyTypeBuilder faTopologyTypeBuilder = new FaTopologyTypeBuilder();
+        faTopologyTypeBuilder.setForwardingAdjacencyTopology(forwardingAdjacencyTopologyBuilder.build());
+
+        final MultilayerTopologyBuilder multilayerTopologyBuilder = new MultilayerTopologyBuilder();
+        multilayerTopologyBuilder.addAugmentation(FaTopologyType.class, faTopologyTypeBuilder.build());
+        final MlTopologyTypeBuilder mlTopologyTypeBuilder = new MlTopologyTypeBuilder();
+        mlTopologyTypeBuilder.setMultilayerTopology(multilayerTopologyBuilder.build());
+
+        final MultitechnologyOpaqueAttributeTopologyBuilder multitechnologyOpaqueAttributeTopologyBuilder =
+                new MultitechnologyOpaqueAttributeTopologyBuilder();
+        final MtTopologyOpaqueAttributeTypeBuilder mtTopologyOpaqueAttributeTypeBuilder =
+                new MtTopologyOpaqueAttributeTypeBuilder();
+        mtTopologyOpaqueAttributeTypeBuilder.setMultitechnologyOpaqueAttributeTopology(
+                multitechnologyOpaqueAttributeTopologyBuilder.build());
+
+        final MultitechnologyTopologyBuilder multitechnologyTopologyBuilder =
+                new MultitechnologyTopologyBuilder();
+        multitechnologyTopologyBuilder.addAugmentation(MtTopologyOpaqueAttributeType.class,
+                mtTopologyOpaqueAttributeTypeBuilder.build());
+        multitechnologyTopologyBuilder.addAugmentation(MlTopologyType.class, mlTopologyTypeBuilder.build());
+
+        final MtTopologyTypeBuilder mtTopologyTypeBuilder = new MtTopologyTypeBuilder();
+        mtTopologyTypeBuilder.setMultitechnologyTopology(multitechnologyTopologyBuilder.build());
+
+        MtTopologyType mtTopologyType = mtTopologyTypeBuilder.build();
+        TopologyTypesBuilder topologyTypesBuilder = new TopologyTypesBuilder();
+        topologyTypesBuilder.addAugmentation(MtTopologyType.class, mtTopologyType);
+
+        return topologyTypesBuilder;
+   }
+}
