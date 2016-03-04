@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_56db727b",
+        "filename": "topoprocessing-nt/src/main/java/org/opendaylight/topoprocessing/nt/translator/NTNodeTranslator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-04T06:45:18Z",
+      "side": 1,
+      "message": "This will not work in case of aggregation of termination points. Deleted condition is required, because in case of aggregation of termination points, termination points are already \"translated\" in TerminationPointsAggregator",
+      "range": {
+        "startLine": 93,
+        "startChar": 24,
+        "endLine": 97,
+        "endChar": 81
+      },
+      "revId": "ec42f9e031cbc1dff61a249a7099fb77b0c8edec",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
