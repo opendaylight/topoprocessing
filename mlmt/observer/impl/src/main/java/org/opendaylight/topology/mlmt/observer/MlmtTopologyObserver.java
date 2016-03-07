@@ -20,6 +20,8 @@ import org.opendaylight.topology.mlmt.utility.MlmtTopologyBuilder;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.topology.mlmt.factory.MlmtProviderFactoryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.mlmt.topology.observer.impl.rev150122.MlmtTopologyObserverRuntimeMXBean;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypesBuilder;
 
 public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implements AutoCloseable,
         MlmtTopologyObserverRuntimeMXBean {
@@ -28,8 +30,8 @@ public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implement
     private Thread thread;
 
     @Override
-    public void init(DataBroker dataBroker, RpcProviderRegistry rpcRegistry,
-            String topologyName, List<String> underlyingTopologyName) {
+    public void init(final DataBroker dataBroker, final RpcProviderRegistry rpcRegistry,
+            final String topologyName, final List<String> underlyingTopologyName) {
         LOG.info("MlmtTopologyObserver.init");
         this.dataBroker = dataBroker;
         processor = new MlmtOperationProcessor(dataBroker);
@@ -54,8 +56,31 @@ public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implement
 
         mapConfigurationDataChangeObserver = new ArrayList<MlmtDataChangeEventListener>();
         mapOperationalDataChangeObserver = new ArrayList<MlmtDataChangeEventListener>();
+        registerDataChangeEventListener(LogicalDatastoreType.CONFIGURATION, mlmtTopologyId);
 
-        registerDataChangeEventListener(LOG, LogicalDatastoreType.CONFIGURATION, mlmtTopologyId);
+        if (!checkNetworkTopology(LogicalDatastoreType.CONFIGURATION)) {
+            mlmtTopologyBuilder.createNetworkTopology(LogicalDatastoreType.CONFIGURATION);
+        }
+        if (!checkNetworkTopology(LogicalDatastoreType.OPERATIONAL)) {
+            mlmtTopologyBuilder.createNetworkTopology(LogicalDatastoreType.OPERATIONAL);
+        }
+        mlmtTopologyBuilder.createTopology(LogicalDatastoreType.CONFIGURATION, mlmtTopologyId);
+
+        TopologyTypesBuilder topologyTypesBuilder = mlmtProviderFactory.configTopologyTypes();
+        if (topologyTypesBuilder != null) {
+            mlmtTopologyBuilder.createTopologyTypes(LogicalDatastoreType.CONFIGURATION,
+                    mlmtTopologyId, topologyTypesBuilder.build());
+        }
+
+        if (underlyingTopologyName == null || underlyingTopologyName.isEmpty()) {
+            return;
+        }
+        for (String name : underlyingTopologyName) {
+            final String toporef = "/network-topology/topology[topology-id='topologyname']";
+            final String path = toporef.replace("topologyname", name);
+            mlmtTopologyBuilder.createUnderlayTopology(LogicalDatastoreType.CONFIGURATION,
+                    mlmtTopologyId, new TopologyId(path));
+        }
     }
 
     @Override

@@ -68,27 +68,19 @@ public class MlmtTopologyBuilder {
     public void createUnderlayTopology(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final TopologyId underlayTopologyRef) {
-        LOG.info("MlmtTopologyBuilder.createUnderlayTopology type: {} topologyInstanceId {} underlayTopologyRef: {} ",
+        LOG.info("MlmtTopologyBuilder.createUnderlayTopology type: {} topologyInstanceId {} underlayTopologyRef: {}",
                 type, topologyInstanceId.toString(), underlayTopologyRef.toString());
-        final UnderlayTopologyBuilder underlayTopologyBuilder = new UnderlayTopologyBuilder();
-        final TopologyTypesBuilder topologyTypesBuilder = new TopologyTypesBuilder();
-        final TopologyKey key = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
-        final TopologyBuilder tbuilder = new TopologyBuilder();
-
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
+                final UnderlayTopologyBuilder underlayTopologyBuilder = new UnderlayTopologyBuilder();
+                final UnderlayTopologyKey underlayTopologyKey = new UnderlayTopologyKey(underlayTopologyRef);
                 underlayTopologyBuilder.setTopologyRef(underlayTopologyRef);
-                UnderlayTopologyKey underlayKey = new UnderlayTopologyKey(underlayTopologyRef);
-                underlayTopologyBuilder.setKey(underlayKey);
-                UnderlayTopology underlayTopology = underlayTopologyBuilder.build();
-                List<UnderlayTopology> lUnderlayTopology = new ArrayList<UnderlayTopology>();
-                lUnderlayTopology.add(underlayTopology);
-                tbuilder.setKey(key);
-                final Topology top = tbuilder.setServerProvided(Boolean.FALSE)
-                        .setTopologyTypes(topologyTypesBuilder.build())
-                                .setUnderlayTopology(lUnderlayTopology).build();
-                transaction.merge(type, topologyInstanceId, top);
+                underlayTopologyBuilder.setKey(underlayTopologyKey);
+                final UnderlayTopology underlayTopology = underlayTopologyBuilder.build();
+                final InstanceIdentifier<UnderlayTopology> underlayTopologyIid = topologyInstanceId
+                        .child(UnderlayTopology.class, underlayTopologyKey);
+                transaction.put(type, underlayTopologyIid, underlayTopology);
             }
         });
     }
@@ -98,13 +90,13 @@ public class MlmtTopologyBuilder {
             final List<UnderlayTopology> underlayTopologyList) {
         LOG.info("MlmtTopologyBuilder.createUnderlayTopologyList type {} topologyInstanceId {} underlayTopologies {}",
                 type, topologyInstanceId.toString(), underlayTopologyList.toString());
-        final TopologyKey key = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
-        final TopologyBuilder tbuilder = new TopologyBuilder();
-        tbuilder.setKey(key);
-
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
+                final TopologyKey key = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
+                final TopologyBuilder tbuilder = new TopologyBuilder();
+                tbuilder.setKey(key);
+                tbuilder.setTopologyId(key.getTopologyId());
                 final Topology top = tbuilder.setUnderlayTopology(underlayTopologyList).build();
                 transaction.merge(type, topologyInstanceId, top);
             }

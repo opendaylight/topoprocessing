@@ -21,46 +21,45 @@ import org.opendaylight.topology.mlmt.utility.MlmtDataChangeObserver;
 
 public class MlmtDataChangeEventListener implements DataChangeListener, AutoCloseable {
 
-    private Logger log;
+    protected static final Logger LOG = LoggerFactory.getLogger(MlmtDataChangeEventListener.class);
     private LogicalDatastoreType storageType;
     private InstanceIdentifier<? extends DataObject> path;
     private ListenerRegistration<DataChangeListener> listenerRegistration;
     private MlmtDataChangeObserver observer;
     private DataBroker dataBroker;
 
-    public void init(final Logger logger, final LogicalDatastoreType type, final DataBroker dataBroker,
+    public void init(final LogicalDatastoreType type, final DataBroker dataBroker,
             final InstanceIdentifier<? extends DataObject> path) {
-        this.log = logger;
         this.storageType = type;
         this.path = path;
         this.dataBroker = dataBroker;
     }
 
-    public void registerObserver(MlmtDataChangeObserver observer) {
+    public void registerObserver(final MlmtDataChangeObserver observer) {
         this.observer = observer;
         this.listenerRegistration = dataBroker.registerDataChangeListener(storageType, path,
                 this, DataBroker.DataChangeScope.SUBTREE);
     }
 
     @Override
-    public void onDataChanged(AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
         try {
             if (observer != null) {
                 observer.onDataChanged(storageType, change);
             }
         } catch (final Exception e) {
-            log.error("MlmtDataChangeEventListener.onDataChanged: ", e);
+            LOG.error("MlmtDataChangeEventListener.onDataChanged: ", e);
         }
     }
 
     @Override
     public void close() {
-        log.info("MlmtDataChangeEventListener stopped.");
+        LOG.info("MlmtDataChangeEventListener stopped.");
         if (this.listenerRegistration != null) {
             try {
                 this.listenerRegistration.close();
             } catch (final Exception e) {
-                log.error("MlmtDataChangeEventListener.close: Failed to close listener registration", e);
+                LOG.error("MlmtDataChangeEventListener.close: Failed to close listener registration", e);
             }
             listenerRegistration = null;
         }
