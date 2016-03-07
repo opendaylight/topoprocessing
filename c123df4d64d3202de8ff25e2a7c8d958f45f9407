@@ -1,0 +1,302 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_7ac2d085",
+        "filename": "topoprocessing-i2rs/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "Remove trailing spaces",
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_5a41cc09",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/LinkCalculator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "Remove this space",
+      "range": {
+        "startLine": 253,
+        "startChar": 20,
+        "endLine": 253,
+        "endChar": 21
+      },
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_3a44c819",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "Is this import necessary?",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 68
+      },
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_9a4eb439",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 174,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "I think it would be better to remove parameter from method definition",
+      "range": {
+        "startLine": 173,
+        "startChar": 0,
+        "endLine": 174,
+        "endChar": 111
+      },
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_ba4f3833",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "This is unnecessary attribute. Use I2rsModel.class directly in code instead of outputModel",
+      "range": {
+        "startLine": 117,
+        "startChar": 8,
+        "endLine": 117,
+        "endChar": 38
+      },
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_1a62a4ad",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TopologyManagerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "Remove this space",
+      "range": {
+        "startLine": 74,
+        "startChar": 48,
+        "endLine": 74,
+        "endChar": 49
+      },
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_fa6420ba",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TopologyManagerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "line length. Please fix it in whole file.",
+      "range": {
+        "startLine": 265,
+        "startChar": 0,
+        "endLine": 271,
+        "endChar": 25
+      },
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_7af770d3",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriterTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "you can import this class",
+      "range": {
+        "startLine": 61,
+        "startChar": 61,
+        "endLine": 62,
+        "endChar": 64
+      },
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_da02fcb2",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriterTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "You can import this class",
+      "range": {
+        "startLine": 63,
+        "startChar": 60,
+        "endLine": 64,
+        "endChar": 73
+      },
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_fa3260a5",
+        "filename": "topoprocessing-inventory/src/test/java/org/opendaylight/topoprocessing/inventory/request/InvTopologyRequestHandlerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 364,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "line length. Please fix it in whole file",
+      "range": {
+        "startLine": 364,
+        "startChar": 8,
+        "endLine": 364,
+        "endChar": 128
+      },
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_3a296837",
+        "filename": "topoprocessing-inventory/src/test/java/org/opendaylight/topoprocessing/inventory/request/InvTopologyRequestListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "line length. Please fix it in whole file",
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_9a235455",
+        "filename": "topoprocessing-nt/src/test/java/org/opendaylight/topoprocessing/nt/request/NTTopologyRequestHandlerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "Remove",
+      "range": {
+        "startLine": 92,
+        "startChar": 63,
+        "endLine": 92,
+        "endChar": 64
+      },
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_7a1e500d",
+        "filename": "topoprocessing-nt/src/test/java/org/opendaylight/topoprocessing/nt/request/NTTopologyRequestHandlerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 366,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "line length. Please fix it in whole file",
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_da195c23",
+        "filename": "topoprocessing-nt/src/test/java/org/opendaylight/topoprocessing/nt/request/NTTopologyRequestListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-07T10:52:36Z",
+      "side": 1,
+      "message": "line length. Please fix it in whole file",
+      "revId": "c123df4d64d3202de8ff25e2a7c8d958f45f9407",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
