@@ -53,13 +53,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacen
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.FaTopologyType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.FaTopologyTypeBuilder;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-
 @RunWith(MockitoJUnitRunner.class)
 public class MlmtProviderFactoryTest extends AbstractDataBrokerTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MlmtProviderFactoryTest.class);
     private static final String MLMT1 = "mlmt:1";
     private MlmtOperationProcessor processor;
     private MlmtProviderFactory providerFactory;
@@ -113,7 +109,7 @@ public class MlmtProviderFactoryTest extends AbstractDataBrokerTest {
     public void testCreateProviderMap() throws Exception {
         MlmtRpcProviderRegistryMock rpcRegistry = new MlmtRpcProviderRegistryMock();
         Map<String, List<MlmtTopologyProvider>> providerMap = providerFactory.createProvidersMap(
-                rpcRegistry, getDataBroker(), LOG, processor, MLMT1);
+                rpcRegistry, getDataBroker(), processor, MLMT1);
 
         List<MlmtTopologyProvider> lProvider = providerMap.get(MLMT1);
         assertNotNull(lProvider);

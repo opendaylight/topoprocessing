@@ -96,12 +96,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacen
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.network.topology.topology.ForwardingAdjacencyKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.network.topology.topology.ForwardingAdjacency;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ForwardingAdjacencyTopologyProviderTest extends AbstractDataBrokerTest {
-    private static final Logger LOG = LoggerFactory.getLogger(ForwardingAdjacencyTopologyProviderTest.class);
     private final Object waitObject = new Object();
     private static final String MLMT = "mlmt:1";
     private static final String EXAMPLE = "example-linkstate-topology";
@@ -184,7 +181,7 @@ public class ForwardingAdjacencyTopologyProviderTest extends AbstractDataBrokerT
         thread.start();
         mlmtTopologyIid = buildTopologyIid(MLMT);
         this.provider = new ForwardingAdjacencyTopologyProvider();
-        provider.init(LOG, processor, mlmtTopologyIid);
+        provider.init(processor, mlmtTopologyIid);
         provider.setDataProvider(dataBroker);
         /*
          * It is necessary to create the network-topology containers in

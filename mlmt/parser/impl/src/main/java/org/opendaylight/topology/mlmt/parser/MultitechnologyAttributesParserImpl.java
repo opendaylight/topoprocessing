@@ -16,16 +16,14 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.igp.node.attributes.IgpNodeAttributes;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.Link1;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.igp.link.attributes.IgpLinkAttributes;
-import org.slf4j.Logger;
 import org.opendaylight.topology.multitechnology.MultitechnologyAttributesParser;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MultitechnologyAttributesParserImpl implements MultitechnologyAttributesParser {
 
-     private static Logger log;
-
-     public void init(final Logger logger) {
-         log = logger;
-     }
+    protected static final Logger LOG = LoggerFactory.getLogger(MultitechnologyAttributesParserImpl.class);
 
      private IgpNodeAttributes getIgpNodeAttributes(final Node node) {
 
@@ -73,7 +71,7 @@ public class MultitechnologyAttributesParserImpl implements MultitechnologyAttri
 
         final Link1 link1 = link.getAugmentation(Link1.class);
         if (link1 == null) {
-           log.info("MultitechnologyAttributesParserImpl.parseTedLinkAttributes link1 is null");
+           LOG.debug("MultitechnologyAttributesParserImpl.parseTedLinkAttributes link1 is null");
            return null;
         }
         final IgpLinkAttributes igpLinkAttributes = link1.getIgpLinkAttributes();
@@ -102,7 +100,7 @@ public class MultitechnologyAttributesParserImpl implements MultitechnologyAttri
 
         final Link1 link1 = link.getAugmentation(Link1.class);
         if (link1 == null) {
-           log.info("MultitechnologyAttributesParserImpl.parseLinkMetric link1 is null");
+           LOG.debug("MultitechnologyAttributesParserImpl.parseLinkMetric link1 is null");
            return null;
         }
         final IgpLinkAttributes igpLinkAttributes = link1.getIgpLinkAttributes();

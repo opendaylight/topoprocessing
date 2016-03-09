@@ -40,12 +40,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoLinkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoTerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoTerminationPointBuilder;
-import org.slf4j.Logger;
 import org.opendaylight.topology.multilayer.MultilayerAttributesParser;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MultilayerAttributesParserImpl implements MultilayerAttributesParser {
 
-    private static Logger log;
+    protected static final Logger LOG = LoggerFactory.getLogger(MultilayerAttributesParserImpl.class);
     private static final String FA_ID_PREFIX = "fa/";
     private static final String FA_ID_UNIDIR = "unidir/";
     private static final String FA_ID_BIDIR = "bidir/";
@@ -59,12 +61,11 @@ public class MultilayerAttributesParserImpl implements MultilayerAttributesParse
     private Bidirectional bidirectional;
     private Unidirectional unidirectional;
 
-    public void init(final Logger logger) {
-        log = logger;
-        log.debug("FA_REG_BID_MATCH " + FA_REG_UNI_MATCH);
-        log.debug("FA_REG_BID_MATCH " + FA_REG_BID_MATCH);
-        log.debug("LINK_REG_UNI_MATCH " + LINK_REG_UNI_MATCH);
-        log.debug("LINK_REG_BID_MATCH " + LINK_REG_BID_MATCH);
+    public void init() {
+        LOG.debug("FA_REG_BID_MATCH {}", FA_REG_UNI_MATCH);
+        LOG.debug("FA_REG_BID_MATCH {}", FA_REG_BID_MATCH);
+        LOG.debug("LINK_REG_UNI_MATCH {}", LINK_REG_UNI_MATCH);
+        LOG.debug("LINK_REG_BID_MATCH {}", LINK_REG_BID_MATCH);
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.bidirectional.BidirectionalBuilder
             bidirectionalBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.bidirectional.BidirectionalBuilder();

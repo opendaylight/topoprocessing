@@ -77,9 +77,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MlTopologyType;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.multilayer.MultilayerTopologyProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.NativeL3IgpMetric;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtLinkMetricAttributeValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtLinkMetricAttributeValueBuilder;
@@ -114,7 +111,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
-    private static final Logger LOG = LoggerFactory.getLogger(MultilayerTopologyProviderTest.class);
     private final Object waitObject = new Object();
     private static final String MLMT = "mlmt:1";
     private static final String EXAMPLE = "example-linkstate-topology";
@@ -219,7 +215,7 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
     @Before
     public void setUp() throws Exception {
         MultilayerAttributesParserTest parser = new MultilayerAttributesParserTest();
-        parser.init(LOG);
+        parser.init();
         processor = new MlmtOperationProcessor(dataBroker);
         thread = new Thread(processor);
         thread.setDaemon(true);
@@ -229,10 +225,10 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         this.provider = new MultilayerTopologyProvider();
 
         ForwardingAdjacencyTopologyTest forwardingAdjacencyTopologyTest = new ForwardingAdjacencyTopologyTest();
-        forwardingAdjacencyTopologyTest.init(LOG, processor, mlmtTopologyIid);
+        forwardingAdjacencyTopologyTest.init(processor, mlmtTopologyIid);
         forwardingAdjacencyTopologyTest.setDataProvider(dataBroker);
 
-        provider.init(LOG, processor, mlmtTopologyIid, parser, forwardingAdjacencyTopologyTest);
+        provider.init(processor, mlmtTopologyIid, parser, forwardingAdjacencyTopologyTest);
         provider.setDataProvider(dataBroker);
         MlmtRpcProviderRegistryMock rpcRegistry = new MlmtRpcProviderRegistryMock();
         provider.registerRpcImpl(rpcRegistry, mlmtTopologyIid);
