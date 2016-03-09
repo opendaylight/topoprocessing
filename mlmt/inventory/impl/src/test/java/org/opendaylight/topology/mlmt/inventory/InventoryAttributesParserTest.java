@@ -47,12 +47,6 @@ import org.opendaylight.topology.mlmt.inventory.InventoryAttributesParser;
 
 public class InventoryAttributesParserTest implements InventoryAttributesParser {
 
-    private static Logger log;
-
-    public void init(final Logger logger) {
-        log = logger;
-    }
-
     @Override
     public NodeRef parseInventoryNodeAttributes(final Node node) {
         final InventoryNode inventoryNode = node.getAugmentation(InventoryNode.class);

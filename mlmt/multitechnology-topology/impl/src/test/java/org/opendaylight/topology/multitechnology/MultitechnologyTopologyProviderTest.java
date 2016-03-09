@@ -111,12 +111,9 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev13
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.node.attributes.Ipv6LocalAddressKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.ted.node.attributes.Ipv6LocalAddressBuilder;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest {
-    private static final Logger LOG = LoggerFactory.getLogger(MultitechnologyTopologyProviderTest.class);
     private final Object waitObject = new Object();
     private static final String MLMT = "mlmt:1";
     private static final String EXAMPLE = "example-linkstate-topology";
@@ -192,7 +189,6 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
     @Before
     public void setUp() throws Exception {
         MultitechnologyAttributesParserTest parser = new MultitechnologyAttributesParserTest();
-        parser.init(LOG);
         processor = new MlmtOperationProcessor(dataBroker);
         thread = new Thread(processor);
         thread.setDaemon(true);
@@ -200,7 +196,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         thread.start();
         mlmtTopologyIid = buildTopologyIid(MLMT);
         this.provider = new MultitechnologyTopologyProvider();
-        provider.init(LOG, processor, mlmtTopologyIid, parser);
+        provider.init(processor, mlmtTopologyIid, parser);
         provider.setDataProvider(dataBroker);
         /*
          * It is necessary to create the network-topology containers in
@@ -209,11 +205,13 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
         NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
         NetworkTopology networkTopology = nb.build();
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), networkTopology);
+        rwTx.put(LogicalDatastoreType.OPERATIONAL,
+                InstanceIdentifier.create(NetworkTopology.class), networkTopology);
         assertCommit(rwTx.submit());
 
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class), networkTopology);
+        rwTx.put(LogicalDatastoreType.CONFIGURATION,
+                InstanceIdentifier.create(NetworkTopology.class), networkTopology);
         assertCommit(rwTx.submit());
 
         dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
@@ -400,7 +398,8 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
                 assertNotNull(attribute);
                 Value value = attribute.getValue();
                 assertNotNull(value);
-                MtTedNodeAttributeValue mtTedNodeAttributeValue = value.getAugmentation(MtTedNodeAttributeValue.class);
+                MtTedNodeAttributeValue mtTedNodeAttributeValue =
+                        value.getAugmentation(MtTedNodeAttributeValue.class);
                 assertNotNull(mtTedNodeAttributeValue);
                 assertEquals(mtTedNodeAttributeValue.getTeRouterIdIpv4().getValue(), ipv4Address.getValue());
                 assertEquals(mtTedNodeAttributeValue.getTeRouterIdIpv6().getValue(), ipv6Address.getValue());
@@ -489,8 +488,10 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
 
         java.lang.Long teDefaultMetric = 20L;
         java.lang.Long metric = 100L;
-        org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.link.attributes.isis.link.attributes.TedBuilder
-                tedBuilder = new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.link.attributes.isis.link.attributes.TedBuilder();
+        org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.link
+                .attributes.isis.link.attributes.TedBuilder tedBuilder = new org.opendaylight.yang.gen.v1.urn
+                .tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.link.attributes.isis.link.attributes
+                .TedBuilder();
         tedBuilder.setTeDefaultMetric(teDefaultMetric);
         java.lang.Long color = 2L;
         tedBuilder.setColor(color);
@@ -546,7 +547,8 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
                 assertNotNull(attribute);
                 Value value = attribute.getValue();
                 assertNotNull(value);
-                MtTedLinkAttributeValue mtTedLinkAttributeValue = value.getAugmentation(MtTedLinkAttributeValue.class);
+                MtTedLinkAttributeValue mtTedLinkAttributeValue =
+                        value.getAugmentation(MtTedLinkAttributeValue.class);
                 assertNotNull(mtTedLinkAttributeValue);
                 assertEquals(mtTedLinkAttributeValue.getTeDefaultMetric(), teDefaultMetric);
                 assertEquals(mtTedLinkAttributeValue.getColor(), color);
@@ -573,7 +575,8 @@ public class MultitechnologyTopologyProviderTest extends AbstractDataBrokerTest 
                 assertNotNull(attribute);
                 value = attribute.getValue();
                 assertNotNull(value);
-                MtLinkMetricAttributeValue mtLinkMetricAttributeValue = value.getAugmentation(MtLinkMetricAttributeValue.class);
+                MtLinkMetricAttributeValue mtLinkMetricAttributeValue =
+                        value.getAugmentation(MtLinkMetricAttributeValue.class);
                 assertNotNull(mtLinkMetricAttributeValue);
                 assertEquals(mtLinkMetricAttributeValue.getMetric(), metric);
             }

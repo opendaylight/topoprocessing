@@ -47,13 +47,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.op
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.MtTopologyOpaqueAttributeType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.multitechnology.topology.opaque.attribute.type.MultitechnologyOpaqueAttributeTopologyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.multitechnology.topology.type.MultitechnologyTopologyBuilder;
-import org.slf4j.Logger;
 
 public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
 
     @Override
     public Map<String, List<MlmtTopologyProvider>> createProvidersMap(final RpcProviderRegistry rpcProviderRegistry,
-            final DataBroker dataBroker, final Logger logger, final MlmtOperationProcessor processor,
+            final DataBroker dataBroker, final MlmtOperationProcessor processor,
                     final String mlmtTopologyName) {
         final TopologyId tid = new TopologyId(mlmtTopologyName);
         final TopologyKey key = new TopologyKey(Preconditions.checkNotNull(tid));
@@ -65,9 +64,8 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
          * creating and adding inventory topology provider
          */
         InventoryAttributesParserImpl inventoryAttributesParser = new InventoryAttributesParserImpl();
-        inventoryAttributesParser.init(logger);
         InventoryTopologyProvider inventoryTopologyProvider = new InventoryTopologyProvider();
-        inventoryTopologyProvider.init(logger, processor, mlmtTopologyId, inventoryAttributesParser);
+        inventoryTopologyProvider.init(processor, mlmtTopologyId, inventoryAttributesParser);
         inventoryTopologyProvider.setDataProvider(dataBroker);
         lProvider.add(inventoryTopologyProvider);
         /*
@@ -75,9 +73,8 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
          */
         MultitechnologyAttributesParserImpl multitechnologyAttributesParser =
                 new MultitechnologyAttributesParserImpl();
-        multitechnologyAttributesParser.init(logger);
         MultitechnologyTopologyProvider multitechnologyTopologyProvider = new MultitechnologyTopologyProvider();
-        multitechnologyTopologyProvider.init(logger, processor, mlmtTopologyId, multitechnologyAttributesParser);
+        multitechnologyTopologyProvider.init(processor, mlmtTopologyId, multitechnologyAttributesParser);
         multitechnologyTopologyProvider.setDataProvider(dataBroker);
         lProvider.add(multitechnologyTopologyProvider);
         /*
@@ -85,15 +82,15 @@ public class MlmtProviderFactoryImpl implements MlmtProviderFactory {
          */
         ForwardingAdjacencyTopologyProvider forwardingAdjacencyTopologyProvider =
                 new ForwardingAdjacencyTopologyProvider();
-        forwardingAdjacencyTopologyProvider.init(logger, processor, mlmtTopologyId);
+        forwardingAdjacencyTopologyProvider.init(processor, mlmtTopologyId);
         forwardingAdjacencyTopologyProvider.setDataProvider(dataBroker);
         /*
          * creating and adding multilayer provider
          */
         MultilayerAttributesParserImpl multilayerAttributesParser = new MultilayerAttributesParserImpl();
-        multilayerAttributesParser.init(logger);
+        multilayerAttributesParser.init();
         MultilayerTopologyProvider multilayerTopologyProvider = new MultilayerTopologyProvider();
-        multilayerTopologyProvider.init(logger, processor, mlmtTopologyId, multilayerAttributesParser,
+        multilayerTopologyProvider.init(processor, mlmtTopologyId, multilayerAttributesParser,
                 forwardingAdjacencyTopologyProvider);
         multilayerTopologyProvider.setDataProvider(dataBroker);
         multilayerTopologyProvider.registerRpcImpl(rpcProviderRegistry, mlmtTopologyId);

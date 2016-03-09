@@ -59,12 +59,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.te
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.NativeL3IgpMetric;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MultilayerAttributesParserImplTest {
-    private static final Logger LOG = LoggerFactory.getLogger(MultilayerAttributesParserImplTest.class);
+
     private MultilayerAttributesParserImpl parser;
 
     @BeforeClass
@@ -75,7 +73,7 @@ public class MultilayerAttributesParserImplTest {
     @Before
     public void setUp() {
         this.parser = new MultilayerAttributesParserImpl();
-        this.parser.init(LOG);
+        this.parser.init();
     }
 
     @Test

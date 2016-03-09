@@ -42,12 +42,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InventoryAttributesParserImplTest  {
-    private static final Logger LOG = LoggerFactory.getLogger(InventoryAttributesParserImplTest.class);
     private InventoryAttributesParserImpl parser;
     private static final String topologyName = "example:1";
     private static final String inventoryNodeName = "inv:example-node:1";
@@ -63,7 +60,6 @@ public class InventoryAttributesParserImplTest  {
     @Before
     public void setUp() {
         this.parser = new InventoryAttributesParserImpl();
-        this.parser.init(LOG);
         TopologyId tid = new TopologyId(topologyName);
         TopologyKey key = new TopologyKey(Preconditions.checkNotNull(tid));
         NodeId nodeId = new NodeId(inventoryNodeName);

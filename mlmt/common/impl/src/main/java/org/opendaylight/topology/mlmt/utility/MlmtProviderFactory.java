@@ -16,16 +16,14 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypesBuilder;
 import org.opendaylight.topology.mlmt.utility.MlmtConsequentAction;
-import org.slf4j.Logger;
 
 public interface MlmtProviderFactory {
 
     Map<String, List<MlmtTopologyProvider>> createProvidersMap(final RpcProviderRegistry session,
-            final DataBroker dataBroker, final Logger logger, MlmtOperationProcessor processor,
+            final DataBroker dataBroker, MlmtOperationProcessor processor,
             String mlmtTopologyName);
 
     MlmtConsequentAction consequentAction(TopologyTypes topologyType);
 
     TopologyTypesBuilder configTopologyTypes();
 }
-

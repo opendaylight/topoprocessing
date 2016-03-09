@@ -48,24 +48,25 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.te
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtLinkMetricAttributeValueBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
-import org.slf4j.Logger;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyOperation;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.impl.rev150122.MultitechnologyTopologyProviderRuntimeMXBean;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class MultitechnologyTopologyProvider implements MultitechnologyTopologyProviderRuntimeMXBean,
             AutoCloseable, MlmtTopologyProvider {
-    private Logger log;
+    private static final Logger LOG = LoggerFactory.getLogger(MultitechnologyTopologyProvider.class);
     private DataBroker dataProvider;
     private MlmtOperationProcessor processor;
     private InstanceIdentifier<Topology> destTopologyId;
     private MultitechnologyAttributesParser parser;
 
-    public void init(final Logger logger, MlmtOperationProcessor processor,
+    public void init(MlmtOperationProcessor processor,
         final InstanceIdentifier<Topology> destTopologyId, final MultitechnologyAttributesParser parser) {
-        logger.info("MultitechnologyTopologyProvider.init");
-        this.log = logger;
+        LOG.info("MultitechnologyTopologyProvider.init");
         this.destTopologyId = destTopologyId;
         this.processor = processor;
         this.parser = parser;
@@ -84,13 +85,14 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
     public void onTopologyCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Topology topology) {
-        log.info("MultitechnologyTopologyProvider.onTopologyCreated");
+        LOG.info("MultitechnologyTopologyProvider.onTopologyCreated");
         final InstanceIdentifier<Topology> targetTopologyId = destTopologyId;
 
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
-                 final MultitechnologyTopologyBuilder multitechnologyTopologyBuilder = new MultitechnologyTopologyBuilder();
+                 final MultitechnologyTopologyBuilder multitechnologyTopologyBuilder =
+                         new MultitechnologyTopologyBuilder();
                  final MtTopologyTypeBuilder mtTopologyTypeBuilder = new MtTopologyTypeBuilder();
                  mtTopologyTypeBuilder.setMultitechnologyTopology(multitechnologyTopologyBuilder.build());
                  InstanceIdentifier<MtTopologyType> target = targetTopologyId.child(TopologyTypes.class)
@@ -113,7 +115,7 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey,
             final TerminationPoint tp) {
-        log.info("MultitechnologyTopologyProvider.onTpCreated");
+        LOG.info("MultitechnologyTopologyProvider.onTpCreated");
     }
 
     @Override
@@ -181,29 +183,32 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
     private void handleNodeAttributes(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Node node) {
-        log.info("MultitechnologyTopologyProvider.handleNodeAttributes type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString() + " nodeKey: " + node.getKey().toString());
+        LOG.info("MultitechnologyTopologyProvider.handleNodeAttributes type {} topologyInstanceId {} nodeKey {}",
+                type, topologyInstanceId.toString(), node.getKey().toString());
         TedNodeAttributes tedNodeAttributes = parser.parseTedNodeAttributes(node);
         if (tedNodeAttributes == null) {
             return;
         }
-        setNativeMtNodeAttributes(LogicalDatastoreType.OPERATIONAL, destTopologyId, tedNodeAttributes, node.getKey());
+        setNativeMtNodeAttributes(LogicalDatastoreType.OPERATIONAL, destTopologyId,
+                tedNodeAttributes, node.getKey());
     }
 
     private void handleLinkAttributes(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Link link) {
-        log.info("MultitechnologyTopologyProvider.handleLinkAttributes type: " + type + " topologyInstanceId: "
-                + topologyInstanceId.toString() + " linkKey: " + link.getKey().toString());
+        LOG.info("MultitechnologyTopologyProvider.handleLinkAttributes type {} topologyInstanceId {} linkKey {}",
+                type, topologyInstanceId.toString(), link.getKey().toString());
         Long metric = parser.parseLinkMetric(link);
         if (metric != null) {
-            setNativeMtLinkMetricAttribute(LogicalDatastoreType.OPERATIONAL, destTopologyId, metric, link.getKey());
+            setNativeMtLinkMetricAttribute(LogicalDatastoreType.OPERATIONAL, destTopologyId,
+                    metric, link.getKey());
         }
         TedLinkAttributes tedLinkAttributes = parser.parseTedLinkAttributes(link);
         if (tedLinkAttributes == null) {
             return;
         }
-        setNativeMtLinkTedAttribute(LogicalDatastoreType.OPERATIONAL, destTopologyId, tedLinkAttributes, link.getKey());
+        setNativeMtLinkTedAttribute(LogicalDatastoreType.OPERATIONAL, destTopologyId,
+                tedLinkAttributes, link.getKey());
     }
 
     private void setNativeMtLinkMetricAttribute(
@@ -212,8 +217,8 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             final Long metric,
             final LinkKey linkKey) {
         try {
-            log.info("MultitechnologyTopologyProvider.setNativeMtLinkMetricAttribute type: " + type +
-                    " topologyInstanceId: " + topologyInstanceId.toString() + " linkKey: " + linkKey.toString());
+            LOG.info("MultitechnologyTopologyProvider.setNativeMtLinkMetricAttribute type {} topology {} linkKey {}",
+                type, topologyInstanceId.toString(), linkKey.toString());
             final InstanceIdentifier<Topology> targetTopologyId = topologyInstanceId;
             final String path = "native-l3-igp-metric:1";
             final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
@@ -237,23 +242,27 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             processor.enqueueOperation(new MlmtTopologyOperation() {
                 @Override
                 public void applyOperation(ReadWriteTransaction transaction) {
-                    if (sourceAttributeObject != null && sourceAttributeObject.isPresent() && sourceAttributeObject.get() != null) {
-                        transaction.put(LogicalDatastoreType.OPERATIONAL, instanceAttributeId, attributeBuilder.build());
+                    if (sourceAttributeObject != null && sourceAttributeObject.isPresent()
+                            && sourceAttributeObject.get() != null) {
+                        transaction.put(LogicalDatastoreType.OPERATIONAL,
+                                instanceAttributeId, attributeBuilder.build());
                     } else {
                         final MtInfoLinkBuilder mtInfoLinkBuilder = new MtInfoLinkBuilder();
                         final List<Attribute> la = new ArrayList<Attribute>();
                         la.add(attributeBuilder.build());
                         mtInfoLinkBuilder.setAttribute(la);
-                        final InstanceIdentifier<MtInfoLink> instanceId = targetTopologyId.child(Link.class, linkKey).
+                        final InstanceIdentifier<MtInfoLink> instanceId =
+                                targetTopologyId.child(Link.class, linkKey).
                             augmentation(MtInfoLink.class);
-                        transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, mtInfoLinkBuilder.build(), true);
+                        transaction.merge(LogicalDatastoreType.OPERATIONAL,
+                                instanceId, mtInfoLinkBuilder.build(), true);
                     }
                 }
             });
         } catch (final InterruptedException e) {
-            log.error("MultitechnologyTopologyProvider.setNativeMtLinkMetricAttribute interrupted exception", e);
+            LOG.error("MultitechnologyTopologyProvider.setNativeMtLinkMetricAttribute interrupted exception", e);
         } catch (final ExecutionException e) {
-            log.error("MultitechnologyTopologyProvider.setNativeMtLinkMetricAttribute execution exception", e);
+            LOG.error("MultitechnologyTopologyProvider.setNativeMtLinkMetricAttribute execution exception", e);
         }
     }
 
@@ -263,8 +272,8 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             final TedLinkAttributes ted,
             final LinkKey linkKey) {
         try {
-            log.info("MultitechnologyTopologyProvider.setNativeMtLinkTedAttribute type: " + type +
-                    " topologyInstanceId: " + topologyInstanceId.toString() + " linkKey: " + linkKey.toString());
+            LOG.info("MultitechnologyTopologyProvider.setNativeMtLinkTedAttribute type {} topology {} linkKey {}", 
+                    type, topologyInstanceId.toString(), linkKey.toString());
             final String path = "native-ted:1";
             final InstanceIdentifier<Topology> targetTopologyId = topologyInstanceId;
             final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
@@ -305,23 +314,27 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             processor.enqueueOperation(new MlmtTopologyOperation() {
                 @Override
                 public void applyOperation(ReadWriteTransaction transaction) {
-                    if (sourceAttributeObject != null && sourceAttributeObject.isPresent() && sourceAttributeObject.get() != null) {
-                        transaction.put(LogicalDatastoreType.OPERATIONAL, instanceAttributeId, attributeBuilder.build());
+                    if (sourceAttributeObject != null && sourceAttributeObject.isPresent()
+                            && sourceAttributeObject.get() != null) {
+                        transaction.put(LogicalDatastoreType.OPERATIONAL,
+                                instanceAttributeId, attributeBuilder.build());
                     } else {
                         final MtInfoLinkBuilder mtInfoLinkBuilder = new MtInfoLinkBuilder();
                         final List<Attribute> la = new ArrayList<Attribute>();
                         la.add(attributeBuilder.build());
                         mtInfoLinkBuilder.setAttribute(la);
-                        final InstanceIdentifier<MtInfoLink> instanceId = targetTopologyId.child(Link.class, linkKey)
+                        final InstanceIdentifier<MtInfoLink> instanceId =
+                                targetTopologyId.child(Link.class, linkKey)
                                 .augmentation(MtInfoLink.class);
-                        transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, mtInfoLinkBuilder.build(), true);
+                        transaction.merge(LogicalDatastoreType.OPERATIONAL,
+                                instanceId, mtInfoLinkBuilder.build(), true);
                     }
                 }
             });
         } catch (final InterruptedException e) {
-            log.error("MultitechnologyTopologyProvider.setNativeMtLinkTedAttribute interrupted exception", e);
+            LOG.error("MultitechnologyTopologyProvider.setNativeMtLinkTedAttribute interrupted exception", e);
         } catch (final ExecutionException e) {
-            log.error("MultitechnologyTopologyProvider.setNativeMtLinkTedAttribute execution exception", e);
+            LOG.error("MultitechnologyTopologyProvider.setNativeMtLinkTedAttribute execution exception", e);
         }
     }
 
@@ -331,8 +344,8 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             final TedNodeAttributes ted,
             final NodeKey nodeKey) {
         try {
-            log.info("MultitechnologyTopologyProvider.setNativeMtNodeAttributes type: " + type +
-                    " topologyInstanceId: " + topologyInstanceId.toString() + " nodeKey: " + nodeKey.toString());
+            LOG.info("MultitechnologyTopologyProvider.setNativeMtNodeAttributes type {} topologyId {} nodeKey {}",
+                    type, topologyInstanceId.toString(), nodeKey.toString());
             final InstanceIdentifier<Topology> targetTopologyId = topologyInstanceId;
             final String path = "native-ted:1";
             final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
@@ -369,23 +382,26 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             processor.enqueueOperation(new MlmtTopologyOperation() {
                 @Override
                 public void applyOperation(ReadWriteTransaction transaction) {
-                    if (sourceAttributeObject != null && sourceAttributeObject.isPresent() && sourceAttributeObject.get() != null) {
-                        transaction.put(LogicalDatastoreType.OPERATIONAL, instanceAttributeId, attributeBuilder.build());
+                    if (sourceAttributeObject != null && sourceAttributeObject.isPresent()
+                            && sourceAttributeObject.get() != null) {
+                        transaction.put(LogicalDatastoreType.OPERATIONAL,
+                                instanceAttributeId, attributeBuilder.build());
                     } else {
                         final MtInfoNodeBuilder mtInfoNodeBuilder = new MtInfoNodeBuilder();
                         final List<Attribute> la = new ArrayList<Attribute>();
                         la.add(attributeBuilder.build());
                         mtInfoNodeBuilder.setAttribute(la);
-                        final InstanceIdentifier<MtInfoNode> instanceId = targetTopologyId.child(Node.class, nodeKey)
-                                .augmentation(MtInfoNode.class);
-                        transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, mtInfoNodeBuilder.build(), true);
+                        final InstanceIdentifier<MtInfoNode> instanceId = 
+                                targetTopologyId.child(Node.class, nodeKey).augmentation(MtInfoNode.class);
+                        transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId,
+                                mtInfoNodeBuilder.build(), true);
                     }
                 }
             });
          } catch (final InterruptedException e) {
-             log.error("MultitechnologyTopologyProvider.setNativeMtNodeAttributes interrupted exception", e);
+             LOG.error("MultitechnologyTopologyProvider.setNativeMtNodeAttributes interrupted exception", e);
          } catch (final ExecutionException e) {
-             log.error("MultitechnologyTopologyProvider.setNativeMtNodeAttributes execution exception", e);
+             LOG.error("MultitechnologyTopologyProvider.setNativeMtNodeAttributes execution exception", e);
          }
     }
 }

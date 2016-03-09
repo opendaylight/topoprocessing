@@ -9,6 +9,7 @@
 package org.opendaylight.topology.multilayer;
 
 import com.google.common.base.Optional;
+import com.google.common.util.concurrent.Futures;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.ExecutionException;
@@ -86,14 +87,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.re
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MultilayerTopologyContext;
 
-import com.google.common.util.concurrent.Futures;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MultilayerTopologyProvider implements MultilayerTopologyProviderRuntimeMXBean,
         AutoCloseable, MlmtTopologyProvider, MultilayerTopologyService, TransactionChainListener {
-    private Logger log;
+    private static final Logger LOG = LoggerFactory.getLogger(MultilayerTopologyProvider.class);
     private DataBroker dataProvider;
     private MlmtOperationProcessor processor;
     private InstanceIdentifier<Topology> destTopologyId;
@@ -112,10 +113,10 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         return mapFaDownState.get(faId);
     }
 
-    public void init(final Logger logger, MlmtOperationProcessor processor, InstanceIdentifier<Topology> destTopologyId,
-            final MultilayerAttributesParser parser, final MultilayerForwardingAdjacency forwardingAdjacencyProvider) {
-        logger.info("MultilayerTopologyProvider.init");
-        this.log = logger;
+    public void init(MlmtOperationProcessor processor, InstanceIdentifier<Topology> destTopologyId,
+            final MultilayerAttributesParser parser,
+            final MultilayerForwardingAdjacency forwardingAdjacencyProvider) {
+        LOG.info("MultilayerTopologyProvider.init");
         this.destTopologyId = destTopologyId;
         this.processor = processor;
         this.parser = parser;
@@ -124,15 +125,16 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
     }
 
     public void setDataProvider(DataBroker dataProvider) {
-        log.info("MultilayerTopologyProvider.setDataProvider");
+        LOG.info("MultilayerTopologyProvider.setDataProvider");
         this.dataProvider = dataProvider;
         this.transactionChain = dataProvider.createTransactionChain(this);
     }
 
     public void registerRpcImpl(final RpcProviderRegistry rpcProviderRegistry,
             InstanceIdentifier<Topology> mlmtTopologyId) {
-        log.info("MultilayerTopologyProvider.registerRpcImpl " + mlmtTopologyId.toString());
-        RoutedRpcRegistration reg = rpcProviderRegistry.addRoutedRpcImplementation(MultilayerTopologyService.class, this);
+        LOG.info("MultilayerTopologyProvider.registerRpcImpl {}", mlmtTopologyId.toString());
+        RoutedRpcRegistration reg = rpcProviderRegistry.addRoutedRpcImplementation(
+                MultilayerTopologyService.class, this);
         reg.registerPath(MultilayerTopologyContext.class, mlmtTopologyId);
     }
 
@@ -143,8 +145,8 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
     @Override
     public void onTransactionChainFailed(TransactionChain<?, ?> chain, AsyncTransaction<?, ?> transaction,
-                                         Throwable cause) {
-        log.error("Failed to export MultilayerTopologyProvider operations, Transaction {} failed.",
+                Throwable cause) {
+        LOG.error("Failed to export MultilayerTopologyProvider operations, Transaction {} failed cause {}",
                   transaction.getIdentifier(), cause);
         transactionChain.close();
         transactionChain = dataProvider.createTransactionChain(this);
@@ -154,7 +156,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
     public void onTopologyCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final Topology topology) {
-        log.info("MultilayerTopologyProvider.onTopologyCreated");
+        LOG.info("MultilayerTopologyProvider.onTopologyCreated");
         final InstanceIdentifier<Topology> targetTopologyId = destTopologyId;
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
@@ -172,15 +174,13 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
     @Override
     public void onNodeCreated(final LogicalDatastoreType type,
-                              final InstanceIdentifier<Topology> topologyInstanceId,
-                              final Node node) {
+            final InstanceIdentifier<Topology> topologyInstanceId, final Node node) {
     }
 
     @Override
     public void onTpCreated(final LogicalDatastoreType type,
-                            final InstanceIdentifier<Topology> topologyInstanceId,
-                            final NodeKey nodeKey,
-                            final TerminationPoint tp) {
+            final InstanceIdentifier<Topology> topologyInstanceId, final NodeKey nodeKey,
+            final TerminationPoint tp) {
     }
 
     @Override
@@ -242,13 +242,13 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
     @Override
     public synchronized void close() throws InterruptedException {
-        log.info("MultilayerTopologyProvider stopped.");
+        LOG.info("MultilayerTopologyProvider stopped.");
     }
 
     private void createTp(WriteTransaction transaction, FaId outFaId,
             InstanceIdentifier<Topology> topologyInstanceId, NodeKey nodeKey,
                     TerminationPointBuilder tpBuilder) {
-        log.info("MultilayerTopologyProvider.createTp");
+        LOG.info("MultilayerTopologyProvider.createTp");
         TerminationPointKey tpKey = tpBuilder.getKey();
         InstanceIdentifier<TerminationPoint> tpInstanceId = topologyInstanceId.child(Node.class, nodeKey)
                 .child(TerminationPoint.class, tpKey);
@@ -262,7 +262,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
     void createLink(WriteTransaction transaction, FaId outFaId, InstanceIdentifier<Topology> topologyInstanceId,
             LinkBuilder linkBuilder, boolean bidirFlag) {
-        log.info("MultilayerTopologyProvider.createLink");
+        LOG.info("MultilayerTopologyProvider.createLink");
         LinkKey head2TailLinkKey = linkBuilder.getKey();
         InstanceIdentifier<Link> linkInstanceId = topologyInstanceId.child(Link.class, head2TailLinkKey);
         transaction.merge(LogicalDatastoreType.OPERATIONAL, linkInstanceId, linkBuilder.build());
@@ -284,11 +284,12 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         }
     }
 
-    private Future<RpcResult<ForwardingAdjAnnounceOutput>> createMtLink(InstanceIdentifier<Topology> topologyInstanceId,
+    private Future<RpcResult<ForwardingAdjAnnounceOutput>> createMtLink(
+            InstanceIdentifier<Topology> topologyInstanceId,
             ForwardingAdjAnnounceInput input, boolean doCreateTp) {
         try {
             WriteTransaction transaction = transactionChain.newWriteOnlyTransaction();
-            log.info("MultilayerTopologyProvider.createMtLink");
+            LOG.info("MultilayerTopologyProvider.createMtLink");
             DirectionalityInfo directionalityInfo = input.getDirectionalityInfo();
             boolean bidirFlag = false;
             if (directionalityInfo instanceof Bidirectional) {
@@ -355,7 +356,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                     .withResult(faAdjAnnOutputBuilder.build()).build());
 
         } catch (final TransactionCommitFailedException e) {
-            log.warn("MultilayerTopologyProvider.createMtLink: TransactionCommitFailedException ", e);
+            LOG.warn("MultilayerTopologyProvider.createMtLink: TransactionCommitFailedException ", e);
             transactionChain.close();
             transactionChain = dataProvider.createTransactionChain(this);
             ForwardingAdjAnnounceOutputBuilder faAdjAnnOutputBuilder = new ForwardingAdjAnnounceOutputBuilder();
@@ -363,7 +364,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
             return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjAnnounceOutput> failed()
                     .withResult(faAdjAnnOutputBuilder.build()).build());
         } catch (final Exception e) {
-            log.warn("MultilayerTopologyProvider.createMtLink: Exception ", e);
+            LOG.warn("MultilayerTopologyProvider.createMtLink: Exception ", e);
             transactionChain.close();
             transactionChain = dataProvider.createTransactionChain(this);
             ForwardingAdjAnnounceOutputBuilder faAdjAnnOutputBuilder = new ForwardingAdjAnnounceOutputBuilder();
@@ -392,15 +393,15 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
             return topology.getLink();
 
         } catch (InterruptedException e) {
-            log.error("MultilayerTopologyProvider.readLinkList: interrupted exception", e);
+            LOG.error("MultilayerTopologyProvider.readLinkList: interrupted exception", e);
         } catch (ExecutionException e) {
-            log.error("MultilayerTopologyProvider.readLinkList: execution exception", e);
+            LOG.error("MultilayerTopologyProvider.readLinkList: execution exception", e);
         }
         return null;
     }
 
     private boolean checkLinkPresence(InstanceIdentifier<Topology> topologyInstanceId, TpId tpId,
-	        List<LinkId> linkToExclude) {
+        List<LinkId> linkToExclude) {
         boolean isInUse = false;
         List<Link> aLink = readLinkList(topologyInstanceId);
         for (Link link : aLink) {
@@ -413,21 +414,21 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
             if (tpId.getValue().equals(link.getDestination().getDestTp().getValue())) {
                  isInUse = true;
             }
-            log.info("MultilayerTopologyProvider.checkLinkPresence source " +
+            LOG.info("MultilayerTopologyProvider.checkLinkPresence source {}",
                     link.getSource().getSourceTp().getValue());
-            log.info("MultilayerTopologyProvider.checkLinkPresence destination " +
+            LOG.info("MultilayerTopologyProvider.checkLinkPresence destination {}",
                     link.getDestination().getDestTp().getValue());
             if (isInUse) {
                 break;
             }
         }
-        log.info("MultilayerTopologyProvider.checkLinkPresence " + isInUse);
+        LOG.info("MultilayerTopologyProvider.checkLinkPresence {}", isInUse);
         return isInUse;
     }
 
     @Override
     public Future<RpcResult<ForwardingAdjAnnounceOutput>> forwardingAdjAnnounce(ForwardingAdjAnnounceInput input) {
-        log.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC");
+        LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC");
 
         InstanceIdentifier<?> iid = input.getNetworkTopologyRef().getValue();
         TopologyKey topologyKey = iid.firstKeyOf(Topology.class, TopologyKey.class);
@@ -437,7 +438,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         StitchingPoint headStitchingPoint = input.getHeadEnd().getStitchingPoint();
         StitchingPoint tailStitchingPoint = input.getTailEnd().getStitchingPoint();
         if (headStitchingPoint == null && tailStitchingPoint == null) {
-            log.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC no stitching points");
+            LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC no stitching points");
             return createMtLink(topologyInstanceId, input, true);
         }
 
@@ -454,10 +455,10 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         NodeId tailNodeId = parser.parseNodeId(tailEnd);
         TpId headTpId = headStitchingPoint.getTpId();
         TpId tailTpId = tailStitchingPoint.getTpId();
-        log.debug("MultilayerTopologyProvider.forwardingAdjAnnounce RPC headNodeId " + headNodeId.getValue());
-        log.debug("MultilayerTopologyProvider.forwardingAdjAnnounce RPC headTpId " + headTpId.getValue());
-        log.debug("MultilayerTopologyProvider.forwardingAdjAnnounce RPC tailNodeId " + tailNodeId.getValue());
-        log.debug("MultilayerTopologyProvider.forwardingAdjAnnounce RPC tailTpId " + tailTpId.getValue());
+        LOG.debug("MultilayerTopologyProvider.forwardingAdjAnnounce RPC headNodeId {}", headNodeId.getValue());
+        LOG.debug("MultilayerTopologyProvider.forwardingAdjAnnounce RPC headTpId {}", headTpId.getValue());
+        LOG.debug("MultilayerTopologyProvider.forwardingAdjAnnounce RPC tailNodeId {}", tailNodeId.getValue());
+        LOG.debug("MultilayerTopologyProvider.forwardingAdjAnnounce RPC tailTpId {}", tailTpId.getValue());
 
         List<Link> aLink = readLinkList(topologyInstanceId);
         if (aLink == null || aLink.isEmpty()) {
@@ -470,7 +471,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         Link leftLink = null;
         Link leftLinkReverse = null;
         if (headStitchingPoint != null) {
-            log.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC headStitchingPoint handling");
+            LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC headStitchingPoint handling");
             /*
              * looking for "left-sided" link having headStitching point as destination tp
              * and in case of bidirectional scenario, also looking for left-sided link having
@@ -482,7 +483,8 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                 if (headNodeId.getValue().equals(destNodeId.getValue()) &&
                         headTpId.getValue().equals(destTpId.getValue())) {
                     leftLink = link;
-                    log.info("leftLink: " + leftLink.getLinkId().toString());
+                    LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC leftLink: {}",
+                            leftLink.getLinkId().toString());
                 }
                 if (!bidirFlag && leftLink != null)
                     break;
@@ -492,7 +494,8 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                     if (headNodeId.getValue().equals(sourceNodeId.getValue()) &&
                             headTpId.getValue().equals(sourceTpId.getValue())) {
                         leftLinkReverse = link;
-                        log.info("leftLinkReverse: " + leftLinkReverse.getLinkId().toString());
+                        LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC  leftLinkReverse: {}",
+                                leftLinkReverse.getLinkId().toString());
                     }
                 }
                 if (bidirFlag && leftLink != null && leftLinkReverse != null)
@@ -506,7 +509,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         Link rightLink = null;
         Link rightLinkReverse = null;
         if (tailStitchingPoint != null) {
-            log.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC tailStitchingPoint handling");
+            LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC tailStitchingPoint handling");
             /*
              * looking for "right-sided" link having headStitching point as source tp
              * and in case of bidirectional, also looking for right-sided link having
@@ -518,7 +521,8 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                 if (tailNodeId.getValue().equals(sourceNodeId.getValue()) &&
                         tailTpId.getValue().equals(sourceTpId.getValue())) {
                     rightLink = link;
-                    log.info("rightLink: " + rightLink.getLinkId().toString());
+                    LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC rightLink {}",
+                            rightLink.getLinkId().toString());
                 }
                 if (!bidirFlag && rightLink != null)
                     break;
@@ -528,7 +532,8 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                     if (tailNodeId.getValue().equals(destNodeId.getValue()) &&
                             tailTpId.getValue().equals(destTpId.getValue())) {
                         rightLinkReverse = link;
-                        log.info("rightLinkReverse: " + rightLinkReverse.getLinkId().toString());
+                        LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC rightLinkReverse: ",
+                                rightLinkReverse.getLinkId().toString());
                     }
                 }
                 if (bidirFlag && rightLink != null && rightLinkReverse != null)
@@ -545,18 +550,18 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         if (!doBidir) {
             org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters
                     .directionality.info.unidirectional.UnidirectionalBuilder unidirectionalBuilder =
-                            new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123
-                                    .fa.parameters.directionality.info.unidirectional.UnidirectionalBuilder();
+                    new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123
+                    .fa.parameters.directionality.info.unidirectional.UnidirectionalBuilder();
             org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality
                     .info.UnidirectionalBuilder unidirBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight
-                            .topology.multilayer.rev150123.fa.parameters.directionality.info.UnidirectionalBuilder();
+                    .topology.multilayer.rev150123.fa.parameters.directionality.info.UnidirectionalBuilder();
             unidirBuilder.setUnidirectional(unidirectionalBuilder.build());
             forwardingAdjAnnounceInputBuilder.setDirectionalityInfo(unidirBuilder.build());
         }
 
         HeadEnd headEndPoint = input.getHeadEnd();
         if (leftLink != null) {
-            log.info("MultilayerTopologyProvider.forwardingAdjAnnounce left link found");
+            LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce left link found");
             NodeId leftNodeId = leftLink.getSource().getSourceNode();
             TpId leftTpId = leftLink.getSource().getSourceTp();
             HeadEndBuilder headEndBuilder = new HeadEndBuilder();
@@ -572,7 +577,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         TpId rightTpId = tailTpId;
         TailEnd tailEndPoint = input.getTailEnd();
         if (rightLink != null) {
-            log.info("MultilayerTopologyProvider.forwardingAdjAnnounce right link found");
+            LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce right link found");
             rightNodeId = rightLink.getDestination().getDestNode();
             rightTpId = rightLink.getDestination().getDestTp();
             TailEndBuilder tailEndBuilder = new TailEndBuilder();
@@ -589,7 +594,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
     @Override
     public Future<RpcResult<ForwardingAdjUpdateOutput>> forwardingAdjUpdate(ForwardingAdjUpdateInput input) {
-        log.info("MultilayerTopologyProvider.forwardingAdjUpdate RPC");
+        LOG.info("MultilayerTopologyProvider.forwardingAdjUpdate RPC");
 
         InstanceIdentifier<?> iid = input.getNetworkTopologyRef().getValue();
         TopologyKey topologyKey = iid.firstKeyOf(Topology.class, TopologyKey.class);
@@ -598,10 +603,10 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.update.output
                 .result.error.ErrorBuilder iErrorBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology
-                        .multilayer.rev150123.forwarding.adj.update.output.result.error.ErrorBuilder();
+                .multilayer.rev150123.forwarding.adj.update.output.result.error.ErrorBuilder();
         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.update.output
                 .result.ErrorBuilder errorBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology
-                        .multilayer.rev150123.forwarding.adj.update.output.result.ErrorBuilder();
+                .multilayer.rev150123.forwarding.adj.update.output.result.ErrorBuilder();
         errorBuilder.setError(iErrorBuilder.build());
         ForwardingAdjUpdateOutputBuilder faAdjAnnUpdBuilder = new ForwardingAdjUpdateOutputBuilder();
 
@@ -629,13 +634,13 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                 final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
                 linkObject = rx.read(LogicalDatastoreType.OPERATIONAL, linkInstanceId).get();
                 if (linkObject == null) {
-                    log.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: source linkObject null");
+                    LOG.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: source linkObject null");
                     faAdjAnnUpdBuilder.setResult(errorBuilder.build());
                     return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjUpdateOutput> failed()
                             .withResult(faAdjAnnUpdBuilder.build()).build());
                 }
                 if (linkObject.isPresent() == false) {
-                    log.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: linkObject not present");
+                    LOG.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: linkObject not present");
                     faAdjAnnUpdBuilder.setResult(errorBuilder.build());
                     return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjUpdateOutput> failed()
                             .withResult(faAdjAnnUpdBuilder.build()).build());
@@ -643,19 +648,19 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
                 Link faLink = linkObject.get();
                 if (faLink == null) {
-                    log.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: dest faLink with faId " +
+                    LOG.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: dest faLink with faId " +
                             strFaId + " not found");
                     faAdjAnnUpdBuilder.setResult(errorBuilder.build());
                     return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjUpdateOutput> failed()
                             .withResult(faAdjAnnUpdBuilder.build()).build());
                 }
             } catch (InterruptedException e) {
-                log.error("MultilayerTopologyProvider.forwardingAdjUpdate RPC: interrupted exception", e);
+                LOG.error("MultilayerTopologyProvider.forwardingAdjUpdate RPC: interrupted exception", e);
                 faAdjAnnUpdBuilder.setResult(errorBuilder.build());
                 return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjUpdateOutput> failed()
                     .withResult(faAdjAnnUpdBuilder.build()).build());
             } catch (ExecutionException e) {
-                log.error("MultilayerTopologyProvider.forwardingAdjUpdate RPC: execution exception", e);
+                LOG.error("MultilayerTopologyProvider.forwardingAdjUpdate RPC: execution exception", e);
                 faAdjAnnUpdBuilder.setResult(errorBuilder.build());
                 return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjUpdateOutput> failed()
                     .withResult(faAdjAnnUpdBuilder.build()).build());
@@ -680,7 +685,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                 TerminationPointBuilder tpBuilder = parser.parseTerminationPointBuilder(headEnd);
                 InstanceIdentifier<TerminationPoint> tpInstanceId = topologyInstanceId
                         .child(Node.class, new NodeKey(headNodeId))
-                                .child(TerminationPoint.class, tpBuilder.getKey());
+                        .child(TerminationPoint.class, tpBuilder.getKey());
                 transaction.merge(LogicalDatastoreType.OPERATIONAL, tpInstanceId, tpBuilder.build());
             }
 
@@ -693,7 +698,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                 TerminationPointBuilder tpBuilder = parser.parseTerminationPointBuilder(tailEnd);
                 InstanceIdentifier<TerminationPoint>  tpInstanceId = topologyInstanceId
                         .child(Node.class, new NodeKey(tailNodeId))
-                                .child(TerminationPoint.class, tpBuilder.getKey());
+                        .child(TerminationPoint.class, tpBuilder.getKey());
                 transaction.merge(LogicalDatastoreType.OPERATIONAL, tpInstanceId, tpBuilder.build());
             }
 
@@ -707,14 +712,14 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                 }
                 createLink(transaction, input.getFaId(), topologyInstanceId, linkBuilder, bidirFlag);
             } else {
-                log.info("MultilayerTopologyProvider.forwardingAdjUpdate RPC: delete link "
-                        + linkInstanceId.toString());
+                LOG.info("MultilayerTopologyProvider.forwardingAdjUpdate RPC: delete link {}",
+                        linkInstanceId.toString());
                 transaction.delete(LogicalDatastoreType.OPERATIONAL, linkInstanceId);
                 if (directionalityInfo instanceof Bidirectional) {
                     linkBuilder = parser.swapSourceDestination(linkBuilder, true);
                     linkInstanceId = topologyInstanceId.child(Link.class, linkBuilder.getKey());
-                    log.info("MultilayerTopologyProvider.forwardingAdjUpdate RPC: delete link "
-                            + linkInstanceId.toString());
+                    LOG.info("MultilayerTopologyProvider.forwardingAdjUpdate RPC: delete link {}",
+                            linkInstanceId.toString());
                     transaction.delete(LogicalDatastoreType.OPERATIONAL, linkInstanceId);
                     parser.swapSourceDestination(linkBuilder, false);
                 }
@@ -722,14 +727,14 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
             transaction.submit().checkedGet();
         } catch (final TransactionCommitFailedException e) {
-             log.error("MultilayerTopologyProvider.forwardingAdjUpdate RPC: TransactionCommitFailedException ", e);
+             LOG.error("MultilayerTopologyProvider.forwardingAdjUpdate RPC: TransactionCommitFailedException ", e);
              transactionChain.close();
              transactionChain = dataProvider.createTransactionChain(this);
              faAdjAnnUpdBuilder.setResult(errorBuilder.build());
              return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjUpdateOutput> failed()
                      .withResult(faAdjAnnUpdBuilder.build()).build());
         } catch (final Exception e) {
-            log.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: Exception ", e);
+            LOG.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: Exception ", e);
             transactionChain.close();
             transactionChain = dataProvider.createTransactionChain(this);
              faAdjAnnUpdBuilder.setResult(errorBuilder.build());
@@ -739,7 +744,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.update
                 .output.result.OkBuilder okBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight
-                        .topology.multilayer.rev150123.forwarding.adj.update.output.result.OkBuilder();
+                .topology.multilayer.rev150123.forwarding.adj.update.output.result.OkBuilder();
         faAdjAnnUpdBuilder.setResult(okBuilder.build());
         return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjUpdateOutput> success()
             .withResult(faAdjAnnUpdBuilder.build()).build());
@@ -747,7 +752,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
     @Override
     public Future<RpcResult<ForwardingAdjWithdrawOutput>> forwardingAdjWithdraw(ForwardingAdjWithdrawInput input) {
-        log.info("MultilayerTopologyProvider.forwardingAdjWithdraw RPC");
+        LOG.info("MultilayerTopologyProvider.forwardingAdjWithdraw RPC");
 
         InstanceIdentifier<?> iid = input.getNetworkTopologyRef().getValue();
         TopologyKey topologyKey = iid.firstKeyOf(Topology.class, TopologyKey.class);
@@ -760,10 +765,10 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         ForwardingAdjWithdrawOutputBuilder faAdjWithdrawOutputBuilder = new ForwardingAdjWithdrawOutputBuilder();
         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output
                 .result.error.ErrorBuilder iErrorBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology
-                        .multilayer.rev150123.forwarding.adj.withdraw.output.result.error.ErrorBuilder();
+                .multilayer.rev150123.forwarding.adj.withdraw.output.result.error.ErrorBuilder();
         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.withdraw.output
                 .result.ErrorBuilder errorBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology
-                        .multilayer.rev150123.forwarding.adj.withdraw.output.result.ErrorBuilder();
+                .multilayer.rev150123.forwarding.adj.withdraw.output.result.ErrorBuilder();
         errorBuilder.setError(iErrorBuilder.build());
 
         List<LinkId> aLinkToExclude = new ArrayList();
@@ -783,18 +788,18 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                 faLink = linkObject.get();
             }
         } catch (InterruptedException e) {
-            log.error("MultilayerTopologyProvider.forwardingAdjWithdraw RPC: interrupted exception", e);
+            LOG.error("MultilayerTopologyProvider.forwardingAdjWithdraw RPC: interrupted exception", e);
             faAdjWithdrawOutputBuilder.setResult(errorBuilder.build());
             return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> failed()
                     .withResult(faAdjWithdrawOutputBuilder.build()).build());
         } catch (ExecutionException e) {
-            log.error("MultilayerTopologyProvider.forwardingAdjWithdraw RPC: execution exception", e);
+            LOG.error("MultilayerTopologyProvider.forwardingAdjWithdraw RPC: execution exception", e);
             faAdjWithdrawOutputBuilder.setResult(errorBuilder.build());
             return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> failed()
                     .withResult(faAdjWithdrawOutputBuilder.build()).build());
         }
 
-        log.info("MultilayerTopologyProvider.forwardingAdjWithdraw RPC: linkid " + linkId.getValue().toString());
+        LOG.info("MultilayerTopologyProvider.forwardingAdjWithdraw RPC: linkid {}", linkId.getValue().toString());
 
         if (forwardingAdjacencyProvider != null) {
             forwardingAdjacencyProvider.onForwardingAdjacencyDeleted(LogicalDatastoreType.OPERATIONAL,
@@ -831,18 +836,18 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         try {
             transaction.submit().checkedGet();
         } catch (final TransactionCommitFailedException e) {
-            log.warn("MultilayerTopologyProvider.forwardingAdjWithdraw RPC: TransactionCommitFailedException ", e);
+            LOG.warn("MultilayerTopologyProvider.forwardingAdjWithdraw RPC: TransactionCommitFailedException ", e);
             transactionChain.close();
             transactionChain = dataProvider.createTransactionChain(this);
             faAdjWithdrawOutputBuilder.setResult(errorBuilder.build());
                     return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> failed()
-                            .withResult(faAdjWithdrawOutputBuilder.build()).build());
+                    .withResult(faAdjWithdrawOutputBuilder.build()).build());
         }
 
         removeLinkFaDownState(faId.toString());
 
         faAdjWithdrawOutputBuilder.setResult(okBuilder.build());
                 return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> success()
-                        .withResult(faAdjWithdrawOutputBuilder.build()).build());
+                .withResult(faAdjWithdrawOutputBuilder.build()).build());
     }
 }

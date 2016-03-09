@@ -26,18 +26,12 @@ import org.opendaylight.topology.mlmt.utility.MlmtTopologyOperation;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.topology.multilayer.MultilayerForwardingAdjacency;
 
-import org.slf4j.Logger;
-
 public class ForwardingAdjacencyTopologyTest implements MultilayerForwardingAdjacency {
-    private Logger log;
     private DataBroker dataProvider;
     private MlmtOperationProcessor processor;
     private InstanceIdentifier<Topology> destTopologyId;
 
-    public void init(final Logger logger, MlmtOperationProcessor processor,
-            InstanceIdentifier<Topology> destTopologyId) {
-        logger.info("ForwardingAdjacencyTopologyTest.init");
-        this.log = logger;
+    public void init(MlmtOperationProcessor processor, InstanceIdentifier<Topology> destTopologyId) {
         this.destTopologyId = destTopologyId;
         this.processor = processor;
     }

@@ -14,16 +14,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
-import org.slf4j.Logger;
 import org.opendaylight.topology.mlmt.inventory.InventoryAttributesParser;
 
 public class InventoryAttributesParserImpl implements InventoryAttributesParser {
-
-    private static Logger log;
-
-    public void init(final Logger logger) {
-        log = logger;
-    }
 
     @Override
     public NodeRef parseInventoryNodeAttributes(final Node node) {
