@@ -19,8 +19,9 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public interface MultilayerForwardingAdjacency {
 
-    void onForwardingAdjacencyCreated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
-            final FaId faId, final ForwardingAdjacencyAttributes faAttributes);
+    void onForwardingAdjacencyCreated(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId, final FaId faId,
+            final ForwardingAdjacencyAttributes faAttributes);
 
     void onLinkCreated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final FaId faId, final LinkKey linkKey);
@@ -28,11 +29,12 @@ public interface MultilayerForwardingAdjacency {
     void onTpCreated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final FaId faId, final NodeKey nodeKey, final TerminationPointKey tpKey);
 
-    void onForwardingAdjacencyUpdated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
-            final FaId faId, final ForwardingAdjacencyAttributes faAttributes);
+    void onForwardingAdjacencyUpdated(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId, final FaId faId,
+            final ForwardingAdjacencyAttributes faAttributes);
 
-    void onForwardingAdjacencyDeleted(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
-            final FaId faId);
+    void onForwardingAdjacencyDeleted(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId, final FaId faId);
 
     void onLinkDeleted(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final LinkKey linkKey);
@@ -40,4 +42,3 @@ public interface MultilayerForwardingAdjacency {
     void onTpDeleted(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey, final TerminationPointKey tpKey);
 }
-

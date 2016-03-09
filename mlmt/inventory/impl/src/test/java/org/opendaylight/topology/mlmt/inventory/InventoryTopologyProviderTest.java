@@ -77,12 +77,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @RunWith(MockitoJUnitRunner.class)
 public class InventoryTopologyProviderTest extends AbstractDataBrokerTest {
-    private static final Logger LOG = LoggerFactory.getLogger(InventoryTopologyProviderTest.class);
     private final Object waitObject = new Object();
     private static final String MLMT = "mlmt:1";
     private static final String EXAMPLE = "example-linkstate-topology";
@@ -158,7 +154,6 @@ public class InventoryTopologyProviderTest extends AbstractDataBrokerTest {
     @Before
     public void setUp() throws Exception {
         InventoryAttributesParserTest parser = new InventoryAttributesParserTest();
-        parser.init(LOG);
         processor = new MlmtOperationProcessor(dataBroker);
         thread = new Thread(processor);
         thread.setDaemon(true);
@@ -166,7 +161,7 @@ public class InventoryTopologyProviderTest extends AbstractDataBrokerTest {
         thread.start();
         mlmtTopologyIid = buildTopologyIid(MLMT);
         this.provider = new InventoryTopologyProvider();
-        provider.init(LOG, processor, mlmtTopologyIid, parser);
+        provider.init(processor, mlmtTopologyIid, parser);
         provider.setDataProvider(dataBroker);
         /*
          * It is necessary to create the network-topology containers in

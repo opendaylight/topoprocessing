@@ -5,6 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
 package org.opendaylight.topology.mlmt.parser;
 
 import org.junit.runner.RunWith;
@@ -45,12 +46,9 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topo
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.IgpLinkAttributes1;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.TedNodeAttributes;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.TedLinkAttributes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MultitechnologyAttributesParserImplTest {
-    private static final Logger LOG = LoggerFactory.getLogger(MultitechnologyAttributesParserImplTest.class);
     private MultitechnologyAttributesParserImpl parser;
     private static final String topologyName = "example:1";
     private static final String nodeName = "example-node:1";
@@ -63,7 +61,6 @@ public class MultitechnologyAttributesParserImplTest {
     @Before
     public void setUp() {
         this.parser = new MultitechnologyAttributesParserImpl();
-        this.parser.init(LOG);
         NodeId nodeId = new NodeId(nodeName);
         NodeKey nodeKey = new NodeKey(nodeId);
     }
@@ -109,8 +106,8 @@ public class MultitechnologyAttributesParserImplTest {
     public void parseTedLinkAttributesTest() {
         org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021
                 .isis.link.attributes.isis.link.attributes.TedBuilder tedBuilder =
-                        new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021
-                                .isis.link.attributes.isis.link.attributes.TedBuilder();
+                new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021
+                .isis.link.attributes.isis.link.attributes.TedBuilder();
         IsisLinkAttributesBuilder isisLinkAttributedBuilder = new IsisLinkAttributesBuilder();
         IgpLinkAttributes1Builder igpLinkAttributes1Builder = new IgpLinkAttributes1Builder();
         IgpLinkAttributesBuilder igpLinkAttributesBuilder = new IgpLinkAttributesBuilder();

@@ -51,7 +51,7 @@ public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implement
 
         mlmtProviderFactory = new MlmtProviderFactoryImpl();
         Map<String, List<MlmtTopologyProvider>> providersMap =
-                mlmtProviderFactory.createProvidersMap(rpcRegistry, dataBroker, LOG, processor, MLMT);
+                mlmtProviderFactory.createProvidersMap(rpcRegistry, dataBroker, processor, MLMT);
         mlmtProviders = providersMap.get(MLMT);
 
         mapConfigurationDataChangeObserver = new ArrayList<MlmtDataChangeEventListener>();

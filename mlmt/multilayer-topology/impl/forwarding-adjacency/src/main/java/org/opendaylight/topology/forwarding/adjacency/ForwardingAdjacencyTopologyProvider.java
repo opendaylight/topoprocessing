@@ -50,17 +50,17 @@ import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.topology.multilayer.MultilayerForwardingAdjacency;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyTopologyProviderRuntimeMXBean,
         AutoCloseable, MultilayerForwardingAdjacency {
-    private Logger log;
+    private static final Logger LOG = LoggerFactory.getLogger(ForwardingAdjacencyTopologyProvider.class);
     private DataBroker dataProvider;
     private MlmtOperationProcessor processor;
     private InstanceIdentifier<Topology> destTopologyId;
 
-    public void init(final Logger logger, MlmtOperationProcessor processor, InstanceIdentifier<Topology> destTopologyId) {
-        logger.info("ForwardingAdjacencyTopologyProvider.init");
-        this.log = logger;
+    public void init(MlmtOperationProcessor processor, InstanceIdentifier<Topology> destTopologyId) {
+        LOG.info("ForwardingAdjacencyTopologyProvider.init");
         this.destTopologyId = destTopologyId;
         this.processor = processor;
     }
@@ -71,11 +71,12 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
 
     private void createTopologyType(final LogicalDatastoreType type,
              final InstanceIdentifier<Topology> topologyInstanceId) {
-        log.info("ForwardingAdjacencyTopologyProvider.createTopologyType");
+        LOG.info("ForwardingAdjacencyTopologyProvider.createTopologyType");
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
-                final ForwardingAdjacencyTopologyBuilder forwardingAdjacencyTopologyBuilder = new ForwardingAdjacencyTopologyBuilder();
+                final ForwardingAdjacencyTopologyBuilder forwardingAdjacencyTopologyBuilder =
+                        new ForwardingAdjacencyTopologyBuilder();
                 final FaTopologyTypeBuilder faTopologyTypeBuilder = new FaTopologyTypeBuilder();
                 faTopologyTypeBuilder.setForwardingAdjacencyTopology(forwardingAdjacencyTopologyBuilder.build());
 
@@ -83,14 +84,15 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
                         .augmentation(MtTopologyType.class).child(MultitechnologyTopology.class)
                         .augmentation(MlTopologyType.class).child(MultilayerTopology.class)
                         .augmentation(FaTopologyType.class);
-                transaction.merge(LogicalDatastoreType.OPERATIONAL, faTopologyTypeIid, faTopologyTypeBuilder.build(), true);
+                transaction.merge(LogicalDatastoreType.OPERATIONAL, faTopologyTypeIid,
+                        faTopologyTypeBuilder.build(), true);
             }
         });
     }
 
     @Override
     public synchronized void close() throws InterruptedException {
-        log.info("ForwardingAdjacencyTopologyProvider stopped.");
+        LOG.info("ForwardingAdjacencyTopologyProvider stopped.");
     }
 
     public void handleForwardingAdjacencyAttributes(final LogicalDatastoreType type,
@@ -104,9 +106,11 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
-                final InstanceIdentifier<ForwardingAdjacency> instanceId = topologyInstanceId.augmentation(FaTopology.class)
+                final InstanceIdentifier<ForwardingAdjacency> instanceId =
+                        topologyInstanceId.augmentation(FaTopology.class)
                        .child(ForwardingAdjacency.class, faKey);
-                transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, forwardingAdjacencyBuilder.build(), true);
+                transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId,
+                        forwardingAdjacencyBuilder.build(), true);
             }
         });
     }
@@ -115,7 +119,7 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
     public void onForwardingAdjacencyCreated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final FaId faId, final ForwardingAdjacencyAttributes faAttributes) {
-        log.info("ForwardingAdjacencyTopologyProvider.onForwardingAdjacencyCreated");
+        LOG.info("ForwardingAdjacencyTopologyProvider.onForwardingAdjacencyCreated");
         createTopologyType(type, destTopologyId);
         handleForwardingAdjacencyAttributes(type, topologyInstanceId, faId, faAttributes);
     }
@@ -124,12 +128,13 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
     public void onForwardingAdjacencyUpdated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId,
             final FaId faId, final ForwardingAdjacencyAttributes faAttributes) {
-        log.info("ForwardingAdjacencyTopologyProvider.onForwardingAdjacencyUpdated");
+        LOG.info("ForwardingAdjacencyTopologyProvider.onForwardingAdjacencyUpdated");
         handleForwardingAdjacencyAttributes(type, topologyInstanceId, faId, faAttributes);
     }
 
     @Override
-    public void onLinkCreated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
+    public void onLinkCreated(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
             final FaId faId, final LinkKey linkKey) {
         final SupportingFaBuilder supportingFaBuilder = new SupportingFaBuilder();
         supportingFaBuilder.setFa(faId);
@@ -153,8 +158,9 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
    @Override
    public void onTpCreated(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
            final FaId faId, final NodeKey nodeKey, final TerminationPointKey tpKey) {
-       final org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.ml.tp.attributes.SupportingFaBuilder
-               supportingFaBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.ml.tp.attributes.SupportingFaBuilder();
+       final org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123
+               .ml.tp.attributes.SupportingFaBuilder supportingFaBuilder = new org.opendaylight.yang.gen.v1.urn
+                       .opendaylight.topology.forwarding.adjacency.rev150123.ml.tp.attributes.SupportingFaBuilder();
        supportingFaBuilder.setFa(faId);
        final MlTerminationPointBuilder mlTpBuilder = new MlTerminationPointBuilder();
        mlTpBuilder.setSupportingFa(supportingFaBuilder.build());
@@ -162,7 +168,8 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
        processor.enqueueOperation(new MlmtTopologyOperation() {
            @Override
            public void applyOperation(ReadWriteTransaction transaction) {
-               final InstanceIdentifier<MlTerminationPoint> instanceId = topologyInstanceId.child(Node.class, nodeKey)
+               final InstanceIdentifier<MlTerminationPoint> instanceId =
+                       topologyInstanceId.child(Node.class, nodeKey)
                        .child(TerminationPoint.class, tpKey).augmentation(MlTerminationPoint.class);
                transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId, mlTpBuilder.build(), true);
            }
@@ -170,22 +177,25 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
     }
 
     @Override
-    public void onForwardingAdjacencyDeleted(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
+    public void onForwardingAdjacencyDeleted(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
             final FaId faId) {
         final ForwardingAdjacencyKey faKey = new ForwardingAdjacencyKey(faId);
 
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
-                final InstanceIdentifier<ForwardingAdjacency> instanceId = topologyInstanceId.augmentation(FaTopology.class)
-                       .child(ForwardingAdjacency.class, faKey);
+                final InstanceIdentifier<ForwardingAdjacency> instanceId =
+                        topologyInstanceId.augmentation(FaTopology.class)
+                        .child(ForwardingAdjacency.class, faKey);
                 transaction.delete(LogicalDatastoreType.OPERATIONAL, instanceId);
             }
         });
     }
 
     @Override
-    public void onLinkDeleted(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
+    public void onLinkDeleted(final LogicalDatastoreType type,
+            final InstanceIdentifier<Topology> topologyInstanceId,
             final LinkKey linkKey) {
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
@@ -203,7 +213,8 @@ public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyT
        processor.enqueueOperation(new MlmtTopologyOperation() {
            @Override
            public void applyOperation(ReadWriteTransaction transaction) {
-               final InstanceIdentifier<MlTerminationPoint> instanceId = topologyInstanceId.child(Node.class, nodeKey)
+               final InstanceIdentifier<MlTerminationPoint> instanceId =
+                       topologyInstanceId.child(Node.class, nodeKey)
                        .child(TerminationPoint.class, tpKey).augmentation(MlTerminationPoint.class);
                transaction.delete(LogicalDatastoreType.OPERATIONAL, instanceId);
            }
