@@ -451,7 +451,7 @@ public class NTTopologyRequestHandlerTest {
     public void testCloseListeners() {
         testUnificationCase();
 
-        handler.processDeletionRequest();
+        handler.processDeletionRequest(0);
         Assert.assertTrue("Listener wasn't closed", testingBroker.getListenerClosed());
         Assert.assertEquals(0, handler.getListeners().size());
     }
@@ -484,7 +484,7 @@ public class NTTopologyRequestHandlerTest {
         handler.processNewRequest();
         Assert.assertEquals(0, listeners.size());
         // process deletion request
-        handler.processDeletionRequest();
+        handler.processDeletionRequest(0);
     }
 
     @Test

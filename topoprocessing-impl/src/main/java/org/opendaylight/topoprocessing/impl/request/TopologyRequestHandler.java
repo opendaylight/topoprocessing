@@ -201,7 +201,7 @@ public abstract class TopologyRequestHandler {
             LOG.debug("Correlation configuration successfully read");
         } catch (Exception e) {
             LOG.warn("Processing new request for topology change failed.", e);
-            closeOperatingResources();
+            closeOperatingResources(0);
             throw new IllegalStateException("Processing new request for topology change failed.", e);
         }
     }
@@ -468,18 +468,26 @@ public abstract class TopologyRequestHandler {
 
     /**
      * Closes all registered listeners and providers
+     * @param timeOut time in ms to wait for close operation to finish, if timeOut == 0, there is no waiting
      */
-    public void processDeletionRequest() {
+    public void processDeletionRequest(int timeOut) {
         LOG.debug("Processing overlay topology deletion request");
-        closeOperatingResources();
+        closeOperatingResources(timeOut);
     }
 
-    private void closeOperatingResources() {
+    private void closeOperatingResources(int timeOut) {
         for (ListenerRegistration<DOMDataTreeChangeListener> listener : listeners) {
             listener.close();
         }
         listeners.clear();
         writer.tearDown();
+        if(timeOut > 0) {
+            try {
+                writer.waitForTearDownCompletion(timeOut);
+            } catch (InterruptedException i) {
+                // do nothing
+            }
+        }
     }
 
     /**
