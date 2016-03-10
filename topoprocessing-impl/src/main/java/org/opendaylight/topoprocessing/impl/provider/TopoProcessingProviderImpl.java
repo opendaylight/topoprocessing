@@ -143,7 +143,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         LOGGER.debug("Registering Topology Request Listener");
         topologyRequestListenerRegistrations.add(
                 dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                        path, listener, DataChangeScope.ONE));
+                        path, listener, DataChangeScope.SUBTREE));
     }
 
 }
