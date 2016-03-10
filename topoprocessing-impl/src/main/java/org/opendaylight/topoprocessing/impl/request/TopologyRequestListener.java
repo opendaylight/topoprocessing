@@ -9,6 +9,7 @@
 package org.opendaylight.topoprocessing.impl.request;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,6 +25,8 @@ import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.Correlations;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.rev150824.link.computation.grouping.LinkComputation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -81,18 +84,25 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     public void onDataChanged(
             AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
         LOGGER.debug("DataChange event notification received");
+
         if (! change.getCreatedData().isEmpty()) {
             processCreatedData(change.getCreatedData());
         }
         if (! change.getRemovedPaths().isEmpty()) {
-            processRemovedData(change.getRemovedPaths());
+            processRemovedData(change.getRemovedPaths(),0);
+        }
+
+        if (! change.getUpdatedData().isEmpty()) {
+            processUpdatedData(change.getUpdatedData());
         }
     }
 
     private void processCreatedData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map) {
         LOGGER.debug("Processing created data changes");
+
         for (Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : map.entrySet()) {
             YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
+
             NormalizedNode<?, ?> normalizedNode = entry.getValue();
             if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)){
                 if (isTopologyRequest(normalizedNode) || isLinkCalculation(normalizedNode)){
@@ -120,12 +130,37 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
         }
     }
 
-    private void processRemovedData(Set<YangInstanceIdentifier> removedPaths) {
+    /**
+     *
+     * @param removedPaths set of removed paths
+     * @param timeOut time in ms to wait for remove to finish, if timeout == 0 there is no waiting
+     */
+    private void processRemovedData(Set<YangInstanceIdentifier> removedPaths,int timeOut) {
         LOGGER.debug("Processing removed data changes");
         for (YangInstanceIdentifier yangInstanceIdentifier : removedPaths) {
             TopologyRequestHandler topologyRequestHandler = topoRequestHandlers.remove(yangInstanceIdentifier);
             if (null != topologyRequestHandler) {
-                topologyRequestHandler.processDeletionRequest();
+                topologyRequestHandler.processDeletionRequest(timeOut);
+            }
+        }
+    }
+
+    private void processUpdatedData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
+        LOGGER.debug("Processing updated data changes");
+        for (Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : change.entrySet()) {
+            YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
+            NormalizedNode<?, ?> normalizedNode = entry.getValue();
+
+            if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)){
+                if (isTopologyRequest(normalizedNode) || isLinkCalculation(normalizedNode)){
+                        Set<YangInstanceIdentifier> key = new HashSet<>();
+                        key.add(yangInstanceIdentifier);
+                        processRemovedData(key,250);
+
+                        Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map = new HashMap<>();
+                        map.put(yangInstanceIdentifier, normalizedNode);
+                        processCreatedData(map);
+                }
             }
         }
     }
