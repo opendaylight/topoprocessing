@@ -52,8 +52,8 @@ public class SpecificValueFiltrator<T> implements Filtrator {
         } else if(value instanceof Number && this.value instanceof Number){
             isFiltered =  !numberEquals(value, this.value);
         } else {
-            isFiltered = false;
-            LOG.warn("One of these types is unsupported: {}; {}", value.getClass().getName(),
+            isFiltered = true;
+            LOG.warn("Comparing values of these types is not supported: {}; {}", value.getClass().getName(),
                             this.value.getClass().getName());
         }
         if (LOG.isDebugEnabled() && isFiltered) {
