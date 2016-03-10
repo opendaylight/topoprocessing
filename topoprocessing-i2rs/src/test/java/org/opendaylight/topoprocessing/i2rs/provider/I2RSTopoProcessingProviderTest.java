@@ -74,7 +74,7 @@ public class I2RSTopoProcessingProviderTest {
                 Matchers.eq(LogicalDatastoreType.CONFIGURATION),
                 Matchers.eq(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER),
                 Matchers.any(TopologyRequestListener.class),
-                Matchers.eq(DataChangeScope.ONE));
+                Matchers.eq(DataChangeScope.SUBTREE));
 
         // close
         topoProcessingProvider.close();
