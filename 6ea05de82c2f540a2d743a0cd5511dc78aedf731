@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_821485e9",
+        "filename": "mlmt/inventory/impl/src/main/java/org/opendaylight/topology/mlmt/inventory/InventoryTopologyProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-10T08:54:29Z",
+      "side": 1,
+      "message": "Why is this protected? I think it should be private. When you use this logger in subclass of InventoryTopologyProvider, then in log you get wrong class name. It shows that message is from InventoryTopologyProvider instead of subclass where it was called.",
+      "range": {
+        "startLine": 41,
+        "startChar": 4,
+        "endLine": 41,
+        "endChar": 13
+      },
+      "revId": "6ea05de82c2f540a2d743a0cd5511dc78aedf731",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_62ea21dc",
+        "filename": "mlmt/multilayer-topology/impl/forwarding-adjacency/src/main/java/org/opendaylight/topology/forwarding/adjacency/ForwardingAdjacencyTopologyProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-10T08:54:29Z",
+      "side": 1,
+      "message": "The same as previous. I think it should be private. If you have some valid reason to have it protected, please let me know",
+      "range": {
+        "startLine": 57,
+        "startChar": 4,
+        "endLine": 57,
+        "endChar": 13
+      },
+      "revId": "6ea05de82c2f540a2d743a0cd5511dc78aedf731",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_a2f0a9c9",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/main/java/org/opendaylight/topology/multilayer/MultilayerTopologyProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-10T08:54:29Z",
+      "side": 1,
+      "message": "Same as previous",
+      "range": {
+        "startLine": 97,
+        "startChar": 4,
+        "endLine": 97,
+        "endChar": 13
+      },
+      "revId": "6ea05de82c2f540a2d743a0cd5511dc78aedf731",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_82ebe5da",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/main/java/org/opendaylight/topology/multilayer/MultilayerTopologyProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 404,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-10T08:54:29Z",
+      "side": 1,
+      "message": "please remove tab",
+      "range": {
+        "startLine": 404,
+        "startChar": 0,
+        "endLine": 404,
+        "endChar": 1
+      },
+      "revId": "6ea05de82c2f540a2d743a0cd5511dc78aedf731",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_e292b14a",
+        "filename": "mlmt/multitechnology-topology/impl/src/main/java/org/opendaylight/topology/multitechnology/MultitechnologyTopologyProvider.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-10T08:54:29Z",
+      "side": 1,
+      "message": "as previous",
+      "range": {
+        "startLine": 61,
+        "startChar": 4,
+        "endLine": 61,
+        "endChar": 13
+      },
+      "revId": "6ea05de82c2f540a2d743a0cd5511dc78aedf731",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_c295ed33",
+        "filename": "mlmt/multitechnology-topology/impl/src/test/java/org/opendaylight/topology/multitechnology/MultitechnologyTopologyProviderTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-10T08:54:29Z",
+      "side": 1,
+      "message": "please remove space",
+      "range": {
+        "startLine": 208,
+        "startChar": 50,
+        "endLine": 208,
+        "endChar": 51
+      },
+      "revId": "6ea05de82c2f540a2d743a0cd5511dc78aedf731",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_2299396e",
+        "filename": "mlmt/parser/impl/src/main/java/org/opendaylight/topology/mlmt/parser/MultilayerAttributesParserImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-10T08:54:29Z",
+      "side": 1,
+      "message": "same as previous",
+      "range": {
+        "startLine": 50,
+        "startChar": 4,
+        "endLine": 50,
+        "endChar": 13
+      },
+      "revId": "6ea05de82c2f540a2d743a0cd5511dc78aedf731",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_42a1dd92",
+        "filename": "mlmt/parser/impl/src/main/java/org/opendaylight/topology/mlmt/parser/MultitechnologyAttributesParserImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-10T08:54:29Z",
+      "side": 1,
+      "message": "same as previous",
+      "range": {
+        "startLine": 26,
+        "startChar": 4,
+        "endLine": 26,
+        "endChar": 13
+      },
+      "revId": "6ea05de82c2f540a2d743a0cd5511dc78aedf731",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
