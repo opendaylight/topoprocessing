@@ -69,26 +69,26 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("OnDataTreeChanged event, with data tree candidates: {}", dataTreeCandidates);
         }
-        Iterator<DataTreeCandidate> iterator = dataTreeCandidates.iterator();
-        while (iterator.hasNext()) {
-            DataTreeCandidate dataTreeCandidate = iterator.next();
-            Iterator<DataTreeCandidateNode> iteratorChildNodes = dataTreeCandidate.getRootNode().getChildNodes().iterator();
-            while (iteratorChildNodes.hasNext()) {
-                DataTreeCandidateNode dataTreeCandidateNode = iteratorChildNodes.next();
-                ModificationType modificationType = dataTreeCandidateNode.getModificationType();
-                if ((modificationType.equals(ModificationType.WRITE)
-                        || modificationType.equals(ModificationType.SUBTREE_MODIFIED))
-                        && dataTreeCandidateNode.getDataAfter().isPresent()) {
-                    proceedChangeRequest(itemIdentifier.node(dataTreeCandidateNode.getIdentifier()),
-                            dataTreeCandidateNode.getDataAfter().get(),
-                            modificationType);
-                } else if (modificationType.equals(ModificationType.DELETE)) {
-                    proceedDeletionRequest(dataTreeCandidateNode.getIdentifier());
-                } else if (modificationType.equals(ModificationType.UNMODIFIED)) {
-                    continue;
+            Iterator<DataTreeCandidate> iterator = dataTreeCandidates.iterator();
+            while (iterator.hasNext()) {
+                DataTreeCandidate dataTreeCandidate = iterator.next();
+                Iterator<DataTreeCandidateNode> iteratorChildNodes = dataTreeCandidate.getRootNode().getChildNodes().iterator();
+                while (iteratorChildNodes.hasNext()) {
+                    DataTreeCandidateNode dataTreeCandidateNode = iteratorChildNodes.next();
+                    ModificationType modificationType = dataTreeCandidateNode.getModificationType();
+                    if ((modificationType.equals(ModificationType.WRITE)
+                            || modificationType.equals(ModificationType.SUBTREE_MODIFIED))
+                            && dataTreeCandidateNode.getDataAfter().isPresent()) {
+                        proceedChangeRequest(itemIdentifier.node(dataTreeCandidateNode.getIdentifier()),
+                                dataTreeCandidateNode.getDataAfter().get(),
+                                modificationType);
+                    } else if (modificationType.equals(ModificationType.DELETE)) {
+                        proceedDeletionRequest(dataTreeCandidateNode.getIdentifier());
+                    } else if (modificationType.equals(ModificationType.UNMODIFIED)) {
+                        continue;
+                    }
                 }
             }
-        }
         LOGGER.debug("DataTreeChanged event processed");
     }
 
