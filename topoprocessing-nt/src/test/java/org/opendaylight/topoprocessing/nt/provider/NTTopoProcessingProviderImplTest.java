@@ -114,7 +114,7 @@ public class NTTopoProcessingProviderImplTest {
                 Matchers.eq(LogicalDatastoreType.CONFIGURATION),
                 Matchers.eq(InstanceIdentifiers.TOPOLOGY_IDENTIFIER),
                 Matchers.any(TopologyRequestListener.class),
-                Matchers.eq(DataChangeScope.ONE));
+                Matchers.eq(DataChangeScope.SUBTREE));
 
         // close
         topoProcessingProvider.close();
