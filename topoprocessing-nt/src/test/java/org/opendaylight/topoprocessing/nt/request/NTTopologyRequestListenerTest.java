@@ -205,7 +205,7 @@ public class NTTopologyRequestListenerTest {
         removedPaths.add(yiid);
         Mockito.when(mockChange.getRemovedPaths()).thenReturn(removedPaths);
         listener.onDataChanged(mockChange);
-        Mockito.verify(mockRequestHandler).processDeletionRequest();
+        Mockito.verify(mockRequestHandler).processDeletionRequest(0);
         Assert.assertEquals("RequestHandlersMap should be empty", 0, handlers.size());
     }
 

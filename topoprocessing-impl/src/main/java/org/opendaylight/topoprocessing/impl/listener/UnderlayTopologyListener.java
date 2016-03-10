@@ -72,7 +72,8 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
         Iterator<DataTreeCandidate> iterator = dataTreeCandidates.iterator();
         while (iterator.hasNext()) {
             DataTreeCandidate dataTreeCandidate = iterator.next();
-            Iterator<DataTreeCandidateNode> iteratorChildNodes = dataTreeCandidate.getRootNode().getChildNodes().iterator();
+            Iterator<DataTreeCandidateNode> iteratorChildNodes =
+                    dataTreeCandidate.getRootNode().getChildNodes().iterator();
             while (iteratorChildNodes.hasNext()) {
                 DataTreeCandidateNode dataTreeCandidateNode = iteratorChildNodes.next();
                 ModificationType modificationType = dataTreeCandidateNode.getModificationType();
