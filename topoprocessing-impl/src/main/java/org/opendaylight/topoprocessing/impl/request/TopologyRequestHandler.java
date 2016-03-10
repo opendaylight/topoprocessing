@@ -480,6 +480,15 @@ public abstract class TopologyRequestHandler {
         }
         listeners.clear();
         writer.tearDown();
+//        try {
+//            // wait till tearDown is completed
+//            long tst = System.currentTimeMillis();
+//            writer.isDown(1000);
+//            LOG.debug("\n\n Elapsed time of tearDown:"+(System.currentTimeMillis()-tst));
+//        } catch(InterruptedException i) {
+//            // do nothing
+//        }
+
     }
 
     /**

@@ -285,6 +285,10 @@ public class TopologyWriter implements TransactionChainListener {
         scheduleWrite();
     }
 
+    public boolean isDown(int tout) throws InterruptedException {
+        return pool.awaitTermination(tout,TimeUnit.MILLISECONDS);
+    }
+
     private YangInstanceIdentifier buildDatastoreIdentifier(String itemId, CorrelationItemEnum correlationItem) {
         InstanceIdentifierBuilder builder = null;
         if (model.equals(I2rsModel.class)) {
