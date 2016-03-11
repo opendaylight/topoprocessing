@@ -183,7 +183,7 @@ public class TopologyRequestListenerTest {
         testListener.onDataChanged(changeMock);
 
         assertEquals(testListener.getTopoRequestHandlers().size(), 0);
-        verify(requestHandlerMock, times(1)).processDeletionRequest();
+        verify(requestHandlerMock, times(1)).processDeletionRequest(0);
     }
 
     /**

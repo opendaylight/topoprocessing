@@ -84,49 +84,16 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     public void onDataChanged(
             AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
         LOGGER.debug("DataChange event notification received");
-        LOGGER.debug("\nChange status:\ngetUpdatedData:"+!change.getUpdatedData().isEmpty()+"\ngetCreatedData:"+!change.getCreatedData().isEmpty()+"\ngetRemovedData():"+!change.getRemovedPaths().isEmpty());
 
         if (! change.getCreatedData().isEmpty()) {
             processCreatedData(change.getCreatedData());
         }
         if (! change.getRemovedPaths().isEmpty()) {
-            processRemovedData(change.getRemovedPaths());
+            processRemovedData(change.getRemovedPaths(),0);
         }
+
         if (! change.getUpdatedData().isEmpty()) {
-
-            for (Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : change.getUpdatedData().entrySet()) {
-                YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
-
-                NormalizedNode<?, ?> normalizedNode = entry.getValue();
-                if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)){
-                    if (isTopologyRequest(normalizedNode) || isLinkCalculation(normalizedNode)){
-                        LOGGER.debug("\n is Topology|Link");
-                        Map.Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode =
-                                nodeSerializer.fromNormalizedNode(identifier, normalizedNode);
-                        TopologyRequestHandler requestHandler =
-                                createTopologyRequestHandler(dataBroker, schemaHolder, rpcServices, fromNormalizedNode);
-//                        Correlations correlations = getCorrelations(fromNormalizedNode);
-//                        LinkComputation linkComputation = getLinkComputation(fromNormalizedNode);
-                        Correlations cor = requestHandler.getCorrelations(fromNormalizedNode);
-                        if(cor != null) {
-                            Set<YangInstanceIdentifier> key = new HashSet<>();
-                            key.add(yangInstanceIdentifier);
-                            processRemovedData(key);
-
-
-                            Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map = new HashMap<>();
-                            map.put(yangInstanceIdentifier, normalizedNode);
-                            processCreatedData(map);
-                        }
-                    } else {
-                        LOGGER.debug("Missing Correlations or Link Computation. At least one of them must be present");
-                    }
-                } else {
-                    LOGGER.debug("Node is not topology");
-                }
-            }
-//            processRemovedData(change.getUpdatedData().keySet());
-//            processCreatedData(change.getUpdatedData());
+            processUpdatedData(change.getUpdatedData());
         }
     }
 
@@ -163,12 +130,37 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
         }
     }
 
-    private void processRemovedData(Set<YangInstanceIdentifier> removedPaths) {
+    /**
+     *
+     * @param removedPaths set of removed paths
+     * @param timeOut time in ms to wait for remove to finish, if timeout == 0 there is no waiting
+     */
+    private void processRemovedData(Set<YangInstanceIdentifier> removedPaths,int timeOut) {
         LOGGER.debug("Processing removed data changes");
         for (YangInstanceIdentifier yangInstanceIdentifier : removedPaths) {
             TopologyRequestHandler topologyRequestHandler = topoRequestHandlers.remove(yangInstanceIdentifier);
             if (null != topologyRequestHandler) {
-                topologyRequestHandler.processDeletionRequest();
+                topologyRequestHandler.processDeletionRequest(timeOut);
+            }
+        }
+    }
+
+    private void processUpdatedData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
+        LOGGER.debug("Processing updated data changes");
+        for (Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : change.entrySet()) {
+            YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
+            NormalizedNode<?, ?> normalizedNode = entry.getValue();
+
+            if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)){
+                if (isTopologyRequest(normalizedNode) || isLinkCalculation(normalizedNode)){
+                        Set<YangInstanceIdentifier> key = new HashSet<>();
+                        key.add(yangInstanceIdentifier);
+                        processRemovedData(key,250);
+
+                        Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map = new HashMap<>();
+                        map.put(yangInstanceIdentifier, normalizedNode);
+                        processCreatedData(map);
+                }
             }
         }
     }

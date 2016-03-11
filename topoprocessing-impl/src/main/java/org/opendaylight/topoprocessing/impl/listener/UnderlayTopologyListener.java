@@ -69,7 +69,6 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("OnDataTreeChanged event, with data tree candidates: {}", dataTreeCandidates);
         }
-
             Iterator<DataTreeCandidate> iterator = dataTreeCandidates.iterator();
             while (iterator.hasNext()) {
                 DataTreeCandidate dataTreeCandidate = iterator.next();
@@ -90,7 +89,6 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
                     }
                 }
             }
-
         LOGGER.debug("DataTreeChanged event processed");
     }
 

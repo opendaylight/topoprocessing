@@ -285,9 +285,15 @@ public class TopologyWriter implements TransactionChainListener {
         scheduleWrite();
     }
 
-    public boolean isDown(int tout) throws InterruptedException {
-        return pool.awaitTermination(tout,TimeUnit.MILLISECONDS);
+    /**
+     * Wait until all threads/writes are finished
+     * @param timeOut timeout to wait for threads/writes to finish in ms
+     * @throws InterruptedException
+     */
+    public void waitForTearDownCompletion(int timeOut)throws InterruptedException {
+        pool.awaitTermination(timeOut,TimeUnit.MILLISECONDS);
     }
+
 
     private YangInstanceIdentifier buildDatastoreIdentifier(String itemId, CorrelationItemEnum correlationItem) {
         InstanceIdentifierBuilder builder = null;
