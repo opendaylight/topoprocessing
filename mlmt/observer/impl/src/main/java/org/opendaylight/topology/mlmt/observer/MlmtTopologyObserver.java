@@ -23,9 +23,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.mlmt.topology.obse
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypesBuilder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implements AutoCloseable,
         MlmtTopologyObserverRuntimeMXBean {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MlmtTopologyObserver.class);
     private MlmtOperationProcessor processor;
     private Thread thread;
 

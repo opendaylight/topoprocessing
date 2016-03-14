@@ -48,12 +48,9 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNode;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 
 public class MlmtTopologyNotifyTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MlmtTopologyNotifyTest.class);
     private static final String MLMT1 = "mlmt:1";
     private Thread thread;
     private InstanceIdentifier<Topology> mlmtTopologyInstanceId;
@@ -101,10 +98,11 @@ public class MlmtTopologyNotifyTest {
     public void setUp() throws Exception {
         TopologyId mlmtTopologyId = new TopologyId(MLMT1);
         TopologyKey mlmtTopologyKey = new TopologyKey(Preconditions.checkNotNull(mlmtTopologyId));
-        mlmtTopologyInstanceId = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, mlmtTopologyKey);
+        mlmtTopologyInstanceId =
+                InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, mlmtTopologyKey);
 
         listener = new UpdateListener();
-        mlmtTopologyNotify = new MlmtTopologyNotify(listener, LOG);
+        mlmtTopologyNotify = new MlmtTopologyNotify(listener);
         thread = new Thread(mlmtTopologyNotify);
         thread.setDaemon(true);
         thread.setName("MlmtTopologyNotifyTest");
@@ -134,7 +132,8 @@ public class MlmtTopologyNotifyTest {
         return tpBuilder;
     }
 
-    private String buildLinkName(String sourceNodeName, String sourceTpName, String destNodeName, String destTpName) {
+    private String buildLinkName(String sourceNodeName, String sourceTpName,
+            String destNodeName, String destTpName) {
         return sourceNodeName + "&" + sourceTpName + "&" + destNodeName + "&" + destTpName;
     }
 

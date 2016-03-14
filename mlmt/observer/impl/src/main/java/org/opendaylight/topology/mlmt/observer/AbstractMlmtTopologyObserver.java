@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObserver, MlmtTopologyProvider {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(AbstractMlmtTopologyObserver.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractMlmtTopologyObserver.class);
     protected InstanceIdentifier<Topology> mlmtTopologyId;
     protected DataBroker dataBroker;
     protected MlmtTopologyBuilder mlmtTopologyBuilder;

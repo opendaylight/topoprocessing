@@ -21,7 +21,7 @@ import org.opendaylight.topology.mlmt.utility.MlmtDataChangeObserver;
 
 public class MlmtDataChangeEventListener implements DataChangeListener, AutoCloseable {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(MlmtDataChangeEventListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MlmtDataChangeEventListener.class);
     private LogicalDatastoreType storageType;
     private InstanceIdentifier<? extends DataObject> path;
     private ListenerRegistration<DataChangeListener> listenerRegistration;

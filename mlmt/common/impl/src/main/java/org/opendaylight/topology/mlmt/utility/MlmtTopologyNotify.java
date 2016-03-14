@@ -12,9 +12,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MlmtTopologyNotify implements Runnable {
-    private Logger log;
+
+    private static final Logger LOG = LoggerFactory.getLogger(MlmtTopologyNotify.class);
     private final BlockingQueue<MlmtTopologyUpdate> notifyQ;
     private static final int NOTIFY_Q_LENGTH_DEFAULT = 54;
     private static final int THREAD_SLEEP = 100;
@@ -22,12 +24,11 @@ public class MlmtTopologyNotify implements Runnable {
     private MlmtTopologyUpdateListener listener;
     private volatile boolean finishing = false;
 
-    public MlmtTopologyNotify(final MlmtTopologyUpdateListener listener, final Logger logger) {
-        this(listener, logger, NOTIFY_Q_LENGTH_DEFAULT);
+    public MlmtTopologyNotify(final MlmtTopologyUpdateListener listener) {
+        this(listener, NOTIFY_Q_LENGTH_DEFAULT);
     }
 
-    public MlmtTopologyNotify(final MlmtTopologyUpdateListener listener, final Logger logger, int queueLength) {
-        this.log = logger;
+    public MlmtTopologyNotify(final MlmtTopologyUpdateListener listener, final int queueLength) {
         this.listener = listener;
         this.notifyQ = new LinkedBlockingQueue<MlmtTopologyUpdate>(queueLength);
      }
@@ -46,10 +47,10 @@ public class MlmtTopologyNotify implements Runnable {
                 // Lets sleep for sometime to allow aggregation of event
                 Thread.sleep(THREAD_SLEEP);
             } catch (final InterruptedException e) {
-                log.error("MlmtTopologyNotify Thread interrupted", e);
+                LOG.error("MlmtTopologyNotify Thread interrupted", e);
                 finishing = true;
             } catch (final Exception e) {
-                log.error("MlmtTopologyNotify Thread exception", e);
+                LOG.error("MlmtTopologyNotify Thread exception", e);
             }
         }
         cleanNotifyQueue();
@@ -61,4 +62,3 @@ public class MlmtTopologyNotify implements Runnable {
         }
     }
 }
-
