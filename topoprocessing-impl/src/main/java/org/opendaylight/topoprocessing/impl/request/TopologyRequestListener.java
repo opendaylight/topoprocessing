@@ -114,8 +114,6 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
                 } else {
                     LOGGER.debug("Missing Correlations or Link Computation. At least one of them must be present");
                 }
-            } else {
-                LOGGER.debug("Node is not topology");
             }
         }
     }
