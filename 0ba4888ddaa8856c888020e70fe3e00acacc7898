@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_d782c0c6",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NotificationInterConnector.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-15T09:18:49Z",
+      "side": 1,
+      "message": "put this to QNames class",
+      "range": {
+        "startLine": 38,
+        "startChar": 4,
+        "endLine": 39,
+        "endChar": 105
+      },
+      "revId": "0ba4888ddaa8856c888020e70fe3e00acacc7898",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_d7d000cb",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NotificationInterConnector.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-15T09:18:49Z",
+      "side": 1,
+      "message": "remove commented line",
+      "range": {
+        "startLine": 135,
+        "startChar": 20,
+        "endLine": 135,
+        "endChar": 75
+      },
+      "revId": "0ba4888ddaa8856c888020e70fe3e00acacc7898",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
