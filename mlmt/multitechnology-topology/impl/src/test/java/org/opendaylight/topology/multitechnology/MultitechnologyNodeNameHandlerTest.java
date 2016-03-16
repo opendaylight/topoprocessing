@@ -25,9 +25,7 @@ import org.junit.AfterClass;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -66,6 +64,7 @@ public class MultitechnologyNodeNameHandlerTest extends AbstractDataBrokerTest {
     private final Object waitObject = new Object();
     private static final String MLMT = "mlmt:1";
     private static final String EXAMPLE = "example:1";
+    private static final String NODENAMEFIELD = "NODE-NAME";
     private DataBroker dataBroker;
     private Thread thread;
     private MlmtOperationProcessor processor;
@@ -175,17 +174,33 @@ public class MultitechnologyNodeNameHandlerTest extends AbstractDataBrokerTest {
 }
 
     @Test
-    public void onNodeNameTest() {
+    public void onNodeNameTest() throws Exception {
         String nodeName = "node:1";
         NodeId nodeId = new NodeId(nodeName);
         NodeKey nodeKey = new NodeKey(nodeId);
 
         MultitechnologyNodeNameHandler.putNodeName(dataBroker, processor,
-                mlmtTopologyIid, nodeKey, nodeName, "NODE-NAME");
+                mlmtTopologyIid, nodeKey, NODENAMEFIELD, nodeName);
+
+        synchronized (waitObject) {
+            waitObject.wait();
+        }
+
+        String rxNodeName = MultitechnologyNodeNameHandler.getNodeName(dataBroker, processor,
+                mlmtTopologyIid, nodeKey, NODENAMEFIELD);
+        assertEquals(nodeName, rxNodeName);
 
         nodeName = "node:2";
         MultitechnologyNodeNameHandler.putNodeName(dataBroker, processor,
-                mlmtTopologyIid, nodeKey, nodeName, "NODE-NAME");
+                mlmtTopologyIid, nodeKey, NODENAMEFIELD, nodeName);
+
+        synchronized (waitObject) {
+            waitObject.wait();
+        }
+
+        rxNodeName = MultitechnologyNodeNameHandler.getNodeName(dataBroker, processor,
+                mlmtTopologyIid, nodeKey, NODENAMEFIELD);
+        assertEquals(nodeName, rxNodeName);
     }
 
     @After
