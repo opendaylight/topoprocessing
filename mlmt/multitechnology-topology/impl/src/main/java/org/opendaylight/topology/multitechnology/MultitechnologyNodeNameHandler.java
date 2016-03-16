@@ -33,6 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.op
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.MtOpaqueNodeAttributeValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.MtOpaqueNodeAttributeValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.Controller;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.opaque.attribute.value.basic.attribute.types.StringValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.opaque.attribute.value.BasicAttributeTypes;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.Uri;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -48,15 +50,14 @@ public class MultitechnologyNodeNameHandler {
 
     public static void putNodeName(final DataBroker dataProvider, final MlmtOperationProcessor processor,
             final InstanceIdentifier<Topology> topologyInstanceId, final NodeKey nodeKey,
-            final String nodeName, final String nodeNameField) {
+            final String nodeNameField, final String nodeName) {
         StringValueBuilder stringValueBuilder = new StringValueBuilder();
         stringValueBuilder.setStringValue(nodeName);
         MtOpaqueNodeAttributeValueBuilder mtOpaqueNodeAttributeValueBuilder =
                 new MtOpaqueNodeAttributeValueBuilder();
         mtOpaqueNodeAttributeValueBuilder.setBasicAttributeTypes(stringValueBuilder.build());
 
-        final String path = nodeNameField;
-        final Uri uri = new Uri(path);
+        final Uri uri = new Uri(nodeNameField);
         final AttributeKey attributeKey = new AttributeKey(uri);
         final InstanceIdentifier<Attribute> instanceAttributeId = topologyInstanceId.child(Node.class, nodeKey)
                 .augmentation(MtInfoNode.class).child(Attribute.class, attributeKey);
@@ -104,5 +105,44 @@ public class MultitechnologyNodeNameHandler {
             LOG.error("MultitechnologyNodeNameHandler.putNodeName execution exception", e);
         }
     }
-}
 
+    public static String getNodeName(final DataBroker dataProvider, final MlmtOperationProcessor processor,
+            final InstanceIdentifier<Topology> topologyInstanceId, final NodeKey nodeKey,
+            final String nodeNameField) {
+        final Uri uri = new Uri(nodeNameField);
+        final AttributeKey attributeKey = new AttributeKey(uri);
+        final InstanceIdentifier<Attribute> instanceAttributeId = topologyInstanceId.child(Node.class, nodeKey)
+                .augmentation(MtInfoNode.class).child(Attribute.class, attributeKey);
+
+        final InstanceIdentifier<Topology> targetTopologyId = topologyInstanceId;
+
+        try {
+            final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
+            final Optional<Attribute> sourceAttributeObject =
+                rx.read(LogicalDatastoreType.OPERATIONAL, instanceAttributeId).get();
+                if (sourceAttributeObject == null || !sourceAttributeObject.isPresent()
+                        || sourceAttributeObject.get() == null) {
+                    return null;
+                }
+                final Value value = sourceAttributeObject.get().getValue();
+                if (value == null) {
+                    return null;
+                }
+                final MtOpaqueNodeAttributeValue mtOpaqueNodeAttributeValue =
+                            value.getAugmentation(MtOpaqueNodeAttributeValue.class);
+                if (mtOpaqueNodeAttributeValue == null) {
+                    return null;
+                }
+                final BasicAttributeTypes basicAttributeTypes = mtOpaqueNodeAttributeValue.getBasicAttributeTypes();
+                if (basicAttributeTypes instanceof StringValue) {
+                    return ((StringValue)basicAttributeTypes).getStringValue();
+                }
+        } catch (final InterruptedException e) {
+            LOG.error("MultitechnologyNodeNameHandler.getNodeName interrupted exception", e);
+        } catch (final ExecutionException e) {
+            LOG.error("MultitechnologyNodeNameHandler.getNodeName execution exception", e);
+        }
+
+        return null;
+    }
+}
