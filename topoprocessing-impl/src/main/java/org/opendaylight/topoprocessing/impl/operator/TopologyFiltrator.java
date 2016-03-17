@@ -29,7 +29,7 @@ public class TopologyFiltrator implements TopologyOperator {
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyFiltrator.class);
 
     private List<Filtrator> filtrators = new ArrayList<>();
-    protected TopologyManager manager;
+    protected Manager manager;
     private TopoStoreProvider topoStoreProvider;
 
     public TopologyFiltrator(TopoStoreProvider topoStoreProvider) {
@@ -93,8 +93,8 @@ public class TopologyFiltrator implements TopologyOperator {
     }
 
     @Override
-    public void setTopologyManager(TopologyManager topologyManager) {
-        this.manager = topologyManager;
+    public void setTopologyManager(Manager manager) {
+        this.manager = manager;
     }
 
     /**

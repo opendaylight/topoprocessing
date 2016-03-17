@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public abstract class TopologyAggregator implements TopologyOperator {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyAggregator.class);
-    protected TopologyManager topologyManager;
+    protected Manager manager;
     private ScriptEngine scriptEngine;
     private String script;
     private TopoStoreProvider topoStoreProvider;
@@ -51,11 +51,11 @@ public abstract class TopologyAggregator implements TopologyOperator {
     }
 
     /**
-     * @param topologyManager handles aggregated nodes from all correlations
+     * @param manager handles aggregated nodes from all correlations
      */
     @Override
-    public void setTopologyManager(TopologyManager topologyManager) {
-        this.topologyManager = topologyManager;
+    public void setTopologyManager(Manager manager) {
+        this.manager = manager;
     }
 
     @Override
@@ -104,7 +104,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
             itemsToAggregate.add(newItem);
             OverlayItem overlayItem = new OverlayItem(itemsToAggregate, newItem.getCorrelationItem());
             newItem.setOverlayItem(overlayItem);
-            topologyManager.addOverlayItem(overlayItem);
+            manager.addOverlayItem(overlayItem);
         }
     }
 
@@ -172,7 +172,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
             OverlayItem overlayItem = new OverlayItem(nodesToAggregate, topoStoreItem.getCorrelationItem());
             topoStoreItem.setOverlayItem(overlayItem);
             newItem.setOverlayItem(overlayItem);
-            topologyManager.addOverlayItem(overlayItem);
+            manager.addOverlayItem(overlayItem);
             return;
         }
         LOG.debug("Adding physical node to existing Logical Node");
@@ -180,7 +180,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
         OverlayItem overlayItem = topoStoreItem.getOverlayItem();
         newItem.setOverlayItem(overlayItem);
         overlayItem.addUnderlayItem(newItem);
-        topologyManager.updateOverlayItem(overlayItem);
+        manager.updateOverlayItem(overlayItem);
     }
 
     @Override
@@ -210,10 +210,10 @@ public abstract class TopologyAggregator implements TopologyOperator {
                 for (UnderlayItem remainingNode : underlayItems) {
                     remainingNode.setOverlayItem(null);
                 }
-                topologyManager.removeOverlayItem(overlayItemIdentifier);
+                manager.removeOverlayItem(overlayItemIdentifier);
             } else {
                 LOG.debug("Removing underlay item from overlay item");
-                topologyManager.updateOverlayItem(overlayItemIdentifier);
+                manager.updateOverlayItem(overlayItemIdentifier);
             }
         }
     }
@@ -245,7 +245,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
                             checkForPossibleAggregationOfLinks(updatedLink, underlayLink);
                         } else if (underlayItem.getOverlayItem() != null) {
                             // in case that only Link value was changed
-                            topologyManager.updateOverlayItem(underlayItem.getOverlayItem());
+                            manager.updateOverlayItem(underlayItem.getOverlayItem());
                         }
                         break;
                     }
@@ -261,7 +261,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
                         checkForPossibleAggregation(underlayItem, topologyId);
                     } else if (underlayItem.getOverlayItem() != null) {
                         // in case that only Node value was changed
-                        topologyManager.updateOverlayItem(underlayItem.getOverlayItem());
+                        manager.updateOverlayItem(underlayItem.getOverlayItem());
                     }
                     break;
                 }

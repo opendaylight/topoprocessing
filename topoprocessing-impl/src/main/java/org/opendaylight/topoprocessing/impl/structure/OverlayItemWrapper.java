@@ -11,6 +11,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
+import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 
 /**
  * @author martin.uhlir
@@ -19,6 +20,7 @@ import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 public class OverlayItemWrapper {
     private Queue<OverlayItem> overlayItems = new ConcurrentLinkedQueue<>();
     private String id;
+    private MapEntryNode aggregatedTerminationPoints;
 
     /**
      * Constructor
@@ -28,6 +30,7 @@ public class OverlayItemWrapper {
     public OverlayItemWrapper(String itemId, OverlayItem overlayItem) {
         this.id = itemId;
         addOverlayItem(overlayItem);
+        aggregatedTerminationPoints = null;
     }
 
     /**
@@ -63,5 +66,13 @@ public class OverlayItemWrapper {
      */
     public void setId(String wrapperId) {
         this.id = wrapperId;
+    }
+
+    public MapEntryNode getAggregatedTerminationPoints() {
+        return aggregatedTerminationPoints;
+    }
+
+    public void setAggregatedTerminationPoints(MapEntryNode aggregatedTerminationPoints) {
+        this.aggregatedTerminationPoints = aggregatedTerminationPoints;
     }
 }
