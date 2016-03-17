@@ -48,6 +48,8 @@ public final class InstanceIdentifiers {
     public static final YangInstanceIdentifier NT_TP_IDENTIFIER = YangInstanceIdentifier.of(org.opendaylight.yang.gen
             .v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node
             .TerminationPoint.QNAME);
+    public static final YangInstanceIdentifier NT_TP_REF_IDENTIFIER =
+                    YangInstanceIdentifier.of(TopologyQNames.TP_REF);
     //I2RS
     /** I2RS model {@link Network} (MapNode) identifier */
     public static final YangInstanceIdentifier I2RS_NETWORK_IDENTIFIER =
