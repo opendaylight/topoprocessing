@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a42497e_442c224b",
+        "filename": "mlmt/multitechnology-topology/impl/src/main/java/org/opendaylight/topology/multitechnology/MultitechnologyNodeNameHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-17T08:17:59Z",
+      "side": 1,
+      "message": "this is not necessary. If isPresent() is true, then get() can\u0027t return null",
+      "range": {
+        "startLine": 124,
+        "startChar": 27,
+        "endLine": 124,
+        "endChar": 62
+      },
+      "revId": "676dc36b10695c27371e905f5366d17f11f7c408",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
