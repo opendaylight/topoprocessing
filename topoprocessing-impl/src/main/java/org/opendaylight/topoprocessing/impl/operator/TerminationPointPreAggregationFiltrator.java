@@ -63,7 +63,7 @@ public class TerminationPointPreAggregationFiltrator extends PreAggregationFiltr
             node = filterTerminationPoints(node, (MapNode) tpMapNodeOpt.get());
             createdEntry.setItem(node);
         }
-        aggregator.processCreatedChanges(identifier, createdEntry, topologyId);
+        operator.processCreatedChanges(identifier, createdEntry, topologyId);
     }
 
     @Override
@@ -81,9 +81,9 @@ public class TerminationPointPreAggregationFiltrator extends PreAggregationFiltr
             updatedEntry.setItem(newNode);
         }
         if (olditem == null) {
-            aggregator.processCreatedChanges(identifier, updatedEntry, topologyId);
+            operator.processCreatedChanges(identifier, updatedEntry, topologyId);
         } else {
-            aggregator.processUpdatedChanges(identifier, updatedEntry, topologyId);
+            operator.processUpdatedChanges(identifier, updatedEntry, topologyId);
         }
     }
 

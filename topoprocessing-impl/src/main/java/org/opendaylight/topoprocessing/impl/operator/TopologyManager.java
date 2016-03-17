@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author martin.uhlir
  *
  */
-public class TopologyManager implements DOMRpcAvailabilityListener {
+public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyManager.class);
 
@@ -79,25 +79,28 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
      * - new overlay item wrapper
      * @param newOverlayItem - OverlayItem which shall be put into wrapper
      */
+    @Override
     public void addOverlayItem(OverlayItem newOverlayItem) {
         if (newOverlayItem != null && !newOverlayItem.getUnderlayItems().isEmpty()) {
-            for (UnderlayItem newUnderlayItem : newOverlayItem.getUnderlayItems()) {
-                for (OverlayItemWrapper wrapper : getWrappersList(newOverlayItem.getCorrelationItem())) {
-                    for (OverlayItem overlayItemFromWrapper : wrapper.getOverlayItems()) {
-                        for (UnderlayItem underlayItemFromWrapper : overlayItemFromWrapper.getUnderlayItems()) {
-                            if (underlayItemFromWrapper.getItemId().equals(newUnderlayItem.getItemId())
-                                    && underlayItemFromWrapper.getTopologyId()
-                                            .equals(newUnderlayItem.getTopologyId())) {
-                                // update existing wrapper
-                                wrapper.addOverlayItem(newOverlayItem);
-                                writer.writeItem(wrapper, newOverlayItem.getCorrelationItem());
-                                registerOverlayRpcs(wrapper, newOverlayItem);
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
+            OverlayItemWrapper wrapper = findOrCreateWrapper(newOverlayItem);
+            writer.writeItem(wrapper, newOverlayItem.getCorrelationItem());
+        }
+    }
+
+
+    /**
+     * Adds new overlay item into existing wrapper or creates one
+     * @param newOverlayItem OverlayItem which shall be put into wrapper
+     * @return existing or new wrapper
+     */
+    public OverlayItemWrapper findOrCreateWrapper(OverlayItem newOverlayItem) {
+        OverlayItemWrapper wrapper = findWrapperWithUnderlayItem(newOverlayItem.getUnderlayItems(),
+                        newOverlayItem.getCorrelationItem());
+        if(wrapper != null) {
+            wrapper.addOverlayItem(newOverlayItem);
+            registerOverlayRpcs(wrapper, newOverlayItem);
+            return wrapper;
+        } else {
             // create new overlay item wrapper with unique id and add the overlay item into it
             String wrapperId;
             if (newOverlayItem.getCorrelationItem().equals(CorrelationItemEnum.TerminationPoint)) {
@@ -107,38 +110,35 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
             }
             OverlayItemWrapper newWrapper = new OverlayItemWrapper(wrapperId, newOverlayItem);
             getWrappersList(newOverlayItem.getCorrelationItem()).add(newWrapper);
-            writer.writeItem(newWrapper, newOverlayItem.getCorrelationItem());
             registerOverlayRpcs(newWrapper, newOverlayItem);
+            return newWrapper;
         }
+    }
+
+    public void writeWrapper(OverlayItemWrapper wrapper, CorrelationItemEnum correlationItem) {
+        writer.writeItem(wrapper, correlationItem);
     }
 
     /**
      * @param overlayItemIdentifier OverlayItem with new changes to update
      */
+    @Override
     public void updateOverlayItem(OverlayItem overlayItemIdentifier) {
-        for (OverlayItemWrapper wrapper : getWrappersList(overlayItemIdentifier.getCorrelationItem())) {
-            for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
-                if (overlayItem.equals(overlayItemIdentifier)) {
-                    writer.writeItem(wrapper, overlayItemIdentifier.getCorrelationItem());
-                    registerOverlayRpcs(wrapper, overlayItem);
-                }
-            }
+        OverlayItemWrapper wrapper = findWrapper(overlayItemIdentifier);
+        if(wrapper != null) {
+            writer.writeItem(wrapper, overlayItemIdentifier.getCorrelationItem());
+            registerOverlayRpcs(wrapper, overlayItemIdentifier);
         }
     }
 
     /**
      * @param overlayItemIdentifier OverlayItem to remove
      */
+    @Override
     public void removeOverlayItem(OverlayItem overlayItemIdentifier) {
-        OverlayItemWrapper foundWrapper = null;
-        for (OverlayItemWrapper wrapper : getWrappersList(overlayItemIdentifier.getCorrelationItem())) {
-            if (wrapper.getOverlayItems().contains(overlayItemIdentifier)) {
-                wrapper.getOverlayItems().remove(overlayItemIdentifier);
-                foundWrapper = wrapper;
-                break;
-            }
-        }
+        OverlayItemWrapper foundWrapper = findWrapper(overlayItemIdentifier);
         if (foundWrapper != null) {
+            foundWrapper.getOverlayItems().remove(overlayItemIdentifier);
             if (foundWrapper.getOverlayItems().size() == 0) {
                 // remove overlay item wrapper as well
                 writer.deleteItem(foundWrapper, overlayItemIdentifier.getCorrelationItem());
@@ -147,6 +147,43 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
                 writer.writeItem(foundWrapper, overlayItemIdentifier.getCorrelationItem());
             }
         }
+    }
+
+    /**
+     * Tries to find wrapper containing OverlayItem in existing wrapper.
+     * @param overlayItemIdentifier
+     * @return wrapper or null if wrapper is not found
+     */
+    public OverlayItemWrapper findWrapper(OverlayItem overlayItemIdentifier) {
+        for (OverlayItemWrapper wrapper : getWrappersList(overlayItemIdentifier.getCorrelationItem())) {
+            if (wrapper.getOverlayItems().contains(overlayItemIdentifier)) {
+                return wrapper;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Tries to find wrapper containing AT LEAST ONE UnderlayItem from collection
+     * @param underlayItems
+     * @return wrapper or null if wrapper is not found
+     */
+    private OverlayItemWrapper findWrapperWithUnderlayItem(Collection<UnderlayItem> underlayItems,
+                    CorrelationItemEnum correlationItem) {
+        for (UnderlayItem underlayItem : underlayItems) {
+            for (OverlayItemWrapper wrapper : getWrappersList(correlationItem)) {
+                for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
+                    for (UnderlayItem underlayItemFromWrapper : overlayItem.getUnderlayItems()) {
+                        if (underlayItemFromWrapper.getItemId().equals(underlayItem.getItemId())
+                                        && underlayItemFromWrapper.getTopologyId()
+                                                .equals(underlayItem.getTopologyId())) {
+                            return wrapper;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
