@@ -56,15 +56,21 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
+
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MultitechnologyNodeNameHandlerTest extends AbstractDataBrokerTest {
+public class MultitechnologyNameHandlerTest extends AbstractDataBrokerTest {
 
     private final Object waitObject = new Object();
     private static final String MLMT = "mlmt:1";
     private static final String EXAMPLE = "example:1";
     private static final String NODENAMEFIELD = "NODE-NAME";
+    private static final String TPNAMEFIELD = "TP-NAME";
     private DataBroker dataBroker;
     private Thread thread;
     private MlmtOperationProcessor processor;
@@ -133,8 +139,8 @@ public class MultitechnologyNodeNameHandlerTest extends AbstractDataBrokerTest {
          * It is necessary to create the network-topology containers in
          * both configuration and operational data storage
          */
-        NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
-        NetworkTopology networkTopology = nb.build();
+        final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
+        final NetworkTopology networkTopology = nb.build();
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
         rwTx.put(LogicalDatastoreType.OPERATIONAL,
                 InstanceIdentifier.create(NetworkTopology.class), networkTopology);
@@ -157,27 +163,40 @@ public class MultitechnologyNodeNameHandlerTest extends AbstractDataBrokerTest {
         Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
         assertNotNull(optional);
         assertTrue("Operational mlmt:1 topology ", optional.isPresent());
-        Topology rxTopology = optional.get();
+        final Topology rxTopology = optional.get();
         assertNotNull(rxTopology);
 
-        NodeBuilder nodeBuilder = new NodeBuilder();
-        String nodeName = "node:1";
-        NodeId nodeId = new NodeId(nodeName);
+        final NodeBuilder nodeBuilder = new NodeBuilder();
+        final String nodeName = "node:1";
+        final NodeId nodeId = new NodeId(nodeName);
         nodeBuilder.setNodeId(nodeId);
-        NodeKey nodeKey = new NodeKey(nodeId);
+        final NodeKey nodeKey = new NodeKey(nodeId);
         nodeBuilder.setKey(nodeKey);
         InstanceIdentifier<Node> nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
 
         rwTx = dataBroker.newWriteOnlyTransaction();
         rwTx.put(LogicalDatastoreType.OPERATIONAL, nodeIid, nodeBuilder.build());
         assertCommit(rwTx.submit());
+
+        final String tpName = "tp:1";
+        final TpId tpId = new TpId(tpName);
+        final TerminationPointKey tpKey = new TerminationPointKey(tpId);
+        final TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
+        tpBuilder.setKey(tpKey);
+        tpBuilder.setTpId(tpId);
+        final InstanceIdentifier<TerminationPoint> instanceId = mlmtTopologyIid
+                .child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
+
+        rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, instanceId, tpBuilder.build());
+        assertCommit(rwTx.submit());
 }
 
     @Test
     public void onNodeNameTest() throws Exception {
         String nodeName = "node:1";
-        NodeId nodeId = new NodeId(nodeName);
-        NodeKey nodeKey = new NodeKey(nodeId);
+        final NodeId nodeId = new NodeId(nodeName);
+        final NodeKey nodeKey = new NodeKey(nodeId);
 
         MultitechnologyNodeNameHandler.putNodeName(dataBroker, processor,
                 mlmtTopologyIid, nodeKey, NODENAMEFIELD, nodeName);
@@ -201,6 +220,40 @@ public class MultitechnologyNodeNameHandlerTest extends AbstractDataBrokerTest {
         rxNodeName = MultitechnologyNodeNameHandler.getNodeName(dataBroker, processor,
                 mlmtTopologyIid, nodeKey, NODENAMEFIELD);
         assertEquals(nodeName, rxNodeName);
+    }
+
+    @Test
+    public void onTpNameTest() throws Exception {
+        String nodeName = "node:1";
+        final NodeId nodeId = new NodeId(nodeName);
+        final NodeKey nodeKey = new NodeKey(nodeId);
+
+        String tpName = "tp:1";
+        final TpId tpId = new TpId(tpName);
+        final TerminationPointKey tpKey = new TerminationPointKey(tpId);
+
+        MultitechnologyTpNameHandler.putTpName(dataBroker, processor,
+                mlmtTopologyIid, nodeKey, tpKey, TPNAMEFIELD, tpName);
+
+        synchronized (waitObject) {
+            waitObject.wait();
+        }
+
+        String rxTpName = MultitechnologyTpNameHandler.getTpName(dataBroker, processor,
+                mlmtTopologyIid, nodeKey, tpKey, TPNAMEFIELD);
+        assertEquals(tpName, rxTpName);
+
+        tpName = "tp:2";
+        MultitechnologyTpNameHandler.putTpName(dataBroker, processor,
+                mlmtTopologyIid, nodeKey, tpKey, TPNAMEFIELD, tpName);
+
+        synchronized (waitObject) {
+            waitObject.wait();
+        }
+
+        rxTpName = MultitechnologyTpNameHandler.getTpName(dataBroker, processor,
+                mlmtTopologyIid, nodeKey, tpKey, TPNAMEFIELD);
+        assertEquals(tpName, rxTpName);
     }
 
     @After
