@@ -68,43 +68,54 @@ public class I2RSNodeTranslator implements NodeTranslator{
                     supportingNodes.withChild(ImmutableNodes.mapEntryBuilder().withNodeIdentifier(
                             new YangInstanceIdentifier.NodeIdentifierWithPredicates(
                                     SupportingNode.QNAME, keyValues)).build());
-                    // prepare termination points
-                    Class<? extends Model> model = I2rsModel.class;
-                    Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
-                            itemNode, InstanceIdentifiers.I2RS_TP_IDENTIFIER);
-                    if (!terminationPointMapNode.isPresent()) {
-                        model = NetworkTopologyModel.class;
-                        terminationPointMapNode = NormalizedNodes.findNode(itemNode,
-                                InstanceIdentifiers.NT_TP_IDENTIFIER);
+                    if (wrapper.getAggregatedTerminationPoints() == null) {
+                        // prepare termination points
+                        Class<? extends Model> model = I2rsModel.class;
+                        Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
+                                itemNode, InstanceIdentifiers.I2RS_TP_IDENTIFIER);
+                        if (!terminationPointMapNode.isPresent()) {
+                            model = NetworkTopologyModel.class;
+                            terminationPointMapNode = NormalizedNodes.findNode(itemNode,
+                                    InstanceIdentifiers.NT_TP_IDENTIFIER);
+                        }
+                        if (terminationPointMapNode.isPresent()) {
+                            /*
+                            if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint
+                                    && model.equals(I2rsModel.class)) {
+                                Collection<MapEntryNode> terminationPointMapEntries =
+                                        ((MapNode) terminationPointMapNode.get()).getValue();
+                                for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
+                                    terminationPoints.addChild(terminationPointMapEntry);
+                                }
+                            } else {
+                            */
+                                List<MapEntryNode> terminationPointEntries = createTerminationPoint(
+                                        (MapNode) terminationPointMapNode.get(), underlayItem.getTopologyId(),
+                                        underlayItem.getItemId(), idGenerator, model);
+                                for (MapEntryNode terminationPointMapEntry : terminationPointEntries) {
+                                    terminationPoints.addChild(terminationPointMapEntry);
+                                }
+                            //}
                     }
-                    if (terminationPointMapNode.isPresent()) {
-                        /*
-                        if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint
-                                && model.equals(I2rsModel.class)) {
-                            Collection<MapEntryNode> terminationPointMapEntries =
-                                    ((MapNode) terminationPointMapNode.get()).getValue();
-                            for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
-                                terminationPoints.addChild(terminationPointMapEntry);
-                            }
-                        } else {
-                        */
-                            List<MapEntryNode> terminationPointEntries = createTerminationPoint(
-                                    (MapNode) terminationPointMapNode.get(), underlayItem.getTopologyId(),
-                                    underlayItem.getItemId(), idGenerator, model);
-                            for (MapEntryNode terminationPointMapEntry : terminationPointEntries) {
-                                terminationPoints.addChild(terminationPointMapEntry);
-                            }
-                        //}
                     }
                 }
             }
         }
 
-        return ImmutableNodes
-                .mapEntryBuilder(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, wrapper.getId())
-                .withChild(supportingNodes.build())
-                .withChild(terminationPoints.build())
-                .build();
+
+        if (wrapper.getAggregatedTerminationPoints() == null) {
+            return ImmutableNodes
+                    .mapEntryBuilder(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, wrapper.getId())
+                    .withChild(supportingNodes.build())
+                    .withChild(terminationPoints.build())
+                    .build();
+        } else {
+            return ImmutableNodes
+                    .mapEntryBuilder(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, wrapper.getId())
+                    .withChild(supportingNodes.build())
+                    .withChild(wrapper.getAggregatedTerminationPoints())
+                    .build();
+        }
     }
 
     private List<MapEntryNode> createTerminationPoint(MapNode terminationPoints, String topologyId, String nodeId,

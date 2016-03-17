@@ -34,6 +34,7 @@ import org.opendaylight.topoprocessing.impl.operator.TerminationPointPreAggregat
 import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TerminationPointFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.LinkFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.NodeAndTPAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
@@ -182,17 +183,24 @@ public abstract class TopologyRequestHandler {
         try {
             LOG.debug("Processing correlation configuration");
             List<Correlation> correlationList = correlations.getCorrelation();
+
+            boolean isAggregationOfNodesAndTp = aggregationOfNodesAndTp(correlationList) ;
+
             //this allow only one correlation of links in request
             for (Correlation correlation : correlationList) {
                 if (FiltrationAggregation.class.equals(correlation.getType())) {
-                    initAggregation(correlation, true);
+                    if (!isAggregationOfNodesAndTp) {
+                        initAggregation(correlation, true);
+                    }
                 } else if (FiltrationOnly.class.equals(correlation.getType())) {
                     initFiltration(correlation);
                 } else if (AggregationOnly.class.equals(correlation.getType())) {
-                    if(correlation.getCorrelationItem() == CorrelationItemEnum.Link) {
-                        linkAggregation = correlation.getAggregation();
-                    } else {
-                        initAggregation(correlation, false);
+                    if (!isAggregationOfNodesAndTp) {
+                        if(correlation.getCorrelationItem() == CorrelationItemEnum.Link) {
+                            linkAggregation = correlation.getAggregation();
+                        } else {
+                            initAggregation(correlation, false);
+                        }
                     }
                 } else if (RenderingOnly.class.equals(correlation.getType())){
                     initRendering(correlation);
@@ -208,6 +216,135 @@ public abstract class TopologyRequestHandler {
             LOG.warn("Processing new request for topology change failed.", e);
             closeOperatingResources(0);
             throw new IllegalStateException("Processing new request for topology change failed.", e);
+        }
+    }
+
+    private boolean aggregationOfNodesAndTp(List<Correlation> correlationList) {
+        Correlation nodeCorrelation = null;
+        boolean nodeFiltration = false;
+        Correlation tpCorrelation = null;
+        boolean tpFiltration = false;
+
+        for (Correlation correlation : correlationList) {
+            if (FiltrationAggregation.class.equals(correlation.getType())
+                    || AggregationOnly.class.equals(correlation.getType())) {
+                if (correlation.getCorrelationItem() == CorrelationItemEnum.Node) {
+                    nodeCorrelation = correlation;
+                    nodeFiltration = FiltrationAggregation.class.equals(correlation.getType());
+                } else if (correlation.getCorrelationItem() == CorrelationItemEnum.TerminationPoint) {
+                    tpCorrelation = correlation;
+                    tpFiltration = FiltrationAggregation.class.equals(correlation.getType());
+                }
+            }
+        }
+        if(nodeCorrelation == null || tpCorrelation == null) {
+            return false;
+        } else {
+            initAggregationOfNodesAndTp(nodeCorrelation, nodeFiltration, tpCorrelation, tpFiltration);
+            return true;
+        }
+    }
+
+    private void initAggregationOfNodesAndTp(Correlation nodeCorrelation, boolean nodeFiltration,
+                    Correlation tpCorrelation, boolean tpFiltration) {
+
+        Aggregation nodeAggregation = nodeCorrelation.getAggregation();
+        Aggregation tpAggregation = tpCorrelation.getAggregation();
+        TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
+        TopologyAggregator nodeAggregator = createAggregator(nodeAggregation.getAggregationType(),
+                        CorrelationItemEnum.Node, topoStoreProvider, null);
+        TerminationPointAggregator tpAggregator = (TerminationPointAggregator) createAggregator(
+                        tpAggregation.getAggregationType(), CorrelationItemEnum.TerminationPoint, topoStoreProvider,
+                        tpAggregation.getMapping().get(0).getInputModel());
+
+        // Termination point aggregator initialization
+        if (tpAggregation.getScripting() != null) {
+            tpAggregator.initCustomAggregation(tpAggregation.getScripting());
+        }
+        Class<? extends Model> inputModel = tpAggregation.getMapping().get(0).getInputModel();
+        Map<String, Map<Integer, YangInstanceIdentifier>> targetFieldsPerTopology = new HashMap<>();
+        TerminationPointPreAggregationFiltrator tpFiltrator = new TerminationPointPreAggregationFiltrator(
+                        topoStoreProvider, inputModel);
+        tpFiltrator.setTopologyAggregator(tpAggregator);
+        for (Mapping mapping : tpAggregation.getMapping()) {
+            String underlayTopologyId = mapping.getUnderlayTopology();
+            // original statement - topoStoreProvider.initializeStore(underlayTopologyId, mapping.isAggregateInside());
+            // aggregation inside is always enabled due to bug5190
+            topoStoreProvider.initializeStore(underlayTopologyId, true);
+            Map<Integer, YangInstanceIdentifier> pathIdentifier = new HashMap<>();
+            for (TargetField targetField : mapping.getTargetField()) {
+                pathIdentifier.put(targetField.getMatchingKey(), translator.translate(
+                        targetField.getTargetFieldPath().getValue(), CorrelationItemEnum.TerminationPoint,
+                        schemaHolder, inputModel));
+            }
+            targetFieldsPerTopology.put(underlayTopologyId, pathIdentifier);
+            //((TerminationPointAggregator) aggregator).setTargetField(pathIdentifier);
+            if (tpFiltration && mapping.getApplyFilters() != null) {
+                for (String filterId : mapping.getApplyFilters()) {
+                    Filter filter = findFilter(tpCorrelation.getFiltration().getFilter(), filterId);
+                    YangInstanceIdentifier filterPath = translator.translate(filter.getTargetField().getValue(),
+                                CorrelationItemEnum.TerminationPoint, schemaHolder, inputModel);
+                    addFiltrator(tpFiltrator, filter, filterPath);
+                }
+            }
+        }
+
+        NodeAndTPAggregator nodeAndTpAggregator = new NodeAndTPAggregator(nodeAggregator, tpAggregator, tpFiltrator,
+                        tpAggregation.getMapping().get(0).getInputModel(), targetFieldsPerTopology);
+        nodeAndTpAggregator.setTopologyManager(topologyManager);
+
+        // Node aggregator initialization
+        if (nodeAggregation.getScripting() != null) {
+            nodeAggregator.initCustomAggregation(nodeAggregation.getScripting());
+        }
+        for (Mapping mapping : nodeAggregation.getMapping()) {
+            inputModel = getRealInputModel(mapping.getInputModel(), CorrelationItemEnum.Node);
+            String underlayTopologyId = mapping.getUnderlayTopology();
+            // original statement - topoStoreProvider.initializeStore(underlayTopologyId, mapping.isAggregateInside());
+            // aggregation inside is always enabled due to bug5190
+            topoStoreProvider.initializeStore(underlayTopologyId, true);
+            Map<Integer, YangInstanceIdentifier> pathIdentifier = new HashMap<>();
+            for (TargetField targetField : mapping.getTargetField()) {
+                pathIdentifier.put(targetField.getMatchingKey(), translator.translate(
+                        targetField.getTargetFieldPath().getValue(), CorrelationItemEnum.Node,
+                        schemaHolder, inputModel));
+            }
+            PreAggregationFiltrator filtrator = null;
+            if (nodeFiltration && mapping.getApplyFilters() != null) {
+                filtrator = new PreAggregationFiltrator(topoStoreProvider);
+                filtrator.setTopologyAggregator(nodeAndTpAggregator);
+                for (String filterId : mapping.getApplyFilters()) {
+                    Filter filter = findFilter(nodeCorrelation.getFiltration().getFilter(), filterId);
+                    YangInstanceIdentifier filterPath = translator.translate(filter.getTargetField().getValue(),
+                                    CorrelationItemEnum.Node, schemaHolder, inputModel);
+                    addFiltrator(filtrator, filter, filterPath);
+                }
+            }
+            UnderlayTopologyListener listener;
+            if (filtrator == null) {
+                listener = modelAdapters.get(inputModel)
+                        .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
+                                CorrelationItemEnum.Node, datastoreType, nodeAndTpAggregator, listeners, pathIdentifier);
+            } else {
+                listener = modelAdapters.get(inputModel)
+                        .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
+                        CorrelationItemEnum.Node, datastoreType, filtrator, listeners, pathIdentifier);
+            }
+
+            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
+                    .createTopologyIdentifier(underlayTopologyId);
+            YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
+                    .buildItemIdentifier(topologyIdentifier, CorrelationItemEnum.Node);
+            LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
+            DOMDataTreeIdentifier treeId ;
+            if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
+                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
+            } else {
+                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
+            }
+            ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
+                    pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
+            listeners.add(listenerRegistration);
         }
     }
 
@@ -320,7 +457,7 @@ public abstract class TopologyRequestHandler {
             if (aggregator instanceof TerminationPointAggregator) {
                 ((TerminationPointAggregator) aggregator).setTargetField(pathIdentifier);
             }
-            PreAggregationFiltrator filtrator= null;
+            PreAggregationFiltrator filtrator = null;
             if (filtration && mapping.getApplyFilters() != null) {
                 if (correlation.getCorrelationItem() == CorrelationItemEnum.TerminationPoint) {
                     filtrator = new TerminationPointPreAggregationFiltrator(topoStoreProvider, inputModel);

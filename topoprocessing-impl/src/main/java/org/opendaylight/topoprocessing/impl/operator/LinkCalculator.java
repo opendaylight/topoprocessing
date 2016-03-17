@@ -51,7 +51,7 @@ public class LinkCalculator implements TopologyOperator {
     private static final YangInstanceIdentifier DEST_NODE_IDENTIFIER = YangInstanceIdentifier
             .of(QName.create(Link.QNAME, "destination")).node(QName.create(Destination.QNAME, "dest-node"));
 
-    protected TopologyManager manager;
+    protected Manager manager;
     private TopologyAggregator aggregator;
     private TopologyStore storedOverlayNodes;
     private Class<? extends Model> outputModel;
@@ -352,8 +352,8 @@ public class LinkCalculator implements TopologyOperator {
     }
 
     @Override
-    public void setTopologyManager(TopologyManager topologyManager) {
-        this.manager = topologyManager;
+    public void setTopologyManager(Manager manager) {
+        this.manager = manager;
     }
 
     private OverlayItem wrapUnderlayItem(UnderlayItem underlayItem) {
