@@ -13,8 +13,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-
 /**
  * @author michal.polkorab
  *
@@ -22,7 +20,7 @@ import java.util.Collections;
 public class PreAggregationFiltrator extends TopologyFiltrator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PreAggregationFiltrator.class);
-    protected TopologyAggregator aggregator;
+    protected TopologyOperator operator;
 
     public PreAggregationFiltrator(TopoStoreProvider topoStoreProvider) {
             super(topoStoreProvider);
@@ -32,7 +30,7 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
     public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry, String topologyId) {
         LOGGER.trace("Processing createdChanges");
         if (passedFiltration(createdEntry.getLeafNodes().values())) {
-            aggregator.processCreatedChanges(identifier, createdEntry, topologyId);
+            operator.processCreatedChanges(identifier, createdEntry, topologyId);
         }
     }
 
@@ -44,17 +42,17 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
             // updateditem is not present yet
             if (passedFiltration(updatedEntry.getLeafNodes().values())) {
                 // passed through filtrator
-                aggregator.processCreatedChanges(identifier, updatedEntry, topologyId);
+                operator.processCreatedChanges(identifier, updatedEntry, topologyId);
             }
             // else do nothing
         } else {
             // updateditem exists already
             if (passedFiltration(updatedEntry.getLeafNodes().values())) {
                 // passed through filtrator
-                aggregator.processUpdatedChanges(identifier, updatedEntry, topologyId);
+                operator.processUpdatedChanges(identifier, updatedEntry, topologyId);
             } else {
                 // filtered out
-                aggregator.processRemovedChanges(identifier, topologyId);
+                operator.processRemovedChanges(identifier, topologyId);
             }
         }
     }
@@ -62,18 +60,18 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
     @Override
     public void processRemovedChanges(YangInstanceIdentifier identifier, String topologyId) {
         LOGGER.trace("Processing removedChanges");
-        aggregator.processRemovedChanges(identifier, topologyId);
+        operator.processRemovedChanges(identifier, topologyId);
     }
 
     @Override
-    public void setTopologyManager(TopologyManager topologyManager) {
+    public void setTopologyManager(ITopologyManager manager) {
         throw new UnsupportedOperationException("PreAggregationFiltrator doesn't use TopologyManager");
     }
 
     /**
-     * @param aggregator performs aggregation after filtering is done
+     * @param operator performs operation after filtering is done
      */
-    public void setTopologyAggregator(TopologyAggregator aggregator) {
-        this.aggregator = aggregator;
+    public void setTopologyAggregator(TopologyOperator operator) {
+        this.operator = operator;
     }
 }
