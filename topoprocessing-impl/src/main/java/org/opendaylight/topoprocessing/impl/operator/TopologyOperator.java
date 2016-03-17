@@ -40,8 +40,8 @@ public interface TopologyOperator {
     void processRemovedChanges(YangInstanceIdentifier itemIdentifier, final String topologyId);
 
     /**
-     * @param topologyManager handles aggregated items from all correlations
+     * @param manager handles aggregated items from all correlations
      */
-    void setTopologyManager(TopologyManager topologyManager);
+    void setTopologyManager(Manager manager);
 
 }
