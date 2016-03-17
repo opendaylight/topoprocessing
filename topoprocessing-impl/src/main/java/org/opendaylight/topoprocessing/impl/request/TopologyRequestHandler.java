@@ -183,17 +183,35 @@ public abstract class TopologyRequestHandler {
             LOG.debug("Processing correlation configuration");
             List<Correlation> correlationList = correlations.getCorrelation();
             //this allow only one correlation of links in request
+
+            Correlation aggregationOfNode = null;
+            Correlation aggregationOfTP = null;
+
             for (Correlation correlation : correlationList) {
                 if (FiltrationAggregation.class.equals(correlation.getType())) {
                     initAggregation(correlation, true);
                 } else if (FiltrationOnly.class.equals(correlation.getType())) {
                     initFiltration(correlation);
                 } else if (AggregationOnly.class.equals(correlation.getType())) {
+
                     if(correlation.getCorrelationItem() == CorrelationItemEnum.Link) {
                         linkAggregation = correlation.getAggregation();
                     } else {
                         initAggregation(correlation, false);
                     }
+
+                    /*switch (correlation.getCorrelationItem()) {
+                        case Link:
+                            linkAggregation = correlation.getAggregation();
+                            break;
+                        case Node:
+                            aggregationOfNode = correlation;
+                            break;
+                        case TerminationPoint:
+                            aggregationOfTP = correlation;
+                            break;
+                    }
+                    */
                 } else if (RenderingOnly.class.equals(correlation.getType())){
                     initRendering(correlation);
                 } else {
@@ -203,6 +221,15 @@ public abstract class TopologyRequestHandler {
             if (linkComputation != null) {
                 initLinkComputation(linkComputation, linkAggregation);
             }
+            /*
+            if (aggregationOfNode != null && aggregationOfTP != null) {
+                initAggregationOfNodeAndTP(aggregationOfNode, aggregationOfTP);
+            } else if (aggregationOfNode != null) {
+                initAggregation(aggregationOfNode, false);
+            } else {
+                initAggregation(aggregationOfTP, false);
+            }
+            */
             LOG.debug("Correlation configuration successfully read");
         } catch (Exception e) {
             LOG.warn("Processing new request for topology change failed.", e);
@@ -320,7 +347,7 @@ public abstract class TopologyRequestHandler {
             if (aggregator instanceof TerminationPointAggregator) {
                 ((TerminationPointAggregator) aggregator).setTargetField(pathIdentifier);
             }
-            PreAggregationFiltrator filtrator= null;
+            PreAggregationFiltrator filtrator = null;
             if (filtration && mapping.getApplyFilters() != null) {
                 if (correlation.getCorrelationItem() == CorrelationItemEnum.TerminationPoint) {
                     YangInstanceIdentifier targetFieldPath = translator.translate(correlation.getFiltration()

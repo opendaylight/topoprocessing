@@ -186,7 +186,7 @@ public class NotificationInterConnector implements TopologyOperator {
     }
 
     @Override
-    public void setTopologyManager(TopologyManager topologyManager) {
+    public void setTopologyManager(Manager manager) {
         throw new UnsupportedOperationException(
                 "NotificationInterConnector can't have TopologyManager set," + " it uses TopologyOperator instead.");
 

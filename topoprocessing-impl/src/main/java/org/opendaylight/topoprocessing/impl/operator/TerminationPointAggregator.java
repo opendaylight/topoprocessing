@@ -143,7 +143,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
         OverlayItem overlayItem = new OverlayItem(
                 Collections.singletonList(createdEntry), CorrelationItemEnum.TerminationPoint);
         createdEntry.setOverlayItem(overlayItem);
-        topologyManager.addOverlayItem(overlayItem);
+        manager.addOverlayItem(overlayItem);
     }
 
     @Override
@@ -181,7 +181,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
             }
         }
         underlayItem.setItem(setTpToNode(nodeTps, newNode, topologyId, underlayItem.getItemId(), model));
-        topologyManager.updateOverlayItem(underlayItem.getOverlayItem());
+        manager.updateOverlayItem(underlayItem.getOverlayItem());
     }
 
     private boolean mapContainsEntry(MapNode newMapNode, MapEntryNode oldEntry) {

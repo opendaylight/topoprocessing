@@ -65,24 +65,34 @@ public class InvNodeTranslator implements NodeTranslator{
                     supportingNodes.withChild(ImmutableNodes.mapEntryBuilder().withNodeIdentifier(
                             new YangInstanceIdentifier.NodeIdentifierWithPredicates(
                                     SupportingNode.QNAME, keyValues)).build());
-                    // prepare termination points
-                    Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
-                            itemNode, TP_IDENTIFIER);
-                    if (terminationPointMapNode.isPresent()) {
-                        Collection<MapEntryNode> terminationPointMapEntries =
-                                ((MapNode) terminationPointMapNode.get()).getValue();
-                        for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
-                            terminationPoints.addChild(terminationPointMapEntry);
+                    if (wrapper.getAggregatedTerminationPoints() == null) {
+                        // prepare termination points
+                        Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
+                                itemNode, TP_IDENTIFIER);
+                        if (terminationPointMapNode.isPresent()) {
+                            Collection<MapEntryNode> terminationPointMapEntries =
+                                    ((MapNode) terminationPointMapNode.get()).getValue();
+                            for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
+                                terminationPoints.addChild(terminationPointMapEntry);
+                            }
                         }
                     }
                 }
             }
         }
 
-        return ImmutableNodes
-                .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, wrapper.getId())
-                .withChild(supportingNodes.build())
-                .withChild(terminationPoints.build())
-                .build();
+        if (wrapper.getAggregatedTerminationPoints() != null) {
+            return ImmutableNodes
+                    .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, wrapper.getId())
+                    .withChild(supportingNodes.build())
+                    .withChild(terminationPoints.build())
+                    .build();
+        } else {
+            return ImmutableNodes
+                    .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, wrapper.getId())
+                    .withChild(supportingNodes.build())
+                    .withChild(wrapper.getAggregatedTerminationPoints())
+                    .build();
+        }
     }
 }

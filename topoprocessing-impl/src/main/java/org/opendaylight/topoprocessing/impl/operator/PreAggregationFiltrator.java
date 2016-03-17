@@ -64,7 +64,7 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
     }
 
     @Override
-    public void setTopologyManager(TopologyManager topologyManager) {
+    public void setTopologyManager(Manager manager) {
         throw new UnsupportedOperationException("PreAggregationFiltrator doesn't use TopologyManager");
     }
 

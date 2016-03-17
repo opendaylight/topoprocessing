@@ -15,8 +15,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.topoprocessing.impl.operator.Manager;
 import org.opendaylight.topoprocessing.impl.operator.TopoStoreProvider;
-import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
@@ -32,7 +32,7 @@ public class IRRenderingOperator implements TopologyOperator {
 
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyOperator.class);
-    private TopologyManager manager;
+    private Manager manager;
     private TopoStoreProvider topoStoreProvider;
 
     @Override
@@ -87,8 +87,8 @@ public class IRRenderingOperator implements TopologyOperator {
     }
 
     @Override
-    public void setTopologyManager(TopologyManager topologyManager) {
-        this.manager = topologyManager;
+    public void setTopologyManager(Manager manager) {
+        this.manager = manager;
     }
 
     public void setTopoStoreProvider(TopoStoreProvider topoStoreProvider) {

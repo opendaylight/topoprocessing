@@ -31,7 +31,7 @@ public class LinkFiltrator extends TopologyFiltrator {
     private static final Logger LOGGER = LoggerFactory.getLogger(LinkFiltrator.class);
 
     private List<Filtrator> filtrators = new ArrayList<>();
-    protected TopologyManager manager;
+    protected Manager manager;
     private TopoStoreProvider topoStoreProvider;
 
     public LinkFiltrator(TopoStoreProvider topoStoreProvider) {
@@ -101,8 +101,8 @@ public class LinkFiltrator extends TopologyFiltrator {
     }
 
     @Override
-    public void setTopologyManager(TopologyManager topologyManager) {
-        this.manager = topologyManager;
+    public void setTopologyManager(Manager manager) {
+        this.manager = manager;
     }
 
     /**
