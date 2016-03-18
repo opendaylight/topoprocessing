@@ -30,6 +30,8 @@ import org.opendaylight.topoprocessing.impl.testUtilities.TestDataTreeCandidateN
 import org.opendaylight.topoprocessing.impl.testUtilities.TestingDOMDataBroker;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -71,11 +73,9 @@ public class NTUnderlayTopologyListenerTest {
         QName ipAddressQname = QName.create(Node.QNAME, "ip-address");
         String nodeName = "node:1";
         String ipAddress = "192.168.1.1";
-        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder()
-                .node(Node.QNAME)
-                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName)
-                .build();
-
+        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME)
+                .node(Topology.QNAME).nodeWithKey(Topology.QNAME,TopologyQNames.TOPOLOGY_ID_QNAME,TOPOLOGY_ID)
+                .node(Node.QNAME).nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName).build();
         LeafNode<String> nodeIpValue = ImmutableNodes.leafNode(ipAddressQname, ipAddress);
         MapEntryNode nodeValueWithIp = ImmutableNodes.mapEntryBuilder(
                 Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName).addChild(nodeIpValue).build();
@@ -91,8 +91,10 @@ public class NTUnderlayTopologyListenerTest {
 
         Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
         targetFields.put(0, nodeIpValue);
-        UnderlayItem physicalNode = new UnderlayItem(nodeValueWithIp, targetFields, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
-        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
+        UnderlayItem physicalNode = new UnderlayItem(nodeValueWithIp, targetFields, TOPOLOGY_ID, nodeName,
+                CorrelationItemEnum.Node);
+        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME,
+                TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
 
         // create
@@ -146,12 +148,10 @@ public class NTUnderlayTopologyListenerTest {
     @Test
     public void testFiltrationRequest() {
         String nodeName = "node:1";
-        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder()
-                .node(Node.QNAME)
-                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName)
-                .build();
+        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME)
+                .node(Topology.QNAME).nodeWithKey(Topology.QNAME,TopologyQNames.TOPOLOGY_ID_QNAME,TOPOLOGY_ID)
+                .node(Node.QNAME).nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName).build();
         MapEntryNode nodeValue = ImmutableNodes.mapEntry(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
-
         TopologyFiltrator mockOperator = Mockito.mock(TopologyFiltrator.class);
         UnderlayTopologyListener listener = new NTUnderlayTopologyListener(dataBroker, TOPOLOGY_ID,
                 CorrelationItemEnum.Node);
@@ -159,7 +159,8 @@ public class NTUnderlayTopologyListenerTest {
         UnderlayItem physicalNode = new UnderlayItem(nodeValue, null, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
 
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
-        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
+        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME,
+                TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
 
         // create
         setUpMocks(rootNode);
@@ -186,7 +187,7 @@ public class NTUnderlayTopologyListenerTest {
         YangInstanceIdentifier nodeIdYiid = YangInstanceIdentifier.builder()
                 .node(Node.QNAME).nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName).build();
         listener.onDataTreeChanged(mockCollection);
-        Mockito.verify(mockOperator).processRemovedChanges(Matchers.eq(nodeIdYiid), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(mockOperator).processRemovedChanges(Matchers.eq(nodeYiid), Matchers.eq(TOPOLOGY_ID));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -204,7 +205,8 @@ public class NTUnderlayTopologyListenerTest {
         pathIdentifiers.put(0, nodeYiid);
         listener.setPathIdentifier(pathIdentifiers);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
-        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
+        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME,
+                TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
 
         setUpMocks(rootNode);
         rootNode.setModificationType(ModificationType.WRITE);
