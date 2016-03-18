@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventoryModel;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
@@ -46,7 +47,9 @@ public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
                     OpendaylightInventoryModel.class);
             this.itemQName = TopologyQNames.buildItemQName(correlationItem, OpendaylightInventoryModel.class);
         }
-        this.itemIdentifier = YangInstanceIdentifier.of(itemQName);
+        this.itemIdentifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+                .nodeWithKey(Topology.QNAME,TopologyQNames.TOPOLOGY_ID_QNAME, underlayTopologyId)
+                        .node(itemQName).build();
     }
 
     public void registerUnderlayTopologyListener(DatastoreType datastoreType, TopologyOperator operator

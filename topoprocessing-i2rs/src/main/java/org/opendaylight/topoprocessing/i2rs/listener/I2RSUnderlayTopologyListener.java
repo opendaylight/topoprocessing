@@ -11,6 +11,7 @@ import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -33,6 +34,8 @@ public class I2RSUnderlayTopologyListener extends UnderlayTopologyListener{
                     InstanceIdentifiers.relativeItemIdIdentifier(correlationItem, I2rsModel.class);
             this.itemQName = TopologyQNames.buildItemQName(correlationItem, I2rsModel.class);
         }
-        this.itemIdentifier = YangInstanceIdentifier.of(itemQName);
+        this.itemIdentifier = YangInstanceIdentifier.builder(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER)
+                .nodeWithKey(Network.QNAME,TopologyQNames.I2RS_NETWORK_ID_QNAME, underlayTopologyId)
+                        .node(itemQName).build();
     }
 }

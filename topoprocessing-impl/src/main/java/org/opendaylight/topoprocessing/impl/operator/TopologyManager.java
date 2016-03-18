@@ -85,7 +85,9 @@ public class TopologyManager implements DOMRpcAvailabilityListener {
                 for (OverlayItemWrapper wrapper : getWrappersList(newOverlayItem.getCorrelationItem())) {
                     for (OverlayItem overlayItemFromWrapper : wrapper.getOverlayItems()) {
                         for (UnderlayItem underlayItemFromWrapper : overlayItemFromWrapper.getUnderlayItems()) {
-                            if (underlayItemFromWrapper.getItemId().equals(newUnderlayItem.getItemId())) {
+                            if (underlayItemFromWrapper.getItemId().equals(newUnderlayItem.getItemId())
+                                    && underlayItemFromWrapper.getTopologyId().
+                                            equals(newUnderlayItem.getTopologyId())) {
                                 // update existing wrapper
                                 wrapper.addOverlayItem(newOverlayItem);
                                 writer.writeItem(wrapper, newOverlayItem.getCorrelationItem());
