@@ -27,7 +27,9 @@ import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestDataTreeCandidateNode;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestingDOMDataBroker;
+import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.network.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -70,14 +72,12 @@ public class I2RSUnderlayTopologyListenerTest {
         QName ipAddressQname = QName.create(Node.QNAME, "ip-address");
         String nodeName = "node:1";
         String ipAddress = "192.168.1.1";
-        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder()
-                .node(Node.QNAME)
-                .nodeWithKey(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, nodeName)
-                .build();
-
+        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER)
+                .nodeWithKey(Network.QNAME,TopologyQNames.I2RS_NETWORK_ID_QNAME, TOPOLOGY_ID)
+                .node(Node.QNAME).build();
         LeafNode<String> nodeIpValue = ImmutableNodes.leafNode(ipAddressQname, ipAddress);
-        MapEntryNode nodeValueWithIp = ImmutableNodes.mapEntryBuilder(
-                Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, nodeName).addChild(nodeIpValue).build();
+        MapEntryNode nodeValueWithIp = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME,
+                nodeName).addChild(nodeIpValue).build();
 
         YangInstanceIdentifier pathIdentifier = YangInstanceIdentifier.of(ipAddressQname);
         TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
@@ -94,6 +94,7 @@ public class I2RSUnderlayTopologyListenerTest {
                 TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
         NodeIdentifierWithPredicates nodePathArgument =
                 new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, nodeName);
+        nodeYiid = nodeYiid.node(nodePathArgument);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
 
         // create
@@ -146,10 +147,9 @@ public class I2RSUnderlayTopologyListenerTest {
     @Test
     public void testFiltrationRequest() {
         String nodeName = "node:1";
-        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder()
-                .node(Node.QNAME)
-                .nodeWithKey(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, nodeName)
-                .build();
+        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER)
+                .nodeWithKey(Network.QNAME,TopologyQNames.I2RS_NETWORK_ID_QNAME, TOPOLOGY_ID)
+                .node(Node.QNAME).build();
         MapEntryNode nodeValue = ImmutableNodes.mapEntry(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, nodeName);
 
         TopologyFiltrator mockOperator = Mockito.mock(TopologyFiltrator.class);
@@ -161,6 +161,7 @@ public class I2RSUnderlayTopologyListenerTest {
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
         NodeIdentifierWithPredicates nodePathArgument =
                 new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, nodeName);
+        nodeYiid = nodeYiid.node(nodePathArgument);
 
         // create
         setUpMocks(rootNode);
@@ -187,7 +188,7 @@ public class I2RSUnderlayTopologyListenerTest {
         YangInstanceIdentifier nodeIdYiid = YangInstanceIdentifier.builder()
                 .node(Node.QNAME).nodeWithKey(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, nodeName).build();
         listener.onDataTreeChanged(mockCollection);
-        Mockito.verify(mockOperator).processRemovedChanges(Matchers.eq(nodeIdYiid), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(mockOperator).processRemovedChanges(Matchers.eq(nodeYiid), Matchers.eq(TOPOLOGY_ID));
     }
 
     @Test(expected = IllegalStateException.class)
