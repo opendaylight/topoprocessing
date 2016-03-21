@@ -101,7 +101,7 @@ public final class TopologyQNames {
     /** Opendaylight-inventory node-id QName */
     public static final QName INVENTORY_NODE_ID_QNAME = QName.create("urn:opendaylight:inventory", "2013-08-19", "id");
     public static final QName INVENTORY_NODE_CONNECTOR_REF_QNAME =
-            QName.create("urn:opendaylight:model:topology:inventory", "2013-10-30", "inventory-node-connector-ref");
+            QName.create("(urn:opendaylight:model:topology:inventory?revision=2013-10-30)inventory-node-connector-ref");
     public static final QName INVENTORY_NODE_REF_QNAME = QName
             .create("(urn:opendaylight:model:topology:inventory?revision=2013-10-30)inventory-node-ref");
 

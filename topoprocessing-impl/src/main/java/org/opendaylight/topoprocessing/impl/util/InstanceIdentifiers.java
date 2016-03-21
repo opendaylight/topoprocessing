@@ -71,8 +71,12 @@ public final class InstanceIdentifiers {
                         YangInstanceIdentifier.of(TopologyQNames.NODE_CONNECTOR_ID_QNAME);
     public static final YangInstanceIdentifier INVENTORY_NODE_CONNECTOR_IDENTIFIER =
                         YangInstanceIdentifier.of(NodeConnector.QNAME);
+
     public static final YangInstanceIdentifier INV_NODE_REF_IDENTIFIER =
             YangInstanceIdentifier.of(TopologyQNames.INVENTORY_NODE_REF_QNAME);
+
+    public static final YangInstanceIdentifier INVENTORY_NODE_CONNECTOR_REF_IDENTIFIER =
+                        YangInstanceIdentifier.of(TopologyQNames.INVENTORY_NODE_CONNECTOR_REF_QNAME);
 
     private InstanceIdentifiers() {
         throw new UnsupportedOperationException("InstanceIdentifiers can't be instantiated.");
