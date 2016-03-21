@@ -23,9 +23,11 @@ import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.topology.rev150608.network.node.termination.point.SupportingTerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.LeafPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventoryModel;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -115,11 +117,14 @@ public class TerminationPointAggregator extends UnificationAggregator {
         getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(identifier, createdEntry);
         // find TerminationPoint Map in underlayItem
         NormalizedNode<?, ?> newNode = createdEntry.getItem();
-        Optional<NormalizedNode<?, ?>> tpMapNodeOpt;
+        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = null;
         if (model.equals(NetworkTopologyModel.class)) {
             tpMapNodeOpt = NormalizedNodes.findNode(newNode, InstanceIdentifiers.NT_TERMINATION_POINT);
-        } else {
+        } else if (model.equals(I2rsModel.class)) {
             tpMapNodeOpt = NormalizedNodes.findNode(newNode, InstanceIdentifiers.I2RS_TERMINATION_POINT);
+        } else if (model.equals(OpendaylightInventoryModel.class)) {
+            tpMapNodeOpt = NormalizedNodes.findNode(createdEntry.getLeafNodes().values().iterator().next(),
+                    InstanceIdentifiers.INVENTORY_NODE_CONNECTOR_IDENTIFIER);
         }
         if (tpMapNodeOpt.isPresent()) {
             MapNode tpMapNode = (MapNode) tpMapNodeOpt.get();
@@ -277,21 +282,70 @@ public class TerminationPointAggregator extends UnificationAggregator {
     private MapEntryNode setTpToNode(List<TemporaryTerminationPoint> tempTpList, NormalizedNode<?, ?> node,
             String topologyId, String nodeId, Class<? extends Model> model) {
         // create TP MapNode Builder
-        CollectionNodeBuilder<MapEntryNode, MapNode> tpBuilder;
+        CollectionNodeBuilder<MapEntryNode, MapNode> tpBuilder = null;
         if (model.equals(NetworkTopologyModel.class)) {
             tpBuilder = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME);
             for (TemporaryTerminationPoint tmpTp : tempTpList) {
                 tpBuilder.addChild(createNetworkTopologyTpEntry(tmpTp, topologyId, nodeId));
             }
-        } else {
+        } else if (model.equals(I2rsModel.class)) {
             tpBuilder = ImmutableNodes.mapNodeBuilder(I2RS_TERMINATION_POINT_QNAME);
             for (TemporaryTerminationPoint tmpTp : tempTpList) {
                 tpBuilder.addChild(createI2rsTpEntry(tmpTp, topologyId, nodeId));
+            }
+        } else if (model.equals(OpendaylightInventoryModel.class)) {
+            tpBuilder = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME);
+            for (TemporaryTerminationPoint tmpTp : tempTpList) {
+                tpBuilder.addChild(createInventoryTpEntry(tmpTp, topologyId, nodeId, node));
             }
         }
         // set children (TPs)
         // create clone from old Node and set new TP MapNode to it
         return ImmutableMapEntryNodeBuilder.create((MapEntryNode) node).withChild(tpBuilder.build()).build();
+    }
+
+    private MapEntryNode createInventoryTpEntry(TemporaryTerminationPoint tmpTp, String topologyId,
+            String nodeId, NormalizedNode<?, ?> node) {
+        ListNodeBuilder<String, LeafSetEntryNode<String>> leafListBuilder = ImmutableLeafSetNodeBuilder.<String>create()
+                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(TopologyQNames.TP_REF));
+        Optional<NormalizedNode<?, ?>> tpMapNodeOpt =
+                NormalizedNodes.findNode(node,InstanceIdentifiers.NT_TERMINATION_POINT);
+        for (MapEntryNode mapEntryNode : tmpTp.getEntries()) {
+            Optional<NormalizedNode<?, ?>> nodeConnectorIdOptional = NormalizedNodes
+                    .findNode(mapEntryNode, InstanceIdentifiers.INVENTORY_NODE_ID_IDENTIFIER);
+            String tpIdFromNt = null;
+            if (nodeConnectorIdOptional.isPresent()) {
+                if (tpMapNodeOpt.isPresent()) {
+                    for (MapEntryNode mapEntryNodeNt : ((MapNode) tpMapNodeOpt.get()).getValue()) {
+                        Optional<DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?>> tpIdOpt =
+                                mapEntryNodeNt.getChild(InstanceIdentifiers.NT_TP_ID_IDENTIFIER.getLastPathArgument());
+                        if (tpIdOpt.isPresent()) {
+                            if (mapEntryNodeNt.getValue().toString()
+                                    .contains(nodeConnectorIdOptional.get().getValue().toString())) {
+                                tpIdFromNt = (String) tpIdOpt.get().getValue();
+                                break;
+                            }
+                        } else {
+                            LOG.debug("No Termination Point ID is present!");
+                        }
+                    }
+                } else {
+                    LOG.warn("No Termination Point MapNode is present!");
+                }
+            } else {
+                LOG.warn("No Node Connector ID is present!");
+            }
+            String tpRefval = "/network-topology:network-topology/topology/" + topologyId +
+                    "/node/" + nodeId + "/termination-point/" + tpIdFromNt;
+            LeafSetEntryNode<String> tpRef = ImmutableLeafSetEntryNodeBuilder.<String>create()
+                    .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue<String>(
+                            TopologyQNames.TP_REF, tpRefval)).withValue(tpRefval).build();
+            leafListBuilder.addChild(tpRef);
+        }
+        MapEntryNode tp = ImmutableNodes
+                .mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tmpTp.getTpId())
+                .withChild(leafListBuilder.build()).build();
+        return tp;
     }
 
     private MapEntryNode createNetworkTopologyTpEntry(TemporaryTerminationPoint tmpTp, String topologyId,
