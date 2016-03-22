@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a3f45e8_e0ed5cf1",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 317,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:44:54Z",
+      "side": 1,
+      "message": "you should test if there is something present in this Optional, before calling get() operation.",
+      "range": {
+        "startLine": 317,
+        "startChar": 58,
+        "endLine": 317,
+        "endChar": 76
+      },
+      "revId": "bcbc2548df70d49d85c71e9c4e5feba624291f1b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_40ba50e2",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 321,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:44:54Z",
+      "side": 1,
+      "message": "you should test if there is something present in this Optional, before calling get() operation.",
+      "range": {
+        "startLine": 321,
+        "startChar": 34,
+        "endLine": 321,
+        "endChar": 63
+      },
+      "revId": "bcbc2548df70d49d85c71e9c4e5feba624291f1b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_c0cdc088",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 326,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:44:54Z",
+      "side": 1,
+      "message": "this is not good variable name",
+      "range": {
+        "startLine": 326,
+        "startChar": 19,
+        "endLine": 326,
+        "endChar": 24
+      },
+      "revId": "bcbc2548df70d49d85c71e9c4e5feba624291f1b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_00c84873",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:44:54Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 96,
+        "startChar": 12,
+        "endLine": 96,
+        "endChar": 123
+      },
+      "revId": "bcbc2548df70d49d85c71e9c4e5feba624291f1b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_40a1b0a8",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:44:54Z",
+      "side": 1,
+      "message": "test if isPresent() before get()",
+      "range": {
+        "startLine": 140,
+        "startChar": 51,
+        "endLine": 140,
+        "endChar": 70
+      },
+      "revId": "bcbc2548df70d49d85c71e9c4e5feba624291f1b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_20a624c2",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:44:54Z",
+      "side": 1,
+      "message": "test if isPresent() before get()",
+      "range": {
+        "startLine": 144,
+        "startChar": 30,
+        "endLine": 144,
+        "endChar": 59
+      },
+      "revId": "bcbc2548df70d49d85c71e9c4e5feba624291f1b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_80abb888",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:44:54Z",
+      "side": 1,
+      "message": "bad variable name",
+      "range": {
+        "startLine": 149,
+        "startChar": 15,
+        "endLine": 149,
+        "endChar": 20
+      },
+      "revId": "bcbc2548df70d49d85c71e9c4e5feba624291f1b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_009fa860",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/util/TopologyQNames.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:44:54Z",
+      "side": 1,
+      "message": "why you changed this?",
+      "range": {
+        "startLine": 104,
+        "startChar": 26,
+        "endLine": 104,
+        "endChar": 118
+      },
+      "revId": "bcbc2548df70d49d85c71e9c4e5feba624291f1b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
