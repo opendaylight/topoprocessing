@@ -24,19 +24,19 @@ import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
-import org.opendaylight.topoprocessing.impl.listener.InventoryListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
-import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
-import org.opendaylight.topoprocessing.impl.operator.LinkCalculator;
-import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
+import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
+import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TopoStoreProvider;
+import org.opendaylight.topoprocessing.impl.operator.TerminationPointPreAggregationFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TerminationPointFiltrator;
-import org.opendaylight.topoprocessing.impl.operator.TopoStoreProvider;
-import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
-import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
-import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
+import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
+import org.opendaylight.topoprocessing.impl.operator.LinkCalculator;
+import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
 import org.opendaylight.topoprocessing.impl.operator.UnificationAggregator;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
@@ -50,7 +50,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationAggregation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.InventoryRenderingModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventoryModel;
@@ -297,7 +296,16 @@ public abstract class TopologyRequestHandler {
             }
             PreAggregationFiltrator filtrator= null;
             if (filtration && mapping.getApplyFilters() != null) {
-                filtrator = new PreAggregationFiltrator(topoStoreProvider);
+                if (correlation.getCorrelationItem() == CorrelationItemEnum.TerminationPoint) {
+                    YangInstanceIdentifier targetFieldPath = translator.translate(correlation.getFiltration()
+                            .getFilter().get(0).getTargetField().getValue(), correlation.getCorrelationItem(),
+                                    schemaHolder, correlation.getFiltration().getFilter().get(0).getInputModel());
+                    filtrator = new TerminationPointPreAggregationFiltrator(topoStoreProvider, correlation
+                            .getFiltration().getFilter().get(0).getInputModel());
+                    ((TerminationPointPreAggregationFiltrator)filtrator).setPathIdentifier(targetFieldPath);
+                } else {
+                    filtrator = new PreAggregationFiltrator(topoStoreProvider);
+                }
                 filtrator.setTopologyAggregator(aggregator);
                 for (String filterId : mapping.getApplyFilters()) {
                     Filter filter = findFilter(correlation.getFiltration().getFilter(), filterId);
