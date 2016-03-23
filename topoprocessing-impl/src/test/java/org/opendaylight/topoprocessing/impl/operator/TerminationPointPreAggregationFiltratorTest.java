@@ -13,6 +13,7 @@ import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
@@ -57,13 +58,15 @@ public class TerminationPointPreAggregationFiltratorTest {
         }
 
         @Override
-        public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry, String topologyId) {
+        public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry,
+                                          String topologyId) {
             MapEntryNode inputNode = (MapEntryNode) createdEntry.getItem();
             Assert.assertEquals("Nodes should be equal", output, inputNode);
         }
 
         @Override
-        public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedEntry, String topologyId) {
+        public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedEntry,
+                                          String topologyId) {
             MapEntryNode inputNode = (MapEntryNode) updatedEntry.getItem();
             Assert.assertEquals("Nodes should be equal", output, inputNode);
         }
@@ -71,19 +74,19 @@ public class TerminationPointPreAggregationFiltratorTest {
 
     @Before
     public void setUp() {
-        filtrator = new TerminationPointPreAggregationFiltrator(topoStoreProvider);
+        String tpId1 = "tp1";
+        String value1 = "15";
+        filtrator = new TerminationPointPreAggregationFiltrator(topoStoreProvider,NetworkTopologyModel.class);
         topoStoreProvider.initializeStore(TOPOLOGY_ID, false);
         filtrator.addFilter(filter);
         filtrator.setTopologyAggregator(aggregator);
+        filtrator.setPathIdentifier(YangInstanceIdentifier.builder().node(UNNUMBERED_QNAME).build());
 
-        String tpId1 = "tp1";
-        String value1 = "15";
-        MapEntryNode tp1 = ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId1)
-                .withChild(ImmutableNodes.leafNode(UNNUMBERED_QNAME, value1)).build();
-
+        MapEntryNode tp1 = ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME,
+                tpId1).withChild(ImmutableNodes.leafNode(UNNUMBERED_QNAME, value1)).build();
         // input
-        nodeValueInput = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME,
-                NODE_ID).withChild(ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME).withChild(tp1).build()).build();
+        nodeValueInput = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID)
+                .withChild(ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME).withChild(tp1).build()).build();
         underlayItemInput = new UnderlayItem(nodeValueInput, null, TOPOLOGY_ID, NODE_ID,
                 CorrelationItemEnum.TerminationPoint);
 
