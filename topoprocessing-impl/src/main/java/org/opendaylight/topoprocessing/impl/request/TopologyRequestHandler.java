@@ -26,18 +26,7 @@ import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.InventoryListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
-import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
-import org.opendaylight.topoprocessing.impl.operator.LinkCalculator;
-import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
-import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
-import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
-import org.opendaylight.topoprocessing.impl.operator.TerminationPointFiltrator;
-import org.opendaylight.topoprocessing.impl.operator.TopoStoreProvider;
-import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
-import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
-import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
-import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
-import org.opendaylight.topoprocessing.impl.operator.UnificationAggregator;
+import org.opendaylight.topoprocessing.impl.operator.*;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
@@ -297,7 +286,16 @@ public abstract class TopologyRequestHandler {
             }
             PreAggregationFiltrator filtrator= null;
             if (filtration && mapping.getApplyFilters() != null) {
-                filtrator = new PreAggregationFiltrator(topoStoreProvider);
+                if(correlation.getCorrelationItem() == CorrelationItemEnum.TerminationPoint) {
+                    filtrator = new TerminationPointPreAggregationFiltrator(topoStoreProvider,correlation
+                            .getFiltration().getFilter().get(0).getInputModel());
+                    ((TerminationPointPreAggregationFiltrator)filtrator).setPathIdentifier(
+                            translator.translate(correlation.getFiltration().getFilter().get(0).getTargetField()
+                                    .getValue(), correlation.getCorrelationItem(), schemaHolder,
+                                            correlation.getFiltration().getFilter().get(0).getInputModel()));
+                } else {
+                    filtrator = new PreAggregationFiltrator(topoStoreProvider);
+                }
                 filtrator.setTopologyAggregator(aggregator);
                 for (String filterId : mapping.getApplyFilters()) {
                     Filter filter = findFilter(correlation.getFiltration().getFilter(), filterId);
