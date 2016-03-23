@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a3f45e8_ecb55332",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTpIdIpAddress.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-23T11:31:01Z",
+      "side": 1,
+      "message": "you probably forgot to change this one.",
+      "range": {
+        "startLine": 25,
+        "startChar": 50,
+        "endLine": 25,
+        "endChar": 51
+      },
+      "revId": "00436c7905c56ae647fdad9d69eb8c8925b8b027",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
