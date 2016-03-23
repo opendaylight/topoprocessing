@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a3f45e8_11e53ca8",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTpIdIpAddress.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-23T09:00:23Z",
+      "side": 1,
+      "message": "Maybe I am wrong, but is this correct? I think IPv4 address can\u0027t start with leading zero.",
+      "range": {
+        "startLine": 25,
+        "startChar": 33,
+        "endLine": 25,
+        "endChar": 34
+      },
+      "revId": "b4e1d54b8f8bd0df7667118ec5d3fd5b926ebd5c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
