@@ -5,7 +5,7 @@
     <parent>
         <artifactId>topoprocessing-parent</artifactId>
         <groupId>org.opendaylight.topoprocessing</groupId>
-        <version>0.1.1-Beryllium-SR1</version>
+        <version>0.1.2-SNAPSHOT</version>
         <relativePath>../parent</relativePath>
     </parent>
     <artifactId>distribution-karaf</artifactId>
@@ -19,8 +19,8 @@
     </scm>
 
     <properties>
-        <branding.version>1.2.1-Beryllium-SR1</branding.version>
-        <karaf.resources.version>1.6.1-Beryllium-SR1</karaf.resources.version>
+        <branding.version>1.2.2-SNAPSHOT</branding.version>
+        <karaf.resources.version>1.6.2-SNAPSHOT</karaf.resources.version>
     </properties>
 
     <dependencies>
