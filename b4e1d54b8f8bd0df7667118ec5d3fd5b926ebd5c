@@ -22,6 +22,30 @@
       "revId": "b4e1d54b8f8bd0df7667118ec5d3fd5b926ebd5c",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_b1fe0837",
+        "filename": "mlmt/common/impl/src/main/java/org/opendaylight/topology/mlmt/utility/MlmtTpIdIpAddress.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-23T09:16:57Z",
+      "side": 1,
+      "message": "Also I don\u0027t know if this is intended as some kind of check if it is IP address or not, but this regex will match also something like 999.999.999.999 what of course is not valid IPv4 address.",
+      "parentUuid": "5a3f45e8_11e53ca8",
+      "range": {
+        "startLine": 25,
+        "startChar": 33,
+        "endLine": 25,
+        "endChar": 34
+      },
+      "revId": "b4e1d54b8f8bd0df7667118ec5d3fd5b926ebd5c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
