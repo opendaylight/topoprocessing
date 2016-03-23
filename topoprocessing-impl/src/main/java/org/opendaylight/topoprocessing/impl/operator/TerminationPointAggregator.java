@@ -9,11 +9,13 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import com.google.common.base.Optional;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+
 import java.util.List;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -149,6 +151,9 @@ public class TerminationPointAggregator extends UnificationAggregator {
         LOG.trace("Processing updatedChanges");
         TopologyStore ts = getTopoStoreProvider().getTopologyStore(topologyId);
         List<TemporaryTerminationPoint> nodeTps = tpStore.get(identifier);
+        if (nodeTps == null) {
+            nodeTps = new ArrayList<>();
+        }
         // load underlay item by given key
         UnderlayItem underlayItem = ts.getUnderlayItems().get(identifier);
         MapEntryNode newNode = (MapEntryNode) updatedEntry.getItem();
@@ -158,16 +163,22 @@ public class TerminationPointAggregator extends UnificationAggregator {
         } else {
             updatedTpMapNode = NormalizedNodes.findNode(newNode, InstanceIdentifiers.I2RS_TERMINATION_POINT);
         }
-        // if node contains Termination points
-        // and those TP have some changes inside
-        if (updatedTpMapNode.isPresent()
-                && (! underlayItem.getLeafNodes().equals(updatedTpMapNode.get()))) {
-            MapNode newTpMap = (MapNode) updatedTpMapNode.get();
-            Map<Integer, NormalizedNode<?, ?>> terminationPointMapNode = new HashMap<>(1);
-            terminationPointMapNode.put(0, newTpMap);
-            underlayItem.setLeafNodes(terminationPointMapNode);
-            removeTerminationPoints(newTpMap, nodeTps);
-            updateTerminationPoints(newTpMap, nodeTps);
+        if ((!updatedTpMapNode.isPresent() || ((MapNode)updatedTpMapNode.get()).getValue().size() == 0)) {
+            nodeTps.clear();
+        } else {
+            // if node contains Termination points
+            // and those TP have some changes inside
+            if (updatedTpMapNode.isPresent() && (underlayItem.getLeafNodes() == null ||
+                    (underlayItem.getLeafNodes() != null &&
+                            !underlayItem.getLeafNodes().equals(updatedTpMapNode.get())))) {
+                MapNode newTpMap = (MapNode) updatedTpMapNode.get();
+                Map<Integer, NormalizedNode<?, ?>> terminationPointMapNode = new HashMap<>(1);
+                terminationPointMapNode.put(0, newTpMap);
+                underlayItem.setLeafNodes(terminationPointMapNode);
+                removeTerminationPoints(newTpMap, nodeTps);
+                updateTerminationPoints(newTpMap, nodeTps);
+
+            }
         }
         underlayItem.setItem(setTpToNode(nodeTps, newNode, topologyId, underlayItem.getItemId(), model));
         topologyManager.updateOverlayItem(underlayItem.getOverlayItem());
@@ -219,7 +230,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
                             isNew = false;
                         } else {
                             // remove it from tmpTp and look if updated newTpEntry should be added to tmpTp
-                            tempTpList.remove(oldTpEntry);
+                            tmpTp.getEntries().remove(oldTpEntry);
                             if (matchTargetFields(tmpTp, targetFields)) {
                                 isNew = false;
                                 tmpTp.getEntries().add(newTpEntry);
@@ -232,7 +243,9 @@ public class TerminationPointAggregator extends UnificationAggregator {
                 }
                 if (isNew) {
                     TemporaryTerminationPoint ttp = new TemporaryTerminationPoint(targetFields);
-                    ttp.setEntries(Collections.singletonList(newTpEntry));
+                    List<MapEntryNode> terminationPointEntries = new ArrayList<>();
+                    terminationPointEntries.add(newTpEntry);
+                    ttp.setEntries(terminationPointEntries);
                     tempTpList.add(ttp);
                 }
             }
@@ -271,11 +284,13 @@ public class TerminationPointAggregator extends UnificationAggregator {
 
     private void removeTerminationPoints(MapNode newTpMap, List<TemporaryTerminationPoint> tempTpList) {
         for (TemporaryTerminationPoint tempTp : tempTpList) {
-            for (MapEntryNode oldTpEntry : tempTp.getEntries()) {
-                if (! mapContainsEntry(newTpMap, oldTpEntry)) {
-                    tempTpList.remove(oldTpEntry);
+                Iterator<MapEntryNode> itr = tempTp.getEntries().iterator();
+                while(itr.hasNext()) {
+                    MapEntryNode mapEN = itr.next();
+                    if (!mapContainsEntry(newTpMap, mapEN)) {
+                        itr.remove();
+                    }
                 }
-            }
         }
     }
 
