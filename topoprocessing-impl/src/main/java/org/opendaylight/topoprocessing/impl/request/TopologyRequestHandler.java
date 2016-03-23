@@ -24,6 +24,7 @@ import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
+import org.opendaylight.topoprocessing.impl.listener.InventoryListener;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
 import org.opendaylight.topoprocessing.impl.operator.LinkCalculator;
@@ -49,7 +50,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationAggregation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.InventoryRenderingModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventoryModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.RenderingOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Unification;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.Correlations;
@@ -213,12 +217,14 @@ public abstract class TopologyRequestHandler {
     private void initFiltration(Correlation correlation) {
         CorrelationItemEnum correlationItem = correlation.getCorrelationItem();
         Filtration filtration = correlation.getFiltration();
+        Class<? extends Model> inputModel =
+                getRealInputModel(filtration.getFilter().get(0).getInputModel(), correlationItem);
         String underlayTopologyId = filtration.getUnderlayTopology();
         TopologyFiltrator filtrator;
         TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
         topoStoreProvider.initializeStore(underlayTopologyId, false);
         if (correlationItem.equals(CorrelationItemEnum.TerminationPoint)) {
-            filtrator = new TerminationPointFiltrator(topoStoreProvider, filtration.getFilter().get(0).getInputModel());
+            filtrator = new TerminationPointFiltrator(topoStoreProvider, inputModel);
         } else {
             filtrator = new TopologyFiltrator(topoStoreProvider);
         }
@@ -226,18 +232,18 @@ public abstract class TopologyRequestHandler {
         for (Filter filter : filtration.getFilter()) {
             Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>();
             pathIdentifiers. put(1, translator.translate(filter.getTargetField().getValue(),
-                    correlation.getCorrelationItem(), schemaHolder, filter.getInputModel()));
+                    correlation.getCorrelationItem(), schemaHolder, inputModel));
             if (filtrator instanceof TerminationPointFiltrator) {
                 ((TerminationPointFiltrator) filtrator).setPathIdentifier(pathIdentifiers.get(1));
             }
             addFiltrator(filtrator, filter, pathIdentifiers.get(1));
-            UnderlayTopologyListener listener = modelAdapters.get(filter.getInputModel()).
+            UnderlayTopologyListener listener = modelAdapters.get(inputModel).
                     registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
                     correlationItem, datastoreType, filtrator, listeners, pathIdentifiers);
 
-            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(filter.getInputModel())
+            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
                     .createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier itemIdentifier = modelAdapters.get(filter.getInputModel())
+            YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
                     .buildItemIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering filtering underlay topology listener for topology: {}", underlayTopologyId);
             DOMDataTreeIdentifier treeId;
@@ -265,8 +271,8 @@ public abstract class TopologyRequestHandler {
         TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
         TopologyAggregator aggregator;
         if (!aggregation.getMapping().isEmpty()) {
-            aggregator = createAggregator(aggregation.getAggregationType(),
-                    correlationItem, topoStoreProvider, aggregation.getMapping().get(0).getInputModel());
+            aggregator = createAggregator(aggregation.getAggregationType(), correlationItem, topoStoreProvider,
+                    getRealInputModel(aggregation.getMapping().get(0).getInputModel(), correlationItem));
         } else {
             aggregator = createAggregator(aggregation.getAggregationType(),
                     correlationItem, topoStoreProvider, null);
@@ -275,14 +281,16 @@ public abstract class TopologyRequestHandler {
         if (aggregation.getScripting() != null) {
             aggregator.initCustomAggregation(aggregation.getScripting());
         }
+        Class<? extends Model> inputModel;
         for (Mapping mapping : aggregation.getMapping()) {
+            inputModel = getRealInputModel(mapping.getInputModel(), correlationItem);
             String underlayTopologyId = mapping.getUnderlayTopology();
             topoStoreProvider.initializeStore(underlayTopologyId, mapping.isAggregateInside());
             Map<Integer, YangInstanceIdentifier> pathIdentifier = new HashMap<>();
             for (TargetField targetField : mapping.getTargetField()) {
                 pathIdentifier.put(targetField.getMatchingKey(), translator.translate(
                         targetField.getTargetFieldPath().getValue(), correlationItem,
-                        schemaHolder, mapping.getInputModel()));
+                        schemaHolder, inputModel));
             }
             if (aggregator instanceof TerminationPointAggregator) {
                 ((TerminationPointAggregator) aggregator).setTargetField(pathIdentifier);
@@ -294,24 +302,24 @@ public abstract class TopologyRequestHandler {
                 for (String filterId : mapping.getApplyFilters()) {
                     Filter filter = findFilter(correlation.getFiltration().getFilter(), filterId);
                     YangInstanceIdentifier filterPath = translator.translate(filter.getTargetField().getValue(),
-                            correlationItem, schemaHolder, mapping.getInputModel());
+                            correlationItem, schemaHolder, inputModel);
                     addFiltrator(filtrator, filter, filterPath);
                 }
             }
             UnderlayTopologyListener listener;
             if(filtrator == null) {
-                listener = modelAdapters.get(mapping.getInputModel())
+                listener = modelAdapters.get(inputModel)
                         .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId, correlationItem,
                                 datastoreType, aggregator, listeners, pathIdentifier);
             } else {
-                listener = modelAdapters.get(mapping.getInputModel())
+                listener = modelAdapters.get(inputModel)
                         .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId, correlationItem,
                                 datastoreType, filtrator, listeners, pathIdentifier);
             }
 
-            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(mapping.getInputModel())
+            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
                     .createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier itemIdentifier = modelAdapters.get(mapping.getInputModel())
+            YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
                     .buildItemIdentifier(topologyIdentifier, correlationItem);
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
             DOMDataTreeIdentifier treeId ;
@@ -378,15 +386,17 @@ public abstract class TopologyRequestHandler {
                 String underlayTopologyId = linkInfo.getLinkTopology();
                 Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>();
                 UnderlayTopologyListener listener = null;
-                Class<? extends Model> inputModel = linkInfo.getInputModel();
+                Class<? extends Model> inputModel =
+                        getRealInputModel(linkInfo.getInputModel(), CorrelationItemEnum.Link);
                 if(linkAggregation != null)
                 {
                     for (Mapping mapping : linkAggregation.getMapping()) {
                         if(mapping.getUnderlayTopology().equals(underlayTopologyId)) {
                             for (TargetField targetField : mapping.getTargetField()) {
                                 pathIdentifiers.put(targetField.getMatchingKey(), translator.translate(
-                                                targetField.getTargetFieldPath().getValue(), CorrelationItemEnum.Link,
-                                                schemaHolder, mapping.getInputModel()));
+                                        targetField.getTargetFieldPath().getValue(), CorrelationItemEnum.Link,
+                                        schemaHolder, getRealInputModel(mapping.getInputModel(),
+                                                CorrelationItemEnum.Link)));
                             }
                         }
                     }
@@ -440,6 +450,15 @@ public abstract class TopologyRequestHandler {
             }
         }
         return null;
+    }
+
+    private Class<? extends Model> getRealInputModel(Class<? extends Model> model, CorrelationItemEnum item) {
+        // for Inventory model are links stored in NetworkTopology model
+        if(item == CorrelationItemEnum.Link && model.equals(OpendaylightInventoryModel.class)) {
+            return NetworkTopologyModel.class;
+        } else {
+            return model;
+        }
     }
 
     private TopologyAggregator createAggregator(Class<? extends AggregationBase> type, CorrelationItemEnum item,

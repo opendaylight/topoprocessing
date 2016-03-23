@@ -142,7 +142,6 @@ public class TopologyRequestHandlerTest {
         setTestHandler();
         handler.processNewRequest();
 
-        verify(mappingMock, times(13)).getInputModel();
         verify(mappingMock, atMost(3)).getApplyFilters();
         assertTrue(handler.getListeners().size() == 3);
         handler.aggregationOnly = false;
@@ -188,7 +187,6 @@ public class TopologyRequestHandlerTest {
         setTestHandler();
         handler.processNewRequest();
 
-        verify(mappingMock, times(16)).getInputModel();
         verify(mappingMock, times(6)).getApplyFilters();
         assertTrue(handler.getListeners().size() == 3);
         handler.filtrationAggregation = false;
