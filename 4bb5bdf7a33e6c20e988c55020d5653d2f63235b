@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a3f45e8_7fcf22b1",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-24T07:28:54Z",
+      "side": 1,
+      "message": "change variable name",
+      "range": {
+        "startLine": 162,
+        "startChar": 15,
+        "endLine": 162,
+        "endChar": 20
+      },
+      "revId": "4bb5bdf7a33e6c20e988c55020d5653d2f63235b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
