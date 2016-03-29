@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a4c51b2_a5ab64d5",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-29T14:12:44Z",
+      "side": 1,
+      "message": "Use please only two tabs",
+      "range": {
+        "startLine": 221,
+        "startChar": 8,
+        "endLine": 221,
+        "endChar": 24
+      },
+      "revId": "10e7b2d5d4b0803add913a1c168a994af185901c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_25875463",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 390,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-29T14:12:44Z",
+      "side": 1,
+      "message": "Use please only two tabs",
+      "range": {
+        "startLine": 390,
+        "startChar": 16,
+        "endLine": 390,
+        "endChar": 32
+      },
+      "revId": "10e7b2d5d4b0803add913a1c168a994af185901c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_c595d089",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 399,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-29T14:12:44Z",
+      "side": 1,
+      "message": "Use please only two tabs",
+      "range": {
+        "startLine": 397,
+        "startChar": 32,
+        "endLine": 399,
+        "endChar": 48
+      },
+      "revId": "10e7b2d5d4b0803add913a1c168a994af185901c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
