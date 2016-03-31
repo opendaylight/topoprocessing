@@ -16,20 +16,41 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 
 public class MlmtTpIdIpAddress {
 
-    public static String ipv4Address(final TerminationPoint tp) {
-        String tpIdString = tp.getKey().getTpId().getValue().toString();
-        String pattern = "^.*?(?=ipv4=(.*?)(?=&))";
+    private static final String IPV4ADDRESS_PATTERN =
+         "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}" +
+         "([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{N}\\p{L}]+)?";
+
+    private static final String[] PATTERN_LIST = {"^.*?(?=ipv4=(.*?)(?=&))", "^.*?(?=ipv4=(.*?)$)"};
+
+    private static boolean isIpv4(final String ipv4String) {
+        String pattern = IPV4ADDRESS_PATTERN;
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(ipv4String);
+        return m.matches();
+    }
+
+    private static String matchString(final String pattern, final String tpIdString) {
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(tpIdString);
-        if (!m.find()) {
-            pattern = "ipv4=((?:[1-9]{1,3}\\.){3}[1-9]{1,3})$";
-            r = Pattern.compile(pattern);
-            m = r.matcher(tpIdString);
-            if (!m.find()) {
-                return null;
+        if (m.find()) {
+            String ipv4String = m.group(1);
+            if (isIpv4(ipv4String)) {
+                return ipv4String;
             }
         }
 
-        return m.group(1);
+        return null;
+    }
+
+    public static String ipv4Address(final TerminationPoint tp) {
+        String tpIdString = tp.getKey().getTpId().getValue().toString();
+        for (String pattern : PATTERN_LIST) {
+            String match = matchString(pattern, tpIdString);
+            if (match != null) {
+                return match;
+            }
+        }
+
+        return null;
     }
 }
