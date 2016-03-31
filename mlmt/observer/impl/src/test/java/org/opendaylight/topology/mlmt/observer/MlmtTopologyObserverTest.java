@@ -491,6 +491,10 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
     @Test(timeout = 10000)
     public void testOnObservedTopologyCreated() throws Exception {
         handleObservedTopologyCreated(false);
+    }
+
+    @Test(timeout = 10000)
+    public void testOnMultitechObservedTopologyCreated() throws Exception {
         handleObservedTopologyCreated(true);
     }
 
