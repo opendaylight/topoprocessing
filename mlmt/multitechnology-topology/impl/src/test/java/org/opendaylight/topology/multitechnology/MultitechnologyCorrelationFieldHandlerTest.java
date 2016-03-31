@@ -70,14 +70,11 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MultitechnologyNameHandlerTest extends AbstractDataBrokerTest {
+public class MultitechnologyCorrelationFieldHandlerTest extends AbstractDataBrokerTest {
 
     private final Object waitObject = new Object();
     private static final String MLMT = "mlmt:1";
     private static final String EXAMPLE = "example:1";
-    private static final String NODENAMEFIELD = "NODE-NAME";
-    private static final String TPNAMEFIELD = "TP-NAME";
-    private static final String LINKNAMEFIELD = "LINK-NAME";
     private DataBroker dataBroker;
     private Thread thread;
     private MlmtOperationProcessor processor;
@@ -149,188 +146,87 @@ public class MultitechnologyNameHandlerTest extends AbstractDataBrokerTest {
         final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
         final NetworkTopology networkTopology = nb.build();
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.create(NetworkTopology.class), networkTopology);
-        assertCommit(rwTx.submit());
-
-        rwTx = dataBroker.newWriteOnlyTransaction();
         rwTx.put(LogicalDatastoreType.CONFIGURATION,
                 InstanceIdentifier.create(NetworkTopology.class), networkTopology);
         assertCommit(rwTx.submit());
 
-        dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
+        dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
                 mlmtTopologyIid, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);
 
         mlmtTopology = buildMlmtTopology(MLMT);
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, mlmtTopology, true);
+        rwTx.merge(LogicalDatastoreType.CONFIGURATION, mlmtTopologyIid, mlmtTopology, true);
         assertCommit(rwTx.submit());
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
-        Optional<Topology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid).get();
+        Optional<Topology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, mlmtTopologyIid).get();
         assertNotNull(optional);
-        assertTrue("Operational mlmt:1 topology ", optional.isPresent());
+        assertTrue("Configuration mlmt:1 topology ", optional.isPresent());
         final Topology rxTopology = optional.get();
         assertNotNull(rxTopology);
-
-        final NodeBuilder nodeBuilder = new NodeBuilder();
-        final String nodeName1 = "node:1";
-        NodeId nodeId = new NodeId(nodeName1);
-        nodeBuilder.setNodeId(nodeId);
-        NodeKey nodeKey = new NodeKey(nodeId);
-        nodeBuilder.setKey(nodeKey);
-        InstanceIdentifier<Node> nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
-
-        rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, nodeIid, nodeBuilder.build());
-        assertCommit(rwTx.submit());
-
-        final String tpName1 = "tp:1";
-        TpId tpId = new TpId(tpName1);
-        TerminationPointKey tpKey = new TerminationPointKey(tpId);
-        final TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
-        tpBuilder.setKey(tpKey);
-        tpBuilder.setTpId(tpId);
-        InstanceIdentifier<TerminationPoint> instanceId = mlmtTopologyIid
-                .child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
-
-        rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, instanceId, tpBuilder.build());
-        assertCommit(rwTx.submit());
-
-        final String nodeName2 = "node:2";
-        nodeId = new NodeId(nodeName2);
-        nodeBuilder.setNodeId(nodeId);
-        nodeKey = new NodeKey(nodeId);
-        nodeBuilder.setKey(nodeKey);
-        nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
-
-        rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, nodeIid, nodeBuilder.build());
-        assertCommit(rwTx.submit());
-
-        final String tpName2 = "tp:2";
-        tpId = new TpId(tpName2);
-        tpKey = new TerminationPointKey(tpId);
-        tpBuilder.setKey(tpKey);
-        tpBuilder.setTpId(tpId);
-        instanceId = mlmtTopologyIid.child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
-
-        LinkBuilder linkBuilder = new LinkBuilder();
-        String linkName1 = "link:1";
-        LinkId linkId = new LinkId(linkName1);
-        LinkKey linkKey = new LinkKey(linkId);
-        linkBuilder.setKey(linkKey);
-        linkBuilder.setLinkId(linkId);
-
-        SourceBuilder sourceBuilder = new SourceBuilder();
-        nodeId = new NodeId(nodeName1);
-        sourceBuilder.setSourceNode(nodeId);
-        tpId = new TpId(tpName1);
-        sourceBuilder.setSourceTp(tpId);
-        linkBuilder.setSource(sourceBuilder.build());
-
-        DestinationBuilder destinationBuilder = new DestinationBuilder();
-        nodeId = new NodeId(nodeName2);
-        destinationBuilder.setDestNode(nodeId);
-        tpId = new TpId(tpName2);
-        destinationBuilder.setDestTp(tpId);
-        linkBuilder.setDestination(destinationBuilder.build());
-        Link link = linkBuilder.build();
-}
-
-    @Test(timeout = 10000)
-    public void onNodeNameTest() throws Exception {
-        String nodeName = "node:1";
-        final NodeId nodeId = new NodeId(nodeName);
-        final NodeKey nodeKey = new NodeKey(nodeId);
-
-        MultitechnologyNodeNameHandler.putNodeName(dataBroker, processor,
-                mlmtTopologyIid, nodeKey, NODENAMEFIELD, nodeName);
-
-        synchronized (waitObject) {
-            waitObject.wait();
-        }
-
-        String rxNodeName = MultitechnologyNodeNameHandler.getNodeName(dataBroker, processor,
-                mlmtTopologyIid, nodeKey, NODENAMEFIELD);
-        assertEquals(nodeName, rxNodeName);
-
-        nodeName = "node:2";
-        MultitechnologyNodeNameHandler.putNodeName(dataBroker, processor,
-                mlmtTopologyIid, nodeKey, NODENAMEFIELD, nodeName);
-
-        synchronized (waitObject) {
-            waitObject.wait();
-        }
-
-        rxNodeName = MultitechnologyNodeNameHandler.getNodeName(dataBroker, processor,
-                mlmtTopologyIid, nodeKey, NODENAMEFIELD);
-        assertEquals(nodeName, rxNodeName);
     }
 
     @Test(timeout = 10000)
-    public void onTpNameTest() throws Exception {
-        String nodeName = "node:1";
+    public void onNodeCorrelationFieldTest() throws Exception {
+        final String nodeName = "node:1";
+        final String correlation_field = "ISO-SYSTEM-ID";
+        final String iso_system_id = "1921.6800.1077";
         final NodeId nodeId = new NodeId(nodeName);
         final NodeKey nodeKey = new NodeKey(nodeId);
 
-        String tpName = "tp:1";
+        MultitechnologyNodeCorrelationFieldHandler.putCorrelationField(dataBroker, processor,
+                mlmtTopologyIid, nodeKey, correlation_field, iso_system_id);
+
+        synchronized (waitObject) {
+            waitObject.wait();
+        }
+
+        String rxCorrelation = MultitechnologyNodeCorrelationFieldHandler.getCorrelationField(
+                dataBroker, processor, mlmtTopologyIid, nodeKey);
+        assertNotNull(rxCorrelation);
+    }
+
+    @Test(timeout = 10000)
+    public void onTpCorrelationFieldTest() throws Exception {
+        String nodeName = "node:1";
+        final NodeId nodeId = new NodeId(nodeName);
+        final NodeKey nodeKey = new NodeKey(nodeId);
+        final String tpName = "tp:1";
+        final String correlation_field = "IPV4-ADDRESS";
+        final String ip_address = "1.77.88.1";
         final TpId tpId = new TpId(tpName);
         final TerminationPointKey tpKey = new TerminationPointKey(tpId);
 
-        MultitechnologyTpNameHandler.putTpName(dataBroker, processor,
-                mlmtTopologyIid, nodeKey, tpKey, TPNAMEFIELD, tpName);
+        MultitechnologyTpCorrelationFieldHandler.putCorrelationField(dataBroker, processor,
+                mlmtTopologyIid, nodeKey, tpKey, correlation_field, ip_address);
 
         synchronized (waitObject) {
             waitObject.wait();
         }
 
-        String rxTpName = MultitechnologyTpNameHandler.getTpName(dataBroker, processor,
-                mlmtTopologyIid, nodeKey, tpKey, TPNAMEFIELD);
-        assertEquals(tpName, rxTpName);
-
-        tpName = "tp:2";
-        MultitechnologyTpNameHandler.putTpName(dataBroker, processor,
-                mlmtTopologyIid, nodeKey, tpKey, TPNAMEFIELD, tpName);
-
-        synchronized (waitObject) {
-            waitObject.wait();
-        }
-
-        rxTpName = MultitechnologyTpNameHandler.getTpName(dataBroker, processor,
-                mlmtTopologyIid, nodeKey, tpKey, TPNAMEFIELD);
-        assertEquals(tpName, rxTpName);
+        String rxCorrelation = MultitechnologyTpCorrelationFieldHandler.getCorrelationField(
+                dataBroker, processor, mlmtTopologyIid, nodeKey, tpKey);
+        assertNotNull(rxCorrelation);
     }
 
     @Test(timeout = 10000)
-    public void onLinkNameTest() throws Exception {
-        String linkName = "link:1";
+    public void onLinkCorrelationFieldTest() throws Exception {
+        final String linkName = "link:1";
         final LinkId linkId = new LinkId(linkName);
         final LinkKey linkKey = new LinkKey(linkId);
+        final String correlation_field = "SOURCE-TP-NAME";
+        final String source_tp_name = "SSR7:1.66.77.2";
 
-        MultitechnologyLinkNameHandler.putLinkName(dataBroker, processor,
-                mlmtTopologyIid, linkKey, LINKNAMEFIELD, linkName);
-
-        synchronized (waitObject) {
-            waitObject.wait();
-        }
-
-        String rxLinkName = MultitechnologyLinkNameHandler.getLinkName(dataBroker, processor,
-                mlmtTopologyIid, linkKey, LINKNAMEFIELD);
-        assertEquals(linkName, rxLinkName);
-
-        linkName = "link:2";
-        MultitechnologyLinkNameHandler.putLinkName(dataBroker, processor,
-                mlmtTopologyIid, linkKey, LINKNAMEFIELD, linkName);
+        MultitechnologyLinkCorrelationFieldHandler.putCorrelationField(dataBroker, processor,
+                mlmtTopologyIid, linkKey, correlation_field, source_tp_name);
 
         synchronized (waitObject) {
             waitObject.wait();
         }
 
-        rxLinkName = MultitechnologyLinkNameHandler.getLinkName(dataBroker, processor,
-                mlmtTopologyIid, linkKey, LINKNAMEFIELD);
-        assertEquals(linkName, rxLinkName);
+        String rxCorrelationField = MultitechnologyLinkCorrelationFieldHandler.getCorrelationField(
+                dataBroker, processor, mlmtTopologyIid, linkKey);
+        assertNotNull(rxCorrelationField);
     }
 
     @After

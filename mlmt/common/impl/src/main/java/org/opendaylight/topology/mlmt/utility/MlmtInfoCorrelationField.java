@@ -16,4 +16,5 @@ public class MlmtInfoCorrelationField {
     static final public String MTINFO_ATTR_CORRELATION_INV_TP_ID = "INV-TP-ID";
     static final public String MTINFO_ATTR_CORRELATION_TP_IPV4_ADDRESS = "IPV4-ADDRESS";
     static final public String MTINFO_ATTR_CORRELATION_SOURCE_TP_NAME = "SOURCE-TP-NAME";
+    static final public String MTINFO_ATTR_CORRELATION_FIELD_SEP = "::";
 }
