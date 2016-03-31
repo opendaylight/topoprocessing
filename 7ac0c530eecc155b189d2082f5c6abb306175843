@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a4c51b2_b7dd4f45",
+        "filename": "mlmt/common/impl/src/test/java/org/opendaylight/topology/mlmt/utility/MlmtTpIdAddressTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-31T09:39:32Z",
+      "side": 1,
+      "message": "this is valid ip address",
+      "range": {
+        "startLine": 53,
+        "startChar": 8,
+        "endLine": 53,
+        "endChar": 31
+      },
+      "revId": "7ac0c530eecc155b189d2082f5c6abb306175843",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_57d84b53",
+        "filename": "mlmt/common/impl/src/test/java/org/opendaylight/topology/mlmt/utility/MlmtTpIdAddressTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 60,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-31T09:39:32Z",
+      "side": 1,
+      "message": "this is invalid ip address. I think you changed it with comment above",
+      "range": {
+        "startLine": 60,
+        "startChar": 8,
+        "endLine": 60,
+        "endChar": 44
+      },
+      "revId": "7ac0c530eecc155b189d2082f5c6abb306175843",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_37f13fce",
+        "filename": "mlmt/common/impl/src/test/java/org/opendaylight/topology/mlmt/utility/MlmtTpIdAddressTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-31T09:39:32Z",
+      "side": 1,
+      "message": "what do you mean by null?",
+      "range": {
+        "startLine": 66,
+        "startChar": 11,
+        "endLine": 66,
+        "endChar": 15
+      },
+      "revId": "7ac0c530eecc155b189d2082f5c6abb306175843",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_17eec3ec",
+        "filename": "mlmt/common/impl/src/test/java/org/opendaylight/topology/mlmt/utility/MlmtTpIdAddressTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-31T09:39:32Z",
+      "side": 1,
+      "message": "what do you mean by null?",
+      "range": {
+        "startLine": 100,
+        "startChar": 11,
+        "endLine": 100,
+        "endChar": 15
+      },
+      "revId": "7ac0c530eecc155b189d2082f5c6abb306175843",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
