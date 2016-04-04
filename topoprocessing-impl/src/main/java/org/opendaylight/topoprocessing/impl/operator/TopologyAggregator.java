@@ -145,7 +145,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
         return targetFieldsMatch;
     }
 
-    private boolean aggregableWithScript(UnderlayItem newItem, UnderlayItem topoStoreItem) {
+    private synchronized boolean aggregableWithScript(UnderlayItem newItem, UnderlayItem topoStoreItem) {
         ScriptResult scriptResult = new ScriptResult();
         scriptEngine.put("aggregable", scriptResult);
         scriptEngine.put("originalItem", topoStoreItem);
