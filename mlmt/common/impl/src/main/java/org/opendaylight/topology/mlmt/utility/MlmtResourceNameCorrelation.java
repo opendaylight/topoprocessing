@@ -74,7 +74,7 @@ public interface MlmtResourceNameCorrelation {
     void putNodeId2NodeName(final NodeId nodeId, final String nodeName);
     String getNodeName(final NodeId nodeId);
 
-    void putInvNodeKey2NodeId(final NodeKey invNodeKey, NodeId nodeId);
+    void putInvNodeKey2NodeId(final NodeKey invNodeKey, final NodeId nodeId);
     NodeId getNodeId(final NodeKey invNodeKey);
 
     void putInvNodeConnectorKey2TpId(final NodeKey invNodeKey,
