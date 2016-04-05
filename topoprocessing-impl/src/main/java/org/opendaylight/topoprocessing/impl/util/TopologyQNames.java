@@ -78,6 +78,9 @@ public final class TopologyQNames {
     public static final QName I2RS_LINK_DEST_NODE_QNAME = QName.create(
             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
             .network.topology.rev150608.network.link.Destination.QNAME, "dest-node");
+    /**I2RS termination-point QName**/
+    public static final QName I2RS_TERMINATION_POINT_QNAME = org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.
+            ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME;
 
     /** Network-topology topology-id QName */
     public static final QName TOPOLOGY_ID_QNAME = QName.create(Topology.QNAME, "topology-id");

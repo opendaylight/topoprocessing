@@ -41,7 +41,7 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.CollectionNo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class I2RSNodeTranslator implements NodeTranslator{
+public class I2RSNodeTranslator implements NodeTranslator {
 
     private static final Logger LOG = LoggerFactory.getLogger(I2RSNodeTranslator.class);
 
@@ -50,15 +50,15 @@ public class I2RSNodeTranslator implements NodeTranslator{
         LOG.debug("Transforming OverlayItemWrapper containing Nodes to datastore format");
         IdentifierGenerator idGenerator = new IdentifierGenerator();
         List<UnderlayItem> writtenNodes = new ArrayList<>();
-        CollectionNodeBuilder<MapEntryNode, MapNode> supportingNodes = ImmutableNodes.mapNodeBuilder(
-                SupportingNode.QNAME);
-        CollectionNodeBuilder<MapEntryNode, MapNode> terminationPoints = ImmutableNodes.mapNodeBuilder(
-                TerminationPoint.QNAME);
+        CollectionNodeBuilder<MapEntryNode, MapNode> supportingNodes = ImmutableNodes
+                .mapNodeBuilder(SupportingNode.QNAME);
+        CollectionNodeBuilder<MapEntryNode, MapNode> terminationPoints = ImmutableNodes
+                .mapNodeBuilder(TerminationPoint.QNAME);
         // iterate through overlay items containing nodes
         for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
             // iterate through overlay item
             for (UnderlayItem underlayItem : overlayItem.getUnderlayItems()) {
-                if (! writtenNodes.contains(underlayItem)) {
+                if (!writtenNodes.contains(underlayItem)) {
                     writtenNodes.add(underlayItem);
                     NormalizedNode<?, ?> itemNode = underlayItem.getItem();
                     // prepare supporting nodes
@@ -66,73 +66,70 @@ public class I2RSNodeTranslator implements NodeTranslator{
                     keyValues.put(TopologyQNames.I2RS_NETWORK_REF, underlayItem.getTopologyId());
                     keyValues.put(TopologyQNames.I2RS_NODE_REF, underlayItem.getItemId());
                     supportingNodes.withChild(ImmutableNodes.mapEntryBuilder().withNodeIdentifier(
-                            new YangInstanceIdentifier.NodeIdentifierWithPredicates(
-                                    SupportingNode.QNAME, keyValues)).build());
+                            new YangInstanceIdentifier.NodeIdentifierWithPredicates(SupportingNode.QNAME, keyValues))
+                            .build());
                     // prepare termination points
                     Class<? extends Model> model = I2rsModel.class;
-                    Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
-                            itemNode, InstanceIdentifiers.I2RS_TP_IDENTIFIER);
+                    Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(itemNode,
+                            InstanceIdentifiers.I2RS_TERMINATION_POINT);
                     if (!terminationPointMapNode.isPresent()) {
                         model = NetworkTopologyModel.class;
                         terminationPointMapNode = NormalizedNodes.findNode(itemNode,
-                                InstanceIdentifiers.NT_TP_IDENTIFIER);
+                                InstanceIdentifiers.NT_TERMINATION_POINT);
                     }
                     if (terminationPointMapNode.isPresent()) {
-                        /*
-                        if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint
-                                && model.equals(I2rsModel.class)) {
-                            Collection<MapEntryNode> terminationPointMapEntries =
-                                    ((MapNode) terminationPointMapNode.get()).getValue();
+                        if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint) {
+                            Collection<MapEntryNode> terminationPointMapEntries = ((MapNode) terminationPointMapNode
+                                    .get()).getValue();
                             for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
                                 terminationPoints.addChild(terminationPointMapEntry);
                             }
                         } else {
-                        */
                             List<MapEntryNode> terminationPointEntries = createTerminationPoint(
                                     (MapNode) terminationPointMapNode.get(), underlayItem.getTopologyId(),
                                     underlayItem.getItemId(), idGenerator, model);
                             for (MapEntryNode terminationPointMapEntry : terminationPointEntries) {
                                 terminationPoints.addChild(terminationPointMapEntry);
                             }
-                        //}
+                        }
                     }
                 }
             }
         }
 
-        return ImmutableNodes
-                .mapEntryBuilder(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, wrapper.getId())
-                .withChild(supportingNodes.build())
-                .withChild(terminationPoints.build())
-                .build();
+        return ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, wrapper.getId())
+                .withChild(supportingNodes.build()).withChild(terminationPoints.build()).build();
     }
 
     private List<MapEntryNode> createTerminationPoint(MapNode terminationPoints, String topologyId, String nodeId,
             IdentifierGenerator idGenerator, Class<? extends Model> model) {
         List<MapEntryNode> terminationPointEntries = new ArrayList<>();
         for (MapEntryNode mapEntryNode : terminationPoints.getValue()) {
-            Optional<DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?>> terminationPointIdOpt;
+            Optional<DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?>> terminationPointIdOpt = null;
             if (model.equals(I2rsModel.class)) {
-                terminationPointIdOpt = mapEntryNode.getChild(
-                        InstanceIdentifiers.I2RS_TP_ID_IDENTIFIER.getLastPathArgument());
+                terminationPointIdOpt = mapEntryNode
+                        .getChild(InstanceIdentifiers.I2RS_TP_ID_IDENTIFIER.getLastPathArgument());
             } else {
-                terminationPointIdOpt = mapEntryNode.getChild(
-                        InstanceIdentifiers.NT_TP_ID_IDENTIFIER.getLastPathArgument());
+                terminationPointIdOpt = mapEntryNode
+                        .getChild(InstanceIdentifiers.NT_TP_ID_IDENTIFIER.getLastPathArgument());
             }
             if (terminationPointIdOpt.isPresent()) {
-                String tpRefId = (String)terminationPointIdOpt.get().getValue();
-                CollectionNodeBuilder<MapEntryNode, MapNode> supportingTermPoints = ImmutableNodes.mapNodeBuilder(
-                        SupportingTerminationPoint.QNAME);
+                String tpRefId = (String) terminationPointIdOpt.get().getValue();
+                CollectionNodeBuilder<MapEntryNode, MapNode> supportingTermPoints = ImmutableNodes
+                        .mapNodeBuilder(SupportingTerminationPoint.QNAME);
                 Map<QName, Object> keys = new HashMap<>();
                 keys.put(TopologyQNames.I2RS_TP_REF, tpRefId);
                 keys.put(TopologyQNames.I2RS_TP_NETWORK_REF, topologyId);
                 keys.put(TopologyQNames.I2RS_TP_NODE_REF, nodeId);
-                supportingTermPoints.withChild(ImmutableNodes.mapEntryBuilder()
+                supportingTermPoints.addChild(ImmutableNodes.mapEntryBuilder()
                         .withNodeIdentifier(new NodeIdentifierWithPredicates(SupportingTerminationPoint.QNAME, keys))
                         .build());
                 String tpId = idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint);
-                terminationPointEntries.add(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME,
-                        TopologyQNames.I2RS_TP_ID_QNAME, tpId).withChild(supportingTermPoints.build()).build());
+                terminationPointEntries
+                        .add(ImmutableNodes
+                                .mapEntryBuilder(TopologyQNames.I2RS_TERMINATION_POINT_QNAME,
+                                        TopologyQNames.I2RS_TP_ID_QNAME, tpId)
+                                .withChild(supportingTermPoints.build()).build());
             }
         }
         return terminationPointEntries;

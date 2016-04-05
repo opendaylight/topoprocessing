@@ -12,14 +12,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
-import org.opendaylight.topoprocessing.impl.operator.filtrator.AbstractFiltrator;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.topology.rev150608.network.node.termination.point.SupportingTerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
@@ -27,22 +25,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventoryModel;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifierWithPredicates;
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
-import org.opendaylight.yangtools.yang.data.api.schema.LeafSetEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.CollectionNodeBuilder;
-import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.ListNodeBuilder;
-import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLeafSetEntryNodeBuilder;
-import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLeafSetNodeBuilder;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableMapEntryNodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.common.base.Optional;
+import org.opendaylight.topoprocessing.impl.operator.filtrator.AbstractFiltrator;
 
 /**
  * @author matus.marko
@@ -59,16 +56,20 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         this.model = model;
     }
 
+    public TerminationPointFiltrator(TopoStoreProvider topoStoreProvider) {
+        super(topoStoreProvider);
+    }
+
     @Override
     public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry, String topologyId) {
         LOGGER.trace("Processing createdChanges");
         NormalizedNode<?, ?> node = createdEntry.getItem();
         Optional<NormalizedNode<?, ?>> tpMapNodeOpt = null;
         if (model.equals(NetworkTopologyModel.class)) {
-            tpMapNodeOpt = NormalizedNodes.findNode(node,InstanceIdentifiers.NT_TERMINATION_POINT);
-        } else if (model.equals(I2rsModel.class)){
-            tpMapNodeOpt = NormalizedNodes.findNode(node,InstanceIdentifiers.I2RS_TERMINATION_POINT);
-        } else if (model.equals(OpendaylightInventoryModel.class)){
+            tpMapNodeOpt = NormalizedNodes.findNode(node, InstanceIdentifiers.NT_TERMINATION_POINT);
+        } else if (model.equals(I2rsModel.class)) {
+            tpMapNodeOpt = NormalizedNodes.findNode(node, InstanceIdentifiers.I2RS_TERMINATION_POINT);
+        } else if (model.equals(OpendaylightInventoryModel.class)) {
             tpMapNodeOpt = NormalizedNodes.findNode(createdEntry.getLeafNodes().values().iterator().next(),
                     InstanceIdentifiers.INVENTORY_NODE_CONNECTOR_IDENTIFIER);
         }
@@ -85,8 +86,8 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
     @Override
     public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedEntry, String topologyId) {
         LOGGER.trace("Processing updatedChanges");
-        Map<YangInstanceIdentifier, UnderlayItem> oldUnderlayItems =
-                getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems();
+        Map<YangInstanceIdentifier, UnderlayItem> oldUnderlayItems = getTopoStoreProvider().getTopologyStore(topologyId)
+                .getUnderlayItems();
         OverlayItem overlayItem;
         UnderlayItem newUnderlayItem = updatedEntry;
         NormalizedNode<?, ?> newNode = newUnderlayItem.getItem();
@@ -94,7 +95,7 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
                 YangInstanceIdentifier.of(TerminationPoint.QNAME));
         if (tpMapNodeOpt.isPresent()) {
             newNode = filterTerminationPoints(newNode, (MapNode) tpMapNodeOpt.get(), topologyId,
-                            updatedEntry.getItemId());
+                    updatedEntry.getItemId());
             newUnderlayItem.setItem(newNode);
         }
         UnderlayItem oldUnderlayItem = oldUnderlayItems.get(identifier);
@@ -108,8 +109,7 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
 
     private NormalizedNode<?, ?> filterTerminationPoints(NormalizedNode<?, ?> node, MapNode tpMapNode,
             String topologyId, String itemId) {
-        CollectionNodeBuilder<MapEntryNode, MapNode> tpBuilder = ImmutableNodes.mapNodeBuilder(
-                TerminationPoint.QNAME);
+        CollectionNodeBuilder<MapEntryNode, MapNode> tpBuilder = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME);
         // checks if pathIdentifiers are present if not initialize them from available filtrators
         if (! pathIdentifiers.isPresent()) {
             pathIdentifiers = Optional.of(new HashMap<>());
@@ -134,7 +134,8 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
                     MapEntryNode tp = createInventoryTpEntry(tpMapEntryNode, node, topologyId, itemId);
                     tpBuilder.addChild(tp);
                 } else {
-                    tpBuilder.addChild(tpMapEntryNode);
+                    MapEntryNode tp = createI2rsTpEntry(tpMapEntryNode, node, topologyId, itemId);
+                    tpBuilder.addChild(tp);
                 }
             }
         }
@@ -142,19 +143,18 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         return node;
     }
 
-    private MapEntryNode createInventoryTpEntry(MapEntryNode tpMapEntryNode, NormalizedNode<?,?> node,
+    private MapEntryNode createInventoryTpEntry(MapEntryNode tpMapEntryNode, NormalizedNode<?, ?> node,
             String topologyId, String itemId) {
         String tpId = idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint);
-        Optional<NormalizedNode<?, ?>> nodeConnectorIdOptional = NormalizedNodes
-                .findNode(tpMapEntryNode, InstanceIdentifiers.INVENTORY_NODE_ID_IDENTIFIER);
-        Optional<NormalizedNode<?, ?>> tpMapNodeOpt =
-                NormalizedNodes.findNode(node,InstanceIdentifiers.NT_TERMINATION_POINT);
+        CollectionNodeBuilder<MapEntryNode, MapNode> supportingTermPoints = ImmutableNodes
+                .mapNodeBuilder(SupportingTerminationPoint.QNAME);
+        Optional<NormalizedNode<?, ?>> nodeConnectorIdOptional = NormalizedNodes.findNode(tpMapEntryNode,
+                InstanceIdentifiers.INVENTORY_NODE_ID_IDENTIFIER);
+        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(node,
+                InstanceIdentifiers.NT_TERMINATION_POINT);
         String tpIdFromNt = null;
-        ListNodeBuilder<String, LeafSetEntryNode<String>> leafListBuilder =
-                ImmutableLeafSetNodeBuilder.<String>create()
-                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(TopologyQNames.TP_REF));
-        if(nodeConnectorIdOptional.isPresent()) {
-            if(tpMapNodeOpt.isPresent()) {
+        if (nodeConnectorIdOptional.isPresent()) {
+            if (tpMapNodeOpt.isPresent()) {
                 for (MapEntryNode mapEntryNode : ((MapNode) tpMapNodeOpt.get()).getValue()) {
                     Optional<DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?>> tpIdOpt =
                             mapEntryNode.getChild(InstanceIdentifiers.NT_TP_ID_IDENTIFIER.getLastPathArgument());
@@ -174,16 +174,40 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         } else {
             LOGGER.warn("No Node Connector ID is present!");
         }
-        String tpRefVal = "/network-topology:network-topology/topology/" + topologyId +
-                "/node/" + itemId + "/termination-point/" + tpIdFromNt;
-        LeafSetEntryNode<String> tpRef = ImmutableLeafSetEntryNodeBuilder.<String>create()
-                .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue<String>(
-                        TopologyQNames.TP_REF, tpRefVal)).withValue(tpRefVal).build();
-        leafListBuilder.addChild(tpRef);
-        MapEntryNode tp = ImmutableNodes
-                .mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId)
-                .withChild(leafListBuilder.build()).build();
-        return tp;
+        Map<QName, Object> keys = new HashMap<>();
+        keys.put(TopologyQNames.I2RS_TP_REF, tpIdFromNt);
+        keys.put(TopologyQNames.I2RS_TP_NETWORK_REF, topologyId);
+        keys.put(TopologyQNames.I2RS_TP_NODE_REF, tpIdFromNt);
+        supportingTermPoints.addChild(ImmutableNodes.mapEntryBuilder()
+                .withNodeIdentifier(new NodeIdentifierWithPredicates(SupportingTerminationPoint.QNAME, keys)).build());
+        return ImmutableNodes
+                .mapEntryBuilder(TopologyQNames.I2RS_TERMINATION_POINT_QNAME, TopologyQNames.I2RS_TP_ID_QNAME, tpId)
+                .withChild(supportingTermPoints.build()).build();
     }
 
+    private MapEntryNode createI2rsTpEntry(MapEntryNode tpMapEntryNode, NormalizedNode<?, ?> node, String topologyId,
+            String nodeId) {
+        String tpId = idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint);
+        CollectionNodeBuilder<MapEntryNode, MapNode> supportingTermPoints = ImmutableNodes
+                .mapNodeBuilder(SupportingTerminationPoint.QNAME);
+        Optional<DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?>> terminationPointIdOpt = null;
+        if (model.equals(NetworkTopologyModel.class)) {
+            terminationPointIdOpt = tpMapEntryNode
+                    .getChild(InstanceIdentifiers.NT_TP_ID_IDENTIFIER.getLastPathArgument());
+        } else if (model.equals(I2rsModel.class)) {
+            terminationPointIdOpt = tpMapEntryNode
+                    .getChild(InstanceIdentifiers.I2RS_TP_ID_IDENTIFIER.getLastPathArgument());
+        }
+        if (terminationPointIdOpt.isPresent()) {
+            Map<QName, Object> keys = new HashMap<>();
+            keys.put(TopologyQNames.I2RS_TP_REF, terminationPointIdOpt.get().getValue());
+            keys.put(TopologyQNames.I2RS_TP_NETWORK_REF, topologyId);
+            keys.put(TopologyQNames.I2RS_TP_NODE_REF, nodeId);
+            supportingTermPoints.addChild(ImmutableNodes.mapEntryBuilder()
+                    .withNodeIdentifier(new NodeIdentifierWithPredicates(SupportingTerminationPoint.QNAME, keys))
+                    .build());
+        }
+        return ImmutableNodes.mapEntryBuilder(TopologyQNames.I2RS_TERMINATION_POINT_QNAME,
+                TopologyQNames.I2RS_TP_ID_QNAME, tpId).withChild(supportingTermPoints.build()).build();
+    }
 }
