@@ -20,6 +20,7 @@ import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.topology.rev150608.network.node.termination.point.SupportingTerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -181,16 +182,16 @@ public class TerminationPointAggregatorTest {
         Assert.assertNotNull("OverlayItem should contain some nodes", topoManager.getNewOverlayItem().getUnderlayItems());
         NormalizedNode<?, ?> node = topoManager.getNewOverlayItem().getUnderlayItems().peek().getItem();
         Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(node,
-                YangInstanceIdentifier.of(TerminationPoint.QNAME));
+                YangInstanceIdentifier.of(TopologyQNames.I2RS_TERMINATION_POINT_QNAME));
         Assert.assertTrue("Node should contain TerminationPointMap", tpMapNodeOpt.isPresent());
         MapNode tpMapNode = (MapNode) tpMapNodeOpt.get();
         ArrayList<MapEntryNode> mapEntryNodes = new ArrayList<>(tpMapNode.getValue());
         Assert.assertEquals("Number of Termination Points", 2, mapEntryNodes.size());
 
         for (MapEntryNode mapEntryNode : mapEntryNodes) {
-            Optional<DataContainerChild<? extends PathArgument, ?>> tpRefsOpt = mapEntryNode.getChild(new NodeIdentifier(TopologyQNames.TP_REF));
+            Optional<DataContainerChild<? extends PathArgument, ?>> tpRefsOpt = mapEntryNode.getChild(new NodeIdentifier(SupportingTerminationPoint.QNAME));
             Assert.assertTrue("TP Entry should have some REFs", tpRefsOpt.isPresent());
-            Collection<LeafSetEntryNode<String>> tpRefs = ((LeafSetNode<String>) tpRefsOpt.get()).getValue();
+            Collection<MapEntryNode> tpRefs = ((MapNode) tpRefsOpt.get()).getValue();
             if (3 == tpRefs.size()) {
 //                TP entry node 1
                 ArrayList<String> stack = new ArrayList<>();
@@ -198,8 +199,8 @@ public class TerminationPointAggregatorTest {
                 stack.add(TP_ID3);
                 stack.add(TP_ID5);
                 int i = 1;
-                for (LeafSetEntryNode<String> tpRef : tpRefs) {
-                    Assert.assertNotNull("TP1 reference" + i, stack.remove(((String) tpRef.getValue())));
+                for (MapEntryNode tpRef : tpRefs) {
+                    Assert.assertNotNull("TP1 reference" + i, stack.remove(((String) tpRef.getValue().iterator().next().getValue())));
                     i++;
                 }
             } else if (2 == tpRefs.size()) {
@@ -208,8 +209,8 @@ public class TerminationPointAggregatorTest {
                 stack.add(TP_ID2);
                 stack.add(TP_ID4);
                 int i = 1;
-                for (LeafSetEntryNode<String> tpRef : tpRefs) {
-                    Assert.assertNotNull("TP2 reference" + i, stack.remove(((String) tpRef.getValue())));
+                for (MapEntryNode tpRef : tpRefs) {
+                    Assert.assertNotNull("TP2 reference" + i, stack.remove(((String) tpRef.getValue().iterator().next().getValue())));
                     i++;
                 }
             } else {
@@ -255,44 +256,15 @@ public class TerminationPointAggregatorTest {
         Assert.assertNotNull("OverlayItem should contain some nodes", topoManager.getOldOverlayItem().getUnderlayItems());
         NormalizedNode<?, ?> node = topoManager.getOldOverlayItem().getUnderlayItems().peek().getItem();
         Collection<MapEntryNode> tpMapNodes = ((MapNode) NormalizedNodes.findNode(node,
-                YangInstanceIdentifier.of(TerminationPoint.QNAME)).get()).getValue();
+                YangInstanceIdentifier.of(TopologyQNames.I2RS_TERMINATION_POINT_QNAME)).get()).getValue();
         Assert.assertEquals("Number of Termination Points", 3, tpMapNodes.size());
         ArrayList<MapEntryNode> mapEntryNodes = new ArrayList<>(tpMapNodes);
-
         for (MapEntryNode mapEntryNode : mapEntryNodes) {
-            Optional<DataContainerChild<? extends PathArgument, ?>> tpRefs
-                    = mapEntryNode.getChild(new NodeIdentifier(TopologyQNames.TP_REF));
-            Assert.assertTrue("TP should contain tp-id", tpRefs.isPresent());
-            List<LeafSetEntryNode<String>> tpRefEntries = new ArrayList<>(((LeafSetNode<String>) tpRefs.get()).getValue());
-            if (tpRefEntries.get(0).getValue().contains("tp:1")) {
-                Assert.assertTrue(tpRefEntries.get(1).getValue().contains("tp:3"));
-                Assert.assertEquals("", 2, tpRefEntries.size());
-            } else if (tpRefEntries.get(0).getValue().contains("tp:3")) {
-                Assert.assertTrue(tpRefEntries.get(1).getValue().contains("tp:1"));
-                Assert.assertEquals("", 2, tpRefEntries.size());
-            } else if (tpRefEntries.get(0).getValue().contains("tp:2")) {
-                Assert.assertTrue(tpRefEntries.get(1).getValue().contains("tp:4"));
-                Assert.assertEquals("", 2, tpRefEntries.size());
-            } else if (tpRefEntries.get(0).getValue().contains("tp:4")) {
-                Assert.assertTrue(tpRefEntries.get(1).getValue().contains("tp:2"));
-                Assert.assertEquals("", 2, tpRefEntries.size());
-            } else if (tpRefEntries.get(0).getValue().contains("tp:5")) {
-                Assert.assertEquals("", 1, tpRefEntries.size());
-            }
-            /*
-                switch ((String) tpRef.getValue()) {
-                    case "tp:1":
-                    case "tp:2":
-                    break;
-                    case TP_ID5:
-                    Optional<DataContainerChild<? extends PathArgument, ?>> tpRefs
-                            = mapEntryNode.getChild(new NodeIdentifier(TopologyQNames.TP_REF));
-                    Assert.assertTrue("Termination Point 3 should not contains TP-REFS", tpRefs.isPresent());
-                    break;
-                    default:
-                        Assert.fail("TP Node should not contain other TPs" + tpRef.get().getValue());
-                }
-                */
+            Optional<DataContainerChild<? extends PathArgument, ?>> tpId
+                    = mapEntryNode.getChild(new NodeIdentifier(TopologyQNames.I2RS_TP_ID_QNAME));
+            Assert.assertTrue("TP should contain tp-id", tpId.isPresent());
+            Optional<DataContainerChild<? extends PathArgument, ?>> tpRefsOpt = mapEntryNode.getChild(new NodeIdentifier(SupportingTerminationPoint.QNAME));
+            Assert.assertTrue("TP Entry should have some REFs", tpRefsOpt.isPresent());
         }
     }
 

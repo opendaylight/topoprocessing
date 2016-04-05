@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
@@ -22,7 +21,6 @@ import org.opendaylight.topoprocessing.impl.translator.NodeTranslator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
@@ -47,8 +45,6 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-
 /**
  * @author matej.perina
  *
@@ -56,7 +52,6 @@ import com.google.common.base.Optional;
 public class NTNodeTranslator implements NodeTranslator{
 
     private static final Logger LOG = LoggerFactory.getLogger(NTNodeTranslator.class);
-    private static final YangInstanceIdentifier TP_IDENTIFIER = YangInstanceIdentifier.of(TerminationPoint.QNAME);
 
     @Override
     public NormalizedNode<?, ?> translate(OverlayItemWrapper wrapper) {
@@ -91,8 +86,7 @@ public class NTNodeTranslator implements NodeTranslator{
                                 InstanceIdentifiers.I2RS_TP_IDENTIFIER);
                     }
                     if (terminationPointMapNode.isPresent()) {
-                        if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint &&
-                                        !FiltrationOnly.class.equals(overlayItem.getCorrelationType())) {
+                        if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint) {
                             Collection<MapEntryNode> terminationPointMapEntries =
                                     ((MapNode) terminationPointMapNode.get()).getValue();
                             for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
@@ -105,13 +99,11 @@ public class NTNodeTranslator implements NodeTranslator{
                             for (MapEntryNode terminationPointMapEntry : terminationPointEntries) {
                                 terminationPoints.addChild(terminationPointMapEntry);
                             }
-
                         }
                     }
                 }
             }
         }
-
         return ImmutableNodes
                 .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, wrapper.getId())
                 .withChild(supportingNodes.build())
@@ -140,7 +132,6 @@ public class NTNodeTranslator implements NodeTranslator{
                         .append(nodeId).append("/")
                         .append(TerminationPoint.QNAME.getLocalName()).append("/")
                         .append((String) terminationPointIdOpt.get().getValue());
-
                 LeafSetEntryNode<String> tpRef = ImmutableLeafSetEntryNodeBuilder.<String>create()
                         .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue<String>(
                                 TopologyQNames.TP_REF, tpRefValue.toString())).withValue(tpRefValue.toString()).build();
