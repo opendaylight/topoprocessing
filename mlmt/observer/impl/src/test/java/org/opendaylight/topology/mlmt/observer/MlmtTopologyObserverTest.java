@@ -211,8 +211,12 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
     @Test(timeout = 10000)
     public void testOnUnderlayTopologyCreated() throws Exception {
         handleTestOnUnderlayTopologyCreated(false);
+    }
+
+    @Test(timeout = 10000)
+    public void testOnMultitechUnderlayTopologyCreated() throws Exception {
         handleTestOnUnderlayTopologyCreated(true);
-   }
+    }
 
     private void handleTestOnUnderlayTopologyCreated(boolean multitechFlag) throws Exception {
         InstanceIdentifier<Topology> mlmtTopologyIid = buildTopologyIid(MLMT);
