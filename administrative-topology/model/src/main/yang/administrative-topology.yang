@@ -1,0 +1,351 @@
+module administrative-topology {
+    yang-version 1;
+    namespace "urn:opendaylight:topology:administrative";
+    prefix "admin-topo";
+
+    import yang-ext         { prefix "ext";   revision-date 2013-07-09; }
+
+    import ietf-yang-types  { prefix "yang";  revision-date 2010-09-24; }
+    import network-topology { prefix "nt";    revision-date 2013-10-21; }
+
+    organization "Ericsson AB";
+    contact "carlo.perocchio@ericsson.com
+             Ericsson
+             Via Melen, 77
+             Genoa - 16152
+             Italy";
+
+    description
+        "
+        Copyright (c) 2015 Ericsson, AB.  All rights reserved.
+
+        This program and the accompanying materials are made available
+        under the terms of the Eclipse Public License v1.0 which
+        accompanies this distribution, and is available at
+        http://www.eclipse.org/legal/epl-v10.html
+
+        This module introduces states in network-topology:
+        so topology can be more than the operational state of the network.
+
+        This definition is introduced in an SDN context.";
+
+    revision "2015-10-20" {
+        description
+            "Initial revision.";
+    }
+
+    grouping administrative-topology-type {
+        container administrative-topology {
+            presence "indicates an Administrative Topology";
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:topology-types" {
+        ext:augment-identifier "administrative-topology-type-info";
+        uses administrative-topology-type;
+    }
+
+
+    grouping topology-config {
+        leaf max-age {
+            description "";
+            type uint32;
+            units "sec";
+            config true;
+            default 3600;
+        }
+        leaf graceful-period {
+            description "";
+            type uint32;
+            units "sec";
+            config true;
+            default 0;
+        }
+    }
+
+    identity admin-state-base {
+    }
+    identity unmanaged {
+        base admin-state-base;
+    }
+    identity locked {
+        base admin-state-base;
+    }
+    identity unlocked {
+        base admin-state-base;
+    }
+    identity shutting-down {
+        base admin-state-base;
+    }
+
+    identity oper-state-base {
+    }
+    identity unknown-op-state {
+        base oper-state-base;
+    }
+    identity enabled-state {
+        base oper-state-base;
+    }
+    identity disabled-state {
+        base oper-state-base;
+    }
+    identity testing-state {
+        base oper-state-base;
+    }
+
+    identity usage-state-base {
+    }
+    identity unknown-usage-state {
+        base usage-state-base;
+    }
+    identity idle {
+        base usage-state-base;
+    }
+    identity active {
+        base usage-state-base;
+    }
+    identity busy {
+        base usage-state-base;
+    }
+
+    grouping network-resource-state {
+        leaf admin-state {
+            type identityref {
+                base admin-state-base;
+            }
+            config true;
+            default unmanaged;
+        }
+        leaf oper-state {
+            type identityref {
+                base oper-state-base;
+            }
+        }
+        leaf last-oper-state-change-event {
+            type yang:date-and-time;
+        }
+        leaf expired-on {
+            type yang:date-and-time;
+        }
+        leaf usage-state {
+            type identityref {
+                base usage-state-base;
+            }
+        }
+        leaf ref-count {
+            type uint32;
+            config false;
+        }
+    }
+
+    grouping node-state {
+        uses network-resource-state;
+    }
+
+    grouping termination-point-state {
+        uses network-resource-state;
+    }
+
+    grouping link-state {
+        uses network-resource-state;
+    }
+
+    augment "/nt:network-topology/nt:topology" {
+        when "./nt:topology-types/administrative-topology";
+        ext:augment-identifier "administrative-topology-info";
+        uses topology-config;
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:node" {
+        when "../nt:topology-types/administrative-topology";
+        ext:augment-identifier "node-state-info";
+        uses node-state;
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:node/nt:termination-point" {
+        when "../../nt:topology-types/administrative-topology";
+        ext:augment-identifier "termination-point-state-info";
+        uses termination-point-state;
+    }
+
+    augment "/nt:network-topology/nt:topology/nt:link" {
+        when "../nt:topology-types/administrative-topology";
+        ext:augment-identifier "link-state-info";
+        uses link-state;
+    }
+
+    //
+    // As in: bgpcep/topology/api/src/main/yang/odl-network-topology.yang
+    //
+    identity administrative-topology-context {
+        description
+            "Identity used to mark the administrative topology context.
+             Defined for RPC binding to a particular topology instance.
+             The instance must support Administrative Topology RPCs.";
+    }
+
+    typedef administrative-network-topology-ref {
+        type instance-identifier;
+        ext:context-reference "administrative-topology-context";
+    }
+
+    grouping administrative-network-topology-reference {
+        leaf administrative-network-topology-ref {
+            type administrative-network-topology-ref;
+            mandatory true;
+            ext:context-reference "administrative-topology-context";
+        }
+    }
+
+    augment "/nt:network-topology/nt:topology" {
+        ext:context-instance "administrative-topology-context";
+    }
+
+    rpc ref-count-update {
+        input {
+            uses administrative-network-topology-reference {
+                description
+                    "The context of the network resources:
+                     the administrative network topology instance representing them.";
+            }
+            list node {
+                key "node-id";
+                leaf node-id {
+                    type nt:node-id;
+                }
+                list tp {
+                    key "tp-id";
+                    leaf tp-id {
+                        type nt:tp-id;
+                    }
+                }
+            }
+            list link {
+                key "link-id";
+                leaf link-id {
+                    type nt:link-id;
+                }
+            }
+            choice operation {
+                leaf increment {
+                    type uint32;
+                }
+                leaf decrement {
+                    type uint32;
+                }
+                leaf clear {
+                    type empty;
+                }
+            }
+        }
+        output {
+            choice result {
+                leaf ok {
+                    type empty;
+                }
+                container error {
+                }
+            }
+        }
+    }
+
+    rpc age-timer-update {
+        input {
+            uses administrative-network-topology-reference {
+                description
+                    "The context of the network resources:
+                     the administrative network topology instance representing them.";
+            }
+            leaf max-age {
+                description "Max age timer value";
+                type uint32;
+                units "sec";
+        }
+       }
+       output {
+            choice result {
+                leaf ok {
+                    type empty;
+                }
+                container error {
+                }
+            }
+        }
+    }
+
+    rpc graceful-period-timer-update {
+        input {
+            uses administrative-network-topology-reference {
+                description
+                    "The context of the network resources:
+                     the administrative network topology instance representing them.";
+            }
+            leaf graceful-period {
+                description "Graceful period timer value";
+                type uint32;
+                units "sec";
+        }
+       }
+       output {
+            choice result {
+                leaf ok {
+                    type empty;
+                }
+                container error {
+                }
+            }
+        }
+    }
+
+    rpc resource-admin-state-update {
+        input {
+            uses administrative-network-topology-reference {
+                description
+                    "The context of the network resources:
+                     the administrative network topology instance representing them.";
+            }
+            list node {
+                key "node-id";
+                leaf node-id {
+                    type nt:node-id;
+                }
+                choice propagate {
+                    list tp {
+                        key "tp-id";
+                        leaf tp-id {
+                            type nt:tp-id;
+                        }
+                    }
+                    leaf all-tp {
+                        description
+                            "If present the specified node admin state value is implicitely
+                            propagated to its termination-points";
+                        type empty;
+                    }
+                }
+            }
+            list link {
+                key "link-id";
+                leaf link-id {
+                    type nt:link-id;
+                }
+            }
+
+            leaf admin-state {
+                type identityref {
+                    base admin-state-base;
+                }
+            }
+        }
+
+        output {
+            choice result {
+                leaf ok {
+                    type empty;
+                }
+                container error {
+                }
+            }
+        }
+    }
+}
