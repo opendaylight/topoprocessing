@@ -24,6 +24,7 @@
         <module>distribution-karaf</module>
         <module>features</module>
         <module>forwarding</module>
+        <module>administrative-topology</module>
         <module>rwa</module>
         <module>mlmt</module>
         <module>parent</module>
