@@ -25,18 +25,19 @@ import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
-import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
-import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
-import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
+import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
+import org.opendaylight.topoprocessing.impl.operator.LinkCalculator;
+import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
 import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TopoStoreProvider;
 import org.opendaylight.topoprocessing.impl.operator.TerminationPointPreAggregationFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TerminationPointFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.LinkFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
-import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
-import org.opendaylight.topoprocessing.impl.operator.LinkCalculator;
-import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
 import org.opendaylight.topoprocessing.impl.operator.UnificationAggregator;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
@@ -50,6 +51,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationAggregation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.InventoryRenderingModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventoryModel;
@@ -224,6 +226,8 @@ public abstract class TopologyRequestHandler {
         topoStoreProvider.initializeStore(underlayTopologyId, false);
         if (correlationItem.equals(CorrelationItemEnum.TerminationPoint)) {
             filtrator = new TerminationPointFiltrator(topoStoreProvider, inputModel);
+        } else if (correlationItem.equals(CorrelationItemEnum.Link)) {
+            filtrator = new LinkFiltrator(topoStoreProvider);
         } else {
             filtrator = new TopologyFiltrator(topoStoreProvider);
         }
@@ -254,6 +258,26 @@ public abstract class TopologyRequestHandler {
             ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
                     pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
             listeners.add(listenerRegistration);
+
+            if(correlation.getCorrelationItem().equals(CorrelationItemEnum.Link)) {
+                listener = modelAdapters.get(inputModel).
+                        registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
+                                CorrelationItemEnum.Node, datastoreType, filtrator, listeners, null);
+                topologyIdentifier = modelAdapters.get(inputModel)
+                        .createTopologyIdentifier(underlayTopologyId);
+                itemIdentifier = modelAdapters.get(inputModel)
+                        .buildItemIdentifier(topologyIdentifier, CorrelationItemEnum.Node);
+                LOG.debug("Registering secondary underlay topology listener for topology (in case of filtering on " +
+                        "links): {}", underlayTopologyId);
+                if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
+                    treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
+                } else {
+                    treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
+                }
+                listenerRegistration =
+                        pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
+                listeners.add(listenerRegistration);
+            }
         }
     }
 
