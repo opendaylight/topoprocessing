@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a4c51b2_e75d4deb",
+        "filename": "administrative-topology/impl/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-09T08:27:48Z",
+      "side": 1,
+      "message": "trailing space",
+      "range": {
+        "startLine": 5,
+        "startChar": 54,
+        "endLine": 5,
+        "endChar": 55
+      },
+      "revId": "cc203dc43e77b5d97d56deb14620f06eb9951e64",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_4772417d",
+        "filename": "administrative-topology/model/src/main/yang/administrative-topology.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-09T08:27:48Z",
+      "side": 1,
+      "message": "trailing space",
+      "range": {
+        "startLine": 208,
+        "startChar": 58,
+        "endLine": 208,
+        "endChar": 59
+      },
+      "revId": "cc203dc43e77b5d97d56deb14620f06eb9951e64",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_276f3594",
+        "filename": "administrative-topology/model/src/main/yang/administrative-topology.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 256,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-09T08:27:48Z",
+      "side": 1,
+      "message": "trailing space",
+      "range": {
+        "startLine": 256,
+        "startChar": 58,
+        "endLine": 256,
+        "endChar": 59
+      },
+      "revId": "cc203dc43e77b5d97d56deb14620f06eb9951e64",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_876c499e",
+        "filename": "administrative-topology/model/src/main/yang/administrative-topology.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-09T08:27:48Z",
+      "side": 1,
+      "message": "trailing space",
+      "range": {
+        "startLine": 280,
+        "startChar": 58,
+        "endLine": 280,
+        "endChar": 59
+      },
+      "revId": "cc203dc43e77b5d97d56deb14620f06eb9951e64",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_67693d8b",
+        "filename": "administrative-topology/model/src/main/yang/administrative-topology.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 304,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-09T08:27:48Z",
+      "side": 1,
+      "message": "trailing space",
+      "range": {
+        "startLine": 304,
+        "startChar": 58,
+        "endLine": 304,
+        "endChar": 59
+      },
+      "revId": "cc203dc43e77b5d97d56deb14620f06eb9951e64",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_c705b1c3",
+        "filename": "administrative-topology/model/src/main/yang/administrative-topology.yang",
+        "patchSetId": 1
+      },
+      "lineNbr": 320,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-09T08:27:48Z",
+      "side": 1,
+      "message": "trailing space",
+      "range": {
+        "startLine": 320,
+        "startChar": 35,
+        "endLine": 320,
+        "endChar": 36
+      },
+      "revId": "cc203dc43e77b5d97d56deb14620f06eb9951e64",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
