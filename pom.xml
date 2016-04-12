@@ -23,7 +23,6 @@
     <modules>
         <module>distribution-karaf</module>
         <module>features</module>
-        <module>forwarding</module>
         <module>rwa</module>
         <module>mlmt</module>
         <module>parent</module>
