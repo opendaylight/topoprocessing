@@ -308,7 +308,9 @@ public abstract class TopologyRequestHandler {
         for (Mapping mapping : aggregation.getMapping()) {
             inputModel = getRealInputModel(mapping.getInputModel(), correlationItem);
             String underlayTopologyId = mapping.getUnderlayTopology();
-            topoStoreProvider.initializeStore(underlayTopologyId, mapping.isAggregateInside());
+            // original statement - topoStoreProvider.initializeStore(underlayTopologyId, mapping.isAggregateInside());
+            // aggregation inside is always enabled due to bug5190
+            topoStoreProvider.initializeStore(underlayTopologyId, true);
             Map<Integer, YangInstanceIdentifier> pathIdentifier = new HashMap<>();
             for (TargetField targetField : mapping.getTargetField()) {
                 pathIdentifier.put(targetField.getMatchingKey(), translator.translate(

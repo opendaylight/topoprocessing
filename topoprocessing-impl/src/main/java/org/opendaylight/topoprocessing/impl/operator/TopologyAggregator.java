@@ -85,15 +85,17 @@ public abstract class TopologyAggregator implements TopologyOperator {
                         checkForPossibleAggregationOfLinks(newItem, topoStoreItem);
                     }
                     else {
-                        if (scriptEngine != null) {
-                            if (aggregableWithScript(newItem, topoStoreItem)) {
+                        if (! newItem.equals(topoStoreItem)) {
+                            if (scriptEngine != null) {
+                                if (aggregableWithScript(newItem, topoStoreItem)) {
+                                    aggregateItems(newItem, topoStoreItem);
+                                    return;
+                                }
+                            } else if (matchTargetFields(newItem, topoStoreItem)) {
+                                // no previous aggregation on this node
                                 aggregateItems(newItem, topoStoreItem);
                                 return;
                             }
-                        } else if (! newItem.equals(topoStoreItem) && matchTargetFields(newItem, topoStoreItem)) {
-                            // no previous aggregation on this node
-                            aggregateItems(newItem, topoStoreItem);
-                            return;
                         }
                     }
                 }
