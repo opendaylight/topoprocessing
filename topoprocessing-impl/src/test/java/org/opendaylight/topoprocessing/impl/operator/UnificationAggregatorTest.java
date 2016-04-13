@@ -16,10 +16,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.topoprocessing.api.structure.ComputedLink;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestNodeCreator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.Scripting;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
@@ -44,13 +46,17 @@ public class UnificationAggregatorTest {
     private static final String TOPO3 = "topo3";
     private static final String TOPO4 = "topo4";
 
+    public static final String script = "aggregable.setResult(true);";
+
     private TopologyAggregator aggregator;
-    private YangInstanceIdentifier leafYiid21, leafYiid22, leafYiid23;
+    private YangInstanceIdentifier leafYiid21, leafYiid22, leafYiid23, leafYiid24;
 
     @Mock
     private NormalizedNode<?,?> mockNormalizedNode1, mockNormalizedNode2;
     @Mock
     private TopologyManager mockManager;
+    @Mock
+    private Scripting mockScripting;
 
     /**
      * Setup schema
@@ -76,8 +82,10 @@ public class UnificationAggregatorTest {
         topoStoreProvider.initializeStore(TOPO2, false);
         topoStoreProvider.initializeStore(TOPO3, false);
         topoStoreProvider.initializeStore(TOPO4, false);
-
         aggregator.setTopologyManager(mockManager);
+        // setup script mock
+        Mockito.when(mockScripting.getLanguage()).thenReturn("javascript");
+        Mockito.when(mockScripting.getScript()).thenReturn(script);
     }
 
     /**
@@ -106,24 +114,42 @@ public class UnificationAggregatorTest {
         LeafNode<String> leafNode22 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.3");
         Map<Integer, NormalizedNode<?, ?>> targetFields1 = new HashMap<>(1);
         targetFields1.put(0, leafNode21);
-        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, targetFields1, TOPO2, "21", CorrelationItemEnum.Node);
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, targetFields1, TOPO2, "21",
+                CorrelationItemEnum.Node);
         Map<Integer, NormalizedNode<?, ?>> targetFields2 = new HashMap<>(1);
         targetFields2.put(0, leafNode22);
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, targetFields2, TOPO2, "22", CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, targetFields2, TOPO2, "22",
+                CorrelationItemEnum.Node);
+
+        leafYiid24 = testNodeCreator.createNodeIdYiid("24");
+        LeafNode<String> leafNode24 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.1");
+        Map<Integer, NormalizedNode<?, ?>> targetFields4 = new HashMap<>(1);
+        targetFields4.put(0, leafNode24);
+        UnderlayItem physicalNode4 = new UnderlayItem(mockNormalizedNode1, targetFields4, TOPO2, "24",
+                CorrelationItemEnum.Node);
+
+        // add to topostrore node that wasnt processed with operator to test if agregator process this correctly
+        aggregator.getTopoStoreProvider().getTopologyStore(TOPO4).getUnderlayItems().put(leafYiid24,physicalNode4);
 
         aggregator.processCreatedChanges(leafYiid21, physicalNode1, TOPO2);
         aggregator.processCreatedChanges(leafYiid22, physicalNode2, TOPO2);
+
+        // enable scripting, next tests will be performed with script
+        aggregator.initCustomAggregation(mockScripting);
 
         Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
         // checks that two nodes have been correctly added into topology TOPO2
         Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
         Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO3).getUnderlayItems().size());
-        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO4).getUnderlayItems().size());
+        Assert.assertEquals(1, aggregator.getTopoStoreProvider().getTopologyStore(TOPO4).getUnderlayItems().size());
 
         // addLogicalNode method has been called twice
         Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) Mockito.any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) Mockito.any());
         Mockito.verify(mockManager, Mockito.times(0)).updateOverlayItem((OverlayItem) Mockito.any());
+
+        // test if script was initailized
+        Mockito.verify(mockScripting).getScript();
 
         // change 2
         leafYiid23 = YangInstanceIdentifier.builder()
@@ -133,7 +159,8 @@ public class UnificationAggregatorTest {
                 .withValue("192.168.1.1").build();
         Map<Integer, NormalizedNode<?, ?>> targetFields3 = new HashMap<>(1);
         targetFields3.put(0, leafNode23);
-        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, targetFields3, TOPO3, "23", CorrelationItemEnum.Node);
+        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, targetFields3, TOPO3, "23",
+                CorrelationItemEnum.Node);
 
         aggregator.processCreatedChanges(leafYiid23, physicalNode3, TOPO3);
 
@@ -141,7 +168,7 @@ public class UnificationAggregatorTest {
         Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
         // checks that one node has been correctly added into topology TOPO3
         Assert.assertEquals(1, aggregator.getTopoStoreProvider().getTopologyStore(TOPO3).getUnderlayItems().size());
-        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO4).getUnderlayItems().size());
+        Assert.assertEquals(1, aggregator.getTopoStoreProvider().getTopologyStore(TOPO4).getUnderlayItems().size());
 
         Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) Mockito.any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) Mockito.any());
@@ -171,7 +198,7 @@ public class UnificationAggregatorTest {
         Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
         // no physical nodes in topology store TOPO3 (=get(2))
         Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO3).getUnderlayItems().size());
-        Assert.assertEquals(0, aggregator.getTopoStoreProvider().getTopologyStore(TOPO4).getUnderlayItems().size());
+        Assert.assertEquals(1, aggregator.getTopoStoreProvider().getTopologyStore(TOPO4).getUnderlayItems().size());
 
         Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) Mockito.any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) Mockito.any());
@@ -204,14 +231,66 @@ public class UnificationAggregatorTest {
                 .withValue("192.168.1.3").build();
         Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
         targetFields.put(0, leafNode31);
-        UnderlayItem physicalNode31 = new UnderlayItem(mockNormalizedNode1, targetFields, TOPO2, "31", CorrelationItemEnum.Node);
+        UnderlayItem physicalNode31 = new UnderlayItem(mockNormalizedNode1, targetFields, TOPO2, "31",
+                CorrelationItemEnum.Node);
         aggregator.processUpdatedChanges(leafYiid21, physicalNode31, TOPO2);
 
         // one new logical node has been created
-        Mockito.verify(mockManager, Mockito.times(3)).addOverlayItem((OverlayItem) Mockito.any());
+        Mockito.verify(mockManager, Mockito.times(2)).addOverlayItem((OverlayItem) Mockito.any());
         Mockito.verify(mockManager, Mockito.times(0)).removeOverlayItem((OverlayItem) Mockito.any());
         // one logical nodes has been updated
-        Mockito.verify(mockManager, Mockito.times(2)).updateOverlayItem((OverlayItem) Mockito.any());
+        Mockito.verify(mockManager, Mockito.times(3)).updateOverlayItem((OverlayItem) Mockito.any());
+    }
+
+
+
+    @Test
+    public void testProcessCreatedChangesOnLinks() throws Exception {
+        TestNodeCreator testNodeCreator = new TestNodeCreator();
+        leafYiid21 = testNodeCreator.createNodeIdYiid("21");
+        LeafNode<String> leafNode21 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.1");
+        leafYiid22 = testNodeCreator.createNodeIdYiid("22");
+        LeafNode<String> leafNode22 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.1.3");
+        Map<Integer, NormalizedNode<?, ?>> targetFieldsLinks1 = new HashMap<>(1);
+        targetFieldsLinks1.put(0, leafNode21);
+        targetFieldsLinks1.put(1, leafNode22);
+
+        leafYiid21 = testNodeCreator.createNodeIdYiid("31");
+        LeafNode<String> leafNode31 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.2.1");
+        leafYiid22 = testNodeCreator.createNodeIdYiid("32");
+        LeafNode<String> leafNode32 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.2.3");
+        Map<Integer, NormalizedNode<?, ?>> targetFieldsLinks2 = new HashMap<>(1);
+        targetFieldsLinks2.put(0, leafNode31);
+        targetFieldsLinks2.put(1, leafNode32);
+
+        leafYiid21 = testNodeCreator.createNodeIdYiid("41");
+        LeafNode<String> leafNode41 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.3.1");
+        leafYiid22 = testNodeCreator.createNodeIdYiid("42");
+        LeafNode<String> leafNode42 = ImmutableNodes.leafNode(QNAME_LEAF_IP, "192.168.3.3");
+        Map<Integer, NormalizedNode<?, ?>> targetFieldsLinks3 = new HashMap<>(1);
+        targetFieldsLinks3.put(0, leafNode41);
+        targetFieldsLinks3.put(1, leafNode42);
+        ComputedLink physicalLink1 = new ComputedLink(mockNormalizedNode1, targetFieldsLinks1,leafNode21,leafNode22,
+                TOPO2, "link1", CorrelationItemEnum.Link);
+        ComputedLink physicalLink2 = new ComputedLink(mockNormalizedNode2, targetFieldsLinks2,leafNode31,leafNode32,
+                TOPO2, "link2", CorrelationItemEnum.Link);
+        ComputedLink physicalLink3 = new ComputedLink(mockNormalizedNode2, targetFieldsLinks3,leafNode41,leafNode42,
+                TOPO2, "link3", CorrelationItemEnum.Link);
+
+        // process creation of two links
+        aggregator.processCreatedChanges(leafYiid21, physicalLink1, TOPO2);
+        aggregator.processCreatedChanges(leafYiid22, physicalLink2, TOPO2);
+        // process update of link
+        aggregator.processUpdatedChanges(leafYiid22, physicalLink3, TOPO2);
+
+        Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO1).getUnderlayItems().size());
+        Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO2).getUnderlayItems().size());
+        Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO3).getUnderlayItems().size());
+        Assert.assertEquals(2, aggregator.getTopoStoreProvider().getTopologyStore(TOPO4).getUnderlayItems().size());
+
+        Mockito.verify(mockManager, Mockito.times(3)).addOverlayItem((OverlayItem) Mockito.any());
+        Mockito.verify(mockManager, Mockito.times(1)).removeOverlayItem((OverlayItem) Mockito.any());
+        Mockito.verify(mockManager, Mockito.times(0)).updateOverlayItem((OverlayItem) Mockito.any());
     }
 
 }
