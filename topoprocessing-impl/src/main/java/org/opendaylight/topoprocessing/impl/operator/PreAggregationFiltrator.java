@@ -13,6 +13,8 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
+
 /**
  * @author michal.polkorab
  *
@@ -29,7 +31,7 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
     @Override
     public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry, String topologyId) {
         LOGGER.trace("Processing createdChanges");
-        if (passedFiltration(createdEntry.getLeafNodes().values().iterator().next())) {
+        if (passedFiltration(createdEntry.getLeafNodes().values())) {
             aggregator.processCreatedChanges(identifier, createdEntry, topologyId);
         }
     }
@@ -40,14 +42,14 @@ public class PreAggregationFiltrator extends TopologyFiltrator {
         UnderlayItem olditem = getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().get(identifier);
         if (null == olditem) {
             // updateditem is not present yet
-            if (passedFiltration(updatedEntry.getItem())) {
+            if (passedFiltration(updatedEntry.getLeafNodes().values())) {
                 // passed through filtrator
                 aggregator.processCreatedChanges(identifier, updatedEntry, topologyId);
             }
             // else do nothing
         } else {
             // updateditem exists already
-            if (passedFiltration(updatedEntry.getItem())) {
+            if (passedFiltration(updatedEntry.getLeafNodes().values())) {
                 // passed through filtrator
                 aggregator.processUpdatedChanges(identifier, updatedEntry, topologyId);
             } else {

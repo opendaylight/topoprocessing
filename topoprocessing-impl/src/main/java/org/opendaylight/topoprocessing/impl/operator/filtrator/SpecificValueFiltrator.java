@@ -25,10 +25,9 @@ import com.google.common.base.Preconditions;
  * @author matus.marko
  * @param <T> filtration type
  */
-public class SpecificValueFiltrator<T> implements Filtrator {
+public class SpecificValueFiltrator<T> extends AbstractFiltrator {
 
     private static final Logger LOG = LoggerFactory.getLogger(SpecificValueFiltrator.class);
-    private final YangInstanceIdentifier pathIdentifier;
     private final T value;
 
     /**
@@ -37,9 +36,8 @@ public class SpecificValueFiltrator<T> implements Filtrator {
      * @param pathIdentifier defines path to {@link NormalizedNode}, which contains value that will be used for filtering
      */
     public SpecificValueFiltrator(T value, YangInstanceIdentifier pathIdentifier) {
+        super(pathIdentifier);
         Preconditions.checkNotNull(value, "Filtering value can't be null");
-        Preconditions.checkNotNull(pathIdentifier, "PathIdentifier can't be null");
-        this.pathIdentifier = pathIdentifier;
         this.value = value;
     }
 

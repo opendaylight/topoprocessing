@@ -8,11 +8,15 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.topoprocessing.impl.operator.filtrator.AbstractFiltrator;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
@@ -46,17 +50,13 @@ import com.google.common.base.Optional;
 public class TerminationPointFiltrator extends TopologyFiltrator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TerminationPointFiltrator.class);
-    private YangInstanceIdentifier pathIdentifier;
+    private Optional<Map<Integer, YangInstanceIdentifier>> pathIdentifiers = Optional.absent();
     private Class<? extends Model> model;
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
 
     public TerminationPointFiltrator(TopoStoreProvider topoStoreProvider, Class<? extends Model> model) {
         super(topoStoreProvider);
         this.model = model;
-    }
-
-    public TerminationPointFiltrator(TopoStoreProvider topoStoreProvider) {
-        super(topoStoreProvider);
     }
 
     @Override
@@ -110,16 +110,31 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
             String topologyId, String itemId) {
         CollectionNodeBuilder<MapEntryNode, MapNode> tpBuilder = ImmutableNodes.mapNodeBuilder(
                 TerminationPoint.QNAME);
+        // checks if pathIdentifiers are present if not initialize them from available filtrators
+        if (! pathIdentifiers.isPresent()) {
+            pathIdentifiers = Optional.of(new HashMap<>());
+            for (int i = 0; i < filtrators.size(); i++) {
+                pathIdentifiers.get().put(i,((AbstractFiltrator)filtrators.get(i)).getPathIdentifier());
+            }
+        }
+        boolean passed;
         for (MapEntryNode tpMapEntryNode : tpMapNode.getValue()) {
-            Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(tpMapEntryNode, pathIdentifier);
-            if (leafNode.isPresent()) {
-                if (passedFiltration(leafNode.get())) {
-                    if (model.equals(OpendaylightInventoryModel.class)) {
-                        MapEntryNode tp = createInventoryTpEntry(tpMapEntryNode, node, topologyId, itemId);
-                        tpBuilder.addChild(tp);
-                    } else {
-                        tpBuilder.addChild(tpMapEntryNode);
+            passed = true;
+            for (Map.Entry<Integer, YangInstanceIdentifier> pathIdentifier: pathIdentifiers.get().entrySet()) {
+                Optional<NormalizedNode<?, ?>> leafNode =
+                        NormalizedNodes.findNode(tpMapEntryNode, pathIdentifier.getValue());
+                    if (! leafNode.isPresent() || ! passedFiltration(leafNode.get())) {
+                        passed = false;
+                        break;
                     }
+            }
+            //check if any Filtrator filtered out
+            if (passed) {
+                if (model.equals(OpendaylightInventoryModel.class)) {
+                    MapEntryNode tp = createInventoryTpEntry(tpMapEntryNode, node, topologyId, itemId);
+                    tpBuilder.addChild(tp);
+                } else {
+                    tpBuilder.addChild(tpMapEntryNode);
                 }
             }
         }
@@ -171,7 +186,4 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         return tp;
     }
 
-    public void setPathIdentifier(YangInstanceIdentifier pathIdentifier) {
-        this.pathIdentifier = pathIdentifier;
-    }
 }
