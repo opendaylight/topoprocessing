@@ -12,11 +12,13 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.topoprocessing.impl.operator.filtrator.AbstractFiltrator;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestNodeCreator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 
@@ -27,11 +29,14 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 public class TopologyFiltratorTest {
 
     private static final String TOPOLOGY_NAME = "mytopo:1";
+    private static final QName UNNUMBERED_QNAME = QName.create(TerminationPoint.QNAME, "unnumbered");
+
 
     private TestNodeCreator creator = new TestNodeCreator();
     private TopologyFiltrator filtrator;
-    @Mock private Filtrator mockFiltrator;
+    @Mock private AbstractFiltrator mockFiltrator;
     @Mock private TopologyManager mockTopologyManager;
+    private YangInstanceIdentifier pathIdentifier = YangInstanceIdentifier.builder().node(UNNUMBERED_QNAME).build();
 
 
     protected List<YangInstanceIdentifier> threeNodesSameTopologyNodeYiid = new ArrayList<YangInstanceIdentifier>() {{
@@ -55,6 +60,8 @@ public class TopologyFiltratorTest {
 
         // create 3 nodes
         Mockito.when(mockFiltrator.isFiltered((NormalizedNode) Matchers.any())).thenReturn(false);
+        Mockito.when(mockFiltrator.getPathIdentifier()).thenReturn(pathIdentifier);
+
 
         String nodeId = "node:1";
         map.put(0, creator.createLeafNodeWithIpAddress("192.168.1.1"));

@@ -10,6 +10,7 @@ package org.opendaylight.topoprocessing.impl.operator;
 
 import com.google.common.base.Optional;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.topoprocessing.impl.operator.filtrator.AbstractFiltrator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
@@ -27,6 +28,9 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableMa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * @author matus.marko
@@ -34,13 +38,8 @@ import org.slf4j.LoggerFactory;
 public class TerminationPointPreAggregationFiltrator extends PreAggregationFiltrator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PreAggregationFiltrator.class);
-    private YangInstanceIdentifier pathIdentifier;
+    private Optional<Map<Integer, YangInstanceIdentifier>> pathIdentifiers = Optional.absent();
     private Class<? extends Model> model;
-
-    public TerminationPointPreAggregationFiltrator(TopoStoreProvider topoStoreProvider) {
-        super(topoStoreProvider);
-    }
-
 
     public TerminationPointPreAggregationFiltrator(TopoStoreProvider topoStoreProvider, Class<? extends Model> model) {
         super(topoStoreProvider);
@@ -88,25 +87,38 @@ public class TerminationPointPreAggregationFiltrator extends PreAggregationFiltr
         }
     }
 
-
     private NormalizedNode<?, ?> filterTerminationPoints(NormalizedNode<?, ?> node, MapNode tpMapNode) {
         CollectionNodeBuilder<MapEntryNode, MapNode> tpBuilder = ImmutableNodes.mapNodeBuilder(
                 TerminationPoint.QNAME);
+        if (! pathIdentifiers.isPresent()) {
+            pathIdentifiers = Optional.of(new HashMap<>());
+            for (int i = 0; i < filtrators.size(); i++) {
+                pathIdentifiers.get().put(i,((AbstractFiltrator)filtrators.get(i)).getPathIdentifier());
+            }
+        }
+        boolean passed;
+        int presentCount;
         for (MapEntryNode tpMapEntryNode : tpMapNode.getValue()) {
-            Optional<NormalizedNode<?, ?>> leafNode = NormalizedNodes.findNode(tpMapEntryNode, pathIdentifier);
-            if (leafNode.isPresent()) {
-                if (passedFiltration(leafNode.get())) {
-                    tpBuilder.addChild(tpMapEntryNode);
+            passed = true;
+            presentCount = 0;
+            for (Map.Entry<Integer, YangInstanceIdentifier> pathIdentifier: pathIdentifiers.get().entrySet()) {
+                Optional<NormalizedNode<?, ?>> leafNode =
+                        NormalizedNodes.findNode(tpMapEntryNode, pathIdentifier.getValue());
+                if (leafNode.isPresent()) {
+                    presentCount++;
+                    if (! passedFiltration(leafNode.get())){
+                        passed = false;
+                        break;
+                    }
                 }
+            }
+            //check if any Filtrator filtered out and if all TargetFields were tested/present
+            if (passed && presentCount==pathIdentifiers.get().size()) {
+                tpBuilder.addChild(tpMapEntryNode);
             }
         }
         node = ImmutableMapEntryNodeBuilder.create((MapEntryNode) node).withChild(tpBuilder.build()).build();
         return node;
-    }
-
-
-    public void setPathIdentifier(YangInstanceIdentifier pathIdentifier) {
-        this.pathIdentifier = pathIdentifier;
     }
 
 }

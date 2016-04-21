@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +26,7 @@ import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
+import org.opendaylight.topoprocessing.impl.operator.filtrator.AbstractFiltrator;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestingDOMDataBroker;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
@@ -57,6 +59,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
+import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 
 /**
  *
@@ -115,7 +118,7 @@ public class TopologyRequestHandlerTest {
         setFiltrationBehaviour();
         handler.processNewRequest();
 
-        assertTrue(handler.getListeners().size() == 2);
+        assertTrue(handler.getListeners().size() == 1);
         handler.filtrationOnly = false;
     }
 
@@ -209,6 +212,10 @@ public class TopologyRequestHandlerTest {
         when(filterMock.getFilterType()).thenReturn(null);
         FiltratorFactory filtratorFactoryMock = mock(FiltratorFactory.class);
         when(filtratorsMock.get(null)).thenReturn(filtratorFactoryMock);
+        AbstractFiltrator abstractFiltrator = mock(AbstractFiltrator.class);
+        when(filtratorFactoryMock.createFiltrator((Filter)any(),(YangInstanceIdentifier) any())).thenReturn(abstractFiltrator);
+        when(abstractFiltrator.getPathIdentifier()).thenReturn(YangInstanceIdentifier.EMPTY);
+        when(abstractFiltrator.isFiltered((NormalizedNode<?, ?>) any())).thenReturn(true);
     }
 
     private void setTestHandler(){

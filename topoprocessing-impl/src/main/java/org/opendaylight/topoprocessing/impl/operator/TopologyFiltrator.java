@@ -8,14 +8,13 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import com.google.common.base.Preconditions;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
+import org.opendaylight.topoprocessing.impl.operator.filtrator.AbstractFiltrator;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
@@ -28,9 +27,9 @@ public class TopologyFiltrator implements TopologyOperator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyFiltrator.class);
 
-    private List<Filtrator> filtrators = new ArrayList<>();
-    protected TopologyManager manager;
-    private TopoStoreProvider topoStoreProvider;
+    List<Filtrator> filtrators = new ArrayList<>();
+    TopologyManager manager;
+    TopoStoreProvider topoStoreProvider;
 
     public TopologyFiltrator(TopoStoreProvider topoStoreProvider) {
         this.topoStoreProvider = topoStoreProvider;
@@ -44,7 +43,7 @@ public class TopologyFiltrator implements TopologyOperator {
     @Override
     public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdItem, String topologyId) {
         LOGGER.trace("Processing createdChanges");
-        if (passedFiltration(createdItem.getLeafNodes().values().iterator().next())) {
+        if (passedFiltration(createdItem.getLeafNodes().values())) {
             topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, createdItem);
             OverlayItem overlayItem = wrapUnderlayItem(createdItem);
             manager.addOverlayItem(overlayItem);
@@ -57,7 +56,7 @@ public class TopologyFiltrator implements TopologyOperator {
         UnderlayItem oldItem = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().get(identifier);
         if (null == oldItem) {
             // updatedItem is not present yet
-            if (passedFiltration(updatedItem.getItem())) {
+            if (passedFiltration(updatedItem.getLeafNodes().values())) {
                 // passed through filtrator
                 topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, updatedItem);
                 manager.addOverlayItem(wrapUnderlayItem(updatedItem));
@@ -65,7 +64,7 @@ public class TopologyFiltrator implements TopologyOperator {
             // else do nothing
         } else {
             // updatedItem exists already
-            if (passedFiltration(updatedItem.getItem())) {
+            if (passedFiltration(updatedItem.getLeafNodes().values())) {
                 // passed through filtrator
                 topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, updatedItem);
                 OverlayItem overlayItem = oldItem.getOverlayItem();
@@ -86,7 +85,8 @@ public class TopologyFiltrator implements TopologyOperator {
     @Override
     public void processRemovedChanges(YangInstanceIdentifier itemIdentifier, String topologyId) {
         LOGGER.trace("Processing removedChanges");
-        UnderlayItem underlayItem = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().remove(itemIdentifier);
+        UnderlayItem underlayItem = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems()
+                .remove(itemIdentifier);
         if (null != underlayItem) {
             manager.removeOverlayItem(underlayItem.getOverlayItem());
         }
@@ -102,19 +102,34 @@ public class TopologyFiltrator implements TopologyOperator {
      * @param filter Node Ip Filtrator
      */
     public void addFilter(Filtrator filter) {
+        Preconditions.checkArgument(filter instanceof AbstractFiltrator,"Filtrator must be subclass of " +
+                "AbstractFiltrator!");
         filtrators.add(filter);
     }
 
-    protected boolean passedFiltration(NormalizedNode<?, ?> node) {
-        for (Filtrator filtrator : filtrators) {
-            if (filtrator.isFiltered(node)) {
+    boolean passedFiltration(Collection<NormalizedNode<?, ?>> nodes) {
+        //check if there is same count of Filtrators and TargetFields (nodes)
+        if (nodes.size() != filtrators.size()) return false;
+        for (NormalizedNode<?, ?> node: nodes) {
+            if (! passedFiltration(node)) {
                 return false;
             }
         }
         return true;
     }
 
-    protected OverlayItem wrapUnderlayItem(UnderlayItem underlayItem) {
+    boolean passedFiltration(NormalizedNode<?, ?> node) {
+        for (Filtrator filtrator : filtrators) {
+            if (node.getIdentifier().equals(((AbstractFiltrator)filtrator).getPathIdentifier().getLastPathArgument())) {
+                if (filtrator.isFiltered(node)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    OverlayItem wrapUnderlayItem(UnderlayItem underlayItem) {
         List<UnderlayItem> underlayItems = Collections.singletonList(underlayItem);
         OverlayItem overlayItem = new OverlayItem(underlayItems, underlayItem.getCorrelationItem());
         underlayItem.setOverlayItem(overlayItem);

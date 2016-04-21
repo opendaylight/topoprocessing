@@ -8,19 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -30,24 +25,15 @@ public class LinkFiltrator extends TopologyFiltrator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LinkFiltrator.class);
 
-    private List<Filtrator> filtrators = new ArrayList<>();
-    protected TopologyManager manager;
-    private TopoStoreProvider topoStoreProvider;
-
     public LinkFiltrator(TopoStoreProvider topoStoreProvider) {
         super(topoStoreProvider);
-        this.topoStoreProvider = topoStoreProvider;
-    }
-
-    protected TopoStoreProvider getTopoStoreProvider() {
-            return topoStoreProvider;
     }
 
     @Override
     public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdItem, String topologyId) {
         LOGGER.trace("Processing createdChanges");
         if (CorrelationItemEnum.Node.equals(createdItem.getCorrelationItem()) ||
-                        passedFiltration(createdItem.getLeafNodes().values().iterator().next())) {
+                        passedFiltration(createdItem.getLeafNodes().values())) {
             topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, createdItem);
             manager.addOverlayItem(wrapUnderlayItem(createdItem));
             LOGGER.trace("Link passed filtration/node getting through: {}",createdItem.getItemId());
@@ -61,7 +47,7 @@ public class LinkFiltrator extends TopologyFiltrator {
         if (null == oldItem) {
             // updatedItem is not present yet
             if (updatedItem.getCorrelationItem().equals(CorrelationItemEnum.Node) ||
-                    passedFiltration(updatedItem.getLeafNodes().values().iterator().next())) {
+                    passedFiltration(updatedItem.getLeafNodes().values())) {
                 // link passed through filtrator ot its node
                 topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, updatedItem);
                 manager.addOverlayItem(wrapUnderlayItem(updatedItem));
@@ -70,7 +56,7 @@ public class LinkFiltrator extends TopologyFiltrator {
         } else {
             // updatedItem exists already
             if (updatedItem.getCorrelationItem().equals(CorrelationItemEnum.Node) ||
-                    passedFiltration(updatedItem.getLeafNodes().values().iterator().next())) {
+                    passedFiltration(updatedItem.getLeafNodes().values())) {
                 // link passed through filtrator ot its node
                 topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, updatedItem);
                 OverlayItem overlayItem = oldItem.getOverlayItem();
@@ -88,45 +74,5 @@ public class LinkFiltrator extends TopologyFiltrator {
                 LOGGER.trace("Removed link/node: {}",updatedItem.getItemId());
             }
         }
-    }
-
-    @Override
-    public void processRemovedChanges(YangInstanceIdentifier itemIdentifier, String topologyId) {
-        LOGGER.trace("Processing removedChanges");
-        UnderlayItem underlayItem = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems()
-                .remove(itemIdentifier);
-        if (null != underlayItem) {
-            manager.removeOverlayItem(underlayItem.getOverlayItem());
-        }
-    }
-
-    @Override
-    public void setTopologyManager(TopologyManager topologyManager) {
-        this.manager = topologyManager;
-    }
-
-    /**
-     * Add new filtrator
-     * @param filter Node Ip Filtrator
-     */
-    public void addFilter(Filtrator filter) {
-        filtrators.add(filter);
-    }
-
-    @Override
-    protected boolean passedFiltration(NormalizedNode<?, ?> node) {
-        for (Filtrator filtrator : filtrators) {
-            if (filtrator.isFiltered(node)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    protected OverlayItem wrapUnderlayItem(UnderlayItem underlayItem) {
-        List<UnderlayItem> underlayItems = Collections.singletonList(underlayItem);
-        OverlayItem overlayItem = new OverlayItem(underlayItems, underlayItem.getCorrelationItem());
-        underlayItem.setOverlayItem(overlayItem);
-        return overlayItem;
     }
 }
