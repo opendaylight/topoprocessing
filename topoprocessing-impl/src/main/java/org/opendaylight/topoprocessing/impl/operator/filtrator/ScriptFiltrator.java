@@ -27,10 +27,9 @@ import org.slf4j.LoggerFactory;
  * Filters items based on provided script
  * @author michal.polkorab
  */
-public class ScriptFiltrator implements Filtrator {
+public class ScriptFiltrator extends AbstractFiltrator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScriptFiltrator.class);
-    private YangInstanceIdentifier pathIdentifier;
     private ScriptEngine engine;
     private String script;
 
@@ -40,9 +39,8 @@ public class ScriptFiltrator implements Filtrator {
      * @param pathIdentifier path to node that the filtration
      */
     public ScriptFiltrator(Scripting scripting, YangInstanceIdentifier pathIdentifier) {
+        super(pathIdentifier);
         Preconditions.checkNotNull(scripting, "Scripting configuration can't be null.");
-        Preconditions.checkNotNull(pathIdentifier, "PathIdentifier can't be null.");
-        this.pathIdentifier = pathIdentifier;
         ScriptEngineManager factory = new ScriptEngineManager();
         engine = factory.getEngineByName(scripting.getLanguage());
         Preconditions.checkNotNull(engine, "ScriptEngine for language {} was not found.", scripting.getLanguage());
