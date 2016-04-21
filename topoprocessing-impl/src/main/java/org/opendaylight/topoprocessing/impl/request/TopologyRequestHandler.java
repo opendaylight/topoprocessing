@@ -232,52 +232,52 @@ public abstract class TopologyRequestHandler {
             filtrator = new TopologyFiltrator(topoStoreProvider);
         }
         filtrator.setTopologyManager(topologyManager);
-        for (Filter filter : filtration.getFilter()) {
-            Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>();
-            pathIdentifiers. put(1, translator.translate(filter.getTargetField().getValue(),
-                    correlation.getCorrelationItem(), schemaHolder, inputModel));
-            if (filtrator instanceof TerminationPointFiltrator) {
-                ((TerminationPointFiltrator) filtrator).setPathIdentifier(pathIdentifiers.get(1));
-            }
-            addFiltrator(filtrator, filter, pathIdentifiers.get(1));
-            UnderlayTopologyListener listener = modelAdapters.get(inputModel).
-                    registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
-                    correlationItem, datastoreType, filtrator, listeners, pathIdentifiers);
 
-            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
+        Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>();
+        int key = 0;
+        for (Filter filter : filtration.getFilter()) {
+            YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
+                    correlation.getCorrelationItem(), schemaHolder, inputModel);
+            pathIdentifiers.put(key++, pathIdentifier);
+            addFiltrator(filtrator, filter, pathIdentifier);
+        }
+
+        UnderlayTopologyListener listener = modelAdapters.get(inputModel).
+                registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
+                        correlationItem, datastoreType, filtrator, listeners, pathIdentifiers);
+        InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
+                .createTopologyIdentifier(underlayTopologyId);
+        YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
+                .buildItemIdentifier(topologyIdentifier, correlationItem);
+        LOG.debug("Registering filtering underlay topology listener for topology: {}", underlayTopologyId);
+        DOMDataTreeIdentifier treeId;
+        if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
+            treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
+        } else {
+            treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
+        }
+        ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
+                pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
+        listeners.add(listenerRegistration);
+
+        if (correlation.getCorrelationItem().equals(CorrelationItemEnum.Link)) {
+            listener = modelAdapters.get(inputModel).
+                    registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
+                            CorrelationItemEnum.Node, datastoreType, filtrator, listeners, null);
+            topologyIdentifier = modelAdapters.get(inputModel)
                     .createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
-                    .buildItemIdentifier(topologyIdentifier, correlationItem);
-            LOG.debug("Registering filtering underlay topology listener for topology: {}", underlayTopologyId);
-            DOMDataTreeIdentifier treeId;
+            itemIdentifier = modelAdapters.get(inputModel)
+                    .buildItemIdentifier(topologyIdentifier, CorrelationItemEnum.Node);
+            LOG.debug("Registering secondary underlay topology listener for topology (in case of filtering on " +
+                    "links): {}", underlayTopologyId);
             if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
                 treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
             } else {
                 treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
             }
-            ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
+            listenerRegistration =
                     pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
             listeners.add(listenerRegistration);
-
-            if (correlation.getCorrelationItem().equals(CorrelationItemEnum.Link)) {
-                listener = modelAdapters.get(inputModel).
-                        registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
-                                CorrelationItemEnum.Node, datastoreType, filtrator, listeners, null);
-                topologyIdentifier = modelAdapters.get(inputModel)
-                        .createTopologyIdentifier(underlayTopologyId);
-                itemIdentifier = modelAdapters.get(inputModel)
-                        .buildItemIdentifier(topologyIdentifier, CorrelationItemEnum.Node);
-                LOG.debug("Registering secondary underlay topology listener for topology (in case of filtering on " +
-                        "links): {}", underlayTopologyId);
-                if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                    treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
-                } else {
-                    treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
-                }
-                listenerRegistration =
-                        pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
-                listeners.add(listenerRegistration);
-            }
         }
     }
 
@@ -323,12 +323,7 @@ public abstract class TopologyRequestHandler {
             PreAggregationFiltrator filtrator= null;
             if (filtration && mapping.getApplyFilters() != null) {
                 if (correlation.getCorrelationItem() == CorrelationItemEnum.TerminationPoint) {
-                    YangInstanceIdentifier targetFieldPath = translator.translate(correlation.getFiltration()
-                            .getFilter().get(0).getTargetField().getValue(), correlation.getCorrelationItem(),
-                                    schemaHolder, correlation.getFiltration().getFilter().get(0).getInputModel());
-                    filtrator = new TerminationPointPreAggregationFiltrator(topoStoreProvider, correlation
-                            .getFiltration().getFilter().get(0).getInputModel());
-                    ((TerminationPointPreAggregationFiltrator)filtrator).setPathIdentifier(targetFieldPath);
+                    filtrator = new TerminationPointPreAggregationFiltrator(topoStoreProvider, inputModel);
                 } else {
                     filtrator = new PreAggregationFiltrator(topoStoreProvider);
                 }
@@ -341,7 +336,7 @@ public abstract class TopologyRequestHandler {
                 }
             }
             UnderlayTopologyListener listener;
-            if(filtrator == null) {
+            if (filtrator == null) {
                 listener = modelAdapters.get(inputModel)
                         .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId, correlationItem,
                                 datastoreType, aggregator, listeners, pathIdentifier);
@@ -376,7 +371,7 @@ public abstract class TopologyRequestHandler {
             Class<? extends Model> inputModel = rendering.getInputModel();
             UnderlayTopologyListener listener = modelAdapters.get(inputModel)
                     .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
-                    correlation.getCorrelationItem(), datastoreType, operator, listeners, null);
+                            correlation.getCorrelationItem(), datastoreType, operator, listeners, null);
             operator = listener.getOperator();
             if(operator instanceof NotificationInterConnector) {
                 operator = ((NotificationInterConnector) operator).getOperator();
@@ -422,7 +417,7 @@ public abstract class TopologyRequestHandler {
                 UnderlayTopologyListener listener = null;
                 Class<? extends Model> inputModel =
                         getRealInputModel(linkInfo.getInputModel(), CorrelationItemEnum.Link);
-                if(linkAggregation != null)
+                if (linkAggregation != null)
                 {
                     for (Mapping mapping : linkAggregation.getMapping()) {
                         if(mapping.getUnderlayTopology().equals(underlayTopologyId)) {
@@ -541,7 +536,7 @@ public abstract class TopologyRequestHandler {
                 writer.waitForTearDownCompletion(timeOut);
             } catch (InterruptedException i) {
                 LOG.debug("Captured InterruptedException in method"
-                          + " closeOperatingResources in TopologyRequestHandler class.");
+                        + " closeOperatingResources in TopologyRequestHandler class.");
             }
         }
     }

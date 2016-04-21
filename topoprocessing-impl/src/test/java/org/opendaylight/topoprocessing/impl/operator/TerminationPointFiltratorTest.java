@@ -1,7 +1,6 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import java.util.Collections;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,7 +77,6 @@ public class TerminationPointFiltratorTest {
         RangeNumberFiltrator filter = new RangeNumberFiltrator(MIN, MAX, path);
         filtrator.addFilter(filter);
         filtrator.setTopologyManager(manager);
-        filtrator.setPathIdentifier(path);
     }
 
     @Test

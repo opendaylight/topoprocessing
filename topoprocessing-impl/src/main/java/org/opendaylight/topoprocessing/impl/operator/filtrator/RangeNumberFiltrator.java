@@ -22,21 +22,19 @@ import com.google.common.base.Preconditions;
 /**
  * @author matus.marko
  */
-public class RangeNumberFiltrator implements Filtrator {
+public class RangeNumberFiltrator extends AbstractFiltrator {
 
     private static final Logger LOG = LoggerFactory.getLogger(RangeNumberFiltrator.class);
 
     protected final int min;
     protected final int max;
-    protected final YangInstanceIdentifier pathIdentifier;
 
     public RangeNumberFiltrator(int min, int max, YangInstanceIdentifier pathIdentifier) {
+        super(pathIdentifier);
         Preconditions.checkNotNull(min, "Filtering min value can't be null");
         Preconditions.checkNotNull(max, "Filtering max value can't be null");
-        Preconditions.checkNotNull(pathIdentifier, "PathIdentifier can't be null");
         this.min = min;
         this.max = max;
-        this.pathIdentifier = pathIdentifier;
     }
 
     @Override
@@ -50,4 +48,5 @@ public class RangeNumberFiltrator implements Filtrator {
         }
         return true;
     }
+
 }

@@ -27,11 +27,10 @@ import com.google.common.base.Preconditions;
 /**
  * @author matus.marko
  */
-public class Ipv6AddressFiltrator implements Filtrator {
+public class Ipv6AddressFiltrator extends AbstractFiltrator {
     private static final Logger LOG = LoggerFactory.getLogger(Ipv6AddressFiltrator.class);
     private static final int MAX_BITS = 128;
 
-    private YangInstanceIdentifier pathIdentifier;
     private BitSet mask;
     private BitSet maskedValue;
 
@@ -41,9 +40,8 @@ public class Ipv6AddressFiltrator implements Filtrator {
      * @param pathIdentifier Path leading to value with ipAddress in examined node
      */
     public Ipv6AddressFiltrator(IpPrefix value, YangInstanceIdentifier pathIdentifier) {
+        super(pathIdentifier);
         Preconditions.checkNotNull(value, "Filtering value can't be null");
-        Preconditions.checkNotNull(pathIdentifier, "PathIdentifier can't be null");
-        this.pathIdentifier = pathIdentifier;
         initialize(value);
     }
 
