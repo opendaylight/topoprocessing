@@ -48,7 +48,8 @@ public class NotificationInterConnector implements TopologyOperator {
     }
 
     @Override
-    public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry, String topologyId) {
+    public synchronized void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry, String
+            topologyId) {
         if (createdEntry != null) {
             LOGGER.trace("Processing created changes");
             Map<YangInstanceIdentifier, UnderlayItem> items = topoStoreProvider.getTopologyStore(topologyId)
@@ -96,7 +97,8 @@ public class NotificationInterConnector implements TopologyOperator {
     }
 
     @Override
-    public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedEntry, String topologyId) {
+    public synchronized void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedEntry, String
+            topologyId) {
         if (updatedEntry != null) {
             LOGGER.trace("Processing updated changes");
             Map<YangInstanceIdentifier, UnderlayItem> items = topoStoreProvider.getTopologyStore(topologyId)
@@ -156,7 +158,7 @@ public class NotificationInterConnector implements TopologyOperator {
     }
 
     @Override
-    public void processRemovedChanges(YangInstanceIdentifier identifier, String topologyId) {
+    public synchronized void processRemovedChanges(YangInstanceIdentifier identifier, String topologyId) {
         if (identifier != null) {
             LOGGER.trace("Processing removed changes");
             Map<YangInstanceIdentifier, UnderlayItem> underlayItems = topoStoreProvider.getTopologyStore(topologyId)
