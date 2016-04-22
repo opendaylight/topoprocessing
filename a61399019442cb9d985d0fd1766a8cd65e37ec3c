@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_9c467722",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriterTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-22T14:55:04Z",
+      "side": 1,
+      "message": "All of these final objects could be static",
+      "range": {
+        "startLine": 57,
+        "startChar": 4,
+        "endLine": 73,
+        "endChar": 76
+      },
+      "revId": "a61399019442cb9d985d0fd1766a8cd65e37ec3c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_3cbe4b00",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriterTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-22T14:55:04Z",
+      "side": 1,
+      "message": "put it on previous line",
+      "range": {
+        "startLine": 74,
+        "startChar": 4,
+        "endLine": 74,
+        "endChar": 13
+      },
+      "revId": "a61399019442cb9d985d0fd1766a8cd65e37ec3c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
