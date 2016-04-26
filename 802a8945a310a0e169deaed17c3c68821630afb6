@@ -22,6 +22,30 @@
       "revId": "802a8945a310a0e169deaed17c3c68821630afb6",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_633497de",
+        "filename": "distribution-karaf/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-04-26T12:13:26Z",
+      "side": 1,
+      "message": "if you look at l157 to l161 you\u0027ll see the boot-up features (on the left side of this window).\n\nThis property defines what feature to load by default when karaf starts.\nIf I\u0027m not mistaken, you can only have one default loaded feature (I could be wrong about this).",
+      "parentUuid": "fa57193c_c325a3ac",
+      "range": {
+        "startLine": 22,
+        "startChar": 6,
+        "endLine": 22,
+        "endChar": 70
+      },
+      "revId": "802a8945a310a0e169deaed17c3c68821630afb6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
