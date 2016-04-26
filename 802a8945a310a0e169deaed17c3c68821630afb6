@@ -46,6 +46,30 @@
       "revId": "802a8945a310a0e169deaed17c3c68821630afb6",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_e3570701",
+        "filename": "distribution-karaf/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1842
+      },
+      "writtenOn": "2016-04-26T12:15:21Z",
+      "side": 1,
+      "message": "That is correct.",
+      "parentUuid": "fa57193c_633497de",
+      "range": {
+        "startLine": 22,
+        "startChar": 6,
+        "endLine": 22,
+        "endChar": 70
+      },
+      "revId": "802a8945a310a0e169deaed17c3c68821630afb6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
