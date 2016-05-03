@@ -47,7 +47,8 @@ public class NotificationInterConnectorTest {
     private QName leafQname = QName.create(Node.QNAME, "leaf-node");
     private QName nodeIdQname = QName.create(Node.QNAME, "id");
 
-    @Mock private TopologyOperator operator;
+    @Mock
+    private TopologyOperator operator;
     private NotificationInterConnector connector;
     private TestNodeCreator creator = new TestNodeCreator();
     private TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
@@ -56,7 +57,7 @@ public class NotificationInterConnectorTest {
     @Before
     public void setUp() {
         operator = Mockito.mock(TopologyOperator.class);
-        connector = new NotificationInterConnector(CorrelationItemEnum.Node,topoStoreProvider);
+        connector = new NotificationInterConnector(CorrelationItemEnum.Node, topoStoreProvider);
         topoStoreProvider.initializeStore(TOPOLOGY_ID, false);
         connector.setOperator(operator);
     }
@@ -86,7 +87,9 @@ public class NotificationInterConnectorTest {
         Mockito.verifyZeroInteractions(operator);
     }
 
-    /** Tests created changes - inventory node is received before topology node */
+    /**
+     * Tests created changes - inventory node is received before topology node
+     */
     @Test
     public void testCreateInventoryNodeFirst() {
         // create inventory node
@@ -103,8 +106,8 @@ public class NotificationInterConnectorTest {
         String node2 = "node:2";
         YangInstanceIdentifier topoNodeId = createTopoNodeIdentifier(node2);
         AugmentationNode augNode = createInventoryRefNode(invNodeId);
-        MapEntryNode topoNode = ImmutableNodes.mapEntryBuilder(Node.QNAME, nodeIdQname, node2)
-                .addChild(augNode).build();
+        MapEntryNode topoNode = ImmutableNodes.mapEntryBuilder(Node.QNAME, nodeIdQname, node2).addChild(augNode)
+                .build();
         UnderlayItem item2 = new UnderlayItem(topoNode, null, TOPOLOGY_ID, node2, CorrelationItemEnum.Node);
         connector.processCreatedChanges(topoNodeId, item2, TOPOLOGY_ID);
 
@@ -112,11 +115,12 @@ public class NotificationInterConnectorTest {
         UnderlayItem comparationItem = new UnderlayItem(topoNode, targetFields, TOPOLOGY_ID, node2,
                 CorrelationItemEnum.Node);
         Mockito.verify(operator, Mockito.times(1)).processCreatedChanges(Matchers.refEq(invNodeId),
-                Matchers.refEq(comparationItem),
-                Matchers.eq(TOPOLOGY_ID));
+                Matchers.refEq(comparationItem), Matchers.eq(TOPOLOGY_ID));
     }
 
-    /** Tests created changes - topology node is received before inventory node */
+    /**
+     * Tests created changes - topology node is received before inventory node
+     */
     @Test
     public void testCreateTopologyNodeFirst() {
         // create inventory node
@@ -132,11 +136,14 @@ public class NotificationInterConnectorTest {
         String node2 = "node:2";
         YangInstanceIdentifier topoNodeId = createTopoNodeIdentifier(node2);
         AugmentationNode augNode = createInventoryRefNode(invNodeId);
-        MapEntryNode topoNode = ImmutableNodes.mapEntryBuilder(Node.QNAME, nodeIdQname, node2)
-                .addChild(augNode).build();
+        MapEntryNode topoNode = ImmutableNodes.mapEntryBuilder(Node.QNAME, nodeIdQname, node2).addChild(augNode)
+                .build();
         UnderlayItem item2 = new UnderlayItem(topoNode, null, TOPOLOGY_ID, node2, CorrelationItemEnum.Node);
 
         // enqueue and process topology node
+        connector.processCreatedChanges(topoNodeId, item2, TOPOLOGY_ID);
+        node2 = "node:22";
+        item2 = new UnderlayItem(topoNode, null, TOPOLOGY_ID, node2, CorrelationItemEnum.Node);
         connector.processCreatedChanges(topoNodeId, item2, TOPOLOGY_ID);
 
         // enqueue and process inventory node
@@ -146,8 +153,7 @@ public class NotificationInterConnectorTest {
         UnderlayItem comparationItem = new UnderlayItem(topoNode, targetFields, TOPOLOGY_ID, node2,
                 CorrelationItemEnum.Node);
         Mockito.verify(operator, Mockito.times(1)).processCreatedChanges(Matchers.refEq(invNodeId),
-                Matchers.refEq(comparationItem),
-                Matchers.eq(TOPOLOGY_ID));
+                Matchers.refEq(comparationItem), Matchers.eq(TOPOLOGY_ID));
     }
 
     /** Tests removed changes - remove with inventory identifier first */
@@ -159,15 +165,16 @@ public class NotificationInterConnectorTest {
 
         // remove with inventory identifier
         connector.processRemovedChanges(invNodeId, TOPOLOGY_ID);
-        Mockito.verify(operator, Mockito.times(1)).processRemovedChanges(
-                Matchers.eq(invNodeId), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(operator, Mockito.times(1)).processRemovedChanges(Matchers.eq(invNodeId),
+                Matchers.eq(TOPOLOGY_ID));
         Assert.assertNotNull("Item should have been removed",
                 topoStoreProvider.getTopologyStore(TOPOLOGY_ID).getUnderlayItems().get(invNodeId));
 
         // remove with topology identifier
         String node2 = "node:2";
         YangInstanceIdentifier topoNodeId = createTopoNodeIdentifier(node2);
-        // item should have been already removed, so no operator interactions are expected
+        // item should have been already removed, so no operator interactions
+        // are expected
         Mockito.verifyNoMoreInteractions(operator);
         connector.processRemovedChanges(topoNodeId, TOPOLOGY_ID);
     }
@@ -183,13 +190,14 @@ public class NotificationInterConnectorTest {
 
         // remove with topology identifier
         connector.processRemovedChanges(topoNodeId, TOPOLOGY_ID);
-        Mockito.verify(operator, Mockito.times(1)).processRemovedChanges(
-                Matchers.eq(invNodeId), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(operator, Mockito.times(1)).processRemovedChanges(Matchers.eq(invNodeId),
+                Matchers.eq(TOPOLOGY_ID));
         Assert.assertNotNull("Item should have been removed",
                 topoStoreProvider.getTopologyStore(TOPOLOGY_ID).getUnderlayItems().get(invNodeId));
 
         // remove with inventory identifier
-        // item should have been already removed, so no operator interactions are expected
+        // item should have been already removed, so no operator interactions
+        // are expected
         Mockito.verifyNoMoreInteractions(operator);
         connector.processRemovedChanges(invNodeId, TOPOLOGY_ID);
     }
@@ -213,8 +221,7 @@ public class NotificationInterConnectorTest {
         UnderlayItem comparationItem = new UnderlayItem(item.getItem(), targetFields, TOPOLOGY_ID, item.getItemId(),
                 CorrelationItemEnum.Node);
         Mockito.verify(operator, Mockito.times(1)).processUpdatedChanges(Matchers.refEq(invNodeId),
-                Matchers.refEq(comparationItem),
-                Matchers.eq(TOPOLOGY_ID));
+                Matchers.refEq(comparationItem), Matchers.eq(TOPOLOGY_ID));
     }
 
     /** Tests update changes - update topology node */
@@ -231,8 +238,7 @@ public class NotificationInterConnectorTest {
         String node2 = "node:2";
         YangInstanceIdentifier topoNodeId = createTopoNodeIdentifier(node2);
         AugmentationNode augNode = createInventoryRefNode(invNodeId);
-        MapEntryNode topoNode = ImmutableNodes.mapEntryBuilder(Node.QNAME, nodeIdQname, node2)
-                .addChild(augNode)
+        MapEntryNode topoNode = ImmutableNodes.mapEntryBuilder(Node.QNAME, nodeIdQname, node2).addChild(augNode)
                 .addChild(ImmutableNodes.leafNode(QName.create(Topology.QNAME, "topo-leaf"), "leafValue")).build();
         UnderlayItem item2 = new UnderlayItem(topoNode, null, TOPOLOGY_ID, node2, CorrelationItemEnum.Node);
         connector.processUpdatedChanges(topoNodeId, item2, TOPOLOGY_ID);
@@ -243,8 +249,91 @@ public class NotificationInterConnectorTest {
         UnderlayItem comparationItem = new UnderlayItem(topoNode, targetFields, TOPOLOGY_ID, node2,
                 CorrelationItemEnum.Node);
         Mockito.verify(operator, Mockito.times(1)).processUpdatedChanges(Matchers.refEq(invNodeId),
-                Matchers.refEq(comparationItem),
+                Matchers.refEq(comparationItem), Matchers.eq(TOPOLOGY_ID));
+    }
+
+    @Test
+    public void testUpdateTopologyNode2() {
+        testCreateInventoryNodeFirst();
+        // create inventory node for expected data check
+        String node1 = "node:11";
+        String leafValue = "10.0.0.1";
+        YangInstanceIdentifier invNodeId = createInvNodeIdentifier(node1);
+        LeafNode<String> leafNode = ImmutableNodes.leafNode(leafQname, leafValue);
+
+        // create topology node
+        String node2 = "node:2";
+        YangInstanceIdentifier topoNodeId = createTopoNodeIdentifier(node2);
+        AugmentationNode augNode = createInventoryRefNode(invNodeId);
+        MapEntryNode topoNode = ImmutableNodes.mapEntryBuilder(Node.QNAME, nodeIdQname, node2).addChild(augNode)
+                .build();
+        UnderlayItem item2 = new UnderlayItem(topoNode, null, TOPOLOGY_ID, node2, CorrelationItemEnum.Node);
+        connector.processUpdatedChanges(topoNodeId, item2, TOPOLOGY_ID);
+
+        // create expected result
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
+        targetFields.put(0, leafNode);
+        UnderlayItem comparationItem = new UnderlayItem(topoNode, targetFields, TOPOLOGY_ID, node2,
+                CorrelationItemEnum.Node);
+        String nodeToRemove = "node:1";
+        invNodeId = createInvNodeIdentifier(nodeToRemove);
+        Mockito.verify(operator, Mockito.times(1)).processRemovedChanges(Matchers.refEq(invNodeId),
                 Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(operator, Mockito.times(0)).processCreatedChanges(Matchers.refEq(invNodeId),
+                Matchers.refEq(comparationItem), Matchers.eq(TOPOLOGY_ID));
+
+    }
+
+    @Test
+    public void testUpdateNode() {
+        testOnlyTopologyNode();
+        testOnlyInventoryNode();
+
+        String node1 = "invnode:1";
+        YangInstanceIdentifier invNodeId = createInvNodeIdentifier(node1);
+        // create topology node
+        String node2 = "toponode:1";
+        YangInstanceIdentifier topoNodeId = createTopoNodeIdentifier(node2);
+        AugmentationNode augNode = createInventoryRefNode(invNodeId);
+        MapEntryNode topoNode = ImmutableNodes.mapEntryBuilder(Node.QNAME, nodeIdQname, node2).addChild(augNode)
+                .build();
+        UnderlayItem item2 = new UnderlayItem(topoNode, null, TOPOLOGY_ID, node2, CorrelationItemEnum.Node);
+        connector.processUpdatedChanges(topoNodeId, item2, TOPOLOGY_ID);
+        Mockito.verifyZeroInteractions(operator);
+    }
+
+    @Test
+    public void testUpdateNode2() {
+        testOnlyTopologyNode();
+
+        String node1 = "invnode:1";
+        YangInstanceIdentifier invNodeId = createInvNodeIdentifier(node1);
+        // create topology node
+        String node2 = "toponode:1";
+        YangInstanceIdentifier topoNodeId = createTopoNodeIdentifier(node2);
+        AugmentationNode augNode = createInventoryRefNode(invNodeId);
+        MapEntryNode topoNode = ImmutableNodes.mapEntryBuilder(Node.QNAME, nodeIdQname, node2).addChild(augNode)
+                .build();
+        UnderlayItem item2 = new UnderlayItem(topoNode, null, TOPOLOGY_ID, node2, CorrelationItemEnum.Node);
+        connector.processUpdatedChanges(topoNodeId, item2, TOPOLOGY_ID);
+        Mockito.verifyZeroInteractions(operator);
+        Assert.assertNull(connector.getTopoStoreProvider().getTopologyStore(TOPOLOGY_ID).getUnderlayItems()
+                .get(invNodeId).getLeafNodes());
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testSetManager() {
+        connector.setTopologyManager(null);
+    }
+
+    @Test
+    public void testGetOperator() {
+        Assert.assertEquals(operator, connector.getOperator());
+    }
+
+    @Test
+    public void testGetProvider() {
+        Assert.assertEquals(topoStoreProvider, connector.getTopoStoreProvider());
     }
 
     private YangInstanceIdentifier createInvNodeIdentifier(String nodeId) {
@@ -257,14 +346,13 @@ public class NotificationInterConnectorTest {
     }
 
     private AugmentationNode createInventoryRefNode(YangInstanceIdentifier invNodeId) {
-        QName inventoryNodeRefQname = QName.create("(urn:opendaylight:model:topology:inventory?"
-                + "revision=2013-10-30)inventory-node-ref");
+        QName inventoryNodeRefQname = QName
+                .create("(urn:opendaylight:model:topology:inventory?" + "revision=2013-10-30)inventory-node-ref");
         Set<QName> qnames = new HashSet<>();
         qnames.add(inventoryNodeRefQname);
         AugmentationIdentifier augId = new AugmentationIdentifier(qnames);
-        AugmentationNode augNode = ImmutableAugmentationNodeBuilder.create()
-                .withNodeIdentifier(augId).withChild(ImmutableNodes.leafNode(inventoryNodeRefQname, invNodeId))
-                .build();
+        AugmentationNode augNode = ImmutableAugmentationNodeBuilder.create().withNodeIdentifier(augId)
+                .withChild(ImmutableNodes.leafNode(inventoryNodeRefQname, invNodeId)).build();
         return augNode;
     }
 }
