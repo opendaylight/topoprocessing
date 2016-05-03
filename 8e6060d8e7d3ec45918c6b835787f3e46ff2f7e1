@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_7693a9fa",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/PreAggregationFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T12:56:53Z",
+      "side": 1,
+      "message": "Please rename to something more meaningful. For example testNodeCreator",
+      "range": {
+        "startLine": 33,
+        "startChar": 41,
+        "endLine": 33,
+        "endChar": 53
+      },
+      "revId": "8e6060d8e7d3ec45918c6b835787f3e46ff2f7e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_964f5d92",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/PreAggregationFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T12:56:53Z",
+      "side": 1,
+      "message": "Map of what? Please rename it to something self-explanatory.",
+      "range": {
+        "startLine": 62,
+        "startChar": 43,
+        "endLine": 62,
+        "endChar": 46
+      },
+      "revId": "8e6060d8e7d3ec45918c6b835787f3e46ff2f7e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_f644d975",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/PreAggregationFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T12:56:53Z",
+      "side": 1,
+      "message": "Please rename it to something self-explanatory.",
+      "range": {
+        "startLine": 74,
+        "startChar": 43,
+        "endLine": 74,
+        "endChar": 46
+      },
+      "revId": "8e6060d8e7d3ec45918c6b835787f3e46ff2f7e1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
