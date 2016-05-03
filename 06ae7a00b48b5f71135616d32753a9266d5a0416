@@ -1,0 +1,349 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_5303170f",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "min what? Please rename to something self-explanatory",
+      "range": {
+        "startLine": 52,
+        "startChar": 29,
+        "endLine": 52,
+        "endChar": 32
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_b6ff0101",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "Please rename to something self-explanatory",
+      "range": {
+        "startLine": 53,
+        "startChar": 29,
+        "endLine": 53,
+        "endChar": 32
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_766c499d",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "comma should be on previous line",
+      "range": {
+        "startLine": 120,
+        "startChar": 16,
+        "endLine": 120,
+        "endChar": 18
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_5669458a",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "comma should be on previous line",
+      "range": {
+        "startLine": 122,
+        "startChar": 16,
+        "endLine": 122,
+        "endChar": 18
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_76b9e92d",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 133,
+        "startChar": 16,
+        "endLine": 133,
+        "endChar": 121
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_366811ba",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "please rename to something self-explanatory",
+      "range": {
+        "startLine": 150,
+        "startChar": 15,
+        "endLine": 150,
+        "endChar": 20
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_565f850e",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "please rename to something self-explanatory",
+      "range": {
+        "startLine": 152,
+        "startChar": 15,
+        "endLine": 152,
+        "endChar": 20
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_36965195",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 158,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "what is con? Please rename to something self-explanatory",
+      "range": {
+        "startLine": 158,
+        "startChar": 25,
+        "endLine": 158,
+        "endChar": 36
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_16934da4",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "Please rename to something self-explanatory",
+      "range": {
+        "startLine": 159,
+        "startChar": 25,
+        "endLine": 159,
+        "endChar": 36
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_36c49191",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "Please rename to something self-explanatory",
+      "range": {
+        "startLine": 205,
+        "startChar": 49,
+        "endLine": 205,
+        "endChar": 60
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_16c18d80",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "Please rename to something self-explanatory",
+      "range": {
+        "startLine": 206,
+        "startChar": 33,
+        "endLine": 206,
+        "endChar": 38
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_b63701b0",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "Please rename to something self-explanatory",
+      "range": {
+        "startLine": 208,
+        "startChar": 58,
+        "endLine": 208,
+        "endChar": 67
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_963c7d95",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "Please rename to something self-explanatory",
+      "range": {
+        "startLine": 210,
+        "startChar": 23,
+        "endLine": 210,
+        "endChar": 26
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_960abdd0",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 219,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "comma should be on previous line",
+      "range": {
+        "startLine": 219,
+        "startChar": 16,
+        "endLine": 219,
+        "endChar": 18
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_f60fb9df",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T11:51:57Z",
+      "side": 1,
+      "message": "comma should be on previous line",
+      "range": {
+        "startLine": 233,
+        "startChar": 16,
+        "endLine": 233,
+        "endChar": 18
+      },
+      "revId": "06ae7a00b48b5f71135616d32753a9266d5a0416",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
