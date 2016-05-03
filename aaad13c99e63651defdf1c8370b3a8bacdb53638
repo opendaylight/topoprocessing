@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_f6ab3987",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriterTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T12:11:23Z",
+      "side": 1,
+      "message": "put this build() call on previous line",
+      "range": {
+        "startLine": 73,
+        "startChar": 4,
+        "endLine": 73,
+        "endChar": 13
+      },
+      "revId": "aaad13c99e63651defdf1c8370b3a8bacdb53638",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_761a8918",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/writer/TopologyWriterTest.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-03T12:11:23Z",
+      "side": 1,
+      "message": "you can make these attributes static",
+      "range": {
+        "startLine": 56,
+        "startChar": 0,
+        "endLine": 73,
+        "endChar": 13
+      },
+      "revId": "aaad13c99e63651defdf1c8370b3a8bacdb53638",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
