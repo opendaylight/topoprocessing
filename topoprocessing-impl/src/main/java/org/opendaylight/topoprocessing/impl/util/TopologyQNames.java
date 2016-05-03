@@ -27,6 +27,9 @@ import org.opendaylight.yangtools.yang.common.QName;
  */
 public final class TopologyQNames {
 
+    public static final QName I2RS_NODE_QNAME = 
+            org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+            .network.rev150608.network.Node.QNAME;
     /** I2RS model network-id QName */
     public static final QName I2RS_NETWORK_ID_QNAME = QName.create(
             org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
@@ -104,6 +107,8 @@ public final class TopologyQNames {
             QName.create("urn:opendaylight:model:topology:inventory", "2013-10-30", "inventory-node-connector-ref");
     public static final QName INVENTORY_NODE_REF_QNAME = QName
             .create("urn:opendaylight:model:topology:inventory", "2013-10-30", "inventory-node-ref");
+    public static final QName INVENTORY_NODE_QNAME = 
+            org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME;
 
     /**Correlation augment QName**/
     public static final QName TOPOLOGY_CORRELATION_AUGMENT =
