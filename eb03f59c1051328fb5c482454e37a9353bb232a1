@@ -1,0 +1,251 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_ccb664dc",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/util/TopologyQNames.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-04T12:28:29Z",
+      "side": 1,
+      "message": "Trailing space",
+      "range": {
+        "startLine": 30,
+        "startChar": 47,
+        "endLine": 30,
+        "endChar": 48
+      },
+      "revId": "eb03f59c1051328fb5c482454e37a9353bb232a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_0cb17ce1",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/util/TopologyQNames.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-04T12:28:29Z",
+      "side": 1,
+      "message": "Trailing space",
+      "range": {
+        "startLine": 110,
+        "startChar": 52,
+        "endLine": 110,
+        "endChar": 53
+      },
+      "revId": "eb03f59c1051328fb5c482454e37a9353bb232a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_ecb528ce",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregatorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-04T12:28:29Z",
+      "side": 1,
+      "message": "Line length",
+      "range": {
+        "startLine": 54,
+        "startChar": 4,
+        "endLine": 54,
+        "endChar": 187
+      },
+      "revId": "eb03f59c1051328fb5c482454e37a9353bb232a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_62e2bfa0",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregatorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-04T12:28:29Z",
+      "side": 1,
+      "message": "Is this class really necessary? Isn\u0027t it possible to mock TopologyManager instead?",
+      "range": {
+        "startLine": 89,
+        "startChar": 4,
+        "endLine": 114,
+        "endChar": 5
+      },
+      "revId": "eb03f59c1051328fb5c482454e37a9353bb232a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_ecec08ca",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregatorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-04T12:28:29Z",
+      "side": 1,
+      "message": "setup should be with lowercase \"u\"",
+      "range": {
+        "startLine": 123,
+        "startChar": 20,
+        "endLine": 123,
+        "endChar": 22
+      },
+      "revId": "eb03f59c1051328fb5c482454e37a9353bb232a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_4cd1b4fa",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregatorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-04T12:28:29Z",
+      "side": 1,
+      "message": "set or setup?",
+      "range": {
+        "startLine": 136,
+        "startChar": 17,
+        "endLine": 136,
+        "endChar": 20
+      },
+      "revId": "eb03f59c1051328fb5c482454e37a9353bb232a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_2cce005b",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregatorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-04T12:28:29Z",
+      "side": 1,
+      "message": "Use lowercase",
+      "range": {
+        "startLine": 149,
+        "startChar": 20,
+        "endLine": 149,
+        "endChar": 21
+      },
+      "revId": "eb03f59c1051328fb5c482454e37a9353bb232a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_8cdbcc1a",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregatorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-04T12:28:29Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 152,
+        "startChar": 16,
+        "endLine": 152,
+        "endChar": 134
+      },
+      "revId": "eb03f59c1051328fb5c482454e37a9353bb232a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_6cd8f81d",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregatorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-04T12:28:29Z",
+      "side": 1,
+      "message": "line length",
+      "revId": "eb03f59c1051328fb5c482454e37a9353bb232a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_426dfb31",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregatorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 486,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-04T12:28:29Z",
+      "side": 1,
+      "message": "Delete this",
+      "range": {
+        "startLine": 477,
+        "startChar": 12,
+        "endLine": 486,
+        "endChar": 15
+      },
+      "revId": "eb03f59c1051328fb5c482454e37a9353bb232a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_226a871a",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregatorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 494,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-04T12:28:29Z",
+      "side": 1,
+      "message": "delete this",
+      "range": {
+        "startLine": 494,
+        "startChar": 8,
+        "endLine": 494,
+        "endChar": 38
+      },
+      "revId": "eb03f59c1051328fb5c482454e37a9353bb232a1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
