@@ -22,14 +22,77 @@ public class SpecificValueFiltratorTest {
      * Tests filtering with integer values
      */
     @Test
-    public void testSpecificNumber() {
-        SpecificValueFiltrator<Integer> filtrator = new SpecificValueFiltrator<>(56, numberPath);
+    public void testSpecificNumberInteger() {
+        SpecificValueFiltrator<Integer> filtrator = new SpecificValueFiltrator<>(5600, numberPath);
 
-        boolean filtered1 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, 56));
+        boolean filtered1 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, 5600));
         Assert.assertFalse("Node should pass the filtrator", filtered1);
 
-        boolean filtered2 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, 16));
+        boolean filtered2 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, 1600));
         Assert.assertTrue("Node should not pass the filtrator", filtered2);
+    }
+
+    /**
+     * Tests filtering with short values
+     */
+    @Test
+    public void testSpecificNumberShort() {
+        SpecificValueFiltrator<Short> filtrator = new SpecificValueFiltrator<>((short) 47, numberPath);
+
+        boolean filtered1 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, 47));
+        Assert.assertFalse("Node should pass the filtrator", filtered1);
+
+        boolean filtered2 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, 5));
+        Assert.assertTrue("Node should not pass the filtrator", filtered2);
+    }
+
+    /**
+     * Tests filtering with long values
+     */
+    @Test
+    public void testSpecificNumberLong() {
+        SpecificValueFiltrator<Long> filtrator = new SpecificValueFiltrator<>((long) 875040, numberPath);
+
+        boolean filtered1 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, 875040));
+        Assert.assertFalse("Node should pass the filtrator", filtered1);
+
+        boolean filtered2 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, 955000));
+        Assert.assertTrue("Node should not pass the filtrator", filtered2);
+    }
+
+    /**
+     * Tests filtering with float values
+     */
+    @Test
+    public void testSpecificNumberFloat() {
+        SpecificValueFiltrator<Float> filtrator = new SpecificValueFiltrator<>((float) 46.54, numberPath);
+
+        boolean filtered1 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, (float) 46.54));
+        Assert.assertFalse("Node should pass the filtrator", filtered1);
+
+        boolean filtered2 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, (float) 10.10));
+        Assert.assertTrue("Node should not pass the filtrator", filtered2);
+    }
+
+    /**
+     * Tests filtering with double values
+     */
+    @Test
+    public void testSpecificNumberDouble() {
+        SpecificValueFiltrator<Double> filtrator = new SpecificValueFiltrator<>((double) 46.54, numberPath);
+
+        boolean filtered1 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, 46.54));
+        Assert.assertFalse("Node should pass the filtrator", filtered1);
+
+        boolean filtered2 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, 10.10));
+        Assert.assertTrue("Node should not pass the filtrator", filtered2);
+    }
+
+    @Test
+    public void testNotSupportedType() {
+        SpecificValueFiltrator<String> filtrator = new SpecificValueFiltrator<>("abc", numberPath);
+        boolean filtered1 = filtrator.isFiltered(ImmutableNodes.leafNode(NUMBER_QNAME, new Object()));
+        Assert.assertTrue("Node should not pass the filtrator", filtered1);
     }
 
     /**
