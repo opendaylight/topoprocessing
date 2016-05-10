@@ -132,7 +132,7 @@ public class NTTopoProcessingProviderImplTest {
         topoProcessingProvider = new TopoProcessingProviderImpl(
                 schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
         topoProcessingProvider.registerModelAdapter(NetworkTopologyModel.class, mockNTModelAdapter);
-        
+
         Map<Class<? extends Model>, ModelAdapter> expectedModelAdapters = new HashMap<>();
         expectedModelAdapters.put(NetworkTopologyModel.class, mockNTModelAdapter);
         Mockito.verify(mockNTModelAdapter).createTopologyRequestListener((DOMDataBroker) Matchers.any(),
@@ -142,4 +142,9 @@ public class NTTopoProcessingProviderImplTest {
                 Matchers.eq(expectedModelAdapters));
     }
 
+    @Test(expected = Exception.class)
+    public void testClose() throws Exception {
+        testRegisterModelAdapter();
+        topoProcessingProvider.close();
+    }
 }
