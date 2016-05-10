@@ -47,7 +47,8 @@ import com.google.common.base.Optional;
 @RunWith(MockitoJUnitRunner.class)
 public class NTOverlayItemTranslatorNodeTest {
 
-    private OverlayItemTranslator translator = new OverlayItemTranslator(new NTNodeTranslator(), new NTLinkTranslator());;
+    private OverlayItemTranslator translator = 
+            new OverlayItemTranslator(new NTNodeTranslator(), new NTLinkTranslator());;
     private static final String TOPOLOGY_NAME = "topology:1";
 
     @Mock
@@ -201,55 +202,67 @@ public class NTOverlayItemTranslatorNodeTest {
 
         final String physicalName1 = "node:1";
         MapNode terminationPoints1 = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME)
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId1)
+                .withChild(ImmutableNodes
+                           .mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId1)
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId1))
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef1))
                                 .build())
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId2)
+                .withChild(ImmutableNodes
+                           .mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId2)
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId2))
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef2))
                                 .build())
                 .build();
-        final MapEntryNode node1 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, physicalName1)
+        final MapEntryNode node1 = ImmutableNodes
+                .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, physicalName1)
                 .withChild(terminationPoints1).build();
 
         final String physicalName2 = "node:2";
         MapNode terminationPoints2 = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME)
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId1)
+                .withChild(ImmutableNodes
+                           .mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId1)
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId1))
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef1))
                                 .build())
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId3)
+                .withChild(ImmutableNodes
+                           .mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId3)
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId3))
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef3))
                                 .build())
                 .build();
-        final MapEntryNode node2 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, physicalName2)
+        final MapEntryNode node2 = ImmutableNodes
+                .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, physicalName2)
                 .withChild(terminationPoints2).build();
 
         final String physicalName3 = "node:3";
         MapNode terminationPoints3 = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME)
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId2)
-                        .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId2))
-                        .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef2))
-                        .build())
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId4)
+                .withChild(ImmutableNodes
+                           .mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId2)
+                                .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId2))
+                                .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef2))
+                                .build())
+                .withChild(ImmutableNodes
+                           .mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId4)
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId4))
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef4))
                                 .build())
                 .build();
-        final MapEntryNode node3 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, physicalName3)
+        final MapEntryNode node3 = ImmutableNodes
+                .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, physicalName3)
                 .withChild(terminationPoints3).build();
 
         final Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
         targetFields.put(0, mockNormalizedNode);
         OverlayItem logicalNode1 = new OverlayItem(new ArrayList<UnderlayItem>() {{
-            add(new UnderlayItem(node1, targetFields, TOPOLOGY_NAME, physicalName1, CorrelationItemEnum.Node));
-            add(new UnderlayItem(node2, targetFields, TOPOLOGY_NAME, physicalName2, CorrelationItemEnum.Node));
+            add(new UnderlayItem(node1, targetFields, TOPOLOGY_NAME, physicalName1, 
+                       CorrelationItemEnum.TerminationPoint));
+            add(new UnderlayItem(node2, targetFields, TOPOLOGY_NAME, physicalName2, 
+                       CorrelationItemEnum.TerminationPoint));
         }}, CorrelationItemEnum.Node);
         OverlayItem logicalNode2 = new OverlayItem(Collections.singletonList(
-                new UnderlayItem(node3, targetFields, TOPOLOGY_NAME, physicalName3, CorrelationItemEnum.Node)
-        ), CorrelationItemEnum.Node);
+                new UnderlayItem(node3, targetFields, TOPOLOGY_NAME, physicalName3, 
+                           CorrelationItemEnum.TerminationPoint)
+        ), CorrelationItemEnum.TerminationPoint);
         OverlayItemWrapper wrapper = new OverlayItemWrapper(logicalName, logicalNode1);
         wrapper.addOverlayItem(logicalNode2);
         NormalizedNode<?, ?> normalizedNode = translator.translate(wrapper);
