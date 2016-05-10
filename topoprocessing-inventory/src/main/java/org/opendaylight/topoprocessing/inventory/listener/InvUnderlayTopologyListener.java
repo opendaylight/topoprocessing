@@ -80,5 +80,5 @@ public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
         } else {
             this.setOperator(operator);
         }
-    };
+    }
 }
