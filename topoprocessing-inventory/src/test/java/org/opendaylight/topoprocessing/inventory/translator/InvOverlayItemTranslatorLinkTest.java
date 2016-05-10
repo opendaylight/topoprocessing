@@ -11,24 +11,33 @@ package org.opendaylight.topoprocessing.inventory.translator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.opendaylight.topoprocessing.api.structure.ComputedLink;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Destination;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.Source;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SupportingLink;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yangtools.util.SingletonSet;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
+import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
+import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 
 import com.google.common.base.Optional;
 
@@ -107,5 +116,40 @@ public class InvOverlayItemTranslatorLinkTest {
         Assert.assertTrue("OverlayLink should contain UnderlayLinks", mapNode.isPresent());
         Collection<MapEntryNode> entryNodes = (Collection<MapEntryNode>) mapNode.get().getValue();
         Assert.assertEquals("OverlayLink contains wrong amount of UnderlayLinks", 5, entryNodes.size());
+    }
+
+    @Test
+    public void testComputedLinkTranslation(){
+        String topologyName = "mytopo:1";
+        String wrapperName = "overlaylink:1";
+        String srcNodeID = "node:1";
+        String dstNodeID = "node:2";
+        String linkID = "link:1";
+
+        MapEntryNode srcNode = ImmutableNodes.mapEntryBuilder(Node.QNAME,
+                TopologyQNames.NETWORK_NODE_ID_QNAME, srcNodeID).build();
+        MapEntryNode dstNode = ImmutableNodes.mapEntryBuilder(Node.QNAME,
+                TopologyQNames.NETWORK_NODE_ID_QNAME, dstNodeID).build();
+        ComputedLink cl = new ComputedLink(null, null, srcNode, dstNode, topologyName, linkID,
+                CorrelationItemEnum.Link);
+
+        List<UnderlayItem> underlayList = new LinkedList<>();
+        underlayList.add(cl);
+        OverlayItem overlayLink1 = new OverlayItem(underlayList, CorrelationItemEnum.Link);
+        OverlayItemWrapper wrapper = new OverlayItemWrapper(wrapperName, overlayLink1);
+
+        NormalizedNode<?, ?> translatedNode = translator.translate(wrapper);
+
+        Optional<DataContainerChild<? extends PathArgument, ?>> outputSrcNode = ((MapEntryNode) translatedNode)
+                .getChild(new NodeIdentifier(Source.QNAME));
+        Optional<DataContainerChild<? extends PathArgument, ?>> outputDstNode = ((MapEntryNode) translatedNode)
+                .getChild(new NodeIdentifier(Destination.QNAME));
+        Assert.assertTrue("OverlayLink should contain a source node", outputSrcNode.isPresent());
+        Assert.assertTrue("OverlayLink should contain a destination node", outputDstNode.isPresent());
+
+        LeafNode outputSrcLeafNode = (LeafNode) ((SingletonSet) outputSrcNode.get().getValue()).getElement();
+        LeafNode outputDstLeafNode = (LeafNode) ((SingletonSet) outputDstNode.get().getValue()).getElement();
+        Assert.assertEquals("Source IDs should be equal", srcNodeID, outputSrcLeafNode.getValue());
+        Assert.assertEquals("Destination IDs should be equal", dstNodeID, outputDstLeafNode.getValue());
     }
 }
