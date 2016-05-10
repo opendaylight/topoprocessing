@@ -48,10 +48,9 @@ public class NTModelAdapter implements ModelAdapter {
             String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType,
             TopologyOperator operator, List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
             Map<Integer, YangInstanceIdentifier> pathIdentifiers) {
-
         NTUnderlayTopologyListener listener = new NTUnderlayTopologyListener(dataBroker, underlayTopologyId, correlationItem);
         listener.setPathIdentifier(pathIdentifiers);
-        listener.registerTopologyOperator(operator);
+        listener.setOperator(operator);
         return listener;
     }
 
@@ -59,13 +58,11 @@ public class NTModelAdapter implements ModelAdapter {
     public TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
-
         return new NTTopologyRequestListener(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
     }
 
     @Override
     public OverlayItemTranslator createOverlayItemTranslator() {
-
         return new OverlayItemTranslator(new NTNodeTranslator(),new NTLinkTranslator());
     }
 

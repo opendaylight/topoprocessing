@@ -9,7 +9,6 @@ package org.opendaylight.topoprocessing.nt.listener;
 
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
-import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -41,7 +40,4 @@ public class NTUnderlayTopologyListener extends UnderlayTopologyListener {
                 .node(itemQName).build();
     }
 
-    public void registerTopologyOperator(TopologyOperator operator){
-        this.setOperator(operator);
-    };
 }
