@@ -105,7 +105,7 @@ public class InvTopoProcessingProviderImplTest {
     }
 
     @Test
-    public void testStartup() throws Exception {
+    public void testStartup() {
         Mockito.when(schemaService.registerSchemaContextListener((SchemaContextListener) Matchers.any()))
                 .thenReturn(schemaContextListenerRegistration);
         Mockito.when(dataBroker.registerDataChangeListener((LogicalDatastoreType) Matchers.any(),
@@ -119,7 +119,11 @@ public class InvTopoProcessingProviderImplTest {
         TopoProcessingProviderInv invProvider = new TopoProcessingProviderInv();
         invProvider.startup(topoProcessingProvider);
         Mockito.verify(schemaService).registerSchemaContextListener((SchemaContextListener) Matchers.any());
+    }
 
+    @Test
+    public void testClose() throws Exception {
+        testStartup();
         // close
         topoProcessingProvider.close();
         Mockito.verify(schemaContextListenerRegistration).close();
