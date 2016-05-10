@@ -14,6 +14,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -156,6 +158,7 @@ public class NTUnderlayTopologyListenerTest {
         UnderlayTopologyListener listener = new NTUnderlayTopologyListener(dataBroker, TOPOLOGY_ID,
                 CorrelationItemEnum.Node);
         listener.setOperator(mockOperator);
+        Assert.assertEquals(mockOperator, listener.getOperator());
         UnderlayItem physicalNode = new UnderlayItem(nodeValue, null, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
 
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
@@ -184,10 +187,50 @@ public class NTUnderlayTopologyListenerTest {
         resetMocks();
         setUpMocks(rootNode);
         rootNode.setModificationType(ModificationType.DELETE);
-        YangInstanceIdentifier nodeIdYiid = YangInstanceIdentifier.builder()
-                .node(Node.QNAME).nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName).build();
         listener.onDataTreeChanged(mockCollection);
         Mockito.verify(mockOperator).processRemovedChanges(Matchers.eq(nodeYiid), Matchers.eq(TOPOLOGY_ID));
+    }
+
+    @Test
+    public void testAggregationTP() {
+        UnderlayTopologyListener listener = new NTUnderlayTopologyListener(dataBroker, TOPOLOGY_ID,
+                CorrelationItemEnum.TerminationPoint);
+        Assert.assertEquals(CorrelationItemEnum.TerminationPoint, listener.getCorrelationItem());
+        String nodeName = "node:1";
+        String ipAddress = "10.0.0.1";
+        QName ipAddressQname = QName.create(Node.QNAME, "ip-address");
+        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME)
+                .node(Topology.QNAME).nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY_ID)
+                .node(Node.QNAME).nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName).build();
+
+        LeafNode<String> nodeIpValue = ImmutableNodes.leafNode(ipAddressQname, ipAddress);
+        MapEntryNode testNode = ImmutableNodes
+                .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName).addChild(nodeIpValue)
+                .build();
+
+        YangInstanceIdentifier pathIdentifier = YangInstanceIdentifier.of(ipAddressQname);
+        TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
+        listener.setOperator(mockOperator);
+        Assert.assertEquals(mockOperator, listener.getOperator());
+        Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>(1);
+        pathIdentifiers.put(0, pathIdentifier);
+        listener.setPathIdentifier(pathIdentifiers);
+
+        UnderlayItem physicalNode = new UnderlayItem(testNode, null, TOPOLOGY_ID, nodeName,
+                CorrelationItemEnum.TerminationPoint);
+        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME,
+                TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
+        TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
+
+        // create
+        setUpMocks(rootNode);
+        rootNode.setModificationType(ModificationType.WRITE);
+        Optional<NormalizedNode<?, ?>> dataAfter = Optional.<NormalizedNode<?, ?>> fromNullable(testNode);
+        rootNode.setDataAfter(dataAfter);
+        rootNode.setIdentifier(nodePathArgument);
+        listener.onDataTreeChanged(mockCollection);
+        Mockito.verify(mockOperator).processCreatedChanges(Matchers.eq(nodeYiid), Matchers.refEq(physicalNode),
+                Matchers.eq(TOPOLOGY_ID));
     }
 
     @Test(expected = IllegalStateException.class)
