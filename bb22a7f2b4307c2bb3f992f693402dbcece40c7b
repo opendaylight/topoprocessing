@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_42515fd7",
+        "filename": "topoprocessing-inventory/src/test/java/org/opendaylight/topoprocessing/inventory/translator/InvOverlayItemTranslatorLinkTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-12T15:41:24Z",
+      "side": 1,
+      "message": "Please rename",
+      "range": {
+        "startLine": 133,
+        "startChar": 21,
+        "endLine": 133,
+        "endChar": 23
+      },
+      "revId": "bb22a7f2b4307c2bb3f992f693402dbcece40c7b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
