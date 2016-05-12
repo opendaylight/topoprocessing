@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_02d92783",
+        "filename": "topoprocessing-nt/src/test/java/org/opendaylight/topoprocessing/nt/translator/NTOverlayItemTranslatorLinkTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-12T15:39:49Z",
+      "side": 1,
+      "message": "Please rename",
+      "range": {
+        "startLine": 134,
+        "startChar": 21,
+        "endLine": 134,
+        "endChar": 23
+      },
+      "revId": "95b142a5fb26adcf77b2aa2aef40b75d5b05aaa0",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
