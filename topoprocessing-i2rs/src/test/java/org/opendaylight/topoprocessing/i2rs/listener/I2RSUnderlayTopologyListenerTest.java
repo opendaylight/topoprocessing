@@ -82,7 +82,7 @@ public class I2RSUnderlayTopologyListenerTest {
         YangInstanceIdentifier pathIdentifier = YangInstanceIdentifier.of(ipAddressQname);
         TopologyAggregator mockOperator = Mockito.mock(TopologyAggregator.class);
         UnderlayTopologyListener listener = new I2RSUnderlayTopologyListener(dataBroker, TOPOLOGY_ID,
-                CorrelationItemEnum.Node);
+                CorrelationItemEnum.TerminationPoint);
         listener.setOperator(mockOperator);
         Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>(1);
         pathIdentifiers.put(0, pathIdentifier);
@@ -90,8 +90,8 @@ public class I2RSUnderlayTopologyListenerTest {
 
         Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
         targetFields.put(0, nodeIpValue);
-        UnderlayItem physicalNode = new UnderlayItem(nodeValueWithIp, targetFields,
-                TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode = new UnderlayItem(nodeValueWithIp, null,
+                TOPOLOGY_ID, nodeName, CorrelationItemEnum.TerminationPoint);
         NodeIdentifierWithPredicates nodePathArgument =
                 new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, nodeName);
         nodeYiid = nodeYiid.node(nodePathArgument);
@@ -185,8 +185,6 @@ public class I2RSUnderlayTopologyListenerTest {
         resetMocks();
         setUpMocks(rootNode);
         rootNode.setModificationType(ModificationType.DELETE);
-        YangInstanceIdentifier nodeIdYiid = YangInstanceIdentifier.builder()
-                .node(Node.QNAME).nodeWithKey(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, nodeName).build();
         listener.onDataTreeChanged(mockCollection);
         Mockito.verify(mockOperator).processRemovedChanges(Matchers.eq(nodeYiid), Matchers.eq(TOPOLOGY_ID));
     }
