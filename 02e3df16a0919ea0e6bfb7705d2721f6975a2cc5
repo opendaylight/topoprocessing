@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_a2067bcc",
+        "filename": "topoprocessing-i2rs/src/test/java/org/opendaylight/topoprocessing/i2rs/listener/I2RSUnderlayTopologyListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-12T17:03:44Z",
+      "side": 1,
+      "message": "Why you change this to TerminationPoint?",
+      "range": {
+        "startLine": 85,
+        "startChar": 16,
+        "endLine": 85,
+        "endChar": 52
+      },
+      "revId": "02e3df16a0919ea0e6bfb7705d2721f6975a2cc5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_62dc6313",
+        "filename": "topoprocessing-i2rs/src/test/java/org/opendaylight/topoprocessing/i2rs/listener/I2RSUnderlayTopologyListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 91,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-12T17:03:44Z",
+      "side": 1,
+      "message": "Remove this variable - It is not used anywhere",
+      "range": {
+        "startLine": 91,
+        "startChar": 43,
+        "endLine": 91,
+        "endChar": 55
+      },
+      "revId": "02e3df16a0919ea0e6bfb7705d2721f6975a2cc5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_42d79fed",
+        "filename": "topoprocessing-i2rs/src/test/java/org/opendaylight/topoprocessing/i2rs/translator/I2RSOverlayItemTranslatorLinkTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-12T17:03:44Z",
+      "side": 1,
+      "message": "Please fix line lenght",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 125
+      },
+      "revId": "02e3df16a0919ea0e6bfb7705d2721f6975a2cc5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_a205db7b",
+        "filename": "topoprocessing-i2rs/src/test/java/org/opendaylight/topoprocessing/i2rs/translator/I2RSOverlayItemTranslatorLinkTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-12T17:03:44Z",
+      "side": 1,
+      "message": "Please rename",
+      "range": {
+        "startLine": 132,
+        "startChar": 21,
+        "endLine": 132,
+        "endChar": 23
+      },
+      "revId": "02e3df16a0919ea0e6bfb7705d2721f6975a2cc5",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
