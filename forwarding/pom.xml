@@ -4,7 +4,7 @@
   <parent>
      <groupId>org.opendaylight.topoprocessing</groupId>
      <artifactId>topoprocessing-parent</artifactId>
-     <version>0.1.2-SNAPSHOT</version>
+     <version>0.1.2-Beryllium-SR2</version>
      <relativePath>../parent</relativePath>
   </parent>
 
@@ -16,7 +16,7 @@
   </modules>
 
   <properties>
-      <openflowplugin.version>0.2.2-SNAPSHOT</openflowplugin.version>
+      <openflowplugin.version>0.2.2-Beryllium-SR2</openflowplugin.version>
   </properties>
 
 </project>
