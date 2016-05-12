@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_0292c79e",
+        "filename": "topoprocessing-nt/src/main/java/org/opendaylight/topoprocessing/nt/adapter/NTModelAdapter.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-12T15:33:43Z",
+      "side": 1,
+      "message": "Please fix linelength",
+      "range": {
+        "startLine": 51,
+        "startChar": 0,
+        "endLine": 51,
+        "endChar": 126
+      },
+      "revId": "b59878c0549413fabe6fe03a58c026d4a5e90be9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_62910399",
+        "filename": "topoprocessing-nt/src/test/java/org/opendaylight/topoprocessing/nt/translator/NTOverlayItemTranslatorNodeTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-12T15:33:43Z",
+      "side": 1,
+      "message": "Please fix lines length in whole file",
+      "revId": "b59878c0549413fabe6fe03a58c026d4a5e90be9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
