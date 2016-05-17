@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_9710cda9",
+        "filename": "topoprocessing-inventory/src/test/java/org/opendaylight/topoprocessing/inventory/translator/InvOverlayItemTranslatorLinkTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-17T08:31:33Z",
+      "side": 1,
+      "message": "Please fix line length",
+      "range": {
+        "startLine": 50,
+        "startChar": 4,
+        "endLine": 50,
+        "endChar": 123
+      },
+      "revId": "0f944af18cbacb6db6ffafc03c04f02ecdfb24c2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
