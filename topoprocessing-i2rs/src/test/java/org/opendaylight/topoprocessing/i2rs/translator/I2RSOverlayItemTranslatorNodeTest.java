@@ -8,6 +8,7 @@
 package org.opendaylight.topoprocessing.i2rs.translator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,20 +24,25 @@ import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
+import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.network.Node;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.network.node.SupportingNode;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.topology.rev150608.network.node.TerminationPoint;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.topology.rev150608.network.node.termination.point.SupportingTerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
+import org.opendaylight.yangtools.yang.data.api.schema.LeafSetNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
+import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLeafSetEntryNodeBuilder;
+import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLeafSetNodeBuilder;
 
 import com.google.common.base.Optional;
 
@@ -47,7 +53,8 @@ import com.google.common.base.Optional;
 @RunWith(MockitoJUnitRunner.class)
 public class I2RSOverlayItemTranslatorNodeTest {
 
-    private OverlayItemTranslator translator = new OverlayItemTranslator(new I2RSNodeTranslator(), new I2RSLinkTranslator());;
+    private OverlayItemTranslator translator = new OverlayItemTranslator(new I2RSNodeTranslator(),
+            new I2RSLinkTranslator());
     private static final String TOPOLOGY_NAME = "topology:1";
 
     @Mock
@@ -201,45 +208,51 @@ public class I2RSOverlayItemTranslatorNodeTest {
 
         final String physicalName1 = "node:1";
         MapNode terminationPoints1 = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME)
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.I2RS_TP_ID_QNAME, tpId1)
-                                .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_ID_QNAME, tpId1))
-                                .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_REF, tpRef1))
-                                .build())
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.I2RS_TP_ID_QNAME, tpId2)
-                                .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_ID_QNAME, tpId2))
-                                .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_REF, tpRef2))
-                                .build())
-                .build();
-        final MapEntryNode node1 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, physicalName1)
-                .withChild(terminationPoints1).build();
-
-        final String physicalName2 = "node:2";
-        MapNode terminationPoints2 = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME)
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.I2RS_TP_ID_QNAME, tpId1)
-                                .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_ID_QNAME, tpId1))
-                                .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_REF, tpRef1))
-                                .build())
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.I2RS_TP_ID_QNAME, tpId3)
-                                .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_ID_QNAME, tpId3))
-                                .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_REF, tpRef3))
-                                .build())
-                .build();
-        final MapEntryNode node2 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, physicalName2)
-                .withChild(terminationPoints2).build();
-
-        final String physicalName3 = "node:3";
-        MapNode terminationPoints3 = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME)
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.I2RS_TP_ID_QNAME, tpId2)
+                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.I2RS_TP_ID_QNAME,
+                        tpId1)
+                        .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_ID_QNAME, tpId1))
+                        .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_REF, tpRef1))
+                        .build())
+                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.I2RS_TP_ID_QNAME,
+                        tpId2)
                         .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_ID_QNAME, tpId2))
                         .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_REF, tpRef2))
                         .build())
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.I2RS_TP_ID_QNAME, tpId4)
-                                .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_ID_QNAME, tpId4))
-                                .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_REF, tpRef4))
-                                .build())
                 .build();
-        final MapEntryNode node3 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, physicalName3)
-                .withChild(terminationPoints3).build();
+        final MapEntryNode node1 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME,
+                physicalName1).withChild(terminationPoints1).build();
+
+        final String physicalName2 = "node:2";
+        MapNode terminationPoints2 = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME)
+                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.I2RS_TP_ID_QNAME,
+                        tpId1)
+                        .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_ID_QNAME, tpId1))
+                        .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_REF, tpRef1))
+                        .build())
+                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.I2RS_TP_ID_QNAME,
+                        tpId3)
+                        .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_ID_QNAME, tpId3))
+                        .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_REF, tpRef3))
+                        .build())
+                .build();
+        final MapEntryNode node2 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME,
+                physicalName2).withChild(terminationPoints2).build();
+
+        final String physicalName3 = "node:3";
+        MapNode terminationPoints3 = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME)
+                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.I2RS_TP_ID_QNAME,
+                        tpId2)
+                        .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_ID_QNAME, tpId2))
+                        .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_REF, tpRef2))
+                        .build())
+                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.I2RS_TP_ID_QNAME,
+                        tpId4)
+                        .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_ID_QNAME, tpId4))
+                        .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_TP_REF, tpRef4))
+                        .build())
+                .build();
+        final MapEntryNode node3 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME,
+                physicalName3).withChild(terminationPoints3).build();
         final Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
         targetFields.put(0, mockNormalizedNode);
         OverlayItem logicalNode1 = new OverlayItem(new ArrayList<UnderlayItem>() {{
@@ -256,5 +269,107 @@ public class I2RSOverlayItemTranslatorNodeTest {
         Collection value = (Collection) ((MapEntryNode) normalizedNode).getChild(
                 new NodeIdentifier(TerminationPoint.QNAME)).get().getValue();
         Assert.assertEquals("OverlayNode contains wrong amount of TerminationPoints", 6, value.size());
+    }
+
+    @Test
+    public void testAggregatedTerminationPointsWithinNodes() {
+        String aggTpId1 = "agg-tp:1";
+        String aggTpId2 = "agg-tp:2";
+
+        String topoId1 = "topo:1";
+        String topoId2 = "topo:2";
+        String topoId3 = "topo:3";
+
+        String nodeId1 = "node:1";
+        String nodeId2 = "node:2";
+        String nodeId3 = "node:3";
+
+        String tpId1 = "tp:1";
+        String tpId2 = "tp:2";
+        String tpId3 = "tp:3";
+
+        /*
+         * tp-ref format is:
+         *  /network-topology:network-topology/topology/TOPOLOGY-ID/node/NODE-ID/termination-point/TP-ID
+         */
+        String tpRef1 = "/network-topology:network-topology/topology/" + topoId1
+                + "/node/" + nodeId1 + "/termination-point/" + tpId1;
+        String tpRef2 = "/network-topology:network-topology/topology/" + topoId2
+                + "/node/" + nodeId2 + "/termination-point/" + tpId2;
+        String tpRef3 = "/network-topology:network-topology/topology/" + topoId3
+                + "/node/" + nodeId3 + "/termination-point/" + tpId3;
+
+        QName tpNTQname = org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
+                .topology.topology.node.TerminationPoint.QNAME;
+        YangInstanceIdentifier suppTpIdentifier = YangInstanceIdentifier.of(SupportingTerminationPoint.QNAME);
+
+        LeafSetNode tpRefs1 = ImmutableLeafSetNodeBuilder.create()
+                .withNodeIdentifier(NodeIdentifier.create(TopologyQNames.TP_REF))
+                .withChild(ImmutableLeafSetEntryNodeBuilder.create()
+                        .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue(TopologyQNames.TP_REF, tpRef1))
+                        .withValue(tpRef1).build())
+                .withChild(ImmutableLeafSetEntryNodeBuilder.create()
+                        .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue(TopologyQNames.TP_REF, tpRef2))
+                        .withValue(tpRef2).build())
+                .build();
+
+        LeafSetNode tpRefs2 = ImmutableLeafSetNodeBuilder.create()
+                .withNodeIdentifier(NodeIdentifier.create(TopologyQNames.TP_REF))
+                .withChild(ImmutableLeafSetEntryNodeBuilder.create()
+                        .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue(TopologyQNames.TP_REF, tpRef3))
+                        .withValue(tpRef3).build())
+                .build();
+
+        MapNode tpMapNode1 = ImmutableNodes.mapNodeBuilder(tpNTQname)
+                .withChild(ImmutableNodes.mapEntryBuilder(tpNTQname, TopologyQNames.NETWORK_TP_ID_QNAME, aggTpId1)
+                        .withChild(tpRefs1)
+                        .build())
+                .withChild(ImmutableNodes.mapEntryBuilder(tpNTQname, TopologyQNames.NETWORK_TP_ID_QNAME, aggTpId2)
+                        .withChild(tpRefs2)
+                        .build())
+                .build();
+
+        UnderlayItem underlayItem = new UnderlayItem(null, null, topoId1, nodeId1, CorrelationItemEnum.Node);
+        OverlayItem overlayItem = new OverlayItem(Arrays.asList(underlayItem), CorrelationItemEnum.Node);
+        OverlayItemWrapper wrapper = new OverlayItemWrapper(nodeId1, overlayItem);
+        wrapper.setAggregatedTerminationPoints(tpMapNode1);
+
+        NormalizedNode<?, ?> translated = translator.translate(wrapper);
+
+        Optional<NormalizedNode<?, ?>> tpsOpt = NormalizedNodes.findNode(translated,
+                InstanceIdentifiers.I2RS_TP_IDENTIFIER);
+        if (tpsOpt.isPresent()) {
+            MapNode tps = (MapNode) tpsOpt.get();
+            Assert.assertEquals("OverlayNode contains wrong amount of TerminationPoints", 2, tps.getValue().size());
+
+            for (MapEntryNode tp : tps.getValue()) {
+                Optional<NormalizedNode<?, ?>> suppTpsOpt = NormalizedNodes.findNode(tp, suppTpIdentifier);
+                if (suppTpsOpt.isPresent()) {
+                    MapNode suppTps = (MapNode) suppTpsOpt.get();
+                    if (suppTps.getValue().size() == 2) {
+                        for (MapEntryNode suppTp : suppTps.getValue()) {
+                            if(suppTp.toString().contains(tpId1)) {
+                                Assert.assertTrue(suppTp.toString().contains(nodeId1));
+                                Assert.assertTrue(suppTp.toString().contains(topoId1));
+                            } else {
+                                Assert.assertTrue(suppTp.toString().contains(tpId2));
+                                Assert.assertTrue(suppTp.toString().contains(nodeId2));
+                                Assert.assertTrue(suppTp.toString().contains(topoId2));
+                            }
+                        }
+                    } else if(suppTps.getValue().size() == 1) {
+                        Assert.assertTrue(suppTps.toString().contains(tpId3));
+                        Assert.assertTrue(suppTps.toString().contains(nodeId3));
+                        Assert.assertTrue(suppTps.toString().contains(topoId3));
+                    } else {
+                        Assert.fail("Wrong number of supporting termination points");
+                    }
+                } else {
+                    Assert.fail("Supporting termination points are not present");
+                }
+            }
+        } else {
+            Assert.fail("Termination Points are not present");
+        }
     }
 }
