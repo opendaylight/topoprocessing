@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
@@ -35,6 +36,7 @@ import org.opendaylight.topoprocessing.impl.testUtilities.TestingDOMDataBroker;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -208,7 +210,31 @@ public class TopologyRequestHandlerTest {
         verify(mappingMock, times(6)).getApplyFilters();
         assertTrue(handler.getListeners().size() == 3);
         handler.filtrationAggregation = false;
+    }
 
+    @Test
+    public void testProcessNewRequestAggregationWithFiltrationOfNodesAndTp(){
+        handler.aggregationOfNodesAndTps = true;
+        setFiltrationBehaviour();
+        when(mappingMock.getUnderlayTopology()).thenReturn("topo1");
+        when(mappingMock.isAggregateInside()).thenReturn(true);
+        TargetFieldBuilder targetFieldBuider = new TargetFieldBuilder()
+                .setTargetFieldPath(leafpathMock)
+                .setMatchingKey(0);
+        List<TargetField> targetFields = new ArrayList<>(1);
+        targetFields.add(targetFieldBuider.build());
+        when(mappingMock.getTargetField()).thenReturn(targetFields);
+        when(leafpathMock.getValue()).thenReturn("f1");
+        Mockito.doReturn(NetworkTopologyModel.class).when(mappingMock).getInputModel();
+        List<String> applyFilters = new ArrayList<String>();
+        applyFilters.add("filter1");
+        when(mappingMock.getApplyFilters()).thenReturn(applyFilters);
+
+        handler.processNewRequest();
+
+        assertEquals(handler.getListeners().size(), 2);
+        verify(mappingMock, times(8)).getApplyFilters();
+        handler.aggregationOfNodesAndTps = false;
     }
 
     @Test(expected=IllegalStateException.class)
@@ -391,6 +417,7 @@ public class TopologyRequestHandlerTest {
         private boolean agregationNull = false;
         private boolean realMapping = false;
         private boolean correctTopologyID = true;
+        private boolean aggregationOfNodesAndTps = false;
         private LinkComputation linkComputationReturn;
 
         public TestTopologyRequestHandler(DOMDataBroker dataBroker, GlobalSchemaContextHolder schemaHolder,
@@ -413,59 +440,95 @@ public class TopologyRequestHandlerTest {
                CorrelationsBuilder correlationsBuilder = new CorrelationsBuilder();
                List<Correlation> correlations = new ArrayList<Correlation>();
 
-               CorrelationBuilder correlationBuilder = new CorrelationBuilder();
-               if(agregationCorelationIntemLink){
-                   correlationBuilder.setCorrelationItem(CorrelationItemEnum.Link);
-               }else{
-                   correlationBuilder.setCorrelationItem(CorrelationItemEnum.Node);
-               }
+               if (!aggregationOfNodesAndTps) {
+                   CorrelationBuilder correlationBuilder = new CorrelationBuilder();
+                   if (agregationCorelationIntemLink) {
+                       correlationBuilder.setCorrelationItem(CorrelationItemEnum.Link);
+                   } else {
+                       correlationBuilder.setCorrelationItem(CorrelationItemEnum.Node);
+                   }
 
-               if(filtrationOnly || filtrationAggregation){
-                   FiltrationBuilder filtrationBuilder = new FiltrationBuilder();
-                   filtrationBuilder.setUnderlayTopology("topo1");
+                   if (filtrationOnly || filtrationAggregation) {
+                       FiltrationBuilder filtrationBuilder = new FiltrationBuilder();
+                       filtrationBuilder.setUnderlayTopology("topo1");
 
+                       List<Filter> filters = new ArrayList<Filter>();
+                       when(filterMock.getFilterId()).thenReturn("filter1");
+                       filters.add(filterMock);
+                       filters.add(filterMock);
+                       filtrationBuilder.setFilter(filters);
+                       correlationBuilder.setType(FiltrationOnly.class);
+                       correlationBuilder.setFiltration(filtrationBuilder.build());
+                   }
+                   if (aggregationOnly || filtrationAggregation) {
+                       AggregationBuilder aggregationBuilder = new AggregationBuilder();
+
+                       List<Mapping> mappings = new ArrayList<Mapping>();
+                       if (realMapping) {
+                           mappings.add(getMapping(correctTopologyID));
+                       } else {
+                           mappings.add(mappingMock);
+                           mappings.add(mappingMock);
+                           mappings.add(mappingMock);
+                       }
+                       aggregationBuilder.setMapping(mappings);
+                       aggregationBuilder.setAggregationType(Equality.class);
+
+                       if (filtrationAggregation) {
+                           correlationBuilder.setType(FiltrationAggregation.class);
+                       }
+                       else {
+                           correlationBuilder.setType(AggregationOnly.class);
+                       }
+                       if (agregationNull) {
+                           correlationBuilder.setAggregation(null);
+                       } else {
+                           correlationBuilder.setAggregation(aggregationBuilder.build());
+                       }
+
+                   }
+                   if (renderingOnly) {
+                       correlationBuilder.setType(RenderingOnly.class);
+                       correlationBuilder.setRendering(renderingMock);
+                   }
+                   if (dataMissing) {
+                       correlationBuilder.setType(null);
+                   }
+
+                   correlations.add(correlationBuilder.build());
+               } else {
                    List<Filter> filters = new ArrayList<Filter>();
                    when(filterMock.getFilterId()).thenReturn("filter1");
                    filters.add(filterMock);
                    filters.add(filterMock);
-                   filtrationBuilder.setFilter(filters);
-                   correlationBuilder.setType(FiltrationOnly.class);
-                   correlationBuilder.setFiltration(filtrationBuilder.build());
-               }
-               if(aggregationOnly || filtrationAggregation){
-                   AggregationBuilder aggregationBuilder = new AggregationBuilder();
 
-                   List<Mapping> mappings = new ArrayList<Mapping>();
-                   if(realMapping){
-                       mappings.add(getMapping(correctTopologyID));
-                   }else{
-                       mappings.add(mappingMock);
-                       mappings.add(mappingMock);
-                       mappings.add(mappingMock);
-                   }
-                   aggregationBuilder.setMapping(mappings);
+                   FiltrationBuilder filtrationBuilder = new FiltrationBuilder();
+                   filtrationBuilder.setUnderlayTopology("topo1");
+                   filtrationBuilder.setFilter(filters);
+
+                   AggregationBuilder aggregationBuilder = new AggregationBuilder();
+                   List<Mapping> nodeMappings = new ArrayList<Mapping>();
+                   nodeMappings.add(mappingMock);
+                   nodeMappings.add(mappingMock);
+                   aggregationBuilder.setMapping(nodeMappings);
                    aggregationBuilder.setAggregationType(Equality.class);
 
-                   if(filtrationAggregation){
-                       correlationBuilder.setType(FiltrationAggregation.class);
-                   }
-                   else correlationBuilder.setType(AggregationOnly.class);
-                   if(agregationNull){
-                       correlationBuilder.setAggregation(null);
-                   }else{
-                       correlationBuilder.setAggregation(aggregationBuilder.build());
-                   }
+                   CorrelationBuilder nodeCorrelationBuilder = new CorrelationBuilder();
+                   nodeCorrelationBuilder.setCorrelationItem(CorrelationItemEnum.Node);
+                   nodeCorrelationBuilder.setType(FiltrationAggregation.class);
+                   nodeCorrelationBuilder.setAggregation(aggregationBuilder.build());
+                   nodeCorrelationBuilder.setFiltration(filtrationBuilder.build());
 
-               }
-               if(renderingOnly){
-                   correlationBuilder.setType(RenderingOnly.class);
-                   correlationBuilder.setRendering(renderingMock);
-               }
-               if(dataMissing){
-                   correlationBuilder.setType(null);
+                   CorrelationBuilder tpCorrelationBuilder = new CorrelationBuilder();
+                   tpCorrelationBuilder.setCorrelationItem(CorrelationItemEnum.TerminationPoint);
+                   tpCorrelationBuilder.setType(FiltrationAggregation.class);
+                   tpCorrelationBuilder.setAggregation(aggregationBuilder.build());
+                   tpCorrelationBuilder.setFiltration(filtrationBuilder.build());
+
+                   correlations.add(nodeCorrelationBuilder.build());
+                   correlations.add(tpCorrelationBuilder.build());
                }
 
-               correlations.add(correlationBuilder.build());
                correlationsBuilder.setCorrelation(correlations);
 
                return correlationsBuilder.build();

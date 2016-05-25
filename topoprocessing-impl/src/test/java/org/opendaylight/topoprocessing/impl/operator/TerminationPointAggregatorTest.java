@@ -87,8 +87,8 @@ public class TerminationPointAggregatorTest {
     private TpTestTopologyManager topoManager;
 
     private class TpTestTopologyManager extends TopologyManager {
-        public OverlayItem oldOverlayItem;
-        public OverlayItem newOverlayItem;
+        private OverlayItem oldOverlayItem;
+        private OverlayItem newOverlayItem;
 
         public TpTestTopologyManager() {
             super(rpcServices, schemaHolder, topologyIdentifier, NetworkTopologyModel.class);
@@ -339,6 +339,101 @@ public class TerminationPointAggregatorTest {
                 for (LeafSetEntryNode<String> tpRef : tpRefs) {
                     Assert.assertNotNull("TP2 reference" + i, stack.remove(((String) tpRef.getValue())));
                     i++;
+                }
+            } else {
+                Assert.fail("Unexpected number of TP References");
+            }
+        }
+    }
+
+    @Test
+    public void testCreateInsideAggregatedNodesNT() {
+        init(NetworkTopologyModel.class);
+        String tpId6 = "tp6";
+        String tpId7 = "tp7";
+        String tpId8 = "tp8";
+
+        String topoId6 = "topo1";
+        String topoId7 = "topo2";
+        String topoId8 = "topo2";
+
+        String fakeNodeId = "fakeNode";
+        String nodeId6 = "node1";
+        String nodeId7 = "node2";
+        String nodeId8 = "node2";
+
+        String fullTpId6 = topoId6 + "/" + nodeId6 + "/" + tpId6;
+        String fullTpId7 = topoId7 + "/" + nodeId7 + "/" + tpId7;
+        String fullTpId8 = topoId8 + "/" + nodeId8 + "/" + tpId8;
+
+        String ip6 = "192.168.1.10";
+        String ip7 = "192.168.1.10";
+        String ip8 = "192.168.1.11";
+
+        MapEntryNode tp6 = ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME,
+                fullTpId6).withChild(ImmutableNodes.leafNode(NT_IP_ADDRESS_QNAME, ip6)).build();
+        MapEntryNode tp7 = ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME,
+                fullTpId7).withChild(ImmutableNodes.leafNode(NT_IP_ADDRESS_QNAME, ip7)).build();
+        MapEntryNode tp8 = ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME,
+                fullTpId8).withChild(ImmutableNodes.leafNode(NT_IP_ADDRESS_QNAME, ip8)).build();
+
+        YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder(InstanceIdentifiers.NODE_IDENTIFIER)
+                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, fakeNodeId).build();
+        MapEntryNode nodeValueInput = ImmutableNodes
+                .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, fakeNodeId)
+                .withChild(ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME).withChild(tp6).withChild(tp7)
+                        .withChild(tp8).build())
+                .build();
+        UnderlayItem underlayItemInput = new UnderlayItem(nodeValueInput, null, TOPOLOGY_NAME, fakeNodeId,
+                CorrelationItemEnum.Node);
+
+        Map<Integer, YangInstanceIdentifier> targetFields = new HashMap<Integer, YangInstanceIdentifier>();
+        targetFields.put(0, targetField);
+        Map<String, Map<Integer, YangInstanceIdentifier>> targetFieldsPerTP = new HashMap<>();
+
+        targetFieldsPerTP.put(fullTpId6, targetFields);
+        targetFieldsPerTP.put(fullTpId7, targetFields);
+        targetFieldsPerTP.put(fullTpId8, targetFields);
+
+        aggregator.setAgregationInsideAggregatedNodes(true);
+        aggregator.setTargetFieldsPerTP(targetFieldsPerTP);
+
+        aggregator.processCreatedChanges(nodeYiid, underlayItemInput, TOPOLOGY_NAME);
+
+        Assert.assertNotNull("Manager should contain some changes", topoManager.getNewOverlayItem());
+        Assert.assertNotNull("OverlayItem should contain some nodes",
+                topoManager.getNewOverlayItem().getUnderlayItems());
+        NormalizedNode<?, ?> node = topoManager.getNewOverlayItem().getUnderlayItems().peek().getItem();
+        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(node,
+                YangInstanceIdentifier.of(TerminationPoint.QNAME));
+        Assert.assertTrue("Node should contain TerminationPointMap", tpMapNodeOpt.isPresent());
+        MapNode tpMapNode = (MapNode) tpMapNodeOpt.get();
+
+        ArrayList<MapEntryNode> mapEntryNodes = new ArrayList<>(tpMapNode.getValue());
+        Assert.assertEquals("Number of Termination Points", 2, mapEntryNodes.size());
+        for (MapEntryNode mapEntryNode : mapEntryNodes) {
+            Optional<DataContainerChild<? extends PathArgument, ?>> tpRefsOpt = mapEntryNode
+                    .getChild(new NodeIdentifier(TopologyQNames.TP_REF));
+            Assert.assertTrue("TP Entry should have some REFs", tpRefsOpt.isPresent());
+            Collection<LeafSetEntryNode<String>> tpRefs = ((LeafSetNode<String>) tpRefsOpt.get()).getValue();
+            if (1 == tpRefs.size()) {
+                // TP 8
+                String tpRef = tpRefs.iterator().next().getValue();
+                Assert.assertTrue(tpRef.contains(topoId8));
+                Assert.assertTrue(tpRef.contains(tpId8));
+                Assert.assertTrue(tpRef.contains(nodeId8));
+            } else if (2 == tpRefs.size()) {
+                // TP 6 and 7
+                for (LeafSetEntryNode<String> tpRef : tpRefs) {
+                    if(tpRef.getValue().contains(tpId6)) {
+                        Assert.assertTrue(tpRef.getValue().contains(tpId6));
+                        Assert.assertTrue(tpRef.getValue().contains(nodeId6));
+                        Assert.assertTrue(tpRef.getValue().contains(topoId6));
+                    } else {
+                        Assert.assertTrue(tpRef.getValue().contains(tpId7));
+                        Assert.assertTrue(tpRef.getValue().contains(nodeId7));
+                        Assert.assertTrue(tpRef.getValue().contains(topoId7));
+                    }
                 }
             } else {
                 Assert.fail("Unexpected number of TP References");
