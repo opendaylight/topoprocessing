@@ -1,0 +1,538 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_76a99b7a",
+        "filename": "topoprocessing-i2rs/src/main/java/org/opendaylight/topoprocessing/i2rs/translator/I2RSNodeTranslator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Please remove commented lines if they aren\u0027t necessary.",
+      "range": {
+        "startLine": 84,
+        "startChar": 28,
+        "endLine": 93,
+        "endChar": 30
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_56cbb752",
+        "filename": "topoprocessing-i2rs/src/main/java/org/opendaylight/topoprocessing/i2rs/translator/I2RSNodeTranslator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Please remove",
+      "range": {
+        "startLine": 100,
+        "startChar": 28,
+        "endLine": 100,
+        "endChar": 31
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_36c6034a",
+        "filename": "topoprocessing-i2rs/src/main/java/org/opendaylight/topoprocessing/i2rs/translator/I2RSNodeTranslator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Indentation",
+      "range": {
+        "startLine": 101,
+        "startChar": 20,
+        "endLine": 101,
+        "endChar": 21
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_96c54f3e",
+        "filename": "topoprocessing-i2rs/src/main/java/org/opendaylight/topoprocessing/i2rs/translator/I2RSNodeTranslator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Remove this line",
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_d605077b",
+        "filename": "topoprocessing-i2rs/src/main/java/org/opendaylight/topoprocessing/i2rs/translator/I2RSNodeTranslator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Two tabs (8 spaces) for this kind of indentation are sufficient. Please fix it also in other places.",
+      "range": {
+        "startLine": 117,
+        "startChar": 12,
+        "endLine": 117,
+        "endChar": 24
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_a7c01be1",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/Manager.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Try to find some better name than Manager because it is very ambiguous",
+      "range": {
+        "startLine": 16,
+        "startChar": 17,
+        "endLine": 16,
+        "endChar": 24
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_e2a3214d",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Reformulate:\nAggregators contains custom managers",
+      "range": {
+        "startLine": 49,
+        "startChar": 81,
+        "endLine": 49,
+        "endChar": 115
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_aa2d7f00",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": ",manager (nodeManager) in node aggregator is called",
+      "range": {
+        "startLine": 52,
+        "startChar": 42,
+        "endLine": 52,
+        "endChar": 92
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_0a258b08",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Join these points and don\u0027t mention addTpsToWrapper method as it is private. Just tell that \"fake\" node is created...",
+      "range": {
+        "startLine": 53,
+        "startChar": 12,
+        "endLine": 54,
+        "endChar": 98
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_8a323b5d",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": ",manager (tpManager) in tp aggregator is called",
+      "range": {
+        "startLine": 56,
+        "startChar": 40,
+        "endLine": 56,
+        "endChar": 86
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_8a807bc1",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Put whole this comment above as javadoc for class",
+      "range": {
+        "startLine": 49,
+        "startChar": 3,
+        "endLine": 58,
+        "endChar": 7
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_0aaf4b2b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Maybe you could use IdentifierGenerator instead of plain int",
+      "range": {
+        "startLine": 68,
+        "startChar": 12,
+        "endLine": 68,
+        "endChar": 15
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_e2ba016d",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "If it should not be called then throw UnsupportedOperationException",
+      "range": {
+        "startLine": 119,
+        "startChar": 12,
+        "endLine": 119,
+        "endChar": 37
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_22acf934",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "If it should not be called then throw UnsupportedOperationException",
+      "range": {
+        "startLine": 124,
+        "startChar": 12,
+        "endLine": 124,
+        "endChar": 37
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_6a7fe7ab",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Please use only two tabs (8 spaces) in this kind of indentation. Please fix it in whole file",
+      "range": {
+        "startLine": 137,
+        "startChar": 17,
+        "endLine": 137,
+        "endChar": 32
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_2a27afcb",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Please try to split this method to more smaller methods",
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_6a040718",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "this is terminationPointId or some another ID? please rename it",
+      "range": {
+        "startLine": 264,
+        "startChar": 39,
+        "endLine": 264,
+        "endChar": 41
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_4de2fd2f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "I think this could be trace",
+      "range": {
+        "startLine": 271,
+        "startChar": 36,
+        "endLine": 271,
+        "endChar": 41
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_add2b959",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "I think this could be trace",
+      "range": {
+        "startLine": 275,
+        "startChar": 28,
+        "endLine": 275,
+        "endChar": 33
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_8d3ed58a",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/NodeAndTPAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 281,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Isn\u0027t there missing space?",
+      "range": {
+        "startLine": 281,
+        "startChar": 36,
+        "endLine": 281,
+        "endChar": 38
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_edfcb174",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "add space",
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_ad7bd9f3",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "prepend is before method name.",
+      "range": {
+        "startLine": 222,
+        "startChar": 20,
+        "endLine": 222,
+        "endChar": 43
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_cd5d6d7b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 255,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "Please change it to 2 tabs (8 spaces) in this kind of indentation. Please fix it in whole file",
+      "range": {
+        "startLine": 255,
+        "startChar": 8,
+        "endLine": 255,
+        "endChar": 24
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_2d56a95c",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-05-26T10:52:52Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 329,
+        "startChar": 32,
+        "endLine": 329,
+        "endChar": 121
+      },
+      "revId": "1fc76fd3784a2074e0a4853e8aabdb630c71abb3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
