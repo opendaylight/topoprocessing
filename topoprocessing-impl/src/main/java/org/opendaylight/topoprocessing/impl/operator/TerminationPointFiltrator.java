@@ -63,6 +63,7 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
     public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry, String topologyId) {
         LOGGER.trace("Processing createdChanges");
         NormalizedNode<?, ?> node = createdEntry.getItem();
+        LOGGER.debug("****createdEntry.item {}", createdEntry.getItem().getValue());
         Optional<NormalizedNode<?, ?>> tpMapNodeOpt = null;
         if (model.equals(NetworkTopologyModel.class)) {
             tpMapNodeOpt = NormalizedNodes.findNode(node,InstanceIdentifiers.NT_TERMINATION_POINT);
@@ -72,12 +73,14 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
             tpMapNodeOpt = NormalizedNodes.findNode(createdEntry.getLeafNodes().values().iterator().next(),
                     InstanceIdentifiers.INVENTORY_NODE_CONNECTOR_IDENTIFIER);
         }
+        UnderlayItem novy = new UnderlayItem(createdEntry.getItem(), createdEntry.getLeafNodes(), createdEntry.getTopologyId(), createdEntry.getItemId(), createdEntry.getCorrelationItem());
         if (tpMapNodeOpt.isPresent()) {
             node = filterTerminationPoints(node, (MapNode) tpMapNodeOpt.get(), topologyId, createdEntry.getItemId());
-            createdEntry.setItem(node);
+
+            novy.setItem(node);
         }
-        getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(identifier, createdEntry);
-        OverlayItem overlayItem = wrapUnderlayItem(createdEntry);
+        getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(identifier, novy);
+        OverlayItem overlayItem = wrapUnderlayItem(novy);
         overlayItem.setCorrelationType(FiltrationOnly.class);
         manager.addOverlayItem(overlayItem);
     }
@@ -88,10 +91,19 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         Map<YangInstanceIdentifier, UnderlayItem> oldUnderlayItems =
                 getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems();
         OverlayItem overlayItem;
-        UnderlayItem newUnderlayItem = updatedEntry;
+        LOGGER.debug("****updatedEntry.item {}", updatedEntry.getItem().getValue());
+        LOGGER.debug("****updatedEntry.leafs {}", updatedEntry.getLeafNodes().values());
+        UnderlayItem newUnderlayItem = new UnderlayItem(updatedEntry.getItem(), updatedEntry.getLeafNodes(), updatedEntry.getTopologyId(), updatedEntry.getItemId(), updatedEntry.getCorrelationItem());
         NormalizedNode<?, ?> newNode = newUnderlayItem.getItem();
-        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(newNode,
-                YangInstanceIdentifier.of(TerminationPoint.QNAME));
+        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = null;
+        if (model.equals(NetworkTopologyModel.class)) {
+            tpMapNodeOpt = NormalizedNodes.findNode(newNode,InstanceIdentifiers.NT_TERMINATION_POINT);
+        } else if (model.equals(I2rsModel.class)){
+            tpMapNodeOpt = NormalizedNodes.findNode(newNode,InstanceIdentifiers.I2RS_TERMINATION_POINT);
+        } else if (model.equals(OpendaylightInventoryModel.class)){
+            tpMapNodeOpt = NormalizedNodes.findNode(updatedEntry.getLeafNodes().values().iterator().next(),
+                    InstanceIdentifiers.INVENTORY_NODE_CONNECTOR_IDENTIFIER);
+        }
         if (tpMapNodeOpt.isPresent()) {
             newNode = filterTerminationPoints(newNode, (MapNode) tpMapNodeOpt.get(), topologyId,
                             updatedEntry.getItemId());
@@ -132,13 +144,16 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
             if (passed) {
                 if (model.equals(OpendaylightInventoryModel.class)) {
                     MapEntryNode tp = createInventoryTpEntry(tpMapEntryNode, node, topologyId, itemId);
-                    tpBuilder.addChild(tp);
+                    if(tp != null)
+                        tpBuilder.addChild(tp);
                 } else {
                     tpBuilder.addChild(tpMapEntryNode);
                 }
             }
         }
+        LOGGER.warn("PRED\n"+NormalizedNodes.toStringTree(node));
         node = ImmutableMapEntryNodeBuilder.create((MapEntryNode) node).withChild(tpBuilder.build()).build();
+        LOGGER.warn("POTOM\n"+NormalizedNodes.toStringTree(node));
         return node;
     }
 
@@ -173,6 +188,9 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
             }
         } else {
             LOGGER.warn("No Node Connector ID is present!");
+        }
+        if(tpIdFromNt == null) {
+            return null;
         }
         String tpRefVal = "/network-topology:network-topology/topology/" + topologyId +
                 "/node/" + itemId + "/termination-point/" + tpIdFromNt;
