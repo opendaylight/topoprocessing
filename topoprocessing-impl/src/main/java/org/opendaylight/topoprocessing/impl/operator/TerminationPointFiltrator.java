@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.filtrator.AbstractFiltrator;
@@ -72,12 +71,14 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
             tpMapNodeOpt = NormalizedNodes.findNode(createdEntry.getLeafNodes().values().iterator().next(),
                     InstanceIdentifiers.INVENTORY_NODE_CONNECTOR_IDENTIFIER);
         }
+        UnderlayItem createdEntryCopy = new UnderlayItem(createdEntry.getItem(), createdEntry.getLeafNodes(),
+                createdEntry.getTopologyId(), createdEntry.getItemId(), createdEntry.getCorrelationItem());
         if (tpMapNodeOpt.isPresent()) {
             node = filterTerminationPoints(node, (MapNode) tpMapNodeOpt.get(), topologyId, createdEntry.getItemId());
-            createdEntry.setItem(node);
+            createdEntryCopy.setItem(node);
         }
-        getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(identifier, createdEntry);
-        OverlayItem overlayItem = wrapUnderlayItem(createdEntry);
+        getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems().put(identifier, createdEntryCopy);
+        OverlayItem overlayItem = wrapUnderlayItem(createdEntryCopy);
         overlayItem.setCorrelationType(FiltrationOnly.class);
         manager.addOverlayItem(overlayItem);
     }
@@ -87,21 +88,28 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         LOGGER.trace("Processing updatedChanges");
         Map<YangInstanceIdentifier, UnderlayItem> oldUnderlayItems =
                 getTopoStoreProvider().getTopologyStore(topologyId).getUnderlayItems();
-        OverlayItem overlayItem;
-        UnderlayItem newUnderlayItem = updatedEntry;
-        NormalizedNode<?, ?> newNode = newUnderlayItem.getItem();
-        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(newNode,
-                YangInstanceIdentifier.of(TerminationPoint.QNAME));
+        UnderlayItem updatedEntryCopy = new UnderlayItem(updatedEntry.getItem(), updatedEntry.getLeafNodes(),
+                updatedEntry.getTopologyId(), updatedEntry.getItemId(), updatedEntry.getCorrelationItem());
+        NormalizedNode<?, ?> newNode = updatedEntryCopy.getItem();
+        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = null;
+        if (model.equals(NetworkTopologyModel.class)) {
+            tpMapNodeOpt = NormalizedNodes.findNode(newNode,InstanceIdentifiers.NT_TERMINATION_POINT);
+        } else if (model.equals(I2rsModel.class)){
+            tpMapNodeOpt = NormalizedNodes.findNode(newNode,InstanceIdentifiers.I2RS_TERMINATION_POINT);
+        } else if (model.equals(OpendaylightInventoryModel.class)){
+            tpMapNodeOpt = NormalizedNodes.findNode(updatedEntry.getLeafNodes().values().iterator().next(),
+                    InstanceIdentifiers.INVENTORY_NODE_CONNECTOR_IDENTIFIER);
+        }
         if (tpMapNodeOpt.isPresent()) {
             newNode = filterTerminationPoints(newNode, (MapNode) tpMapNodeOpt.get(), topologyId,
                             updatedEntry.getItemId());
-            newUnderlayItem.setItem(newNode);
+            updatedEntryCopy.setItem(newNode);
         }
         UnderlayItem oldUnderlayItem = oldUnderlayItems.get(identifier);
-        overlayItem = oldUnderlayItem.getOverlayItem();
+        OverlayItem overlayItem = oldUnderlayItem.getOverlayItem();
         overlayItem.setCorrelationType(FiltrationOnly.class);
         Queue<UnderlayItem> underlayItems = new ConcurrentLinkedQueue<>();
-        underlayItems.add(newUnderlayItem);
+        underlayItems.add(updatedEntryCopy);
         overlayItem.setUnderlayItems(underlayItems);
         manager.addOverlayItem(overlayItem);
     }
@@ -133,7 +141,9 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
             if (passed) {
                 if (model.equals(OpendaylightInventoryModel.class)) {
                     MapEntryNode tp = createInventoryTpEntry(tpMapEntryNode, node, topologyId, itemId);
-                    tpBuilder.addChild(tp);
+                    if(tp != null) {
+                        tpBuilder.addChild(tp);
+                    }
                 } else {
                     tpBuilder.addChild(tpMapEntryNode);
                 }
@@ -174,6 +184,9 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
             }
         } else {
             LOGGER.warn("No Node Connector ID is present!");
+        }
+        if(tpIdFromNt == null) {
+            return null;
         }
         String tpRefVal = "/network-topology:network-topology/topology/" + topologyId +
                 "/node/" + itemId + "/termination-point/" + tpIdFromNt;
