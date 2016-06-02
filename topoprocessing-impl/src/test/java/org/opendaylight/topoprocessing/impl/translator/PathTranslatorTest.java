@@ -8,8 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.translator;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
@@ -34,15 +34,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.data.util.DataSchemaContextTree;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import org.opendaylight.yangtools.yang.model.parser.api.YangSyntaxErrorException;
-import org.opendaylight.yangtools.yang.parser.impl.YangParserImpl;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.io.ByteSource;
+import org.opendaylight.yangtools.yang.parser.spi.meta.ReactorException;
+import org.opendaylight.yangtools.yang.parser.spi.source.SourceException;
+import org.opendaylight.yangtools.yang.parser.spi.source.StatementStreamSource;
+import org.opendaylight.yangtools.yang.parser.stmt.reactor.CrossSourceStatementReactor;
+import org.opendaylight.yangtools.yang.parser.stmt.rfc6020.YangInferencePipeline;
+import org.opendaylight.yangtools.yang.parser.stmt.rfc6020.YangStatementSourceImpl;
 
 /**
  * @author martin.uhlir
@@ -61,8 +61,8 @@ public class PathTranslatorTest {
     private Class<? extends Model> I2RSmodel = I2rsModel.class;
     private Class<? extends Model> INVmodel = OpendaylightInventoryModel.class;
 
-    private static SchemaContext createTestContext() throws IOException, YangSyntaxErrorException {
-        final YangParserImpl parser = new YangParserImpl();
+    private static SchemaContext createTestContext() throws IOException, YangSyntaxErrorException,
+    ReactorException {
         List<String> modules = new ArrayList<String>();
         modules.add("/ietf-inet-types.yang");
         modules.add("/network-topology.yang");
@@ -84,21 +84,12 @@ public class PathTranslatorTest {
         modules.add("/opendaylight-flow-types.yang");
         modules.add("/opendaylight-table-types.yang");
         modules.add("/flow-node-inventory.yang");
-        return parser.parseSources(Collections2.transform(modules, new Function<String, ByteSource>() {
-            @Override
-            public ByteSource apply(final String input) {
-                return new ByteSource() {
-                    @Override
-                    public InputStream openStream() throws IOException {
-                        return PathTranslatorTest.class.getResourceAsStream(input);
-                    }
-                };
-            }
-        }));
+        return parseYangSources(modules);
     }
 
     @Before
-    public void startup() throws URISyntaxException, ParseException, IOException, YangSyntaxErrorException {
+    public void startup() throws URISyntaxException, ParseException, IOException, YangSyntaxErrorException,
+    ReactorException {
         schemaContext = createTestContext();
         DataSchemaContextTree contextTree = DataSchemaContextTree.from(schemaContext);
         Mockito.when(mockSchemaHolder.getSchemaContext()).thenReturn(schemaContext);
@@ -303,24 +294,29 @@ public class PathTranslatorTest {
      */
     @Test(expected = IllegalStateException.class)
     public void testUnexistingModuleName()
-            throws URISyntaxException, ParseException, IOException, YangSyntaxErrorException {
-        final YangParserImpl parser = new YangParserImpl();
+            throws URISyntaxException, ParseException, IOException, YangSyntaxErrorException, ReactorException {
+
         List<String> modules = new ArrayList<String>();
         modules.add("/ietf-inet-types.yang");
         modules.add("/network-topology.yang");
-        SchemaContext schemaContext2 = parser
-                .parseSources(Collections2.transform(modules, new Function<String, ByteSource>() {
-                    @Override
-                    public ByteSource apply(final String input) {
-                        return new ByteSource() {
-                            @Override
-                            public InputStream openStream() throws IOException {
-                                return PathTranslatorTest.class.getResourceAsStream(input);
-                            }
-                        };
-                    }
-                }));
+
+        SchemaContext schemaContext2 = parseYangSources(modules);
         Mockito.when(mockSchemaHolder.getSchemaContext()).thenReturn(schemaContext2);
         testLegalPath();
+    }
+
+    public static SchemaContext parseYangSources(List<String> input) throws SourceException, ReactorException,
+    FileNotFoundException{
+
+        StatementStreamSource[] sources = new StatementStreamSource[input.size()];
+
+        for(int i = 0; i < input.size(); i++){
+            sources[i] = new YangStatementSourceImpl(PathTranslatorTest.class.getResourceAsStream(input.get(i)));
+        }
+
+        CrossSourceStatementReactor.BuildAction reactor = YangInferencePipeline.RFC6020_REACTOR.newBuild();
+        reactor.addSources(sources);
+
+        return reactor.buildEffective();
     }
 }
