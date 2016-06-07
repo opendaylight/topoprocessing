@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_a4819091",
+        "filename": "topoprocessing-common/src/main/java/org/opendaylight/topoprocessing/algorithms/SuurballeAlgorithm.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-06-07T09:11:33Z",
+      "side": 1,
+      "message": "Please fix line length. Line should not exceed 120. char column.",
+      "range": {
+        "startLine": 120,
+        "startChar": 4,
+        "endLine": 120,
+        "endChar": 139
+      },
+      "revId": "486a2f4a04dcc0bd35f19717f2a3cdc47495a4c1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_847e0cad",
+        "filename": "topoprocessing-common/src/main/java/org/opendaylight/topoprocessing/algorithms/SuurballeAlgorithm.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-06-07T09:11:33Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 128,
+        "startChar": 4,
+        "endLine": 128,
+        "endChar": 127
+      },
+      "revId": "486a2f4a04dcc0bd35f19717f2a3cdc47495a4c1",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
