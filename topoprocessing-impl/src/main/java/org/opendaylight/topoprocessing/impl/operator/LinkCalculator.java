@@ -100,8 +100,6 @@ public class LinkCalculator implements TopologyOperator {
                 computedLink.setItem(item.getItem());
                 NormalizedNode<?, ?> updatedLinkSrc = getLinkSourceNode(item);
                 NormalizedNode<?, ?> updatedLinkDst = getLinkDestNode(item);
-                computedLink.setSrcNode(null);
-                computedLink.setDstNode(null);
                 ComputedLink newLink = updateComputedLink(computedLink, updatedLinkSrc, updatedLinkDst);
                 OverlayItem overlayItem = computedLink.getOverlayItem();
                 if(newLink == null) {
@@ -115,32 +113,53 @@ public class LinkCalculator implements TopologyOperator {
                     waitingLinks.remove(itemIdentifier);
                 }
             } else if (storedOverlayNodes.getUnderlayItems().containsKey(itemIdentifier)) {
+                //in case of a node update
                 storedOverlayNodes.getUnderlayItems().put(itemIdentifier, item);
                 Iterator<Entry<YangInstanceIdentifier, UnderlayItem>> waitingLinksIterator =
                         waitingLinks.entrySet().iterator();
+                //check waiting links for promotion
                 while (waitingLinksIterator.hasNext()) {
                     Entry<YangInstanceIdentifier, UnderlayItem> waitingLink = waitingLinksIterator.next();
                     if(calculatePossibleLink(waitingLink.getKey(),waitingLink.getValue(), true)){
                         waitingLinksIterator.remove();
                     }
                 }
+                //check matched links for update of src/dest or demotion
                 Iterator<Entry<YangInstanceIdentifier, ComputedLink>> matchedLinksIterator =
                         matchedLinks.entrySet().iterator();
                 List<YangInstanceIdentifier> matchedLinksToRemove = new LinkedList<>();
+                Map<YangInstanceIdentifier, ComputedLink> matchedLinksToUpdate = new HashMap<>();
                 while(matchedLinksIterator.hasNext()){
                     Entry<YangInstanceIdentifier, ComputedLink> matchedLink = matchedLinksIterator.next();
                     ComputedLink computedLink = matchedLink.getValue();
-                    NormalizedNode<?, ?> oldSrc = getLinkSourceNode(computedLink);
-                    NormalizedNode<?, ?> oldDst = getLinkDestNode(computedLink);
-                    computedLink.setSrcNode(null);
-                    computedLink.setDstNode(null);
-                    if(updateComputedLink(computedLink, oldSrc, oldDst) == null){
+                    NormalizedNode<?, ?> linkUnderlaySrc = getLinkSourceNode(computedLink);
+                    NormalizedNode<?, ?> linkUnderlayDst = getLinkDestNode(computedLink);
+                    NormalizedNode<?, ?> oldOverlaySrcNode = computedLink.getSrcNode();
+                    NormalizedNode<?, ?> oldOverlayDstNode = computedLink.getDstNode();
+                    ComputedLink updatedLink = updateComputedLink(computedLink, linkUnderlaySrc, linkUnderlayDst);
+                    if(updatedLink == null){
+                        //if the link lacks a double-sided match, it has to be demoted
                         waitingLinks.put(matchedLink.getKey(), computedLink);
                         matchedLinksToRemove.add(matchedLink.getKey());
-                    }
+                    } else if(!updatedLink.getSrcNode().equals(oldOverlaySrcNode) ||
+                                !updatedLink.getDstNode().equals(oldOverlayDstNode)){
+                            //if a change happened, store the updated version
+                            matchedLinksToUpdate.put(matchedLink.getKey(), updatedLink);
+                        }
                 }
                 for(YangInstanceIdentifier yiid: matchedLinksToRemove){
                     removeMatchedLink(yiid);
+                }
+                for(Map.Entry<YangInstanceIdentifier, ComputedLink> updatedLinkEntry: matchedLinksToUpdate.entrySet()){
+                    YangInstanceIdentifier yiid = updatedLinkEntry.getKey();
+                    ComputedLink updatedLink = updatedLinkEntry.getValue();
+                    matchedLinks.put(yiid, updatedLink);
+                    if(aggregator != null) {
+                        aggregator.processUpdatedChanges(yiid, updatedLink, updatedLink.getTopologyId());
+                    }
+                    else {
+                        manager.updateOverlayItem(updatedLink.getOverlayItem());
+                    }
                 }
             }
         }
@@ -270,63 +289,60 @@ public class LinkCalculator implements TopologyOperator {
      * Updates a preexisting matched link. If a match is found, the computed link is updated accordingly.
      * Else returns null.
      *
-     * @param computedLink - an old matched link with null src and/or dst
-     * @param updatedLinkSrc - new src of the updated link
-     * @param updatedLinkDst - new dst of the updated link
+     * @param computedLink - an old matched link
+     * @param updatedLinkSrc - new underlay src of the updated link
+     * @param updatedLinkDst - new underlay dst of the updated link
      * @return updated computed link, null if no match is found
      */
     private ComputedLink updateComputedLink(ComputedLink computedLink, NormalizedNode<?,?> updatedLinkSrc,
             NormalizedNode<?,?> updatedLinkDst) {
-        NormalizedNode<?, ?> computedLinkDstNode = computedLink.getDstNode();
-        NormalizedNode<?, ?> computedLinkSrcNode = computedLink.getSrcNode();
-
-        if (computedLinkSrcNode == null || computedLinkDstNode == null) {
-            Iterator<Entry<YangInstanceIdentifier, UnderlayItem>> overlayNodesIterator =
-                    storedOverlayNodes.getUnderlayItems().entrySet().iterator();
-            //iterate over all overlay nodes
-            while (overlayNodesIterator.hasNext()) {
-                Entry<YangInstanceIdentifier, UnderlayItem> overlayNodeEntry = overlayNodesIterator.next();
-                NormalizedNode<?, ?> overlayNode = overlayNodeEntry.getValue().getItem();
-                Collection<?> supportingNodes = null;
-                if (outputModel.equals(I2rsModel.class)) {
+        computedLink.setSrcNode(null);
+        computedLink.setDstNode(null);
+        Iterator<Entry<YangInstanceIdentifier, UnderlayItem>> overlayNodesIterator =
+                storedOverlayNodes.getUnderlayItems().entrySet().iterator();
+        //iterate over all overlay nodes
+        while (overlayNodesIterator.hasNext()) {
+            Entry<YangInstanceIdentifier, UnderlayItem> overlayNodeEntry = overlayNodesIterator.next();
+            NormalizedNode<?, ?> overlayNode = overlayNodeEntry.getValue().getItem();
+            Collection<?> supportingNodes = null;
+            if (outputModel.equals(I2rsModel.class)) {
+            supportingNodes = (Collection<?>) ((MapEntryNode) overlayNode)
+                    .getChild(new NodeIdentifier(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+                            .network.rev150608.network.node.SupportingNode.QNAME)).get().getValue();
+            } else {
                 supportingNodes = (Collection<?>) ((MapEntryNode) overlayNode)
-                        .getChild(new NodeIdentifier(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                                .network.rev150608.network.node.SupportingNode.QNAME)).get().getValue();
+                        .getChild(new NodeIdentifier(SupportingNode.QNAME)).get().getValue();
+            }
+            Iterator<?> supportingNodesIterator = supportingNodes.iterator();
+            while (supportingNodesIterator.hasNext()) {
+                NormalizedNode<?, ?> supportingNode = (NormalizedNode<?, ?>) supportingNodesIterator.next();
+                YangInstanceIdentifier yiidNodeRef = null;
+                if (outputModel.equals(I2rsModel.class)) {
+                    yiidNodeRef = YangInstanceIdentifier.builder()
+                        .node(TopologyQNames.I2RS_NODE_REF).build();
                 } else {
-                    supportingNodes = (Collection<?>) ((MapEntryNode) overlayNode)
-                            .getChild(new NodeIdentifier(SupportingNode.QNAME)).get().getValue();
+                    yiidNodeRef = YangInstanceIdentifier.builder()
+                            .node(TopologyQNames.NODE_REF).build();
                 }
-                Iterator<?> supportingNodesIterator = supportingNodes.iterator();
-                while (supportingNodesIterator.hasNext()) {
-                    NormalizedNode<?, ?> supportingNode = (NormalizedNode<?, ?>) supportingNodesIterator.next();
-                    YangInstanceIdentifier yiidNodeRef = null;
-                    if (outputModel.equals(I2rsModel.class)) {
-                        yiidNodeRef = YangInstanceIdentifier.builder()
-                            .node(TopologyQNames.I2RS_NODE_REF).build();
-                    } else {
-                        yiidNodeRef = YangInstanceIdentifier.builder()
-                                .node(TopologyQNames.NODE_REF).build();
+                Optional<NormalizedNode<?, ?>> supportingNodeNodeRefOptional =
+                        NormalizedNodes.findNode(supportingNode, yiidNodeRef);
+                if (supportingNodeNodeRefOptional.isPresent()) {
+                    NormalizedNode<?, ?> supportingNodeNodeRef = supportingNodeNodeRefOptional.get();
+                    String suppNodeNodeRefValue = (String) supportingNodeNodeRef.getValue();
+                    if (computedLink.getSrcNode() == null && suppNodeNodeRefValue.equals(updatedLinkSrc.getValue())) {
+                        computedLink.setSrcNode(overlayNode);
                     }
-                    Optional<NormalizedNode<?, ?>> supportingNodeNodeRefOptional =
-                            NormalizedNodes.findNode(supportingNode, yiidNodeRef);
-                    if (supportingNodeNodeRefOptional.isPresent()) {
-                        NormalizedNode<?, ?> supportingNodeNodeRef = supportingNodeNodeRefOptional.get();
-                        String suppNodeNodeRefValue = (String) supportingNodeNodeRef.getValue();
-                        if (computedLinkSrcNode == null && suppNodeNodeRefValue.equals(updatedLinkSrc.getValue())) {
-                            computedLink.setSrcNode(overlayNode);
-                        }
-                        if (computedLinkDstNode == null && suppNodeNodeRefValue.equals(updatedLinkDst.getValue())) {
-                            computedLink.setDstNode(overlayNode);
-                        }
-                        if (computedLink.getSrcNode() != null && computedLink.getDstNode() != null) {
-                            break;
-                        }
+                    if (computedLink.getDstNode() == null && suppNodeNodeRefValue.equals(updatedLinkDst.getValue())) {
+                        computedLink.setDstNode(overlayNode);
+                    }
+                    if (computedLink.getSrcNode() != null && computedLink.getDstNode() != null) {
+                        break;
                     }
                 }
             }
-            if (computedLink.getSrcNode() == null || computedLink.getDstNode() == null) {
-                return null;
-            }
+        }
+        if (computedLink.getSrcNode() == null || computedLink.getDstNode() == null) {
+            return null;
         }
         return computedLink;
     }
