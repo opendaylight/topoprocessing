@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da5c1566_64c49892",
+        "filename": "topoprocessing-i2rs/src/test/java/org/opendaylight/topoprocessing/i2rs/translator/I2RSOverlayItemTranslatorNodeTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 306,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-06-07T07:58:41Z",
+      "side": 1,
+      "message": "Line length",
+      "range": {
+        "startLine": 306,
+        "startChar": 7,
+        "endLine": 306,
+        "endChar": 131
+      },
+      "revId": "de5f0428775edb7c9ccb13a29d6c3514c04e8f10",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da5c1566_a4beb0fd",
+        "filename": "topoprocessing-i2rs/src/test/java/org/opendaylight/topoprocessing/i2rs/translator/I2RSOverlayItemTranslatorNodeTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 315,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-06-07T07:58:41Z",
+      "side": 1,
+      "message": "Line length",
+      "range": {
+        "startLine": 315,
+        "startChar": 7,
+        "endLine": 315,
+        "endChar": 131
+      },
+      "revId": "de5f0428775edb7c9ccb13a29d6c3514c04e8f10",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
