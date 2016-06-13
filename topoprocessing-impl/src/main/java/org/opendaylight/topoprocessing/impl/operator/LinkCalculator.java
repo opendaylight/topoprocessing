@@ -336,15 +336,12 @@ public class LinkCalculator implements TopologyOperator {
                         computedLink.setDstNode(overlayNode);
                     }
                     if (computedLink.getSrcNode() != null && computedLink.getDstNode() != null) {
-                        break;
+                        return computedLink;
                     }
                 }
             }
         }
-        if (computedLink.getSrcNode() == null || computedLink.getDstNode() == null) {
-            return null;
-        }
-        return computedLink;
+        return null;
     }
 
     private NormalizedNode<?, ?> getLinkSourceNode(UnderlayItem link) {
