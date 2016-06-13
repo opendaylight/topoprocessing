@@ -93,24 +93,24 @@ public class I2RSNodeTranslator implements NodeTranslator{
             }
         }
 
-        if (wrapper.getAggregatedTerminationPoints() == null) {
-            return ImmutableNodes
-                    .mapEntryBuilder(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, wrapper.getId())
-                    .withChild(supportingNodes.build())
-                    .withChild(terminationPoints.build())
-                    .build();
-        } else {
+        if (wrapper.getAggregatedTerminationPoints() != null &&
+                !wrapper.getAggregatedTerminationPoints().getValue().isEmpty()) {
             MapNode aggregatedTPs = wrapper.getAggregatedTerminationPoints();
             Optional<NormalizedNode<?, ?>> tpId = NormalizedNodes.findNode(
                     aggregatedTPs.getValue().iterator().next(), InstanceIdentifiers.NT_TP_ID_IDENTIFIER);
             if (tpId.isPresent()) {
                 aggregatedTPs = translateAggregatedTPsWithinNodesFromNT(idGenerator, aggregatedTPs);
             }
-
             return ImmutableNodes
                     .mapEntryBuilder(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, wrapper.getId())
                     .withChild(supportingNodes.build())
                     .withChild(aggregatedTPs)
+                    .build();
+        } else {
+            return ImmutableNodes
+                    .mapEntryBuilder(Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, wrapper.getId())
+                    .withChild(supportingNodes.build())
+                    .withChild(terminationPoints.build())
                     .build();
         }
     }
