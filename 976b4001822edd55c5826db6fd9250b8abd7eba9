@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "ba51214e_3b95c3e4",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/LinkCalculator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 5872
+      },
+      "writtenOn": "2016-06-13T08:35:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_c6b63e3d",
+      "range": {
+        "startLine": 144,
+        "startChar": 80,
+        "endLine": 144,
+        "endChar": 89
+      },
+      "revId": "976b4001822edd55c5826db6fd9250b8abd7eba9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "da5c1566_2683ba57",
         "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/LinkCalculator.java",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2016-06-09T07:27:48Z",
       "side": 1,
       "message": "just use ! negation instead of testing equality to false",
+      "range": {
+        "startLine": 145,
+        "startChar": 32,
+        "endLine": 145,
+        "endChar": 92
+      },
+      "revId": "976b4001822edd55c5826db6fd9250b8abd7eba9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "ba51214e_1b9a7f14",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/LinkCalculator.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 5872
+      },
+      "writtenOn": "2016-06-13T08:35:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "da5c1566_2683ba57",
       "range": {
         "startLine": 145,
         "startChar": 32,
