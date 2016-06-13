@@ -195,10 +195,10 @@ public abstract class TopologyRequestHandler {
                 } else if (FiltrationOnly.class.equals(correlation.getType())) {
                     initFiltration(correlation);
                 } else if (AggregationOnly.class.equals(correlation.getType())) {
-                    if (!isAggregationOfNodesAndTp) {
-                        if(correlation.getCorrelationItem() == CorrelationItemEnum.Link) {
-                            linkAggregation = correlation.getAggregation();
-                        } else {
+                    if(correlation.getCorrelationItem() == CorrelationItemEnum.Link) {
+                        linkAggregation = correlation.getAggregation();
+                    } else {
+                        if (!isAggregationOfNodesAndTp) {
                             initAggregation(correlation, false);
                         }
                     }
