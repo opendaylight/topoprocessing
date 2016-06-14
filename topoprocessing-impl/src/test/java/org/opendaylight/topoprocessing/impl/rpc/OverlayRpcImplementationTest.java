@@ -40,11 +40,11 @@ import java.util.Date;
 @RunWith(MockitoJUnitRunner.class)
 public class OverlayRpcImplementationTest {
 
-    private static final QName CONTEXT_REFERENCE = QName.cachedReference(QName.create("urn:opendaylight:yang:extension:yang-ext",
-            "2013-07-09", "context-reference"));
-    private static final QName RPC_QNAME = QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "rpc");
-    private static final QName TEST_QNAME = QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "test");
-    private static final QName AUG_QNAME = QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "aug");
+    private static final QName CONTEXT_REFERENCE = QName.create("urn:opendaylight:yang:extension:yang-ext",
+            "2013-07-09", "context-reference").intern();
+    private static final QName RPC_QNAME = QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "rpc").intern();
+    private static final QName TEST_QNAME = QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "test").intern();
+    private static final QName AUG_QNAME = QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "aug").intern();
 
     private OverlayRpcImplementation overlayRpcImplementation;
     private YangInstanceIdentifier underlayNodeIdentifier;
