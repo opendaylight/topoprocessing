@@ -51,8 +51,10 @@ public class TerminationPointFiltratorTest {
     private static final String NODE_ID = "node:1";
     private static final int FILTRATOR_MIN_VALUE = 10;
     private static final int FILTRATOR_MAX_VALUE = 20;
-    private static final QName UNNUMBERED_QNAME = QName.create(TerminationPoint.QNAME, "unnumbered");
-    private static final QName INVENTORY_NUMBER_VALUE_QNAME = QName.create(NodeConnector.QNAME, "number-value");
+    private static final QName UNNUMBERED_QNAME =
+        QName.create(TerminationPoint.QNAME, "unnumbered").intern();
+    private static final QName INVENTORY_NUMBER_VALUE_QNAME =
+        QName.create(NodeConnector.QNAME, "number-value").intern();
 
     private TerminationPointFiltrator networkTopoModelFiltrator;
     private TerminationPointFiltrator inventoryModelFiltrator;

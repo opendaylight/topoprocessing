@@ -35,10 +35,10 @@ import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 @RunWith(MockitoJUnitRunner.class)
 public class EqualityAggregatorTest {
 
-    private static final QName ROOT_QNAME = QName.create("foo", "2014-03-13", "bar");
-    private static final QName LIST_IP_QNAME = QName.create(ROOT_QNAME, "ip");
-    private static final QName LEAF_IP_QNAME = QName.create(ROOT_QNAME, "ip-id");
-    private static final QName QNAME_LEAF_IP = QName.create(ROOT_QNAME, "ip");
+    private static final QName ROOT_QNAME = QName.create("foo", "2014-03-13", "bar").intern();
+    private static final QName LIST_IP_QNAME = QName.create(ROOT_QNAME, "ip").intern();
+    private static final QName LEAF_IP_QNAME = QName.create(ROOT_QNAME, "ip-id").intern();
+    private static final QName QNAME_LEAF_IP = QName.create(ROOT_QNAME, "ip").intern();
 
     private static final String TOPO1 = "topo1";
     private static final String TOPO2 = "topo2";

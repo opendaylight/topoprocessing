@@ -28,7 +28,7 @@ import java.util.Map;
 public class LinkFiltratorTest {
 
     private static final String TOPOLOGY_NAME = "mytopo:1";
-    private static final QName PATH_QNAME = QName.create(Node.QNAME,"ip-address");
+    private static final QName PATH_QNAME = QName.create(Node.QNAME,"ip-address").intern();
 
 
     private TestNodeCreator nodeCreator = new TestNodeCreator();

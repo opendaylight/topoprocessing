@@ -15,7 +15,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 public class Ipv6AddressFiltratorTest {
 
     private static final QName ROOT_QNAME = Node.QNAME;
-    private static final QName IP_QNAME = QName.create(ROOT_QNAME, "ip-address");
+    private static final QName IP_QNAME = QName.create(ROOT_QNAME, "ip-address").intern();
     private final YangInstanceIdentifier path = YangInstanceIdentifier.builder().node(IP_QNAME).build();
     private TestNodeCreator creator = new TestNodeCreator();
 

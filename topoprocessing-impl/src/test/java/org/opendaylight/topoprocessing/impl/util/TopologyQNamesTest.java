@@ -25,9 +25,9 @@ import org.opendaylight.yangtools.yang.common.QName;
  */
 public class TopologyQNamesTest {
 
-    private static final QName NODE_ID_QNAME = QName.create(Node.QNAME, "node-id");
-    private static final QName LINK_ID_QNAME = QName.create(Link.QNAME, "link-id");
-    private static final QName TP_ID_QNAME = QName.create(TerminationPoint.QNAME, "tp-id");
+    private static final QName NODE_ID_QNAME = QName.create(Node.QNAME, "node-id").intern();
+    private static final QName LINK_ID_QNAME = QName.create(Link.QNAME, "link-id").intern();
+    private static final QName TP_ID_QNAME = QName.create(TerminationPoint.QNAME, "tp-id").intern();
 
     private static final QName I2RS_NODE_QNAME = org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang
             .ietf.network.rev150608.network.Node.QNAME;
@@ -37,11 +37,11 @@ public class TopologyQNamesTest {
             .ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME;
 
     private static final QName I2RS_NODE_ID_QNAME = QName.create(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns
-            .yang.ietf.network.rev150608.network.Node.QNAME, "node-id");
+            .yang.ietf.network.rev150608.network.Node.QNAME, "node-id").intern();
     private static final QName I2RS_LINK_ID_QNAME = QName.create(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns
-            .yang.ietf.network.topology.rev150608.network.Link.QNAME , "link-id");
+            .yang.ietf.network.topology.rev150608.network.Link.QNAME , "link-id").intern();
     private static final QName I2RS_TP_ID_QNAME = QName.create(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang
-            .ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME , "tp-id");
+            .ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME , "tp-id").intern();
 
     /**
      * Tests item-id QNames

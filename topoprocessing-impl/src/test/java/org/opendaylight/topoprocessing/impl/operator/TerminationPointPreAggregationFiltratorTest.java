@@ -32,7 +32,8 @@ public class TerminationPointPreAggregationFiltratorTest {
 
     private static final String TOPOLOGY_ID = "topo:1";
     private static final String NODE_ID = "node:1";
-    private static final QName UNNUMBERED_QNAME = QName.create(TerminationPoint.QNAME, "unnumbered");
+    private static final QName UNNUMBERED_QNAME =
+        QName.create(TerminationPoint.QNAME, "unnumbered").intern();
 
     private TerminationPointPreAggregationFiltrator filtrator;
     private YangInstanceIdentifier nodeYiid = YangInstanceIdentifier.builder(InstanceIdentifiers.NODE_IDENTIFIER)

@@ -13,8 +13,8 @@ import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
  */
 public class SpecificValueFiltratorTest {
 
-    private static final QName NUMBER_QNAME = QName.create(Node.QNAME, "number");
-    private static final QName STRING_QNAME = QName.create(Node.QNAME, "string");
+    private static final QName NUMBER_QNAME = QName.create(Node.QNAME, "number").intern();
+    private static final QName STRING_QNAME = QName.create(Node.QNAME, "string").intern();
     private final YangInstanceIdentifier path = YangInstanceIdentifier.builder().node(STRING_QNAME).build();
     private final YangInstanceIdentifier numberPath = YangInstanceIdentifier.builder().node(NUMBER_QNAME).build();
 
