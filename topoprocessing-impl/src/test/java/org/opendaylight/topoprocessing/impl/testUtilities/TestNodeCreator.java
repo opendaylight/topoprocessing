@@ -23,7 +23,7 @@ import static org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers.NODE
  */
 public class TestNodeCreator {
 
-    private static final QName IP_ADDRESS_QNAME = QName.create(Node.QNAME, "ip-address");
+    private static final QName IP_ADDRESS_QNAME = QName.create(Node.QNAME, "ip-address").intern();
 
     public YangInstanceIdentifier createNodeIdYiid(String nodeId) {
         return YangInstanceIdentifier.builder(NODE_IDENTIFIER)

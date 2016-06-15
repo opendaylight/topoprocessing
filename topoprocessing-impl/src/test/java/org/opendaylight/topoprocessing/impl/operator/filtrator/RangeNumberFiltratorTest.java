@@ -17,7 +17,7 @@ public class RangeNumberFiltratorTest {
     private static final String NODE_ID = "mynode:1";
 
     private static final QName ROOT_QNAME = Node.QNAME;
-    private static final QName NUMBER_QNAME = QName.create(ROOT_QNAME, "number");
+    private static final QName NUMBER_QNAME = QName.create(ROOT_QNAME, "number").intern();
     private final YangInstanceIdentifier path = YangInstanceIdentifier.builder().node(NUMBER_QNAME).build();
 
     @Test

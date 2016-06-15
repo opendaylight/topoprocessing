@@ -24,7 +24,7 @@ import static org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers.LINK
  */
 public class TestLinkCreator {
 
-    private static final QName IP_ADDRESS_QNAME = QName.create(Link.QNAME, "ip-address");
+    private static final QName IP_ADDRESS_QNAME = QName.create(Link.QNAME, "ip-address").intern();
 
     public YangInstanceIdentifier createNodeIdYiid(String linkId) {
         return YangInstanceIdentifier.builder(LINK_IDENTIFIER)

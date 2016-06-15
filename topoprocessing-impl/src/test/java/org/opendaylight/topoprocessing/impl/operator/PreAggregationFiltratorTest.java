@@ -31,7 +31,7 @@ public class PreAggregationFiltratorTest {
 
     private static final String TOPOLOGY_ID = "mytopo:1";
     private static final TestNodeCreator TEST_NODE_CREATOR = new TestNodeCreator();
-    private static final QName IP_ADDRESS_QNAME = QName.create(Node.QNAME, "ip-address");
+    private static final QName IP_ADDRESS_QNAME = QName.create(Node.QNAME, "ip-address").intern();
     private static final YangInstanceIdentifier PATH_IDENTIFIER = YangInstanceIdentifier.builder()
             .node(IP_ADDRESS_QNAME).build();
 

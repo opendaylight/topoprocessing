@@ -52,10 +52,13 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLe
 public class TerminationPointAggregatorTest {
     private static final QName I2RS_TERMINATION_POINT_QNAME = org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns
             .yang.ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME;
-    private static final QName I2RS_IP_ADDRESS_QNAME = QName.create(I2RS_TERMINATION_POINT_QNAME, "ip-address");
-    private static final QName NT_IP_ADDRESS_QNAME = QName.create(TerminationPoint.QNAME, "ip-address");
-    private static final QName INV_IP_ADDRESS_QNAME = QName.create(NodeConnector.QNAME, "ip-address");
-    private static final QName NODE_FEATURE = QName.create(Node.QNAME, "node-feature");
+    private static final QName I2RS_IP_ADDRESS_QNAME =
+        QName.create(I2RS_TERMINATION_POINT_QNAME, "ip-address").intern();
+    private static final QName NT_IP_ADDRESS_QNAME =
+        QName.create(TerminationPoint.QNAME, "ip-address").intern();
+    private static final QName INV_IP_ADDRESS_QNAME =
+        QName.create(NodeConnector.QNAME, "ip-address").intern();
+    private static final QName NODE_FEATURE = QName.create(Node.QNAME, "node-feature").intern();
     private static final String TOPOLOGY_NAME = "topo:1";
     private static final String TP_ID1 = "tp1";
     private static final String TP_ID2 = "tp2";

@@ -14,7 +14,7 @@ import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 public class RangeStringFiltratorTest {
 
     private static final QName ROOT_QNAME = Node.QNAME;
-    private static final QName STRING_QNAME = QName.create(ROOT_QNAME, "string");
+    private static final QName STRING_QNAME = QName.create(ROOT_QNAME, "string").intern();
     private final YangInstanceIdentifier path = YangInstanceIdentifier.builder().node(STRING_QNAME).build();
 
     @Test

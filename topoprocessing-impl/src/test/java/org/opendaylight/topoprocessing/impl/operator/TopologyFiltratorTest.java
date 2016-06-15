@@ -29,7 +29,8 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 public class TopologyFiltratorTest {
 
     private static final String TOPOLOGY_NAME = "mytopo:1";
-    private static final QName UNNUMBERED_QNAME = QName.create(TerminationPoint.QNAME, "unnumbered");
+    private static final QName UNNUMBERED_QNAME =
+        QName.create(TerminationPoint.QNAME, "unnumbered").intern();
 
 
     private TestNodeCreator creator = new TestNodeCreator();

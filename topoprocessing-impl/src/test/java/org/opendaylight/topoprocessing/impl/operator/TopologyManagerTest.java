@@ -52,8 +52,8 @@ import org.opendaylight.yangtools.yang.model.api.SchemaPath;
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyManagerTest {
 
-    private static final QName ROOT_QNAME = QName.create("foo", "2014-03-13", "bar");
-    private static final QName QNAME_LEAF_IP = QName.create(ROOT_QNAME, "ip");
+    private static final QName ROOT_QNAME = QName.create("foo", "2014-03-13", "bar").intern();
+    private static final QName QNAME_LEAF_IP = QName.create(ROOT_QNAME, "ip").intern();
 
     private static final String TOPOLOGY1 = "pcep-topology:1";
     private static final String NODE_ID1 = "pcep:1";
