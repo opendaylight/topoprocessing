@@ -21,6 +21,7 @@ import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
+import org.opendaylight.topoprocessing.impl.translator.TranslatorHelper;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.topology.rev150608.network.node.termination.point.SupportingTerminationPoint;
@@ -379,8 +380,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
             } else {
                 LOG.warn("No Node Connector ID is present!");
             }
-            String tpRefval = "/network-topology:network-topology/topology/" + topologyId +
-                    "/node/" + nodeId + "/termination-point/" + tpIdFromNt;
+            String tpRefval = TranslatorHelper.createTpRefNT(topologyId, nodeId, tpIdFromNt);
             LeafSetEntryNode<String> tpRef = ImmutableLeafSetEntryNodeBuilder.<String>create()
                     .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue<String>(
                             TopologyQNames.TP_REF, tpRefval)).withValue(tpRefval).build();
@@ -410,9 +410,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
                 } else {
                     tpId = (String) leaf.get().getValue();
                 }
-                String value = "/network-topology:network-topology/topology/" + topologyId +
-                        "/node/" + nodeId +
-                        "/termination-point/" + tpId;
+                String value = TranslatorHelper.createTpRefNT(topologyId, nodeId, tpId);
                 LeafSetEntryNode<String> tpRef = ImmutableLeafSetEntryNodeBuilder.<String>create()
                         .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue<String>(
                                 TopologyQNames.TP_REF, value)).withValue(value).build();

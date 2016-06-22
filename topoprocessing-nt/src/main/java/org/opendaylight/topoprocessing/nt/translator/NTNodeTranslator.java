@@ -19,6 +19,7 @@ import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.translator.NodeTranslator;
+import org.opendaylight.topoprocessing.impl.translator.TranslatorHelper;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -139,18 +140,12 @@ public class NTNodeTranslator implements NodeTranslator{
                         InstanceIdentifiers.NT_TP_ID_IDENTIFIER.getLastPathArgument());
             }
             if (terminationPointIdOpt.isPresent()) {
-                StringBuilder tpRefValue = new StringBuilder();
-                tpRefValue.append("/").append(NetworkTopology.QNAME.getLocalName()).append("/")
-                        .append(Topology.QNAME.getLocalName()).append("/")
-                        .append(topologyId).append("/")
-                        .append(Node.QNAME.getLocalName()).append("/")
-                        .append(nodeId).append("/")
-                        .append(TerminationPoint.QNAME.getLocalName()).append("/")
-                        .append((String) terminationPointIdOpt.get().getValue());
-
                 LeafSetEntryNode<String> tpRef = ImmutableLeafSetEntryNodeBuilder.<String>create()
-                        .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue<String>(
-                                TopologyQNames.TP_REF, tpRefValue.toString())).withValue(tpRefValue.toString()).build();
+                        .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue<String>(TopologyQNames.TP_REF,
+                                TranslatorHelper.createTpRefNT(topologyId, nodeId,
+                                        (String) terminationPointIdOpt.get().getValue())))
+                        .withValue(TranslatorHelper.createTpRefNT(topologyId, nodeId,
+                                (String) terminationPointIdOpt.get().getValue())).build();
                 List<LeafSetEntryNode<String>> tpRefs = new ArrayList<>();
                 tpRefs.add(tpRef);
                 ListNodeBuilder<String, LeafSetEntryNode<String>> leafListBuilder =
