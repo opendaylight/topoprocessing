@@ -17,6 +17,7 @@ import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.filtrator.AbstractFiltrator;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
+import org.opendaylight.topoprocessing.impl.translator.TranslatorHelper;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -188,8 +189,7 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         if(tpIdFromNt == null) {
             return null;
         }
-        String tpRefVal = "/network-topology:network-topology/topology/" + topologyId +
-                "/node/" + itemId + "/termination-point/" + tpIdFromNt;
+        String tpRefVal = TranslatorHelper.createTpRefNT(topologyId, itemId, tpIdFromNt);
         LeafSetEntryNode<String> tpRef = ImmutableLeafSetEntryNodeBuilder.<String>create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue<String>(
                         TopologyQNames.TP_REF, tpRefVal)).withValue(tpRefVal).build();
