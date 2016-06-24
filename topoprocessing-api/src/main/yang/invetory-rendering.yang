@@ -11,10 +11,10 @@ module opendaylight-inventory-rendering  {
     namespace "urn:opendaylight:topology:inventory:rendering";
     prefix "inv";
 
-    import ietf-inet-types { prefix inet; revision-date "2010-09-24"; }
+    import ietf-inet-types { prefix inet; revision-date "2013-07-15"; }
     import network-topology {prefix topo; revision-date "2013-10-21";}
     import yang-ext {prefix ext; revision-date "2013-07-09";}
-    import ietf-yang-types {prefix yang; revision-date "2010-09-24";}
+    import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
 
     description
         "This module defines a supporting model for Inventory deprecation.
