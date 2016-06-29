@@ -77,8 +77,8 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
             while (iteratorChildNodes.hasNext()) {
                 DataTreeCandidateNode dataTreeCandidateNode = iteratorChildNodes.next();
                 ModificationType modificationType = dataTreeCandidateNode.getModificationType();
-                if ((modificationType.equals(ModificationType.WRITE)
-                        || modificationType.equals(ModificationType.SUBTREE_MODIFIED))
+                if ((modificationType.equals(ModificationType.WRITE) ||
+                        modificationType.equals(ModificationType.SUBTREE_MODIFIED))
                         && dataTreeCandidateNode.getDataAfter().isPresent()) {
                     boolean updated = dataTreeCandidateNode.getDataBefore().isPresent() ||
                             modificationType.equals(ModificationType.SUBTREE_MODIFIED);
@@ -86,8 +86,6 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
                             dataTreeCandidateNode.getDataAfter().get(), updated);
                 } else if (modificationType.equals(ModificationType.DELETE)) {
                     proceedDeletionRequest(dataTreeCandidateNode.getIdentifier());
-                } else if (modificationType.equals(ModificationType.UNMODIFIED)) {
-                    continue;
                 }
             }
         }

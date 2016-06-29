@@ -233,22 +233,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
                 if(underlayItem.getCorrelationItem() == CorrelationItemEnum.Link) {
                     if(underlayItem instanceof ComputedLink && updatedItem instanceof ComputedLink)
                     {
-                        ComputedLink underlayLink = (ComputedLink) underlayItem;
-                        ComputedLink updatedLink = (ComputedLink) updatedItem;
-                        if (! matchTargetFields(underlayItem, updatedItem) ||
-                                ! underlayLink.getSrcNode().equals(updatedLink.getSrcNode()) ||
-                                ! underlayLink.getDstNode().equals(updatedLink.getDstNode())) {
-                            underlayLink.setLeafNodes(updatedLink.getLeafNodes());
-                            underlayLink.setSrcNode(updatedLink.getSrcNode());
-                            underlayLink.setDstNode(updatedLink.getDstNode());
-                            if (underlayItem.getOverlayItem() != null) {
-                                removeUnderlayItemFromOverlayItem(underlayItem);
-                            }
-                            checkForPossibleAggregationOfLinks(updatedLink, underlayLink);
-                        } else if (underlayItem.getOverlayItem() != null) {
-                            // in case that only Link value was changed
-                            manager.updateOverlayItem(underlayItem.getOverlayItem());
-                        }
+                        updateLinks(underlayItem, updatedItem);
                         break;
                     }
                 }
@@ -268,6 +253,25 @@ public abstract class TopologyAggregator implements TopologyOperator {
                     break;
                 }
             }
+        }
+    }
+
+    private void updateLinks(UnderlayItem underlayItem, UnderlayItem updatedItem) {
+        ComputedLink underlayLink = (ComputedLink) underlayItem;
+        ComputedLink updatedLink = (ComputedLink) updatedItem;
+        if (! matchTargetFields(underlayItem, updatedItem) ||
+                ! underlayLink.getSrcNode().equals(updatedLink.getSrcNode()) ||
+                ! underlayLink.getDstNode().equals(updatedLink.getDstNode())) {
+            underlayLink.setLeafNodes(updatedLink.getLeafNodes());
+            underlayLink.setSrcNode(updatedLink.getSrcNode());
+            underlayLink.setDstNode(updatedLink.getDstNode());
+            if (underlayItem.getOverlayItem() != null) {
+                removeUnderlayItemFromOverlayItem(underlayItem);
+            }
+            checkForPossibleAggregationOfLinks(updatedLink, underlayLink);
+        } else if (underlayItem.getOverlayItem() != null) {
+            // in case that only Link value was changed
+            manager.updateOverlayItem(underlayItem.getOverlayItem());
         }
     }
 
