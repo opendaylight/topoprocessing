@@ -31,7 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventoryModel;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -126,15 +125,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
         }
         // find TerminationPoint Map in underlayItem
         NormalizedNode<?, ?> newNode = createdEntry.getItem();
-        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = null;
-        if (model.equals(NetworkTopologyModel.class)) {
-            tpMapNodeOpt = NormalizedNodes.findNode(newNode, InstanceIdentifiers.NT_TERMINATION_POINT);
-        } else if (model.equals(I2rsModel.class)) {
-            tpMapNodeOpt = NormalizedNodes.findNode(newNode, InstanceIdentifiers.I2RS_TERMINATION_POINT);
-        } else if (model.equals(OpendaylightInventoryModel.class)) {
-            tpMapNodeOpt = NormalizedNodes.findNode(createdEntry.getLeafNodes().values().iterator().next(),
-                    InstanceIdentifiers.INVENTORY_NODE_CONNECTOR_IDENTIFIER);
-        }
+        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = findTPBasedOnModel(createdEntry);
         if (tpMapNodeOpt.isPresent()) {
             MapNode tpMapNode = (MapNode) tpMapNodeOpt.get();
             // set TPMapNode to Items leafnode for further looking for changes
@@ -164,12 +155,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
         // load underlay item by given key
         UnderlayItem underlayItem = ts.getUnderlayItems().get(identifier);
         MapEntryNode newNode = (MapEntryNode) updatedEntry.getItem();
-        Optional<NormalizedNode<?, ?>> updatedTpMapNode;
-        if (model.equals(NetworkTopologyModel.class)) {
-            updatedTpMapNode = NormalizedNodes.findNode(newNode, InstanceIdentifiers.NT_TERMINATION_POINT);
-        } else {
-            updatedTpMapNode = NormalizedNodes.findNode(newNode, InstanceIdentifiers.I2RS_TERMINATION_POINT);
-        }
+        Optional<NormalizedNode<?, ?>> updatedTpMapNode = findTPBasedOnModel(updatedEntry);
         if ((!updatedTpMapNode.isPresent() || ((MapNode)updatedTpMapNode.get()).getValue().size() == 0)) {
             nodeTps.clear();
         } else {
@@ -184,11 +170,23 @@ public class TerminationPointAggregator extends UnificationAggregator {
                 underlayItem.setLeafNodes(terminationPointMapNode);
                 removeTerminationPoints(newTpMap, nodeTps);
                 updateTerminationPoints(newTpMap, nodeTps);
-
             }
         }
         underlayItem.setItem(setTpToNode(nodeTps, newNode, topologyId, underlayItem.getItemId(), model));
         manager.updateOverlayItem(underlayItem.getOverlayItem());
+    }
+
+    private Optional<NormalizedNode<?, ?>> findTPBasedOnModel(UnderlayItem uItem) {
+        Optional<NormalizedNode<?, ?>> tpMapNodeOpt = null;
+        if (model.equals(NetworkTopologyModel.class)) {
+            tpMapNodeOpt = NormalizedNodes.findNode(uItem.getItem(),InstanceIdentifiers.NT_TERMINATION_POINT);
+        } else if (model.equals(I2rsModel.class)){
+            tpMapNodeOpt = NormalizedNodes.findNode(uItem.getItem(),InstanceIdentifiers.I2RS_TERMINATION_POINT);
+        } else if (model.equals(OpendaylightInventoryModel.class)){
+            tpMapNodeOpt = NormalizedNodes.findNode(uItem.getLeafNodes().values().iterator().next(),
+                    InstanceIdentifiers.INVENTORY_NODE_CONNECTOR_IDENTIFIER);
+        }
+        return tpMapNodeOpt;
     }
 
     private boolean mapContainsEntry(MapNode newMapNode, MapEntryNode oldEntry) {

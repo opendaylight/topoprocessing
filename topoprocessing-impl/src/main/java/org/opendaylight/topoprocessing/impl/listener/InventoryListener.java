@@ -69,17 +69,14 @@ public class InventoryListener implements DOMDataTreeChangeListener {
             while (iteratorChildNodes.hasNext()) {
                 DataTreeCandidateNode dataTreeCandidateNode = iteratorChildNodes.next();
                 ModificationType modificationType = dataTreeCandidateNode.getModificationType();
-                if ((modificationType.equals(ModificationType.WRITE)
-                        || modificationType.equals(ModificationType.SUBTREE_MODIFIED))
+                boolean modified = modificationType.equals(ModificationType.SUBTREE_MODIFIED);
+                if ((modificationType.equals(ModificationType.WRITE) || modified)
                         && dataTreeCandidateNode.getDataAfter().isPresent()) {
-                    boolean updated = dataTreeCandidateNode.getDataBefore().isPresent() ||
-                            modificationType.equals(ModificationType.SUBTREE_MODIFIED);
+                    boolean updated = dataTreeCandidateNode.getDataBefore().isPresent() || modified;
                     proceedChangeRequest(itemIdentifier.node(dataTreeCandidateNode.getIdentifier()),
                             dataTreeCandidateNode.getDataAfter().get(), updated);
                 } else if (modificationType.equals(ModificationType.DELETE)) {
                     processRemovedChanges(dataTreeCandidateNode.getIdentifier());
-                } else if (modificationType.equals(ModificationType.UNMODIFIED)) {
-                    continue;
                 }
             }
         }
@@ -88,18 +85,7 @@ public class InventoryListener implements DOMDataTreeChangeListener {
     private void proceedChangeRequest(YangInstanceIdentifier identifier,
             NormalizedNode<?, ?> entry, boolean updated) {
         if (entry instanceof MapEntryNode && entry.getNodeType().equals(Node.QNAME)) {
-            Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(pathIdentifiers.size());
-            if (correlationItem.equals(CorrelationItemEnum.TerminationPoint)) {
-                targetFields.put(0, entry);
-            } else {
-                for (Entry<Integer, YangInstanceIdentifier> pathIdentifierEntry : pathIdentifiers.entrySet()) {
-                    Optional<NormalizedNode<?, ?>> targetFieldOpt =
-                            NormalizedNodes.findNode(entry, pathIdentifierEntry.getValue());
-                    if (targetFieldOpt.isPresent()) {
-                        targetFields.put(pathIdentifierEntry.getKey(), targetFieldOpt.get());
-                    }
-                }
-            }
+            Map<Integer, NormalizedNode<?, ?>> targetFields = fillTargetFields(entry);
             if (!targetFields.isEmpty()) {
                 if (LOGGER.isDebugEnabled()) {
                     LOGGER.debug("Found target fields: {}", targetFields);
@@ -111,10 +97,24 @@ public class InventoryListener implements DOMDataTreeChangeListener {
                 } else {
                     operator.processUpdatedChanges(identifier, underlayItem, topologyId);
                 }
-            } else {
-                return;
             }
         }
+    }
+
+    private Map<Integer, NormalizedNode<?, ?>> fillTargetFields(NormalizedNode<?, ?> entry) {
+        Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(pathIdentifiers.size());
+        if (correlationItem.equals(CorrelationItemEnum.TerminationPoint)) {
+            targetFields.put(0, entry);
+        } else {
+            for (Entry<Integer, YangInstanceIdentifier> pathIdentifierEntry : pathIdentifiers.entrySet()) {
+                Optional<NormalizedNode<?, ?>> targetFieldOpt =
+                        NormalizedNodes.findNode(entry, pathIdentifierEntry.getValue());
+                if (targetFieldOpt.isPresent()) {
+                    targetFields.put(pathIdentifierEntry.getKey(), targetFieldOpt.get());
+                }
+            }
+        }
+        return targetFields;
     }
 
     /**

@@ -31,7 +31,7 @@
                         <!-- <name>inmemory-data-broker</name> -->
                     </dom-data-broker>
                     <binding-normalized-node-serializer>
-                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding">binding:binding-normalized-node-serializer</type>
+                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:mdsal:binding:dom">binding:binding-normalized-node-serializer</type>
                         <name>runtime-mapping-singleton</name>
                     </binding-normalized-node-serializer>
                     <broker>

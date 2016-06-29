@@ -42,7 +42,7 @@ public class TopologyFiltrator implements TopologyOperator {
     }
 
     protected TopoStoreProvider getTopoStoreProvider() {
-            return topoStoreProvider;
+        return topoStoreProvider;
     }
 
 

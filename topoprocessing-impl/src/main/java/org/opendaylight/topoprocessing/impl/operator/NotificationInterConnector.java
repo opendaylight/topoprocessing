@@ -57,7 +57,10 @@ public class NotificationInterConnector implements TopologyOperator {
             YangInstanceIdentifier key = null;
             if (itemFromTopology(createdEntry)) {
                 key = extractInventoryNodeRefIdentifier(createdEntry);
-                if (key!=null && items.containsKey(key)) {
+                if (key == null) {
+                    return;
+                }
+                if (items.containsKey(key)) {
                     if (createdEntry.getItemId()!=null && items.get(key).getItemId()!=null &&
                             !items.get(key).getItemId().equals(createdEntry.getItemId())) {
                         for (YangInstanceIdentifier id : topoToInvIds.keySet()) {
@@ -68,11 +71,7 @@ public class NotificationInterConnector implements TopologyOperator {
                         }
                     }
                 }
-                if (key != null) {
-                    topoToInvIds.put(identifier, key);
-                } else {
-                    return;
-                }
+                topoToInvIds.put(identifier, key);
             } else {
                 key = identifier;
             }
@@ -115,33 +114,20 @@ public class NotificationInterConnector implements TopologyOperator {
             } else {
                 if (itemFromTopology(updatedEntry)) {
                     key = extractInventoryNodeRefIdentifier(updatedEntry);
-                    if (key != null) {
-                        topoToInvIds.put(identifier, key);
-                    } else {
+                    if (key == null) {
                         return;
                     }
+                    topoToInvIds.put(identifier, key);
                 } else {
                     key = identifier;
                 }
             }
             UnderlayItem item = items.get(key);
             if (item != null) {
-                UnderlayItem resultingItem = null;
+                UnderlayItem resultingItem = updateItemFields(item, updatedEntry);
                 LOGGER.debug("Updated changes - item exists");
                 if ((item.getItem() != null) && (item.getLeafNodes() != null)) {
-                    if (updatedEntry.getItem() == null) {
-                        updatedEntry.setItem(item.getItem());
-                    }
-                    if (updatedEntry.getLeafNodes() == null) {
-                        updatedEntry.setLeafNodes(item.getLeafNodes());
-                    }
-                    resultingItem = updatedEntry;
-                    if (resultingItem.getItemId() == null) {
-                        resultingItem.setItemId(item.getItemId());
-                    }
                     operator.processUpdatedChanges(key, resultingItem, topologyId);
-                } else {
-                    resultingItem = updateItemFields(item, updatedEntry);
                 }
                 items.put(key, resultingItem);
             } else {
@@ -178,7 +164,6 @@ public class NotificationInterConnector implements TopologyOperator {
             if (underlayItems.get(removalIdentifier).getItem() == null
                     && underlayItems.get(removalIdentifier).getLeafNodes() == null) {
                 underlayItems.remove(removalIdentifier);
-                // return;
             }
             // if identifier exists in topology store
             if (underlayItem != null) {
@@ -191,7 +176,6 @@ public class NotificationInterConnector implements TopologyOperator {
     public void setTopologyManager(ITopologyManager manager) {
         throw new UnsupportedOperationException(
                 "NotificationInterConnector can't have TopologyManager set," + " it uses TopologyOperator instead.");
-
     }
 
     /**
@@ -231,13 +215,16 @@ public class NotificationInterConnector implements TopologyOperator {
     }
 
     private static UnderlayItem updateItemFields(UnderlayItem oldItem, UnderlayItem newItem) {
-        if (newItem.getItem() != null) {
-            oldItem.setItem(newItem.getItem());
+        if (newItem.getItem() == null) {
+            newItem.setItem(oldItem.getItem());
         }
-        if (newItem.getLeafNodes() != null) {
-            oldItem.setLeafNodes(newItem.getLeafNodes());
+        if (newItem.getLeafNodes() == null) {
+            newItem.setLeafNodes(oldItem.getLeafNodes());
         }
-        return oldItem;
+        if (newItem.getItemId() == null) {
+            newItem.setItemId(oldItem.getItemId());
+        }
+        return newItem;
     }
 
     public TopoStoreProvider getTopoStoreProvider() {
