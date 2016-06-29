@@ -58,10 +58,8 @@ public class PathTranslator {
             GlobalSchemaContextHolder schemaHolder, Class<? extends Model> inputModel) {
         LOGGER.debug("Translating target-field path: " + yangPath);
         DataSchemaContextTree contextTree = schemaHolder.getContextTree();
-        QName itemQName = TopologyQNames.buildItemQName(correlationItem, inputModel);
         YangInstanceIdentifier itemIdentifier = null;
-        itemIdentifier = createBaseIdentifier(correlationItem, inputModel,
-                itemQName);
+        itemIdentifier = createBaseIdentifier(correlationItem, inputModel);
         DataSchemaContextNode<?> contextNode = contextTree.getChild(itemIdentifier);
         Iterable<String> pathArguments = splitYangPath(yangPath);
         Iterator<String> iterator = pathArguments.iterator();
@@ -82,48 +80,62 @@ public class PathTranslator {
         return targetIdentifier;
     }
 
-    private YangInstanceIdentifier createBaseIdentifier(CorrelationItemEnum correlationItem, Class<? extends Model> inputModel,
-            QName itemQName) {
-        YangInstanceIdentifier itemIdentifier;
+    private YangInstanceIdentifier createBaseIdentifier(CorrelationItemEnum correlationItem,
+            Class<? extends Model> inputModel) {
+        YangInstanceIdentifier itemIdentifier = null;
         // if inputModel == null, than use network-topology model as default
         if (OpendaylightInventoryModel.class.equals(inputModel)) {
-            InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
-                    .node(Nodes.QNAME)
-                    .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME)
-                    .nodeWithKey(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME,
-                            TopologyQNames.INVENTORY_NODE_ID_QNAME, "");
-            if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
-                itemIdentifierBuilder.node(NodeConnector.QNAME)
-                        .nodeWithKey(NodeConnector.QNAME, TopologyQNames.NODE_CONNECTOR_ID_QNAME, "");
-            }
-            itemIdentifier = itemIdentifierBuilder.build();
+            itemIdentifier = createInvIdentifier(correlationItem);
         } else if (NetworkTopologyModel.class.equals(inputModel)){
-            YangInstanceIdentifier.InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
-                    .node(NetworkTopology.QNAME)
-                    .node(Topology.QNAME)
-                    .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, "");
-            if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
-                itemIdentifierBuilder.node(Node.QNAME)
-                        .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, "");
-            }
-            itemIdentifier = itemIdentifierBuilder.node(itemQName)
-                    .nodeWithKey(itemQName, TopologyQNames.buildItemIdQName(correlationItem, inputModel), "").build();
+            itemIdentifier = createNetworkIdentifier(correlationItem, inputModel);
         } else if (I2rsModel.class.equals(inputModel)) {
-            YangInstanceIdentifier.InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
-                    .node(Network.QNAME)
-                    .nodeWithKey(Network.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, "");
-            if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
-                itemIdentifierBuilder.node(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                        .network.rev150608.network.Node.QNAME)
-                        .nodeWithKey(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                                .network.rev150608.network.Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, "");
-            }
-            itemIdentifier = itemIdentifierBuilder.node(itemQName)
-                    .nodeWithKey(itemQName, TopologyQNames.buildItemIdQName(correlationItem, inputModel), "").build();
-        } else {
-            itemIdentifier = null;
+            itemIdentifier = createI2rsIdentifier(correlationItem, inputModel);
         }
         return itemIdentifier;
+    }
+
+    private YangInstanceIdentifier createI2rsIdentifier(CorrelationItemEnum correlationItem,
+            Class<? extends Model> inputModel) {
+        QName itemQName = TopologyQNames.buildItemQName(correlationItem, inputModel);
+        YangInstanceIdentifier.InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
+                .node(Network.QNAME)
+                .nodeWithKey(Network.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, "");
+        if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
+            itemIdentifierBuilder.node(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+                    .network.rev150608.network.Node.QNAME)
+                    .nodeWithKey(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+                            .network.rev150608.network.Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, "");
+        }
+        return itemIdentifierBuilder.node(itemQName)
+                .nodeWithKey(itemQName, TopologyQNames.buildItemIdQName(correlationItem, inputModel), "").build();
+    }
+
+    private YangInstanceIdentifier createNetworkIdentifier(CorrelationItemEnum correlationItem,
+            Class<? extends Model> inputModel) {
+        QName itemQName = TopologyQNames.buildItemQName(correlationItem, inputModel);
+        YangInstanceIdentifier.InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
+                .node(NetworkTopology.QNAME)
+                .node(Topology.QNAME)
+                .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, "");
+        if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
+            itemIdentifierBuilder.node(Node.QNAME)
+                    .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, "");
+        }
+        return itemIdentifierBuilder.node(itemQName)
+                .nodeWithKey(itemQName, TopologyQNames.buildItemIdQName(correlationItem, inputModel), "").build();
+    }
+
+    private YangInstanceIdentifier createInvIdentifier(CorrelationItemEnum correlationItem) {
+        InstanceIdentifierBuilder itemIdentifierBuilder = YangInstanceIdentifier.builder()
+                .node(Nodes.QNAME)
+                .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME)
+                .nodeWithKey(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME,
+                        TopologyQNames.INVENTORY_NODE_ID_QNAME, "");
+        if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
+            itemIdentifierBuilder.node(NodeConnector.QNAME)
+                    .nodeWithKey(NodeConnector.QNAME, TopologyQNames.NODE_CONNECTOR_ID_QNAME, "");
+        }
+        return itemIdentifierBuilder.build();
     }
 
     private static QName parseQname(SchemaContext context, String pathArgument) {

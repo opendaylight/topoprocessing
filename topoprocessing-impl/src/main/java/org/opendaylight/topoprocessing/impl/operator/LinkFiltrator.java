@@ -45,7 +45,7 @@ public class LinkFiltrator extends TopologyFiltrator {
     public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedItem, String topologyId) {
         LOGGER.trace("Processing updatedChanges");
         UnderlayItem oldItem = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().get(identifier);
-        if (null == oldItem) {
+        if (oldItem == null) {
             // updatedItem is not present yet
             if (updatedItem.getCorrelationItem().equals(CorrelationItemEnum.Node) ||
                     passedFiltration(updatedItem.getLeafNodes().values())) {

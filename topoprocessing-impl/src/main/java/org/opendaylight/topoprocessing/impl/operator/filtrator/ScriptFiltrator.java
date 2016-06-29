@@ -11,15 +11,12 @@ package org.opendaylight.topoprocessing.impl.operator.filtrator;
 import com.google.common.base.Preconditions;
 
 import org.opendaylight.topoprocessing.impl.structure.ScriptResult;
-import com.google.common.base.Optional;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.Scripting;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
-import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
