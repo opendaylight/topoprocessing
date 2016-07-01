@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a561d44_c70acad1",
+        "filename": "topoprocessing-config/src/main/resources/80-topoprocessing-config.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-07-01T21:45:44Z",
+      "side": 1,
+      "message": "Is that answer to\nhttps://lists.opendaylight.org/pipermail/release/2016-June/006909.html\n? If it is, than this should be in this change\nhttps://git.opendaylight.org/gerrit/#/c/40053/",
+      "range": {
+        "startLine": 34,
+        "startChar": 81,
+        "endLine": 34,
+        "endChar": 98
+      },
+      "revId": "950534639902079aa539e09d2c8a93afcb9f6e56",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_994e77c0",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/InventoryListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-07-01T21:45:44Z",
+      "side": 1,
+      "message": "I think local variable in this case has only little advantage (if any). Please revert it to previous state",
+      "range": {
+        "startLine": 72,
+        "startChar": 16,
+        "endLine": 73,
+        "endChar": 81
+      },
+      "revId": "950534639902079aa539e09d2c8a93afcb9f6e56",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_9c2f85a1",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-07-01T21:45:44Z",
+      "side": 1,
+      "message": "A in previous file",
+      "range": {
+        "startLine": 80,
+        "startChar": 16,
+        "endLine": 81,
+        "endChar": 81
+      },
+      "revId": "950534639902079aa539e09d2c8a93afcb9f6e56",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_1c137567",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/LinkCalculator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-07-01T21:45:44Z",
+      "side": 1,
+      "message": "createNodeRef() is sufficient. Please rename.",
+      "range": {
+        "startLine": 341,
+        "startChar": 35,
+        "endLine": 341,
+        "endChar": 66
+      },
+      "revId": "950534639902079aa539e09d2c8a93afcb9f6e56",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_0782024f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 179,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-07-01T21:45:44Z",
+      "side": 1,
+      "message": "Please rename to findTerminationPoint",
+      "range": {
+        "startLine": 179,
+        "startChar": 43,
+        "endLine": 179,
+        "endChar": 61
+      },
+      "revId": "950534639902079aa539e09d2c8a93afcb9f6e56",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_a7907696",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-07-01T21:45:44Z",
+      "side": 1,
+      "message": "Please use Optional.absent() instead of null. When you use null, then you risk null pointer exception somewhere else in code. For example on line 159 you can get npe if you return null. I think, that if return type of method is Optional, than it should never be null...",
+      "range": {
+        "startLine": 180,
+        "startChar": 8,
+        "endLine": 180,
+        "endChar": 59
+      },
+      "revId": "950534639902079aa539e09d2c8a93afcb9f6e56",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_07f962e9",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-07-01T21:45:44Z",
+      "side": 1,
+      "message": "The same as in previous file",
+      "range": {
+        "startLine": 102,
+        "startChar": 43,
+        "endLine": 102,
+        "endChar": 60
+      },
+      "revId": "950534639902079aa539e09d2c8a93afcb9f6e56",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_67ddbe70",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-07-01T21:45:44Z",
+      "side": 1,
+      "message": "The same as in previous file",
+      "range": {
+        "startLine": 103,
+        "startChar": 8,
+        "endLine": 103,
+        "endChar": 59
+      },
+      "revId": "950534639902079aa539e09d2c8a93afcb9f6e56",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
