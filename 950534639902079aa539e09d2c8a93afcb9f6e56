@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_2783c605",
+        "filename": "topoprocessing-config/src/main/resources/80-topoprocessing-config.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-07-01T22:18:01Z",
+      "side": 1,
+      "message": "I tried to install odl-topoprocessing-network-topology feature but it failed with this error:\nUnable to resolve value AttributeConfigElement [defaultValue\u003dnull, value\u003dMappedDependency{namespace\u003d\u0027urn:opendaylight:params:xml:ns:yang:mdsal:binding:dom\u0027, serviceName\u003d\u0027binding-normalized-node-serializer\u0027\nSo I thinkg this does not work correctly or am I missing something?",
+      "parentUuid": "9a561d44_c70acad1",
+      "range": {
+        "startLine": 34,
+        "startChar": 81,
+        "endLine": 34,
+        "endChar": 98
+      },
+      "revId": "950534639902079aa539e09d2c8a93afcb9f6e56",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_994e77c0",
         "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/InventoryListener.java",
         "patchSetId": 1
