@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_92876961",
+        "filename": "topoprocessing-inventory/src/main/java/org/opendaylight/topoprocessing/inventory/translator/InvNodeTranslator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 5872
+      },
+      "writtenOn": "2016-07-04T11:29:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_879c526b",
+      "revId": "7d8904237f9ec152102844f00c7e4cb768a73e7d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_e7a1ceaa",
         "filename": "topoprocessing-inventory/src/main/java/org/opendaylight/topoprocessing/inventory/translator/InvNodeTranslator.java",
         "patchSetId": 2
@@ -42,6 +60,30 @@
     },
     {
       "key": {
+        "uuid": "9a561d44_f27ce574",
+        "filename": "topoprocessing-inventory/src/main/java/org/opendaylight/topoprocessing/inventory/translator/InvNodeTranslator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 5872
+      },
+      "writtenOn": "2016-07-04T11:29:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_e7a1ceaa",
+      "range": {
+        "startLine": 141,
+        "startChar": 24,
+        "endLine": 141,
+        "endChar": 94
+      },
+      "revId": "7d8904237f9ec152102844f00c7e4cb768a73e7d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_6795be3f",
         "filename": "topoprocessing-inventory/src/main/java/org/opendaylight/topoprocessing/inventory/translator/InvNodeTranslator.java",
         "patchSetId": 2
@@ -53,6 +95,30 @@
       "writtenOn": "2016-07-01T22:13:28Z",
       "side": 1,
       "message": "Use created local variable.",
+      "range": {
+        "startLine": 142,
+        "startChar": 27,
+        "endLine": 142,
+        "endChar": 97
+      },
+      "revId": "7d8904237f9ec152102844f00c7e4cb768a73e7d",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_d281e14b",
+        "filename": "topoprocessing-inventory/src/main/java/org/opendaylight/topoprocessing/inventory/translator/InvNodeTranslator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 5872
+      },
+      "writtenOn": "2016-07-04T11:29:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9a561d44_6795be3f",
       "range": {
         "startLine": 142,
         "startChar": 27,
