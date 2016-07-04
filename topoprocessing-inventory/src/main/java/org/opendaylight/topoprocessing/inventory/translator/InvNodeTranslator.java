@@ -57,30 +57,13 @@ public class InvNodeTranslator implements NodeTranslator{
             for (UnderlayItem underlayItem : overlayItem.getUnderlayItems()) {
                 if (! writtenNodes.contains(underlayItem)) {
                     writtenNodes.add(underlayItem);
-                    NormalizedNode<?, ?> itemNode = underlayItem.getItem();
-                    // prepare supporting nodes
-                    Map<QName, Object> keyValues = new HashMap<>();
-                    keyValues.put(TopologyQNames.TOPOLOGY_REF, underlayItem.getTopologyId());
-                    keyValues.put(TopologyQNames.NODE_REF, underlayItem.getItemId());
-                    supportingNodes.withChild(ImmutableNodes.mapEntryBuilder().withNodeIdentifier(
-                            new YangInstanceIdentifier.NodeIdentifierWithPredicates(
-                                    SupportingNode.QNAME, keyValues)).build());
+                    addSupportingNodes(underlayItem, supportingNodes);
                     if (wrapper.getAggregatedTerminationPoints() == null) {
-                        // prepare termination points
-                        Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
-                                itemNode, TP_IDENTIFIER);
-                        if (terminationPointMapNode.isPresent()) {
-                            Collection<MapEntryNode> terminationPointMapEntries =
-                                    ((MapNode) terminationPointMapNode.get()).getValue();
-                            for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
-                                terminationPoints.addChild(terminationPointMapEntry);
-                            }
-                        }
+                        prepareTerminationPoints(underlayItem, terminationPoints);
                     }
                 }
             }
         }
-
         if (wrapper.getAggregatedTerminationPoints() == null) {
             return ImmutableNodes
                     .mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, wrapper.getId())
@@ -93,6 +76,31 @@ public class InvNodeTranslator implements NodeTranslator{
                     .withChild(supportingNodes.build())
                     .withChild(wrapper.getAggregatedTerminationPoints())
                     .build();
+        }
+    }
+
+    private void addSupportingNodes(UnderlayItem underlayItem,
+            CollectionNodeBuilder<MapEntryNode, MapNode> supportingNodes) {
+     // prepare supporting nodes
+        Map<QName, Object> keyValues = new HashMap<>();
+        keyValues.put(TopologyQNames.TOPOLOGY_REF, underlayItem.getTopologyId());
+        keyValues.put(TopologyQNames.NODE_REF, underlayItem.getItemId());
+        supportingNodes.withChild(ImmutableNodes.mapEntryBuilder().withNodeIdentifier(
+                new YangInstanceIdentifier.NodeIdentifierWithPredicates(
+                        SupportingNode.QNAME, keyValues)).build());
+    }
+
+    private void prepareTerminationPoints(UnderlayItem underlayItem,
+            CollectionNodeBuilder<MapEntryNode, MapNode> terminationPoints) {
+        NormalizedNode<?, ?> itemNode = underlayItem.getItem();
+        Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
+                itemNode, TP_IDENTIFIER);
+        if (terminationPointMapNode.isPresent()) {
+            Collection<MapEntryNode> terminationPointMapEntries =
+                    ((MapNode) terminationPointMapNode.get()).getValue();
+            for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
+                terminationPoints.addChild(terminationPointMapEntry);
+            }
         }
     }
 }
