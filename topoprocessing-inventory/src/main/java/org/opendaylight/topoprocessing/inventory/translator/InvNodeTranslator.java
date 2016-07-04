@@ -71,34 +71,9 @@ public class InvNodeTranslator implements NodeTranslator{
             for (UnderlayItem underlayItem : overlayItem.getUnderlayItems()) {
                 if (! writtenNodes.contains(underlayItem)) {
                     writtenNodes.add(underlayItem);
-                    NormalizedNode<?, ?> itemNode = underlayItem.getItem();
-                    // prepare supporting nodes
-                    Map<QName, Object> keyValues = new HashMap<>();
-                    keyValues.put(TopologyQNames.TOPOLOGY_REF, underlayItem.getTopologyId());
-                    keyValues.put(TopologyQNames.NODE_REF, underlayItem.getItemId());
-                    supportingNodes.withChild(ImmutableNodes.mapEntryBuilder().withNodeIdentifier(
-                            new YangInstanceIdentifier.NodeIdentifierWithPredicates(
-                                    SupportingNode.QNAME, keyValues)).build());
+                    addSupportingNodes(underlayItem, supportingNodes);
                     if (wrapper.getAggregatedTerminationPoints() == null) {
-                        // prepare termination points
-                        Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
-                                itemNode, InstanceIdentifiers.NT_TERMINATION_POINT);
-                        if (terminationPointMapNode.isPresent()) {
-                            Collection<MapEntryNode> terminationPointMapEntries =
-                                    ((MapNode) terminationPointMapNode.get()).getValue();
-                            for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
-                                Optional<NormalizedNode<?, ?>> connectorAugmentationNode =
-                                        NormalizedNodes.findNode(terminationPointMapEntry,
-                                                NODE_CONNECTOR_AUGMENTATION_IDENTIFIER);
-                                if (connectorAugmentationNode.isPresent()){
-                                    //if we need to transform the node connector ref into a tp-ref
-                                    terminationPoints.addChild(createTerminationPoint(connectorAugmentationNode.get(),
-                                            underlayItem.getTopologyId(), underlayItem.getItemId(), idGenerator));
-                                } else {
-                                    terminationPoints.addChild(terminationPointMapEntry);
-                                }
-                            }
-                        }
+                        prepareTerminationPoints(underlayItem, terminationPoints, idGenerator);
                     }
                 }
             }
@@ -117,6 +92,39 @@ public class InvNodeTranslator implements NodeTranslator{
                     .withChild(wrapper.getAggregatedTerminationPoints())
                     .build();
         }
+    }
+
+    private void prepareTerminationPoints(UnderlayItem underlayItem,
+            CollectionNodeBuilder<MapEntryNode, MapNode> terminationPoints, IdentifierGenerator idGenerator) {
+        NormalizedNode<?, ?> itemNode = underlayItem.getItem();
+        Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
+                itemNode, InstanceIdentifiers.NT_TERMINATION_POINT);
+        if (terminationPointMapNode.isPresent()) {
+            Collection<MapEntryNode> terminationPointMapEntries =
+                    ((MapNode) terminationPointMapNode.get()).getValue();
+            for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
+                Optional<NormalizedNode<?, ?>> connectorAugmentationNode =
+                        NormalizedNodes.findNode(terminationPointMapEntry,
+                                NODE_CONNECTOR_AUGMENTATION_IDENTIFIER);
+                if (connectorAugmentationNode.isPresent()){
+                    //if we need to transform the node connector ref into a tp-ref
+                    terminationPoints.addChild(createTerminationPoint(connectorAugmentationNode.get(),
+                            underlayItem.getTopologyId(), underlayItem.getItemId(), idGenerator));
+                } else {
+                    terminationPoints.addChild(terminationPointMapEntry);
+                }
+            }
+        }
+    }
+
+    private void addSupportingNodes(UnderlayItem underlayItem,
+            CollectionNodeBuilder<MapEntryNode, MapNode> supportingNodes) {
+        Map<QName, Object> keyValues = new HashMap<>();
+        keyValues.put(TopologyQNames.TOPOLOGY_REF, underlayItem.getTopologyId());
+        keyValues.put(TopologyQNames.NODE_REF, underlayItem.getItemId());
+        supportingNodes.withChild(ImmutableNodes.mapEntryBuilder().withNodeIdentifier(
+                new YangInstanceIdentifier.NodeIdentifierWithPredicates(
+                        SupportingNode.QNAME, keyValues)).build());
     }
 
     /**
