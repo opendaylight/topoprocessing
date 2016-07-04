@@ -62,37 +62,13 @@ public class I2RSNodeTranslator implements NodeTranslator{
             for (UnderlayItem underlayItem : overlayItem.getUnderlayItems()) {
                 if (! writtenNodes.contains(underlayItem)) {
                     writtenNodes.add(underlayItem);
-                    NormalizedNode<?, ?> itemNode = underlayItem.getItem();
-                    // prepare supporting nodes
-                    Map<QName, Object> keyValues = new HashMap<>();
-                    keyValues.put(TopologyQNames.I2RS_NETWORK_REF, underlayItem.getTopologyId());
-                    keyValues.put(TopologyQNames.I2RS_NODE_REF, underlayItem.getItemId());
-                    supportingNodes.withChild(ImmutableNodes.mapEntryBuilder().withNodeIdentifier(
-                            new YangInstanceIdentifier.NodeIdentifierWithPredicates(
-                                    SupportingNode.QNAME, keyValues)).build());
+                    addSupportingNodes(underlayItem, supportingNodes);
                     if (wrapper.getAggregatedTerminationPoints() == null) {
-                        // prepare termination points
-                        Class<? extends Model> model = I2rsModel.class;
-                        Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
-                                itemNode, InstanceIdentifiers.I2RS_TP_IDENTIFIER);
-                        if (!terminationPointMapNode.isPresent()) {
-                            model = NetworkTopologyModel.class;
-                            terminationPointMapNode = NormalizedNodes.findNode(itemNode,
-                                    InstanceIdentifiers.NT_TP_IDENTIFIER);
-                        }
-                        if (terminationPointMapNode.isPresent()) {
-                            List<MapEntryNode> terminationPointEntries = createTerminationPoint(
-                                    (MapNode) terminationPointMapNode.get(), underlayItem.getTopologyId(),
-                                    underlayItem.getItemId(), idGenerator, model);
-                            for (MapEntryNode terminationPointMapEntry : terminationPointEntries) {
-                                terminationPoints.addChild(terminationPointMapEntry);
-                            }
-                        }
+                        prepareTerminationPoints(underlayItem, idGenerator, terminationPoints);
                     }
                 }
             }
         }
-
         if (wrapper.getAggregatedTerminationPoints() != null &&
                 !wrapper.getAggregatedTerminationPoints().getValue().isEmpty()) {
             MapNode aggregatedTPs = wrapper.getAggregatedTerminationPoints();
@@ -113,6 +89,37 @@ public class I2RSNodeTranslator implements NodeTranslator{
                     .withChild(terminationPoints.build())
                     .build();
         }
+    }
+
+    private void prepareTerminationPoints(UnderlayItem underlayItem, IdentifierGenerator idGenerator,
+            CollectionNodeBuilder<MapEntryNode, MapNode> terminationPoints) {
+        NormalizedNode<?, ?> itemNode = underlayItem.getItem();
+        Class<? extends Model> model = I2rsModel.class;
+        Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
+                itemNode, InstanceIdentifiers.I2RS_TP_IDENTIFIER);
+        if (!terminationPointMapNode.isPresent()) {
+            model = NetworkTopologyModel.class;
+            terminationPointMapNode = NormalizedNodes.findNode(itemNode,
+                    InstanceIdentifiers.NT_TP_IDENTIFIER);
+        }
+        if (terminationPointMapNode.isPresent()) {
+            List<MapEntryNode> terminationPointEntries = createTerminationPoint(
+                    (MapNode) terminationPointMapNode.get(), underlayItem.getTopologyId(),
+                    underlayItem.getItemId(), idGenerator, model);
+            for (MapEntryNode terminationPointMapEntry : terminationPointEntries) {
+                terminationPoints.addChild(terminationPointMapEntry);
+            }
+        }
+    }
+
+    private void addSupportingNodes(UnderlayItem underlayItem,
+            CollectionNodeBuilder<MapEntryNode, MapNode> supportingNodes) {
+        Map<QName, Object> keyValues = new HashMap<>();
+        keyValues.put(TopologyQNames.I2RS_NETWORK_REF, underlayItem.getTopologyId());
+        keyValues.put(TopologyQNames.I2RS_NODE_REF, underlayItem.getItemId());
+        supportingNodes.withChild(ImmutableNodes.mapEntryBuilder().withNodeIdentifier(
+                new YangInstanceIdentifier.NodeIdentifierWithPredicates(
+                        SupportingNode.QNAME, keyValues)).build());
     }
 
     private MapNode translateAggregatedTPsWithinNodesFromNT(IdentifierGenerator idGenerator, MapNode aggregatedTPs) {

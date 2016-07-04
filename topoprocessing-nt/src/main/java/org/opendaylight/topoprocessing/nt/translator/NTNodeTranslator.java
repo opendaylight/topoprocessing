@@ -71,42 +71,9 @@ public class NTNodeTranslator implements NodeTranslator{
             for (UnderlayItem underlayItem : overlayItem.getUnderlayItems()) {
                 if (! writtenNodes.contains(underlayItem)) {
                     writtenNodes.add(underlayItem);
-                    NormalizedNode<?, ?> itemNode = underlayItem.getItem();
-                    // prepare supporting nodes
-                    Map<QName, Object> keyValues = new HashMap<>();
-                    keyValues.put(TopologyQNames.TOPOLOGY_REF, underlayItem.getTopologyId());
-                    keyValues.put(TopologyQNames.NODE_REF, underlayItem.getItemId());
-                    supportingNodes.withChild(ImmutableNodes.mapEntryBuilder().withNodeIdentifier(
-                            new YangInstanceIdentifier.NodeIdentifierWithPredicates(
-                                    SupportingNode.QNAME, keyValues)).build());
+                    addSupportingNodes(underlayItem, supportingNodes);
                     if (wrapper.getAggregatedTerminationPoints() == null) {
-                        // prepare termination points
-                        Class<? extends Model> model = NetworkTopologyModel.class;
-                        Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
-                                itemNode, InstanceIdentifiers.NT_TP_IDENTIFIER);
-                        if (!terminationPointMapNode.isPresent()) {
-                            model = I2rsModel.class;
-                            terminationPointMapNode = NormalizedNodes.findNode(itemNode,
-                                    InstanceIdentifiers.I2RS_TP_IDENTIFIER);
-                        }
-                        if (terminationPointMapNode.isPresent()) {
-                            if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint &&
-                                            !FiltrationOnly.class.equals(overlayItem.getCorrelationType())) {
-                                Collection<MapEntryNode> terminationPointMapEntries =
-                                        ((MapNode) terminationPointMapNode.get()).getValue();
-                                for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
-                                    terminationPoints.addChild(terminationPointMapEntry);
-                                }
-                            } else {
-                                List<MapEntryNode> terminationPointEntries = createTerminationPoint(
-                                        (MapNode) terminationPointMapNode.get(), underlayItem.getTopologyId(),
-                                        underlayItem.getItemId(), idGenerator, model);
-                                for (MapEntryNode terminationPointMapEntry : terminationPointEntries) {
-                                    terminationPoints.addChild(terminationPointMapEntry);
-                                }
-
-                            }
-                        }
+                        prepareTerminationPoints(underlayItem, idGenerator, terminationPoints, overlayItem);
                     }
                 }
             }
@@ -124,6 +91,47 @@ public class NTNodeTranslator implements NodeTranslator{
                     .withChild(supportingNodes.build())
                     .withChild(wrapper.getAggregatedTerminationPoints())
                     .build();
+        }
+    }
+
+    private void addSupportingNodes(UnderlayItem underlayItem,
+            CollectionNodeBuilder<MapEntryNode, MapNode> supportingNodes) {
+        Map<QName, Object> keyValues = new HashMap<>();
+        keyValues.put(TopologyQNames.TOPOLOGY_REF, underlayItem.getTopologyId());
+        keyValues.put(TopologyQNames.NODE_REF, underlayItem.getItemId());
+        supportingNodes.withChild(ImmutableNodes.mapEntryBuilder().withNodeIdentifier(
+                new YangInstanceIdentifier.NodeIdentifierWithPredicates(
+                        SupportingNode.QNAME, keyValues)).build());
+    }
+
+    private void prepareTerminationPoints(UnderlayItem underlayItem, IdentifierGenerator idGenerator,
+            CollectionNodeBuilder<MapEntryNode, MapNode> terminationPoints, OverlayItem overlayItem) {
+        NormalizedNode<?, ?> itemNode = underlayItem.getItem();
+        Class<? extends Model> model = NetworkTopologyModel.class;
+        Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
+                itemNode, InstanceIdentifiers.NT_TP_IDENTIFIER);
+        if (!terminationPointMapNode.isPresent()) {
+            model = I2rsModel.class;
+            terminationPointMapNode = NormalizedNodes.findNode(itemNode,
+                    InstanceIdentifiers.I2RS_TP_IDENTIFIER);
+        }
+        if (terminationPointMapNode.isPresent()) {
+            if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint &&
+                            !FiltrationOnly.class.equals(overlayItem.getCorrelationType())) {
+                Collection<MapEntryNode> terminationPointMapEntries =
+                        ((MapNode) terminationPointMapNode.get()).getValue();
+                for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
+                    terminationPoints.addChild(terminationPointMapEntry);
+                }
+            } else {
+                List<MapEntryNode> terminationPointEntries = createTerminationPoint(
+                        (MapNode) terminationPointMapNode.get(), underlayItem.getTopologyId(),
+                        underlayItem.getItemId(), idGenerator, model);
+                for (MapEntryNode terminationPointMapEntry : terminationPointEntries) {
+                    terminationPoints.addChild(terminationPointMapEntry);
+                }
+
+            }
         }
     }
 

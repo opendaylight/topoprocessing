@@ -40,11 +40,41 @@ public class I2RSLinkTranslator implements LinkTranslator {
     @Override
     public NormalizedNode<?, ?> translate(OverlayItemWrapper wrapper) {
         LOG.debug("Transforming OverlayItemWrapper containing Links to I2RS format");
+
+        DataContainerNodeBuilder<NodeIdentifierWithPredicates, MapEntryNode> linkNode =
+                ImmutableNodes.mapEntryBuilder(Link.QNAME, TopologyQNames.I2RS_LINK_ID_QNAME, wrapper.getId());
+        MapNode supportingLinks = buildSupportingLinks(wrapper);
+        linkNode.withChild(supportingLinks);
+        UnderlayItem link = wrapper.getOverlayItems().peek().getUnderlayItems().peek();
+        if(link instanceof ComputedLink) {
+            setSrcDestNode(link, linkNode);
+        }
+
+        return linkNode.build();
+    }
+
+    private void setSrcDestNode(UnderlayItem link,
+            DataContainerNodeBuilder<NodeIdentifierWithPredicates, MapEntryNode> linkNode) {
+        ComputedLink computedLink = (ComputedLink) link;
+        ContainerNode sourceNode = ImmutableContainerNodeBuilder.create()
+                .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(Source.QNAME))
+                .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_LINK_SOURCE_NODE_QNAME,
+                        NormalizedNodes.findNode(computedLink.getSrcNode(),
+                                YangInstanceIdentifier.of(TopologyQNames.I2RS_NODE_ID_QNAME)).get().getValue()))
+                .build();
+        ContainerNode destNode = ImmutableContainerNodeBuilder.create()
+                .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(Destination.QNAME))
+                .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_LINK_DEST_NODE_QNAME,
+                        NormalizedNodes.findNode(computedLink.getDstNode(),
+                                YangInstanceIdentifier.of(TopologyQNames.I2RS_NODE_ID_QNAME)).get().getValue()))
+                .build();
+        linkNode.withChild(sourceNode).withChild(destNode);
+    }
+
+    private MapNode buildSupportingLinks(OverlayItemWrapper wrapper) {
         List<UnderlayItem> writtenLinks = new ArrayList<>();
         CollectionNodeBuilder<MapEntryNode, MapNode> supportingLinks = ImmutableNodes.mapNodeBuilder(
                 SupportingLink.QNAME);
-        DataContainerNodeBuilder<NodeIdentifierWithPredicates, MapEntryNode> linkNode =
-                ImmutableNodes.mapEntryBuilder(Link.QNAME, TopologyQNames.I2RS_LINK_ID_QNAME, wrapper.getId());
         // iterate through overlay items containing lists
         for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
             // iterate through underlay items
@@ -60,27 +90,6 @@ public class I2RSLinkTranslator implements LinkTranslator {
                 }
             }
         }
-        linkNode.withChild(supportingLinks.build());
-
-        UnderlayItem link = wrapper.getOverlayItems().peek().getUnderlayItems().peek();
-        if(link instanceof ComputedLink) {
-            ComputedLink computedLink = (ComputedLink) link;
-            ContainerNode sourceNode = ImmutableContainerNodeBuilder.create()
-                    .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(Source.QNAME))
-                    .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_LINK_SOURCE_NODE_QNAME,
-                            NormalizedNodes.findNode(computedLink.getSrcNode(),
-                                    YangInstanceIdentifier.of(TopologyQNames.I2RS_NODE_ID_QNAME)).get().getValue()))
-                    .build();
-            ContainerNode destNode = ImmutableContainerNodeBuilder.create()
-                    .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(Destination.QNAME))
-                    .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_LINK_DEST_NODE_QNAME,
-                            NormalizedNodes.findNode(computedLink.getDstNode(),
-                                    YangInstanceIdentifier.of(TopologyQNames.I2RS_NODE_ID_QNAME)).get().getValue()))
-                    .build();
-            linkNode.withChild(sourceNode).withChild(destNode);
-        }
-
-        return linkNode.build();
+        return supportingLinks.build();
     }
-
 }

@@ -47,12 +47,39 @@ public class InvLinkTranslator implements LinkTranslator{
     @Override
     public NormalizedNode<?, ?> translate(OverlayItemWrapper wrapper) {
         LOG.debug("Transforming OverlayItemWrapper containing Links to network-topology format");
+        DataContainerNodeBuilder<NodeIdentifierWithPredicates, MapEntryNode> linkNode =
+                ImmutableNodes.mapEntryBuilder(Link.QNAME, TopologyQNames.NETWORK_LINK_ID_QNAME, wrapper.getId());
+        MapNode supportingLinks = buildSupportingLinks(wrapper);
+        linkNode.withChild(supportingLinks);
+        UnderlayItem link = wrapper.getOverlayItems().peek().getUnderlayItems().peek();
+        if(link instanceof ComputedLink) {
+            setSrcDestNode(link, linkNode);
+        }
+        return linkNode.build();
+    }
+
+    private void setSrcDestNode(UnderlayItem link,
+            DataContainerNodeBuilder<NodeIdentifierWithPredicates, MapEntryNode> linkNode) {
+        ComputedLink computedLink = (ComputedLink) link;
+        ContainerNode sourceNode = ImmutableContainerNodeBuilder.create()
+                .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(Source.QNAME))
+                .withChild(ImmutableNodes.leafNode(TopologyQNames.LINK_SOURCE_NODE_QNAME,
+                        NormalizedNodes.findNode(computedLink.getSrcNode(),
+                                YangInstanceIdentifier.of(TopologyQNames.NETWORK_NODE_ID_QNAME)).get().getValue()))
+                .build();
+        ContainerNode destNode = ImmutableContainerNodeBuilder.create()
+                .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(Destination.QNAME))
+                .withChild(ImmutableNodes.leafNode(TopologyQNames.LINK_DEST_NODE_QNAME,
+                        NormalizedNodes.findNode(computedLink.getDstNode(),
+                                YangInstanceIdentifier.of(TopologyQNames.NETWORK_NODE_ID_QNAME)).get().getValue()))
+                .build();
+        linkNode.withChild(sourceNode).withChild(destNode);
+    }
+
+    private MapNode buildSupportingLinks(OverlayItemWrapper wrapper) {
         List<UnderlayItem> writtenLinks = new ArrayList<>();
         CollectionNodeBuilder<MapEntryNode, MapNode> supportingLinks = ImmutableNodes.mapNodeBuilder(
                 SupportingLink.QNAME);
-        DataContainerNodeBuilder<NodeIdentifierWithPredicates, MapEntryNode> linkNode =
-                ImmutableNodes.mapEntryBuilder(Link.QNAME, TopologyQNames.NETWORK_LINK_ID_QNAME, wrapper.getId());
-        // iterate through overlay items containing lists
         for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
             // iterate through underlay items
             for (UnderlayItem underlayItem : overlayItem.getUnderlayItems()) {
@@ -70,27 +97,6 @@ public class InvLinkTranslator implements LinkTranslator{
                 }
             }
         }
-        linkNode.withChild(supportingLinks.build());
-
-        UnderlayItem link = wrapper.getOverlayItems().peek().getUnderlayItems().peek();
-        if(link instanceof ComputedLink) {
-            ComputedLink computedLink = (ComputedLink) link;
-            ContainerNode sourceNode = ImmutableContainerNodeBuilder.create()
-                    .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(Source.QNAME))
-                    .withChild(ImmutableNodes.leafNode(TopologyQNames.LINK_SOURCE_NODE_QNAME,
-                            NormalizedNodes.findNode(computedLink.getSrcNode(),
-                                    YangInstanceIdentifier.of(TopologyQNames.NETWORK_NODE_ID_QNAME)).get().getValue()))
-                    .build();
-            ContainerNode destNode = ImmutableContainerNodeBuilder.create()
-                    .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(Destination.QNAME))
-                    .withChild(ImmutableNodes.leafNode(TopologyQNames.LINK_DEST_NODE_QNAME,
-                            NormalizedNodes.findNode(computedLink.getDstNode(),
-                                    YangInstanceIdentifier.of(TopologyQNames.NETWORK_NODE_ID_QNAME)).get().getValue()))
-                    .build();
-            linkNode.withChild(sourceNode).withChild(destNode);
-        }
-
-        return linkNode.build();
+        return supportingLinks.build();
     }
-
 }
