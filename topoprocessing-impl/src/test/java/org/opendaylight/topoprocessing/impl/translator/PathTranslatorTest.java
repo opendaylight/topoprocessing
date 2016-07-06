@@ -103,7 +103,7 @@ public class PathTranslatorTest {
      * @throws URISyntaxException
      *             if URI is in incorrect format. Should not happen because URI
      *             in this test case is a constant
-     * @throws ParseException
+     * @throws ParseException ParseException
      */
     @Test
     public void testLegalPath() throws URISyntaxException, ParseException {
@@ -291,6 +291,12 @@ public class PathTranslatorTest {
 
     /**
      * Test case: module does not exist
+     *
+     * @throws URISyntaxException URISyntaxException
+     * @throws ParseException ParseException
+     * @throws IOException IOException
+     * @throws YangSyntaxErrorException YangSyntaxErrorException
+     * @throws ReactorException ReactorException
      */
     @Test(expected = IllegalStateException.class)
     public void testUnexistingModuleName()
