@@ -77,6 +77,8 @@ public class NTOverlayItemTranslatorNodeTest {
 
     /**
      * Wrap the same node more times to the wrapper, translate it, and check result for the duplicity
+     *
+     * @throws Exception Exception
      */
     @Test
     public void testSameNodePassed() throws Exception {
@@ -99,8 +101,8 @@ public class NTOverlayItemTranslatorNodeTest {
     }
 
     /**
-     * Test case: one SupportingNode translation<br/>
-     * - includes TopologyRef and NodeRef
+     * <p>Test case: one SupportingNode translation</p>
+     * <p>- includes TopologyRef and NodeRef</p>
      */
     @Test
     public void testSupportingNode() {
