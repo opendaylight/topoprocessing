@@ -81,7 +81,7 @@ public class UnificationCustomScriptTest {
 
     /**
      * Simple test for script aggregation
-     * @throws Exception
+     * @throws Exception Exception
      */
     @Test
     public void testProcessCreatedChanges() throws Exception {
