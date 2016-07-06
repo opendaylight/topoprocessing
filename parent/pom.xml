@@ -25,7 +25,6 @@
     <description>
         Topology processing framework allows to agregate and filter topologies according to defined correlations. It also provides functionality, which you can use to make your own topology model rendering (translation from one model to another).
     </description>
-    <url>https://wiki.opendaylight.org/view/Topology_Processing_Framework:Main</url>
 
     <licenses>
         <license>
@@ -232,4 +231,20 @@
             </plugins>
         </pluginManagement>
     </build>
+
+  <!--
+      Maven Site Configuration
+
+      The following configuration is necessary for maven-site-plugin to
+      correctly identify the correct deployment path for OpenDaylight Maven
+      sites.
+  -->
+  <url>${odl.site.url}/${project.groupId}/${stream}/${project.artifactId}/</url>
+
+  <distributionManagement>
+    <site>
+      <id>opendaylight-site</id>
+      <url>${nexus.site.url}/${project.artifactId}/</url>
+    </site>
+  </distributionManagement>
 </project>
