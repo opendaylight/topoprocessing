@@ -108,37 +108,31 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
                 throw new IllegalStateException("item-id was not found in: " + entry);
             }
             UnderlayItem underlayItem = null;
-            // in case that operator is instance of TopologyAggregator or PreAggregationFiltrator
-            // but not TerminationPointAggregator
-            if (pathIdentifiers != null) {
-                // AGGREGATION
-                if (correlationItem == CorrelationItemEnum.TerminationPoint) {
-                    underlayItem = new UnderlayItem(entry, null, underlayTopologyId, itemId, correlationItem);
-                } else {
-                    LOGGER.debug("Finding target fields");
-                    Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(pathIdentifiers.size());
-                    for (Entry<Integer, YangInstanceIdentifier> pathIdentifierEntry : pathIdentifiers.entrySet()) {
-                        Optional<NormalizedNode<?, ?>> targetFieldOpt =
-                                NormalizedNodes.findNode(entry, pathIdentifierEntry.getValue());
-                        if (targetFieldOpt.isPresent()) {
-                            targetFields.put(pathIdentifierEntry.getKey(), targetFieldOpt.get());
-                        }
-                    }
-                    if (!targetFields.isEmpty()) {
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("Found target fields: {}", targetFields);
-                        }
-                        underlayItem = new UnderlayItem(entry, targetFields, underlayTopologyId, itemId,
-                                correlationItem);
-                    } else {
-                        return;
-                    }
-                }
-            } else {
+
+            if (pathIdentifiers == null || correlationItem == CorrelationItemEnum.TerminationPoint) {
                 // FILTRATION or opendaylight-inventory model is used - doesn't contain leafNode
                 // or Termination-point aggregation
-                underlayItem = new UnderlayItem(entry, null, underlayTopologyId, itemId,
-                        correlationItem);
+                underlayItem = new UnderlayItem(entry, null, underlayTopologyId, itemId, correlationItem);
+            } else if (pathIdentifiers != null && correlationItem != CorrelationItemEnum.TerminationPoint) {
+                // AGGREGATION
+                LOGGER.debug("Finding target fields");
+                Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(pathIdentifiers.size());
+                for (Entry<Integer, YangInstanceIdentifier> pathIdentifierEntry : pathIdentifiers.entrySet()) {
+                    Optional<NormalizedNode<?, ?>> targetFieldOpt =
+                            NormalizedNodes.findNode(entry, pathIdentifierEntry.getValue());
+                    if (targetFieldOpt.isPresent()) {
+                        targetFields.put(pathIdentifierEntry.getKey(), targetFieldOpt.get());
+                    }
+                }
+                if (!targetFields.isEmpty()) {
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("Found target fields: {}", targetFields);
+                    }
+                    underlayItem = new UnderlayItem(entry, targetFields, underlayTopologyId, itemId,
+                            correlationItem);
+                } else {
+                    return;
+                }
             }
             LOGGER.debug("underlayItem created");
             if (!updated) {
