@@ -284,9 +284,7 @@ public abstract class TopologyRequestHandler {
             if (tpFiltration && mapping.getApplyFilters() != null) {
                 for (String filterId : mapping.getApplyFilters()) {
                     Filter filter = findFilter(tpCorrelation.getFiltration().getFilter(), filterId);
-                    YangInstanceIdentifier filterPath = translator.translate(filter.getTargetField().getValue(),
-                            CorrelationItemEnum.TerminationPoint, schemaHolder, inputModel);
-                    addFiltrator(tpFiltrator, filter, filterPath);
+                    addFiltrator(tpFiltrator, filter, CorrelationItemEnum.TerminationPoint, inputModel);
                 }
             }
         }
@@ -317,9 +315,7 @@ public abstract class TopologyRequestHandler {
                 filtrator.setTopologyAggregator(nodeAndTpAggregator);
                 for (String filterId : mapping.getApplyFilters()) {
                     Filter filter = findFilter(nodeCorrelation.getFiltration().getFilter(), filterId);
-                    YangInstanceIdentifier filterPath = translator.translate(filter.getTargetField().getValue(),
-                            CorrelationItemEnum.Node, schemaHolder, inputModel);
-                    addFiltrator(filtrator, filter, filterPath);
+                    addFiltrator(filtrator, filter, CorrelationItemEnum.Node, inputModel);
                 }
             }
             UnderlayTopologyListener listener;
@@ -333,21 +329,8 @@ public abstract class TopologyRequestHandler {
                         .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
                         CorrelationItemEnum.Node, datastoreType, filtrator, listeners, pathIdentifier);
             }
-
-            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
-                    .createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
-                    .buildItemIdentifier(topologyIdentifier, CorrelationItemEnum.Node);
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
-            DOMDataTreeIdentifier treeId ;
-            if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
-            } else {
-                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
-            }
-            ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
-                    pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
-            listeners.add(listenerRegistration);
+            registerListener(listener, inputModel, underlayTopologyId, CorrelationItemEnum.Node);
         }
     }
 
@@ -376,56 +359,35 @@ public abstract class TopologyRequestHandler {
         Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>();
         int key = 0;
         for (Filter filter : filtration.getFilter()) {
-            YangInstanceIdentifier pathIdentifier = translator.translate(filter.getTargetField().getValue(),
-                    correlation.getCorrelationItem(), schemaHolder, inputModel);
-            pathIdentifiers.put(key++, pathIdentifier);
-            addFiltrator(filtrator, filter, pathIdentifier);
+            YangInstanceIdentifier filterPath =
+                    addFiltrator(filtrator, filter, correlation.getCorrelationItem(), inputModel);
+            pathIdentifiers.put(key++, filterPath);
         }
 
         UnderlayTopologyListener listener = modelAdapters.get(inputModel).
                 registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
                         correlationItem, datastoreType, filtrator, listeners, pathIdentifiers);
-        InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
-                .createTopologyIdentifier(underlayTopologyId);
-        YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
-                .buildItemIdentifier(topologyIdentifier, correlationItem);
         LOG.debug("Registering filtering underlay topology listener for topology: {}", underlayTopologyId);
-        DOMDataTreeIdentifier treeId;
-        if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-            treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
-        } else {
-            treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
-        }
-        ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
-                pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
-        listeners.add(listenerRegistration);
+        registerListener(listener, inputModel, underlayTopologyId, correlationItem);
 
         if (correlation.getCorrelationItem().equals(CorrelationItemEnum.Link)) {
             listener = modelAdapters.get(inputModel).
                     registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
                             CorrelationItemEnum.Node, datastoreType, filtrator, listeners, null);
-            topologyIdentifier = modelAdapters.get(inputModel)
-                    .createTopologyIdentifier(underlayTopologyId);
-            itemIdentifier = modelAdapters.get(inputModel)
-                    .buildItemIdentifier(topologyIdentifier, CorrelationItemEnum.Node);
             LOG.debug("Registering secondary underlay topology listener for topology (in case of filtering on " +
                     "links): {}", underlayTopologyId);
-            if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
-            } else {
-                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
-            }
-            listenerRegistration =
-                    pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
-            listeners.add(listenerRegistration);
+            registerListener(listener, inputModel, underlayTopologyId, CorrelationItemEnum.Node);
         }
     }
 
-    private void addFiltrator(TopologyFiltrator operator, Filter filter,
-            YangInstanceIdentifier pathIdentifier) {
+    private YangInstanceIdentifier addFiltrator(TopologyFiltrator operator, Filter filter,
+            CorrelationItemEnum correlationItem, Class<? extends Model> inputModel) {
+        YangInstanceIdentifier filterPath = translator.translate(filter.getTargetField().getValue(),
+                correlationItem, schemaHolder, inputModel);
         FiltratorFactory ff = filtrators.get(filter.getFilterType());
-        Filtrator currentFiltrator = ff.createFiltrator(filter, pathIdentifier);
+        Filtrator currentFiltrator = ff.createFiltrator(filter, filterPath);
         operator.addFilter(currentFiltrator);
+        return filterPath;
     }
 
     private void initAggregation(Correlation correlation, boolean filtration) {
@@ -470,36 +432,16 @@ public abstract class TopologyRequestHandler {
                 filtrator.setTopologyAggregator(aggregator);
                 for (String filterId : mapping.getApplyFilters()) {
                     Filter filter = findFilter(correlation.getFiltration().getFilter(), filterId);
-                    YangInstanceIdentifier filterPath = translator.translate(filter.getTargetField().getValue(),
-                            correlationItem, schemaHolder, inputModel);
-                    addFiltrator(filtrator, filter, filterPath);
+                    addFiltrator(filtrator, filter, correlationItem, inputModel);
                 }
             }
             UnderlayTopologyListener listener;
-            if (filtrator == null) {
-                listener = modelAdapters.get(inputModel)
-                        .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId, correlationItem,
-                                datastoreType, aggregator, listeners, pathIdentifier);
-            } else {
-                listener = modelAdapters.get(inputModel)
-                        .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId, correlationItem,
-                                datastoreType, filtrator, listeners, pathIdentifier);
-            }
-
-            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
-                    .createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
-                    .buildItemIdentifier(topologyIdentifier, correlationItem);
+            TopologyOperator operator = filtrator == null ? aggregator : filtrator;
+            listener = modelAdapters.get(inputModel)
+                    .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId, correlationItem,
+                            datastoreType, operator, listeners, pathIdentifier);
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
-            DOMDataTreeIdentifier treeId ;
-            if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
-            } else {
-                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
-            }
-            ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
-                    pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
-            listeners.add(listenerRegistration);
+            registerListener(listener, inputModel, underlayTopologyId, correlationItem);
         }
     }
 
@@ -516,20 +458,8 @@ public abstract class TopologyRequestHandler {
                 operator = ((NotificationInterConnector) operator).getOperator();
             }
             operator.setTopologyManager(topologyManager);
-            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(outputModel)
-                    .createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier itemIdentifier = modelAdapters.get(outputModel)
-                    .buildItemIdentifier(topologyIdentifier, correlation.getCorrelationItem());
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
-            DOMDataTreeIdentifier treeId ;
-            if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
-            } else {
-                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
-            }
-            ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
-                    pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
-            listeners.add(listenerRegistration);
+            registerListener(listener, outputModel, underlayTopologyId, correlation.getCorrelationItem());
         } else {
             throw new IllegalStateException("Rendering data missing: " + correlation);
         }
@@ -556,8 +486,7 @@ public abstract class TopologyRequestHandler {
                 UnderlayTopologyListener listener = null;
                 Class<? extends Model> inputModel =
                         getRealInputModel(linkInfo.getInputModel(), CorrelationItemEnum.Link);
-                if (linkAggregation != null)
-                {
+                if (linkAggregation != null) {
                     for (Mapping mapping : linkAggregation.getMapping()) {
                         if(mapping.getUnderlayTopology().equals(underlayTopologyId)) {
                             for (TargetField targetField : mapping.getTargetField()) {
@@ -576,21 +505,9 @@ public abstract class TopologyRequestHandler {
                             .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
                                     CorrelationItemEnum.Link, datastoreType, calculator, listeners, null);
                 }
-                InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
-                        .createTopologyIdentifier(underlayTopologyId);
-                YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
-                        .buildItemIdentifier(topologyIdentifier, CorrelationItemEnum.Link);
                 LOG.debug("Registering link calculation underlay topology listener for topology: {}",
                         underlayTopologyId);
-                DOMDataTreeIdentifier treeId ;
-                if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                    treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
-                } else {
-                    treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
-                }
-                ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
-                        pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
-                listeners.add(listenerRegistration);
+                registerListener(listener, inputModel, underlayTopologyId, CorrelationItemEnum.Link);
             }
             //register overlay listener
             UnderlayTopologyListener listener = modelAdapters.get(outputModel)
@@ -609,6 +526,24 @@ public abstract class TopologyRequestHandler {
             throw new IllegalStateException("link computation data missing: " + linkComputation);
         }
         return calculator;
+    }
+
+    private void registerListener(UnderlayTopologyListener listener, Class<? extends Model> model,
+            String topologyId, CorrelationItemEnum correlationItem) {
+        InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(model)
+                .createTopologyIdentifier(topologyId);
+        YangInstanceIdentifier itemIdentifier = modelAdapters.get(model)
+                .buildItemIdentifier(topologyIdentifier, correlationItem);
+        DOMDataTreeIdentifier treeId = createDOMDataTreeIdentifier(itemIdentifier);
+        ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
+                pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
+        listeners.add(listenerRegistration);
+    }
+
+    private DOMDataTreeIdentifier createDOMDataTreeIdentifier(YangInstanceIdentifier itemIdentifier) {
+        return datastoreType.equals(DatastoreType.OPERATIONAL) ?
+                new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier) :
+                new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
     }
 
     private Filter findFilter(List<Filter> filters, String filterId) {
