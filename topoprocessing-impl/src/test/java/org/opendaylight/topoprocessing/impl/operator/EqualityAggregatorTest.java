@@ -69,7 +69,7 @@ public class EqualityAggregatorTest {
      * }
      * </pre>
      *
-     * @throws Exception
+     * @throws Exception Exception
      */
     @Before
     public void setUp() throws Exception {
@@ -129,7 +129,7 @@ public class EqualityAggregatorTest {
      *     }
      * </pre>
      *
-     * @throws Exception
+     * @throws Exception Exception
      */
     @Test
     public void testProcessCreatedChanges() throws Exception {
@@ -194,7 +194,7 @@ public class EqualityAggregatorTest {
      *
      * Result: Logical node removed
      *
-     * @throws Exception
+     * @throws Exception Exception
      */
     @Test
     public void testProcessRemovedChanges() throws Exception {
@@ -230,7 +230,7 @@ public class EqualityAggregatorTest {
      * Change 1 - update:
      * <pre>
      *     TOPO1 {
-     *         node11: 192.168.1.1 -> 192.168.1.2;
+     *         node11: 192.168.1.1 {@literal ->} 192.168.1.2;
      *     }
      * </pre>
      *
@@ -246,7 +246,7 @@ public class EqualityAggregatorTest {
      *     }
      * </pre>
      *
-     * @throws Exception
+     * @throws Exception Exception
      */
     @Test
     public void testProcessUpdatedChanges1() throws Exception {
@@ -271,7 +271,7 @@ public class EqualityAggregatorTest {
      * Change 1 - update:
      * <pre>
      *     TOPO3 {
-     *         node23: 192.168.1.1 -> 192.168.1.2;
+     *         node23: 192.168.1.1 {@literal ->} 192.168.1.2;
      *     }
      * </pre>
      *
@@ -285,7 +285,7 @@ public class EqualityAggregatorTest {
      *     }
      * </pre>
      *
-     * @throws Exception
+     * @throws Exception Exception
      */
     @Test
     public void testProcessUpdatedChanges2() throws Exception {
@@ -312,7 +312,7 @@ public class EqualityAggregatorTest {
      * - modifying physical node not belonging to any logical node
      * <pre>
      *     TOPO2 {
-     *         node22: 192.168.1.3 -> 192.168.1.2;
+     *         node22: 192.168.1.3 {@literal ->} 192.168.1.2;
      *     }
      * </pre>
      *
@@ -328,7 +328,7 @@ public class EqualityAggregatorTest {
      *          node22 (192.168.1.2, TOPO2);
      * </pre>
      *
-     * @throws Exception
+     * @throws Exception Exception
      */
     @Test
     public void testProcessUpdatedChanges3() throws Exception {
@@ -349,7 +349,7 @@ public class EqualityAggregatorTest {
     /**
      * If in an aggregated (logical) node a Node value has been changed (it means LeafNode value remained unchanged),
      * only this Node value will be updated
-     * @throws Exception
+     * @throws Exception Exception
      */
     @Test
     public void testProcessUpdatedChanges4() throws Exception {
@@ -370,7 +370,7 @@ public class EqualityAggregatorTest {
 
     /**
      * AggregateInside in the topologies TOPO5 and TOPO6 is set to true.
-     * @throws Exception
+     * @throws Exception Exception
      */
     @Test
     public void test() throws Exception {
