@@ -71,10 +71,10 @@ public class UnificationAggregatorTest {
      * }
      * </pre>
      *
-     * @throws Exception
+     * @throws Exception Exception
      */
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         // initialize and set up topology stores
         TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
         aggregator = new UnificationAggregator(topoStoreProvider);
@@ -101,7 +101,7 @@ public class UnificationAggregatorTest {
      * LogicalNode(1): {node21, node23}
      * LogicalNode(2): {node22}
      *
-     * @throws Exception
+     * @throws Exception Exception
      */
     @Test
     public void testProcessCreatedChanges() throws Exception {
@@ -186,7 +186,7 @@ public class UnificationAggregatorTest {
      * case2
      * Verify that node22 has been removed from LogicalNode(2) by use of removeLogicalNode function
      * (due to the fact, that it was the last node in that LogicalNode)
-     * @throws Exception
+     * @throws Exception Exception
      */
     @Test
     public void testProcessRemovedChanges() throws Exception {
@@ -221,7 +221,7 @@ public class UnificationAggregatorTest {
      * When IP address of one node has changed the way it can create aggregated node with some other existing
      * physical node (because their IP addresses are equal), this node shall be removed from original LogicalNode
      * (by calling updateLogicalNode method) and added into the other LogicalNode (by calling addLogicalNode method)
-     * @throws Exception
+     * @throws Exception Exception
      */
     @Test
     public void testProcessUpdatedChanges1() throws Exception {
