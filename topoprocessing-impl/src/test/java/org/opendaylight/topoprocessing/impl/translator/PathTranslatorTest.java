@@ -88,7 +88,7 @@ public class PathTranslatorTest {
      * Result of this method (YangInstanceIdentifier) should be equal to expected value.
      * @throws URISyntaxException if URI is in incorrect format. Should not happen because URI in this test case
      * is a constant
-     * @throws ParseException
+     * @throws ParseException ParseException
      */
     @Test
     public void testLegalPath() throws URISyntaxException, ParseException {
@@ -166,6 +166,11 @@ public class PathTranslatorTest {
 
     /**
      * Test case: module does not exist
+     *
+     * @throws URISyntaxException URISyntaxException
+     * @throws ParseException ParseException
+     * @throws IOException IOException
+     * @throws YangSyntaxErrorException YangSyntaxErrorException
      */
     @Test(expected=IllegalStateException.class)
     public void testUnexistingModuleName()
