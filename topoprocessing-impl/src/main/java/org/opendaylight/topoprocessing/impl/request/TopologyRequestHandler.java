@@ -508,8 +508,7 @@ public abstract class TopologyRequestHandler {
         TopologyOperator operator = null;
         if (rendering != null) {
             String underlayTopologyId = rendering.getUnderlayTopology();
-            Class<? extends Model> inputModel = rendering.getInputModel();
-            UnderlayTopologyListener listener = modelAdapters.get(inputModel)
+            UnderlayTopologyListener listener = modelAdapters.get(outputModel)
                     .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
                             correlation.getCorrelationItem(), datastoreType, operator, listeners, null);
             operator = listener.getOperator();
@@ -517,9 +516,9 @@ public abstract class TopologyRequestHandler {
                 operator = ((NotificationInterConnector) operator).getOperator();
             }
             operator.setTopologyManager(topologyManager);
-            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(inputModel)
+            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(outputModel)
                     .createTopologyIdentifier(underlayTopologyId);
-            YangInstanceIdentifier itemIdentifier = modelAdapters.get(inputModel)
+            YangInstanceIdentifier itemIdentifier = modelAdapters.get(outputModel)
                     .buildItemIdentifier(topologyIdentifier, correlation.getCorrelationItem());
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
             DOMDataTreeIdentifier treeId ;
