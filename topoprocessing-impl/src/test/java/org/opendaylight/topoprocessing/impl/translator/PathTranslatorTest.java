@@ -64,7 +64,7 @@ public class PathTranslatorTest {
     private static SchemaContext createTestContext() throws IOException, YangSyntaxErrorException,
     ReactorException {
         List<String> modules = new ArrayList<String>();
-        modules.add("/ietf-inet-types.yang");
+        modules.add("/ietf-inet-types@2013-07-15.yang");
         modules.add("/network-topology.yang");
         modules.add("/l3-unicast-igp-topology.yang");
         modules.add("/network-topology-pcep.yang");
@@ -73,7 +73,7 @@ public class PathTranslatorTest {
         modules.add("/yang-ext.yang");
         modules.add("/opendaylight-inventory.yang");
         modules.add("/opendaylight-l2-types.yang");
-        modules.add("/ietf-yang-types.yang");
+        modules.add("/ietf-yang-types@2013-07-15.yang");
         modules.add("/opendaylight-topology.yang");
         modules.add("/opendaylight-meter-types.yang");
         modules.add("/opendaylight-queue-types.yang");
@@ -303,7 +303,7 @@ public class PathTranslatorTest {
             throws URISyntaxException, ParseException, IOException, YangSyntaxErrorException, ReactorException {
 
         List<String> modules = new ArrayList<String>();
-        modules.add("/ietf-inet-types.yang");
+        modules.add("/ietf-inet-types@2013-07-15.yang");
         modules.add("/network-topology.yang");
 
         SchemaContext schemaContext2 = parseYangSources(modules);
