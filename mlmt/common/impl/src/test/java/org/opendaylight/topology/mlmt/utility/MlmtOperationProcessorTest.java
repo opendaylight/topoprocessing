@@ -12,8 +12,10 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -100,7 +102,8 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
                 nb.setTopology(topologies);
-                transaction.put(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class), nb.build());
+                transaction.put(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class),
+                        nb.build());
             }
         });
 
@@ -109,9 +112,11 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
         }
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
-        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class)).get();
+        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION,
+                InstanceIdentifier.create(NetworkTopology.class)).get();
         assertNotNull(optional);
-        assertTrue("MlmtOperationProcessorTest.testPutConfiguration: Configuration network topology not present", optional.isPresent());
+        assertTrue("MlmtOperationProcessorTest.testPutConfiguration: Configuration network topology not present",
+                optional.isPresent());
         NetworkTopology rxNetworkTopology = optional.get();
         assertNotNull(rxNetworkTopology);
     }
@@ -124,7 +129,8 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
                 nb.setTopology(topologies);
-                transaction.put(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class), nb.build());
+                transaction.put(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class),
+                        nb.build());
             }
 
             @Override
@@ -136,9 +142,11 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
         }
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
-        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class)).get();
+        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION,
+                InstanceIdentifier.create(NetworkTopology.class)).get();
         assertNotNull(optional);
-        assertTrue("MlmtOperationProcessorTest.testPutConfiguration: Configuration network topology not present", optional.isPresent());
+        assertTrue("MlmtOperationProcessorTest.testPutConfiguration: Configuration network topology not present",
+                optional.isPresent());
         NetworkTopology rxNetworkTopology = optional.get();
         assertNotNull(rxNetworkTopology);
     }
@@ -151,7 +159,8 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
                 nb.setTopology(topologies);
-                transaction.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), nb.build());
+                transaction.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class),
+                        nb.build());
             }
         });
 
@@ -160,9 +169,11 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
         }
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
-        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class)).get();
+        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL,
+                InstanceIdentifier.create(NetworkTopology.class)).get();
         assertNotNull(optional);
-        assertTrue("MlmtOperationProcessorTest.testPutOperational: Operational network topology not present", optional.isPresent());
+        assertTrue("MlmtOperationProcessorTest.testPutOperational: Operational network topology not present",
+                optional.isPresent());
         NetworkTopology rxNetworkTopology = optional.get();
         assertNotNull(rxNetworkTopology);
     }
@@ -175,7 +186,8 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
                 nb.setTopology(topologies);
-                transaction.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), nb.build());
+                transaction.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class),
+                        nb.build());
             }
 
             @Override
@@ -187,9 +199,11 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
         }
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
-        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class)).get();
+        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL,
+                InstanceIdentifier.create(NetworkTopology.class)).get();
         assertNotNull(optional);
-        assertTrue("MlmtOperationProcessorTest.testPutOperational: Operational network topology not present", optional.isPresent());
+        assertTrue("MlmtOperationProcessorTest.testPutOperational: Operational network topology not present",
+                optional.isPresent());
         NetworkTopology rxNetworkTopology = optional.get();
         assertNotNull(rxNetworkTopology);
     }
@@ -202,7 +216,8 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
                 nb.setTopology(topologies);
-                transaction.merge(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class), nb.build());
+                transaction.merge(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class),
+                        nb.build());
             }
         });
 
@@ -211,9 +226,11 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
         }
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
-        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class)).get();
+        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION,
+                InstanceIdentifier.create(NetworkTopology.class)).get();
         assertNotNull(optional);
-        assertTrue("MlmtOperationProcessorTest.testMergeOperational: Operational network topology not present", optional.isPresent());
+        assertTrue("MlmtOperationProcessorTest.testMergeOperational: Operational network topology not present",
+                optional.isPresent());
         NetworkTopology rxTopology = optional.get();
         assertNotNull(rxTopology);
     }
@@ -226,7 +243,8 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
                 nb.setTopology(topologies);
-                transaction.merge(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class), nb.build());
+                transaction.merge(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class),
+                        nb.build());
             }
 
             @Override
@@ -238,9 +256,11 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
         }
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
-        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(NetworkTopology.class)).get();
+        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION,
+                InstanceIdentifier.create(NetworkTopology.class)).get();
         assertNotNull(optional);
-        assertTrue("MlmtOperationProcessorTest.testMergeOperational: Operational network topology not present", optional.isPresent());
+        assertTrue("MlmtOperationProcessorTest.testMergeOperational: Operational network topology not present",
+                optional.isPresent());
         NetworkTopology rxTopology = optional.get();
         assertNotNull(rxTopology);
     }
@@ -253,7 +273,8 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
                 nb.setTopology(topologies);
-                transaction.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), nb.build());
+                transaction.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class),
+                        nb.build());
             }
         });
 
@@ -262,9 +283,11 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
         }
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
-        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class)).get();
+        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL,
+                InstanceIdentifier.create(NetworkTopology.class)).get();
         assertNotNull(optional);
-        assertTrue("MlmtOperationProcessorTest.testMergeOperational: Operational network topology not present", optional.isPresent());
+        assertTrue("MlmtOperationProcessorTest.testMergeOperational: Operational network topology not present",
+                optional.isPresent());
         NetworkTopology rxTopology = optional.get();
         assertNotNull(rxTopology);
     }
@@ -277,7 +300,8 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
             public void applyOperation(ReadWriteTransaction transaction) {
                 final NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
                 nb.setTopology(topologies);
-                transaction.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class), nb.build());
+                transaction.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class),
+                        nb.build());
             }
 
             @Override
@@ -289,9 +313,11 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
         }
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
-        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(NetworkTopology.class)).get();
+        Optional<NetworkTopology> optional = rTx.read(LogicalDatastoreType.OPERATIONAL,
+                InstanceIdentifier.create(NetworkTopology.class)).get();
         assertNotNull(optional);
-        assertTrue("MlmtOperationProcessorTest.testMergeOperational: Operational network topology not present", optional.isPresent());
+        assertTrue("MlmtOperationProcessorTest.testMergeOperational: Operational network topology not present",
+                optional.isPresent());
         NetworkTopology rxTopology = optional.get();
         assertNotNull(rxTopology);
     }

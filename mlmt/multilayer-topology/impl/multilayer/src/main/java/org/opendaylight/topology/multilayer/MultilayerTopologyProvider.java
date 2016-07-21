@@ -11,84 +11,82 @@ package org.opendaylight.topology.multilayer;
 import com.google.common.base.Optional;
 import com.google.common.util.concurrent.Futures;
 
-import java.util.concurrent.Future;
-import java.util.concurrent.ExecutionException;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkBuilder;
+import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyOperation;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.multitechnology.topology.type.MultitechnologyTopology;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MultilayerTopologyService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.impl.rev150123.MultilayerTopologyProviderRuntimeMXBean;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaEndPoint;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaOperStatus;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjAnnounceInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjAnnounceInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjAnnounceOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjAnnounceOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjUpdateInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjUpdateOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjUpdateOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjWithdrawInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjWithdrawOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.HeadEnd;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.TailEnd;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.stitched.end.point.pair.StitchedHeadEndBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.stitched.end.point.pair.StitchedTailEndBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaOperStatus;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaEndPoint;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.end.point.StitchingPoint;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.announce.output.result.FaIdBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MlTopologyTypeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MlTopologyType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.multilayer.topology.type.MultilayerTopologyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.impl.rev150123.MultilayerTopologyProviderRuntimeMXBean;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjAnnounceOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjWithdrawOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.ForwardingAdjUpdateOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.announce.output.result.FaIdBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.announce.output.result.NoneBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MlTopologyType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MlTopologyTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MultilayerTopologyContext;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MultilayerTopologyService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.end.point.StitchingPoint;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.DirectionalityInfo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.parameters.directionality.info.Bidirectional;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.stitched.end.point.pair.StitchedHeadEndBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.fa.stitched.end.point.pair.StitchedTailEndBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.announce.output.result.FaIdBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.announce.output.result.NoneBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.HeadEnd;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.HeadEndBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.TailEnd;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adjacency.attributes.TailEndBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.Attribute;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.multilayer.topology.type.MultilayerTopologyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoLink;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoLinkBuilder;
-import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.Attribute;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.multitechnology.topology.type.MultitechnologyTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.MultilayerTopologyContext;
-
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,11 +102,13 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
     private Map<String, LinkBuilder> mapFaDownState;
 
     private synchronized void addLinkFaDownState(String faId, LinkBuilder linkBuilder) {
-         mapFaDownState.put(faId, linkBuilder);
+        mapFaDownState.put(faId, linkBuilder);
     }
+
     private synchronized void removeLinkFaDownState(String faId) {
         mapFaDownState.remove(faId);
     }
+
     private synchronized LinkBuilder getLinkFaDownState(String faId) {
         return mapFaDownState.get(faId);
     }
@@ -372,7 +372,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
             return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjAnnounceOutput> failed()
                     .withResult(faAdjAnnOutputBuilder.build()).build());
         }
-     }
+    }
 
     private List<Link> readLinkList(InstanceIdentifier<Topology> topologyInstanceId) {
         try {
@@ -409,10 +409,10 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
                 continue;
             }
             if (tpId.getValue().equals(link.getSource().getSourceTp().getValue())) {
-                 isInUse = true;
+                isInUse = true;
             }
             if (tpId.getValue().equals(link.getDestination().getDestTp().getValue())) {
-                 isInUse = true;
+                isInUse = true;
             }
             LOG.info("MultilayerTopologyProvider.checkLinkPresence source {}",
                     link.getSource().getSourceTp().getValue());
@@ -480,26 +480,28 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
             for (Link link : aLink) {
                 NodeId destNodeId = link.getDestination().getDestNode();
                 TpId destTpId = link.getDestination().getDestTp();
-                if (headNodeId.getValue().equals(destNodeId.getValue()) &&
-                        headTpId.getValue().equals(destTpId.getValue())) {
+                if (headNodeId.getValue().equals(destNodeId.getValue())
+                        && headTpId.getValue().equals(destTpId.getValue())) {
                     leftLink = link;
                     LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC leftLink: {}",
                             leftLink.getLinkId().toString());
                 }
-                if (!bidirFlag && leftLink != null)
+                if (!bidirFlag && leftLink != null) {
                     break;
+                }
                 if (bidirFlag) {
                     NodeId sourceNodeId = link.getSource().getSourceNode();
                     TpId sourceTpId = link.getSource().getSourceTp();
-                    if (headNodeId.getValue().equals(sourceNodeId.getValue()) &&
-                            headTpId.getValue().equals(sourceTpId.getValue())) {
+                    if (headNodeId.getValue().equals(sourceNodeId.getValue())
+                            && headTpId.getValue().equals(sourceTpId.getValue())) {
                         leftLinkReverse = link;
                         LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC  leftLinkReverse: {}",
                                 leftLinkReverse.getLinkId().toString());
                     }
                 }
-                if (bidirFlag && leftLink != null && leftLinkReverse != null)
+                if (bidirFlag && leftLink != null && leftLinkReverse != null) {
                     break;
+                }
             }
         }
         if (bidirFlag == true && leftLinkReverse == null) {
@@ -518,26 +520,28 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
             for (Link link : aLink) {
                 NodeId sourceNodeId = link.getSource().getSourceNode();
                 TpId sourceTpId = link.getSource().getSourceTp();
-                if (tailNodeId.getValue().equals(sourceNodeId.getValue()) &&
-                        tailTpId.getValue().equals(sourceTpId.getValue())) {
+                if (tailNodeId.getValue().equals(sourceNodeId.getValue())
+                        && tailTpId.getValue().equals(sourceTpId.getValue())) {
                     rightLink = link;
                     LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC rightLink {}",
                             rightLink.getLinkId().toString());
                 }
-                if (!bidirFlag && rightLink != null)
+                if (!bidirFlag && rightLink != null) {
                     break;
+                }
                 if (bidirFlag == true) {
                     NodeId destNodeId = link.getDestination().getDestNode();
                     TpId destTpId = link.getDestination().getDestTp();
-                    if (tailNodeId.getValue().equals(destNodeId.getValue()) &&
-                            tailTpId.getValue().equals(destTpId.getValue())) {
+                    if (tailNodeId.getValue().equals(destNodeId.getValue())
+                            && tailTpId.getValue().equals(destTpId.getValue())) {
                         rightLinkReverse = link;
                         LOG.info("MultilayerTopologyProvider.forwardingAdjAnnounce RPC rightLinkReverse: ",
                                 rightLinkReverse.getLinkId().toString());
                     }
                 }
-                if (bidirFlag && rightLink != null && rightLinkReverse != null)
+                if (bidirFlag && rightLink != null && rightLinkReverse != null) {
                     break;
+                }
             }
         }
 
@@ -590,7 +594,7 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
         forwardingAdjAnnounceInputBuilder.setTailEnd(tailEndPoint);
 
         return createMtLink(topologyInstanceId, forwardingAdjAnnounceInputBuilder.build(), false);
-     }
+    }
 
     @Override
     public Future<RpcResult<ForwardingAdjUpdateOutput>> forwardingAdjUpdate(ForwardingAdjUpdateInput input) {
@@ -648,8 +652,8 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
                 Link faLink = linkObject.get();
                 if (faLink == null) {
-                    LOG.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: dest faLink with faId " +
-                            strFaId + " not found");
+                    LOG.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: dest faLink with faId "
+                            + strFaId + " not found");
                     faAdjAnnUpdBuilder.setResult(errorBuilder.build());
                     return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjUpdateOutput> failed()
                             .withResult(faAdjAnnUpdBuilder.build()).build());
@@ -727,19 +731,19 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
 
             transaction.submit().checkedGet();
         } catch (final TransactionCommitFailedException e) {
-             LOG.error("MultilayerTopologyProvider.forwardingAdjUpdate RPC: TransactionCommitFailedException ", e);
-             transactionChain.close();
-             transactionChain = dataProvider.createTransactionChain(this);
-             faAdjAnnUpdBuilder.setResult(errorBuilder.build());
-             return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjUpdateOutput> failed()
-                     .withResult(faAdjAnnUpdBuilder.build()).build());
+            LOG.error("MultilayerTopologyProvider.forwardingAdjUpdate RPC: TransactionCommitFailedException ", e);
+            transactionChain.close();
+            transactionChain = dataProvider.createTransactionChain(this);
+            faAdjAnnUpdBuilder.setResult(errorBuilder.build());
+            return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjUpdateOutput> failed()
+                    .withResult(faAdjAnnUpdBuilder.build()).build());
         } catch (final Exception e) {
             LOG.warn("MultilayerTopologyProvider.forwardingAdjUpdate RPC: Exception ", e);
             transactionChain.close();
             transactionChain = dataProvider.createTransactionChain(this);
-             faAdjAnnUpdBuilder.setResult(errorBuilder.build());
-             return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjUpdateOutput> failed()
-                     .withResult(faAdjAnnUpdBuilder.build()).build());
+            faAdjAnnUpdBuilder.setResult(errorBuilder.build());
+            return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjUpdateOutput> failed()
+                    .withResult(faAdjAnnUpdBuilder.build()).build());
         }
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.forwarding.adj.update
@@ -840,14 +844,14 @@ public class MultilayerTopologyProvider implements MultilayerTopologyProviderRun
             transactionChain.close();
             transactionChain = dataProvider.createTransactionChain(this);
             faAdjWithdrawOutputBuilder.setResult(errorBuilder.build());
-                    return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> failed()
+            return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> failed()
                     .withResult(faAdjWithdrawOutputBuilder.build()).build());
         }
 
         removeLinkFaDownState(faId.toString());
 
         faAdjWithdrawOutputBuilder.setResult(okBuilder.build());
-                return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> success()
+        return Futures.immediateFuture(RpcResultBuilder.<ForwardingAdjWithdrawOutput> success()
                 .withResult(faAdjWithdrawOutputBuilder.build()).build());
     }
 }

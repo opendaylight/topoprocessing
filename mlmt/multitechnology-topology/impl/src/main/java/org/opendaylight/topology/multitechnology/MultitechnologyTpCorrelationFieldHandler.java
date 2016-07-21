@@ -10,43 +10,41 @@ package org.opendaylight.topology.multitechnology;
 
 import com.google.common.base.Optional;
 
-import java.util.concurrent.ExecutionException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.topology.mlmt.utility.MlmtInfoCorrelationField;
+import org.opendaylight.topology.mlmt.utility.MlmtInfoOpaqueAttrId;
+import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
+import org.opendaylight.topology.mlmt.utility.MlmtTopologyOperation;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.Controller;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.MtOpaqueTpAttrValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.MtOpaqueTpAttrValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.opaque.attribute.value.BasicAttributeTypes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.opaque.attribute.value.basic.attribute.types.StringValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.opaque.attribute.value.basic.attribute.types.StringValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoTerminationPoint;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoTerminationPointBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.Attribute;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.AttributeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.AttributeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.attribute.Value;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.attribute.ValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoTerminationPoint;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoTerminationPointBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.AttributeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.Attribute;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.AttributeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.attribute.Value;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.attribute.ValueBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.opaque.attribute.value.basic.attribute.types.StringValueBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.MtOpaqueTpAttrValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.MtOpaqueTpAttrValueBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.Controller;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.opaque.attribute.value.basic.attribute.types.StringValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.opaque.attribute.rev150122.opaque.attribute.value.BasicAttributeTypes;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
-import org.opendaylight.topology.mlmt.utility.MlmtTopologyOperation;
-import org.opendaylight.topology.mlmt.utility.MlmtInfoOpaqueAttrId;
-import org.opendaylight.topology.mlmt.utility.MlmtInfoCorrelationField;
 
 public class MultitechnologyTpCorrelationFieldHandler {
 
@@ -92,14 +90,14 @@ public class MultitechnologyTpCorrelationFieldHandler {
     public static String getCorrelationField(final DataBroker dataProvider, final MlmtOperationProcessor processor,
             final InstanceIdentifier<Topology> topologyInstanceId, final NodeKey nodeKey,
             final TerminationPointKey tpKey) {
-         final String path = MlmtInfoOpaqueAttrId.MTINFO_OPAQUE_ATTR_ID_CORRELATION_FIELD;
-         final Uri uri = new Uri(path);
-         final AttributeKey attributeKey = new AttributeKey(uri);
-         final InstanceIdentifier<Attribute> instanceAttributeId = topologyInstanceId.child(Node.class, nodeKey)
-                 .child(TerminationPoint.class, tpKey).augmentation(MtInfoTerminationPoint.class)
-                 .child(Attribute.class, attributeKey);
+        final String path = MlmtInfoOpaqueAttrId.MTINFO_OPAQUE_ATTR_ID_CORRELATION_FIELD;
+        final Uri uri = new Uri(path);
+        final AttributeKey attributeKey = new AttributeKey(uri);
+        final InstanceIdentifier<Attribute> instanceAttributeId = topologyInstanceId.child(Node.class, nodeKey)
+                .child(TerminationPoint.class, tpKey).augmentation(MtInfoTerminationPoint.class)
+                .child(Attribute.class, attributeKey);
 
-         try {
+        try {
             final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
             final Optional<Attribute> sourceAttributeObject =
                      rx.read(LogicalDatastoreType.CONFIGURATION, instanceAttributeId).get();

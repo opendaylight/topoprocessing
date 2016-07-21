@@ -12,13 +12,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 
 public class MlmtTpIdIpAddress {
 
     private static final String IPV4ADDRESS_PATTERN =
-         "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}" +
-         "([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{N}\\p{L}]+)?";
+         "(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\\.){3}"
+         + "([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(%[\\p{N}\\p{L}]+)?";
 
     private static final String[] PATTERN_LIST = {"^.*?(?=ipv4=(.*?)(?=&))", "^.*?(?=ipv4=(.*?)$)"};
 

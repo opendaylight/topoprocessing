@@ -31,7 +31,7 @@ public class MlmtTopologyNotify implements Runnable {
     public MlmtTopologyNotify(final MlmtTopologyUpdateListener listener, final int queueLength) {
         this.listener = listener;
         this.notifyQ = new LinkedBlockingQueue<MlmtTopologyUpdate>(queueLength);
-     }
+    }
 
     public void add(MlmtTopologyUpdate update) {
         this.notifyQ.add(update);

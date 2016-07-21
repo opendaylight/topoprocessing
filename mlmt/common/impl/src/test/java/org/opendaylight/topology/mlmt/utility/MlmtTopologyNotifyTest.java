@@ -7,47 +7,39 @@
  */
 package org.opendaylight.topology.mlmt.utility;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
-import org.junit.BeforeClass;
-import org.junit.Before;
-import org.junit.Test;
+import java.util.Collections;
+
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Ignore;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.DestinationBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkBuilder;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SourceBuilder;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.DestinationBuilder;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNode;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class MlmtTopologyNotifyTest {
 
@@ -139,42 +131,42 @@ public class MlmtTopologyNotifyTest {
 
     @Test(timeout = 10000)
     public void testUpdateOnNode() throws Exception {
-       NodeBuilder nodeBuilder = createNodeBuilder("node:1");
-       Node node = nodeBuilder.build();
-       MlmtTopologyUpdateOnNode update = new MlmtTopologyUpdateOnNode(LogicalDatastoreType.OPERATIONAL,
-               mlmtTopologyInstanceId, node);
-       mlmtTopologyNotify.add(update);
+        NodeBuilder nodeBuilder = createNodeBuilder("node:1");
+        Node node = nodeBuilder.build();
+        MlmtTopologyUpdateOnNode update = new MlmtTopologyUpdateOnNode(LogicalDatastoreType.OPERATIONAL,
+                mlmtTopologyInstanceId, node);
+        mlmtTopologyNotify.add(update);
 
-       synchronized (waitObject) {
-          waitObject.wait(5000);
+        synchronized (waitObject) {
+            waitObject.wait(5000);
         }
 
-       assertTrue(listener.nodeUpdated);
-       assertEquals(listener.rxEntry.getStoreType(), LogicalDatastoreType.OPERATIONAL);
-       assertEquals(listener.rxEntry.getTopologyInstanceId(), mlmtTopologyInstanceId);
-       assertEquals(listener.rxEntry.getNode(), node);
+        assertTrue(listener.nodeUpdated);
+        assertEquals(listener.rxEntry.getStoreType(), LogicalDatastoreType.OPERATIONAL);
+        assertEquals(listener.rxEntry.getTopologyInstanceId(), mlmtTopologyInstanceId);
+        assertEquals(listener.rxEntry.getNode(), node);
     }
 
     @Test(timeout = 10000)
     public void testUpdateOnTp() throws Exception {
-       String nodeName = "node:1";
-       String tpName = "tp:1";
-       NodeBuilder nodeBuilder = createNodeBuilder(nodeName);
-       TerminationPointBuilder tpBuilder = createTerminationPointBuilder(nodeName, tpName);
-       TerminationPoint tp = tpBuilder.build();
-       MlmtTopologyUpdateOnTp update = new MlmtTopologyUpdateOnTp(LogicalDatastoreType.OPERATIONAL,
-               mlmtTopologyInstanceId, nodeBuilder.getKey(), tp);
-       mlmtTopologyNotify.add(update);
+        String nodeName = "node:1";
+        String tpName = "tp:1";
+        NodeBuilder nodeBuilder = createNodeBuilder(nodeName);
+        TerminationPointBuilder tpBuilder = createTerminationPointBuilder(nodeName, tpName);
+        TerminationPoint tp = tpBuilder.build();
+        MlmtTopologyUpdateOnTp update = new MlmtTopologyUpdateOnTp(LogicalDatastoreType.OPERATIONAL,
+                mlmtTopologyInstanceId, nodeBuilder.getKey(), tp);
+        mlmtTopologyNotify.add(update);
 
-       synchronized (waitObject) {
-          waitObject.wait(5000);
+        synchronized (waitObject) {
+            waitObject.wait(5000);
         }
 
-       assertTrue(listener.tpUpdated);
-       assertEquals(listener.rxEntry.getStoreType(), LogicalDatastoreType.OPERATIONAL);
-       assertEquals(listener.rxEntry.getTopologyInstanceId(), mlmtTopologyInstanceId);
-       assertEquals(listener.rxEntry.getNodeKey(), nodeBuilder.getKey());
-       assertEquals(listener.rxEntry.getTerminationPoint(), tp);
+        assertTrue(listener.tpUpdated);
+        assertEquals(listener.rxEntry.getStoreType(), LogicalDatastoreType.OPERATIONAL);
+        assertEquals(listener.rxEntry.getTopologyInstanceId(), mlmtTopologyInstanceId);
+        assertEquals(listener.rxEntry.getNodeKey(), nodeBuilder.getKey());
+        assertEquals(listener.rxEntry.getTerminationPoint(), tp);
     }
 
     @Test(timeout = 10000)
@@ -206,14 +198,14 @@ public class MlmtTopologyNotifyTest {
                topologyInstanceId, link);
         mlmtTopologyNotify.add(update);
 
-       synchronized (waitObject) {
-          waitObject.wait(5000);
+        synchronized (waitObject) {
+            waitObject.wait(5000);
         }
 
-       assertTrue(listener.linkUpdated);
-       assertEquals(listener.rxEntry.getStoreType(), LogicalDatastoreType.OPERATIONAL);
-       assertEquals(listener.rxEntry.getTopologyInstanceId(), mlmtTopologyInstanceId);
-       assertEquals(listener.rxEntry.getLink(), link);
+        assertTrue(listener.linkUpdated);
+        assertEquals(listener.rxEntry.getStoreType(), LogicalDatastoreType.OPERATIONAL);
+        assertEquals(listener.rxEntry.getTopologyInstanceId(), mlmtTopologyInstanceId);
+        assertEquals(listener.rxEntry.getLink(), link);
     }
 
     @After
