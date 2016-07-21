@@ -17,15 +17,16 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 public interface TopologyOperator {
 
     /**
-     * Process newly created changes
+     * Process newly created changes.
      * @param itemIdentifier identifies item which is being created
      * @param createdItem item which is being created
      * @param topologyId identifies topology, which the new changes came from
      */
-    void processCreatedChanges(YangInstanceIdentifier itemIdentifier, UnderlayItem createdItem, final String topologyId);
+    void processCreatedChanges(YangInstanceIdentifier itemIdentifier, UnderlayItem createdItem,
+            final String topologyId);
 
     /**
-     * Process newly updated changes
+     * Process newly updated changes.
      * @param itemIdentifier identifies updated item
      * @param updatedItem item which is being updated
      * @param topologyId identifies topology, which the updated changes came from
@@ -33,7 +34,7 @@ public interface TopologyOperator {
     void processUpdatedChanges(YangInstanceIdentifier itemIdentifier, UnderlayItem updatedItem, String topologyId);
 
     /**
-     * Process newly deleted changes
+     * Process newly deleted changes.
      * @param itemIdentifier removed item identifier
      * @param topologyId identifies topology, which the removed changes came from
      */

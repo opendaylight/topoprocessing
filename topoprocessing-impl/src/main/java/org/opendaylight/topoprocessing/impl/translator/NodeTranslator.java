@@ -17,7 +17,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 public interface NodeTranslator {
 
     /**
-     * Converts OverlayItemWrapper object containing logical nodes to datastore node object
+     * Converts OverlayItemWrapper object containing logical nodes to datastore node object.
      * @param wrapper OverlayItemWrapper object containing OverlayItems containing Node items
      * @return Node in datastore format
      */

@@ -23,7 +23,7 @@ public class ScriptFiltratorFactory implements FiltratorFactory {
 
     @Override
     public Filtrator createFiltrator(Filter filter, YangInstanceIdentifier pathIdentifier) {
-        if(filter.getFilterTypeBody() instanceof ScriptFilterType) {
+        if (filter.getFilterTypeBody() instanceof ScriptFilterType) {
             return new ScriptFiltrator(((ScriptFilterType)filter.getFilterTypeBody()).getScriptFilter().getScripting(),
                     pathIdentifier);
         } else {

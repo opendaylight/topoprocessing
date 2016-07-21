@@ -1,18 +1,21 @@
 package org.opendaylight.topoprocessing.impl.listener;
 
 import static org.mockito.Mockito.mock;
-import org.junit.Assert;
+
+import com.google.common.base.Optional;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -34,8 +37,8 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNode;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
-import com.google.common.base.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UnderlayTopologyListenerTest {

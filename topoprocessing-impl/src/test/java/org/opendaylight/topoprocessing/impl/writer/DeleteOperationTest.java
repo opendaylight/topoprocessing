@@ -26,14 +26,14 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 @RunWith(MockitoJUnitRunner.class)
 public class DeleteOperationTest {
 
-    private final static String TOPOLOGY_ID = "mytopo:1";
+    private static final String TOPOLOGY_ID = "mytopo:1";
     private final YangInstanceIdentifier topologyIdentifier = YangInstanceIdentifier
             .builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
             .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY_ID).build();
 
     @Mock private DOMDataWriteTransaction mockDomDataWriteTransaction;
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testClassCreationWithNullIdentifier() {
         DeleteOperation deleteOperation = new DeleteOperation(null);
     }

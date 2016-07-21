@@ -2,7 +2,6 @@ package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -19,7 +18,7 @@ public class SpecificValueFiltratorTest {
     private final YangInstanceIdentifier numberPath = YangInstanceIdentifier.builder().node(NUMBER_QNAME).build();
 
     /**
-     * Tests filtering with integer values
+     * Tests filtering with integer values.
      */
     @Test
     public void testSpecificNumberInteger() {
@@ -33,7 +32,7 @@ public class SpecificValueFiltratorTest {
     }
 
     /**
-     * Tests filtering with short values
+     * Tests filtering with short values.
      */
     @Test
     public void testSpecificNumberShort() {
@@ -47,7 +46,7 @@ public class SpecificValueFiltratorTest {
     }
 
     /**
-     * Tests filtering with long values
+     * Tests filtering with long values.
      */
     @Test
     public void testSpecificNumberLong() {
@@ -61,7 +60,7 @@ public class SpecificValueFiltratorTest {
     }
 
     /**
-     * Tests filtering with float values
+     * Tests filtering with float values.
      */
     @Test
     public void testSpecificNumberFloat() {
@@ -75,7 +74,7 @@ public class SpecificValueFiltratorTest {
     }
 
     /**
-     * Tests filtering with double values
+     * Tests filtering with double values.
      */
     @Test
     public void testSpecificNumberDouble() {
@@ -96,7 +95,7 @@ public class SpecificValueFiltratorTest {
     }
 
     /**
-     * Tests filtering with string values
+     * Tests filtering with string values.
      */
     @Test
     public void testSpecificString() {

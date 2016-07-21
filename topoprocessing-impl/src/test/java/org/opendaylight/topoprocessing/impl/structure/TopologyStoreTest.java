@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -23,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+
 /**
  * @author martin.uhlir
  *
@@ -58,7 +60,8 @@ public class TopologyStoreTest {
     public void testGetPhysicalNodes() {
         testInitialization();
         HashMap<YangInstanceIdentifier, UnderlayItem> physicalNodes = new HashMap<>();
-        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY_ID, NODE_ID, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY_ID, NODE_ID,
+                CorrelationItemEnum.Node);
         physicalNodes.put(createTopologyIdentifier(TOPOLOGY_ID).build(), physicalNode);
 
         physicalNodesEqual(physicalNodes, topologyStore.getUnderlayItems());
@@ -71,16 +74,18 @@ public class TopologyStoreTest {
      */
     private static boolean physicalNodesEqual(Map<YangInstanceIdentifier, UnderlayItem> expectedPhysicalNodes,
             Map<YangInstanceIdentifier, UnderlayItem> actualPhysicalNodes) {
-        Iterator<Entry<YangInstanceIdentifier, UnderlayItem>> expectedIterator = expectedPhysicalNodes.entrySet().iterator();
-        Iterator<Entry<YangInstanceIdentifier, UnderlayItem>> actualIterator = actualPhysicalNodes.entrySet().iterator();
+        Iterator<Entry<YangInstanceIdentifier, UnderlayItem>> expectedIterator =
+                expectedPhysicalNodes.entrySet().iterator();
+        Iterator<Entry<YangInstanceIdentifier, UnderlayItem>> actualIterator =
+                actualPhysicalNodes.entrySet().iterator();
         if (expectedIterator.hasNext() && actualIterator.hasNext()) {
             Entry<YangInstanceIdentifier, UnderlayItem> expected = expectedIterator.next();
             Entry<YangInstanceIdentifier, UnderlayItem> actual = actualIterator.next();
-            if (expected.getKey().equals(actual.getKey()) &&
-                    expected.getValue().getItem().equals(actual.getValue().getItem()) &&
-                    expected.getValue().getLeafNodes().equals(actual.getValue().getLeafNodes()) &&
-                    expected.getValue().getTopologyId().equals(actual.getValue().getTopologyId()) &&
-                    expected.getValue().getItemId().equals(actual.getValue().getItemId())) {
+            if (expected.getKey().equals(actual.getKey())
+                    && expected.getValue().getItem().equals(actual.getValue().getItem())
+                    && expected.getValue().getLeafNodes().equals(actual.getValue().getLeafNodes())
+                    && expected.getValue().getTopologyId().equals(actual.getValue().getTopologyId())
+                    && expected.getValue().getItemId().equals(actual.getValue().getItemId())) {
                 return true;
             }
         }

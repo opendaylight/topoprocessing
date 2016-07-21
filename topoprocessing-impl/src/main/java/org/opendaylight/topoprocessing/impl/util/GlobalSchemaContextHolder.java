@@ -12,7 +12,7 @@ import org.opendaylight.yangtools.yang.data.util.DataSchemaContextTree;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 
 /**
- * Stores global schema context
+ * Stores global schema context.
  * @author michal.polkorab
  */
 public class GlobalSchemaContextHolder {
@@ -21,7 +21,7 @@ public class GlobalSchemaContextHolder {
     private DataSchemaContextTree contextTree;
 
     /**
-     * Default constructor
+     * Default constructor.
      * @param globalSchemaContext   Global Schema Context used for lookup in models
      */
     public GlobalSchemaContextHolder(SchemaContext globalSchemaContext) {
@@ -30,7 +30,7 @@ public class GlobalSchemaContextHolder {
     }
 
     /**
-     * updates global {@link SchemaContext}
+     * updates global {@link SchemaContext}.
      * @param globalSchemaContext    updated Global Schema Context
      */
     public void updateSchemaContext(SchemaContext globalSchemaContext) {

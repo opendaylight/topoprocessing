@@ -7,6 +7,8 @@
  */
 package org.opendaylight.topoprocessing.inventory.translator;
 
+import com.google.common.base.Optional;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,13 +45,11 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-
 /**
  * @author matej.perina
  *
  */
-public class InvNodeTranslator implements NodeTranslator{
+public class InvNodeTranslator implements NodeTranslator {
 
     private static final Logger LOG = LoggerFactory.getLogger(InvNodeTranslator.class);
     private static final AugmentationIdentifier NODE_CONNECTOR_AUGMENTATION_IDENTIFIER =
@@ -106,7 +106,7 @@ public class InvNodeTranslator implements NodeTranslator{
                 Optional<NormalizedNode<?, ?>> connectorAugmentationNode =
                         NormalizedNodes.findNode(terminationPointMapEntry,
                                 NODE_CONNECTOR_AUGMENTATION_IDENTIFIER);
-                if (connectorAugmentationNode.isPresent()){
+                if (connectorAugmentationNode.isPresent()) {
                     //if we need to transform the node connector ref into a tp-ref
                     terminationPoints.addChild(createTerminationPoint(connectorAugmentationNode.get(),
                             underlayItem.getTopologyId(), underlayItem.getItemId(), idGenerator));
@@ -128,7 +128,7 @@ public class InvNodeTranslator implements NodeTranslator{
     }
 
     /**
-     *  Creates a termination point with tp-ref from a given node-connector-ref augmentation node
+     *  Creates a termination point with tp-ref from a given node-connector-ref augmentation node.
      *
      * @param connectorAugmentationNode node-connector-ref augmentation node
      * @param topologyId topology ID
@@ -158,7 +158,7 @@ public class InvNodeTranslator implements NodeTranslator{
                 TopologyQNames.NETWORK_TP_ID_QNAME, tpId).withChild(leafListBuilder.build()).build();
     }
 
-    private static AugmentationIdentifier createNodeConnectorAugmentationIdentifier(){
+    private static AugmentationIdentifier createNodeConnectorAugmentationIdentifier() {
         Set<QName> nodeConnectorRefIdentifier = new HashSet<>();
         nodeConnectorRefIdentifier.add(TopologyQNames.INVENTORY_NODE_CONNECTOR_REF_QNAME);
         return new AugmentationIdentifier(nodeConnectorRefIdentifier);

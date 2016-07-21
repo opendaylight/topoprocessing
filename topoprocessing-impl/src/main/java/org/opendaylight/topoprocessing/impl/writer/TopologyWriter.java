@@ -11,12 +11,14 @@ package org.opendaylight.topoprocessing.impl.writer;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
@@ -81,7 +83,7 @@ public class TopologyWriter implements TransactionChainListener {
     };
 
     /**
-     * Default constructor
+     * Default constructor.
      * @param topologyId topologyId of overlay topology
      */
     public TopologyWriter(String topologyId, Class<? extends Model> model) {
@@ -110,7 +112,7 @@ public class TopologyWriter implements TransactionChainListener {
 
 
     /**
-     * Writes empty overlay topology with provided topologyId. Also writes empty {@link Link}
+     * Writes empty overlay topology with provided topologyId. Also writes empty {@link Link}.
      * and {@link Node} mapnode.
      */
     public void initOverlayTopology() {
@@ -148,7 +150,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * @param wrapper LogicalNodeWrapper to be written into datastore
+     * @param wrapper LogicalNodeWrapper to be written into datastore.
      * @param itemType item type
      */
     public void writeItem(final OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
@@ -158,7 +160,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * @param wrapper LogicalNodeWrapper to be removed from datastore
+     * @param wrapper LogicalNodeWrapper to be removed from datastore.
      * @param itemType item type
      */
     public void deleteItem(final OverlayItemWrapper wrapper, CorrelationItemEnum itemType) {
@@ -189,7 +191,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * @param transactionChain Sets {@link TransactionChain}
+     * @param transactionChain Sets {@link TransactionChain}.
      */
     public void setTransactionChain(DOMTransactionChain transactionChain) {
         this.transactionChain = transactionChain;
@@ -201,7 +203,7 @@ public class TopologyWriter implements TransactionChainListener {
 
 
     /**
-     * Writes topology-types
+     * Writes topology-types.
      * @param topologyTypes - taken from overlay topology request
      */
     public void writeTopologyTypes(DataContainerChild<? extends PathArgument, ?> topologyTypes) {
@@ -232,7 +234,7 @@ public class TopologyWriter implements TransactionChainListener {
             TransactionOperation currentOperation = preparedOperations.poll();
             currentOperation.addOperationIntoTransaction(transaction);
             operation++;
-            if(currentOperation instanceof ShutdownOperation) {
+            if (currentOperation instanceof ShutdownOperation) {
                 preparedOperations.clear();
                 preparedOperations = new IgnoreAddQueue<TransactionOperation>();
                 shutdown = true;
@@ -247,14 +249,15 @@ public class TopologyWriter implements TransactionChainListener {
             public void onSuccess(Void empty) {
                 LOGGER.debug("Transaction successfully written.");
             }
+
             @Override
             public void onFailure(Throwable throwable) {
                 LOGGER.warn("Transaction failed.");
             }
         });
 
-        if(shutdown) {
-            if(! submit.isDone()) {
+        if (shutdown) {
+            if (! submit.isDone()) {
                 try {
                     submit.get(SHUTDOWN_SUBMIT_TIMEOUT, TimeUnit.MILLISECONDS);
                 } catch (Exception e) {
@@ -268,7 +271,7 @@ public class TopologyWriter implements TransactionChainListener {
                 LOGGER.error("An error occurred while closing transaction chain: {}", transactionChain, e);
             }
             pool.shutdownNow();
-        } else{
+        } else {
             if (! WRITE_SCHEDULED_UPDATER.compareAndSet(this, 1, 0)) {
                 LOGGER.warn("Writer found unscheduled");
             }
@@ -277,7 +280,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * Signals that allocated resources should be released
+     * Signals that allocated resources should be released.
      */
     public void tearDown() {
         LOGGER.trace("Tear down signaled.");
@@ -286,7 +289,7 @@ public class TopologyWriter implements TransactionChainListener {
     }
 
     /**
-     * Wait until all threads/writes are finished
+     * Wait until all threads/writes are finished.
      * @param timeOut timeout to wait for threads/writes to finish in ms
      * @throws InterruptedException
      */
@@ -299,36 +302,36 @@ public class TopologyWriter implements TransactionChainListener {
         InstanceIdentifierBuilder builder = null;
         if (model.equals(I2rsModel.class)) {
             switch (correlationItem) {
-            case Node:
-            case TerminationPoint:
-                builder = YangInstanceIdentifier.builder(nodeIdentifier)
-                            .nodeWithKey(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608
-                                    .network.Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, itemId);
-                break;
-            case Link:
-                builder = YangInstanceIdentifier.builder(linkIdentifier)
-                        .nodeWithKey(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.topology
-                                .rev150608.network.Link.QNAME, TopologyQNames.I2RS_LINK_ID_QNAME, itemId);
-                break;
-            default:
-                throw new IllegalArgumentException("Wrong Correlation item set: "
-                        + correlationItem);
+                case Node:
+                case TerminationPoint:
+                    builder = YangInstanceIdentifier.builder(nodeIdentifier)
+                                .nodeWithKey(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608
+                                        .network.Node.QNAME, TopologyQNames.I2RS_NODE_ID_QNAME, itemId);
+                    break;
+                case Link:
+                    builder = YangInstanceIdentifier.builder(linkIdentifier)
+                            .nodeWithKey(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.topology
+                                    .rev150608.network.Link.QNAME, TopologyQNames.I2RS_LINK_ID_QNAME, itemId);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Wrong Correlation item set: "
+                            + correlationItem);
             }
 
         } else {
             switch (correlationItem) {
-            case Node:
-            case TerminationPoint:
-                builder = YangInstanceIdentifier.builder(nodeIdentifier)
-                            .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, itemId);
-                break;
-            case Link:
-                builder = YangInstanceIdentifier.builder(linkIdentifier)
-                        .nodeWithKey(Link.QNAME, TopologyQNames.NETWORK_LINK_ID_QNAME, itemId);
-                break;
-            default:
-                throw new IllegalArgumentException("Wrong Correlation item set: "
-                        + correlationItem);
+                case Node:
+                case TerminationPoint:
+                    builder = YangInstanceIdentifier.builder(nodeIdentifier)
+                                .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, itemId);
+                    break;
+                case Link:
+                    builder = YangInstanceIdentifier.builder(linkIdentifier)
+                            .nodeWithKey(Link.QNAME, TopologyQNames.NETWORK_LINK_ID_QNAME, itemId);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Wrong Correlation item set: "
+                            + correlationItem);
             }
         }
         return builder.build();

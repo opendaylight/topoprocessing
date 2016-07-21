@@ -37,7 +37,7 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
 
-/** *
+/**
  * @author matej.perina
  *
  */
@@ -49,7 +49,8 @@ public class InvModelAdapter implements ModelAdapter {
             TopologyOperator operator, List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
             Map<Integer, YangInstanceIdentifier> pathIdentifiers) {
 
-        InvUnderlayTopologyListener listener = new InvUnderlayTopologyListener(dataBroker, underlayTopologyId, correlationItem);
+        InvUnderlayTopologyListener listener = new InvUnderlayTopologyListener(dataBroker, underlayTopologyId,
+                correlationItem);
         listener.registerUnderlayTopologyListener(datastoreType,operator,listeners,pathIdentifiers);
         return listener;
     }
@@ -70,16 +71,16 @@ public class InvModelAdapter implements ModelAdapter {
     public YangInstanceIdentifier buildItemIdentifier(InstanceIdentifierBuilder builder,
             CorrelationItemEnum correlationItemEnum) {
         switch (correlationItemEnum) {
-        case Node:
-        case TerminationPoint:
-            builder.node(Node.QNAME);
-            break;
-        case Link:
-            builder.node(Link.QNAME);
-            break;
-        default:
-            throw new IllegalArgumentException("Wrong Correlation item set: "
-                    + correlationItemEnum);
+            case Node:
+            case TerminationPoint:
+                builder.node(Node.QNAME);
+                break;
+            case Link:
+                builder.node(Link.QNAME);
+                break;
+            default:
+                throw new IllegalArgumentException("Wrong Correlation item set: "
+                        + correlationItemEnum);
         }
         return builder.build();
     }

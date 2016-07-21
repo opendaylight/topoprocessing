@@ -8,13 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
+import com.google.common.base.Preconditions;
+
 import java.math.BigDecimal;
 
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Preconditions;
 
 /**
  * @author matus.marko
@@ -42,7 +43,7 @@ public class SpecificValueFiltrator<T> extends AbstractFiltrator {
         boolean isFiltered;
         if (value instanceof String && this.value instanceof String)  {
             isFiltered =  !this.value.equals(value);
-        } else if(value instanceof Number && this.value instanceof Number){
+        } else if (value instanceof Number && this.value instanceof Number) {
             isFiltered =  !numberEquals(value, this.value);
         } else {
             isFiltered = true;
@@ -77,7 +78,7 @@ public class SpecificValueFiltrator<T> extends AbstractFiltrator {
     private boolean numberEquals(T num1, T num2) {
         BigDecimal bigDecimal1 = createBigDecimal((Number) num1);
         BigDecimal bigDecimal2 = createBigDecimal((Number) num2);
-        if(bigDecimal1 == null || bigDecimal2 == null) {
+        if (bigDecimal1 == null || bigDecimal2 == null) {
             return false;
         }
         return bigDecimal1.compareTo(bigDecimal2) == 0;

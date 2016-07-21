@@ -8,6 +8,7 @@
 package org.opendaylight.topoprocessing.inventoryRendering.translator;
 
 import com.google.common.base.Optional;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,7 +83,7 @@ public class IRNodeTranslatorTest {
         Optional<DataContainerChild<? extends PathArgument, ?>> nodeIdOpt =
                 ((MapEntryNode)translatedNode).getChild(new NodeIdentifier(TopologyQNames.NETWORK_NODE_ID_QNAME));
         Assert.assertTrue("node-id is missing", nodeIdOpt.isPresent());
-        if (nodeIdOpt.isPresent()){
+        if (nodeIdOpt.isPresent()) {
             String nodeId = (String)nodeIdOpt.get().getValue();
             Assert.assertEquals("node-id is not correct: " + nodeId, "undItem", nodeId);
         }
@@ -330,10 +332,12 @@ public class IRNodeTranslatorTest {
         qnames.add(IRQNames.INVENTORY_NODE_CONNECTOR_REF_QNAME);
         AugmentationIdentifier ncRefAugmentIdentifier = new AugmentationIdentifier(qnames);
 
-        YangInstanceIdentifier ncIdent1 = YangInstanceIdentifier.create(new YangInstanceIdentifier.NodeIdentifierWithPredicates(
-                NodeConnector.QNAME, IRQNames.NODE_CONNECTOR_ID_QNAME, "nodeConnector1"));
-        YangInstanceIdentifier ncIdent2 = YangInstanceIdentifier.create(new YangInstanceIdentifier.NodeIdentifierWithPredicates(
-                NodeConnector.QNAME, IRQNames.NODE_CONNECTOR_ID_QNAME, "nodeConnector2"));
+        YangInstanceIdentifier ncIdent1 = YangInstanceIdentifier.create(
+                new YangInstanceIdentifier.NodeIdentifierWithPredicates(NodeConnector.QNAME,
+                        IRQNames.NODE_CONNECTOR_ID_QNAME, "nodeConnector1"));
+        YangInstanceIdentifier ncIdent2 = YangInstanceIdentifier.create(
+                new YangInstanceIdentifier.NodeIdentifierWithPredicates(NodeConnector.QNAME,
+                        IRQNames.NODE_CONNECTOR_ID_QNAME, "nodeConnector2"));
 
         DataContainerNodeBuilder<AugmentationIdentifier, AugmentationNode> ncRefAugmentationBuilder =
                 ImmutableAugmentationNodeBuilder.create();

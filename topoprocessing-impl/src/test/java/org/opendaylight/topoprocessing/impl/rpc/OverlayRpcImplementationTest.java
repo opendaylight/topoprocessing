@@ -1,12 +1,15 @@
 package org.opendaylight.topoprocessing.impl.rpc;
 
-import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
-import java.util.HashSet;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
+
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,16 +26,21 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
+import org.opendaylight.yangtools.yang.data.api.schema.LeafNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
-import org.opendaylight.yangtools.yang.model.api.*;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
+import org.opendaylight.yangtools.yang.model.api.ContainerSchemaNode;
+import org.opendaylight.yangtools.yang.model.api.DataSchemaNode;
+import org.opendaylight.yangtools.yang.model.api.Module;
+import org.opendaylight.yangtools.yang.model.api.RpcDefinition;
+import org.opendaylight.yangtools.yang.model.api.SchemaContext;
+import org.opendaylight.yangtools.yang.model.api.SchemaPath;
+import org.opendaylight.yangtools.yang.model.api.UnknownSchemaNode;
 
 /**
  * @author matus.marko
@@ -42,9 +50,12 @@ public class OverlayRpcImplementationTest {
 
     private static final QName CONTEXT_REFERENCE = QName.create("urn:opendaylight:yang:extension:yang-ext",
             "2013-07-09", "context-reference").intern();
-    private static final QName RPC_QNAME = QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "rpc").intern();
-    private static final QName TEST_QNAME = QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "test").intern();
-    private static final QName AUG_QNAME = QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "aug").intern();
+    private static final QName RPC_QNAME =
+            QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "rpc").intern();
+    private static final QName TEST_QNAME =
+            QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "test").intern();
+    private static final QName AUG_QNAME =
+            QName.create("urn:opendaylight:topology:correlation", "2013-10-21", "aug").intern();
 
     private OverlayRpcImplementation overlayRpcImplementation;
     private YangInstanceIdentifier underlayNodeIdentifier;

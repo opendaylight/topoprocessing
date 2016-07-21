@@ -23,7 +23,7 @@ public class RangeNumberFiltratorFactory implements FiltratorFactory {
 
     @Override
     public Filtrator createFiltrator(Filter filter, YangInstanceIdentifier pathIdentifier) {
-        if(filter.getFilterTypeBody() instanceof RangeNumberFilterType) {
+        if (filter.getFilterTypeBody() instanceof RangeNumberFilterType) {
             RangeNumberFilter RNFilter = ((RangeNumberFilterType)filter.getFilterTypeBody()).getRangeNumberFilter();
             return new RangeNumberFiltrator(RNFilter.getMinNumberValue(), RNFilter.getMaxNumberValue(), pathIdentifier);
         } else {

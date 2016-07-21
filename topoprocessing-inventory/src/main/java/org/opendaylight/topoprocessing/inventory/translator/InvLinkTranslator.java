@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author matej.perina
  *
  */
-public class InvLinkTranslator implements LinkTranslator{
+public class InvLinkTranslator implements LinkTranslator {
 
     private static final Logger LOG = LoggerFactory.getLogger(InvLinkTranslator.class);
 
@@ -52,7 +52,7 @@ public class InvLinkTranslator implements LinkTranslator{
         MapNode supportingLinks = buildSupportingLinks(wrapper);
         linkNode.withChild(supportingLinks);
         UnderlayItem link = wrapper.getOverlayItems().peek().getUnderlayItems().peek();
-        if(link instanceof ComputedLink) {
+        if (link instanceof ComputedLink) {
             setSrcDestNode(link, linkNode);
         }
         return linkNode.build();

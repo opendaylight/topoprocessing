@@ -34,7 +34,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 public interface ModelAdapter {
 
     /**
-     * Create model specific UnderlayTopologyListener
+     * Create model specific UnderlayTopologyListener.
      * @param dataBroker            PingPong Data Broker
      * @param underlayTopologyId    underlay topology identifier
      * @param correlationItem       can be either Node or Link or TerminationPoint
@@ -50,26 +50,27 @@ public interface ModelAdapter {
             Map<Integer, YangInstanceIdentifier> pathIdentifier);
 
     /**
-     * Create model specific TopologyRequestListener
+     * Create model specific TopologyRequestListener.
      * @param dataBroker        access to Datastore
-     * @param nodeSerializer    translates Topology into BindingAware object - for easier handling in TopologyRequestHandler
+     * @param nodeSerializer    translates Topology into BindingAware object - for easier handling in
+     *                          TopologyRequestHandler
      * @param schemaHolder      access to SchemaContext and SchemaListener
      * @param rpcServices       rpcServices for rpc republishing
      * @param modelAdapters     registered ModelAdapters
      * @return new instance of model specific TopologyRequestListener
      */
     TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
-            BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
-            Map<Class<? extends Model>, ModelAdapter> modelAdapters);
+            BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
+            RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters);
 
     /**
-     * Create model specific OverlayItemTranslator
+     * Create model specific OverlayItemTranslator.
      * @return new instance of model specific TopologyRequestListener
      */
     OverlayItemTranslator createOverlayItemTranslator();
 
     /**
-     * Builds item identifier (identifies item {@link MapNode})
+     * Builds item identifier (identifies item {@link MapNode}).
      * @param builder starting builder (set with specific topology) that will be appended
      * with corresponding item QName
      * @param correlationItemEnum item type
@@ -79,7 +80,7 @@ public interface ModelAdapter {
             CorrelationItemEnum correlationItemEnum);
 
     /**
-     * Creates model specific (topology or network) identifier builder
+     * Creates model specific (topology or network) identifier builder.
      * @param underlayTopologyId
      * @return new model specific topology builder
      */

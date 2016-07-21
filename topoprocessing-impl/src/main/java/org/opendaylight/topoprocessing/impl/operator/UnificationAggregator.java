@@ -21,7 +21,7 @@ public class UnificationAggregator extends TopologyAggregator {
     public UnificationAggregator(TopoStoreProvider topoStoreProvider) {
         super(topoStoreProvider);
     }
-    
+
     @Override
     protected int getMinUnderlayItems() {
         return UNDERLAY_ITEMS_IN_OVERLAY_ITEM;

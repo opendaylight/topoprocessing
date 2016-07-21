@@ -44,7 +44,7 @@ public class TopologyQNamesTest {
             .ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME , "tp-id").intern();
 
     /**
-     * Tests item-id QNames
+     * Tests item-id QNames.
      */
     @Test
     public void testItemIdQNames() {
@@ -65,7 +65,7 @@ public class TopologyQNamesTest {
     }
 
     /**
-     * Tests item QNames
+     * Tests item QNames.
      */
     @Test
     public void testItemQNames() {

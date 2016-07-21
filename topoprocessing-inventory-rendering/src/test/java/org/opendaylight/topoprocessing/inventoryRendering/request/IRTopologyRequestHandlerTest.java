@@ -10,6 +10,9 @@ package org.opendaylight.topoprocessing.inventoryRendering.request;
 
 import static org.mockito.Matchers.any;
 
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.CheckedFuture;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,9 +69,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 
-import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.CheckedFuture;
-
 /**
  *
  * @author matej.perina
@@ -121,7 +121,7 @@ public class IRTopologyRequestHandlerTest {
                 (YangInstanceIdentifier) Matchers.any())).thenReturn(mockReadFuture);
     }
 
-    @Test (expected=NullPointerException.class)
+    @Test (expected = NullPointerException.class)
     public void testTopologyWithoutAugmentation() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
@@ -137,7 +137,7 @@ public class IRTopologyRequestHandlerTest {
         return topoBuilder;
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationMissingInAugment() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = new CorrelationAugmentBuilder();
@@ -168,7 +168,7 @@ public class IRTopologyRequestHandlerTest {
         return correlationAugmentBuilder;
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationWithoutCorrelationType() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(null,
@@ -180,7 +180,7 @@ public class IRTopologyRequestHandlerTest {
         handler.processNewRequest();
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationWithoutCorrelationDataRenderingCase() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(RenderingOnly.class,
@@ -192,7 +192,7 @@ public class IRTopologyRequestHandlerTest {
         handler.processNewRequest();
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationWithUnknownCorrelationType() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(CorrelationBase.class,
@@ -204,7 +204,7 @@ public class IRTopologyRequestHandlerTest {
         handler.processNewRequest();
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationItemNull() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         RenderingBuilder renderingBuilder = new RenderingBuilder();
@@ -277,7 +277,7 @@ public class IRTopologyRequestHandlerTest {
         Assert.assertEquals(0, handler.getListeners().size());
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testRenderingWithoutRenderingData() {
         // pre-testing setup
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);

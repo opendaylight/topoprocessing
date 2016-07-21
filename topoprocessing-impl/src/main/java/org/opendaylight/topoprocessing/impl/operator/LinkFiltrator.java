@@ -8,16 +8,15 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author michal.vrsansky
@@ -33,8 +32,8 @@ public class LinkFiltrator extends TopologyFiltrator {
     @Override
     public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdItem, String topologyId) {
         LOGGER.trace("Processing createdChanges");
-        if (CorrelationItemEnum.Node.equals(createdItem.getCorrelationItem()) ||
-                        passedFiltration(createdItem.getLeafNodes().values())) {
+        if (CorrelationItemEnum.Node.equals(createdItem.getCorrelationItem())
+                || passedFiltration(createdItem.getLeafNodes().values())) {
             topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, createdItem);
             manager.addOverlayItem(wrapUnderlayItem(createdItem));
             LOGGER.trace("Link passed filtration/node getting through: {}",createdItem.getItemId());
@@ -47,8 +46,8 @@ public class LinkFiltrator extends TopologyFiltrator {
         UnderlayItem oldItem = topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().get(identifier);
         if (oldItem == null) {
             // updatedItem is not present yet
-            if (updatedItem.getCorrelationItem().equals(CorrelationItemEnum.Node) ||
-                    passedFiltration(updatedItem.getLeafNodes().values())) {
+            if (updatedItem.getCorrelationItem().equals(CorrelationItemEnum.Node)
+                    || passedFiltration(updatedItem.getLeafNodes().values())) {
                 // link passed through filtrator ot its node
                 topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, updatedItem);
                 manager.addOverlayItem(wrapUnderlayItem(updatedItem));
@@ -56,8 +55,8 @@ public class LinkFiltrator extends TopologyFiltrator {
             }
         } else {
             // updatedItem exists already
-            if (updatedItem.getCorrelationItem().equals(CorrelationItemEnum.Node) ||
-                    passedFiltration(updatedItem.getLeafNodes().values())) {
+            if (updatedItem.getCorrelationItem().equals(CorrelationItemEnum.Node)
+                    || passedFiltration(updatedItem.getLeafNodes().values())) {
                 // link passed through filtrator ot its node
                 topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems().put(identifier, updatedItem);
                 OverlayItem overlayItem = oldItem.getOverlayItem();

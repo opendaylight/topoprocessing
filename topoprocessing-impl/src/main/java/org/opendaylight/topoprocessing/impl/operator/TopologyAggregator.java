@@ -9,14 +9,17 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import com.google.common.base.Preconditions;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+
 import org.opendaylight.topoprocessing.api.structure.ComputedLink;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -30,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class handling aggregation correlation
+ * Class handling aggregation correlation.
  * @author matus.marko
  * @author martin.uhlir
  */
@@ -73,7 +76,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
 
     /**
      * Creates new overlay item or adds new underlay item into existing overlay item if the condition
-     * for correlation is satisfied
+     * for correlation is satisfied.
      * @param newItem - new underlay item on which the correlation is created
      */
     private void checkForPossibleAggregation(UnderlayItem newItem, String topologyId) {
@@ -81,10 +84,9 @@ public abstract class TopologyAggregator implements TopologyOperator {
             if ((! ts.getId().equals(topologyId)) || ts.isAggregateInside()) {
                 for (Entry<YangInstanceIdentifier, UnderlayItem> topoStoreEntry : ts.getUnderlayItems().entrySet()) {
                     UnderlayItem topoStoreItem = topoStoreEntry.getValue();
-                    if(newItem.getCorrelationItem() == CorrelationItemEnum.Link) {
+                    if (newItem.getCorrelationItem() == CorrelationItemEnum.Link) {
                         checkForPossibleAggregationOfLinks(newItem, topoStoreItem);
-                    }
-                    else {
+                    } else {
                         if (! newItem.equals(topoStoreItem)) {
                             if (scriptEngine != null) {
                                 if (aggregableWithScript(newItem, topoStoreItem)) {
@@ -110,22 +112,20 @@ public abstract class TopologyAggregator implements TopologyOperator {
         }
     }
 
-    private void checkForPossibleAggregationOfLinks(UnderlayItem newItem, UnderlayItem topoStoreItem)
-    {
-        if(newItem instanceof ComputedLink && topoStoreItem instanceof ComputedLink)
-        {
+    private void checkForPossibleAggregationOfLinks(UnderlayItem newItem, UnderlayItem topoStoreItem) {
+        if (newItem instanceof ComputedLink && topoStoreItem instanceof ComputedLink) {
             ComputedLink newLink = (ComputedLink) newItem;
             ComputedLink topoStoreLink = (ComputedLink) topoStoreItem;
             if (scriptEngine != null) {
-                if (aggregableWithScript(newItem, topoStoreItem) &&
-                        newLink.getSrcNode().equals(topoStoreLink.getSrcNode()) &&
-                        newLink.getDstNode().equals(topoStoreLink.getDstNode())) {
+                if (aggregableWithScript(newItem, topoStoreItem)
+                        && newLink.getSrcNode().equals(topoStoreLink.getSrcNode())
+                        && newLink.getDstNode().equals(topoStoreLink.getDstNode())) {
                     aggregateItems(newItem, topoStoreItem);
                     return;
                 }
-            } else if ((!newItem.equals(topoStoreItem)) && matchTargetFields(newItem, topoStoreItem) &&
-                    newLink.getSrcNode().equals(topoStoreLink.getSrcNode()) &&
-                    newLink.getDstNode().equals(topoStoreLink.getDstNode())) {
+            } else if ((!newItem.equals(topoStoreItem)) && matchTargetFields(newItem, topoStoreItem)
+                    && newLink.getSrcNode().equals(topoStoreLink.getSrcNode())
+                    && newLink.getDstNode().equals(topoStoreLink.getDstNode())) {
                 // no previous aggregation on this link
                 aggregateItems(newItem, topoStoreItem);
                 return;
@@ -230,14 +230,12 @@ public abstract class TopologyAggregator implements TopologyOperator {
                 UnderlayItem underlayItem = ts.getUnderlayItems().get(identifier);
                 Preconditions.checkNotNull(underlayItem, "Updated underlay item not found in the Topology store");
                 underlayItem.setItem(updatedItem.getItem());
-                if(underlayItem.getCorrelationItem() == CorrelationItemEnum.Link) {
-                    if(underlayItem instanceof ComputedLink && updatedItem instanceof ComputedLink)
-                    {
+                if (underlayItem.getCorrelationItem() == CorrelationItemEnum.Link) {
+                    if (underlayItem instanceof ComputedLink && updatedItem instanceof ComputedLink) {
                         updateLinks(underlayItem, updatedItem);
                         break;
                     }
-                }
-                else {
+                } else {
                     // if Leaf Node was changed
                     if (! matchTargetFields(underlayItem, updatedItem)) {
                         underlayItem.setLeafNodes(updatedItem.getLeafNodes());
@@ -259,9 +257,9 @@ public abstract class TopologyAggregator implements TopologyOperator {
     private void updateLinks(UnderlayItem underlayItem, UnderlayItem updatedItem) {
         ComputedLink underlayLink = (ComputedLink) underlayItem;
         ComputedLink updatedLink = (ComputedLink) updatedItem;
-        if (! matchTargetFields(underlayItem, updatedItem) ||
-                ! underlayLink.getSrcNode().equals(updatedLink.getSrcNode()) ||
-                ! underlayLink.getDstNode().equals(updatedLink.getDstNode())) {
+        if (! matchTargetFields(underlayItem, updatedItem)
+                || ! underlayLink.getSrcNode().equals(updatedLink.getSrcNode())
+                || ! underlayLink.getDstNode().equals(updatedLink.getDstNode())) {
             underlayLink.setLeafNodes(updatedLink.getLeafNodes());
             underlayLink.setSrcNode(updatedLink.getSrcNode());
             underlayLink.setDstNode(updatedLink.getDstNode());
@@ -286,7 +284,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
     protected abstract boolean wrapSingleItem();
 
     /**
-     * Overrides default behavior of aggregation with the one programmed in script
+     * Overrides default behavior of aggregation with the one programmed in script.
      * @param scripting script definition
      */
     public void initCustomAggregation(Scripting scripting) {

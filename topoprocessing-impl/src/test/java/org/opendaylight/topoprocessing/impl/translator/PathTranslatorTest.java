@@ -228,7 +228,7 @@ public class PathTranslatorTest {
     }
 
     /**
-     * Test case: two colons in the path should not be accepted
+     * Test case: two colons in the path should not be accepted.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testTwoColonsIllegalArgument() {
@@ -237,7 +237,7 @@ public class PathTranslatorTest {
     }
 
     /**
-     * Test case: the path should contain one and only one colon in one path
+     * Test case: the path should contain one and only one colon in one path.
      * argument
      */
     @Test(expected = IllegalArgumentException.class)
@@ -247,8 +247,7 @@ public class PathTranslatorTest {
     }
 
     /**
-     * Test case: path in the argument does not match expected format [module
-     * name]:[child name]
+     * Test case: path in the argument does not match expected format [module name]:[child name].
      */
     @Test(expected = IllegalArgumentException.class)
     public void testColonAtLastPosition() {
@@ -258,8 +257,7 @@ public class PathTranslatorTest {
     }
 
     /**
-     * Test case: path in the argument does not match expected format [module
-     * name]:[child name]
+     * Test case: path in the argument does not match expected format [module name]:[child name].
      */
     @Test(expected = IllegalArgumentException.class)
     public void testColonAtFirstPosition() {
@@ -268,7 +266,7 @@ public class PathTranslatorTest {
     }
 
     /**
-     * Test case: empty string as argument is not allowed
+     * Test case: empty string as argument is not allowed.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyString() {
@@ -276,7 +274,7 @@ public class PathTranslatorTest {
     }
 
     /**
-     * Test case: null as argument is not allowed
+     * Test case: null as argument is not allowed.
      */
     @Test(expected = IllegalArgumentException.class)
     public void testYangPathNull() {
@@ -290,7 +288,7 @@ public class PathTranslatorTest {
     }
 
     /**
-     * Test case: module does not exist
+     * Test case: module does not exist.
      *
      * @throws URISyntaxException URISyntaxException
      * @throws ParseException ParseException
@@ -312,11 +310,11 @@ public class PathTranslatorTest {
     }
 
     public static SchemaContext parseYangSources(List<String> input) throws SourceException, ReactorException,
-    FileNotFoundException{
+    FileNotFoundException {
 
         StatementStreamSource[] sources = new StatementStreamSource[input.size()];
 
-        for(int i = 0; i < input.size(); i++){
+        for (int i = 0; i < input.size(); i++) {
             sources[i] = new YangStatementSourceImpl(PathTranslatorTest.class.getResourceAsStream(input.get(i)));
         }
 

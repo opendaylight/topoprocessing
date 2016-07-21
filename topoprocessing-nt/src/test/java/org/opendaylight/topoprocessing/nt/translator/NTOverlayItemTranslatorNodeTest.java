@@ -8,6 +8,8 @@
 
 package org.opendaylight.topoprocessing.nt.translator;
 
+import com.google.common.base.Optional;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,8 +41,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 
-import com.google.common.base.Optional;
-
 /**
  * @author matus.marko
  */
@@ -48,7 +48,7 @@ import com.google.common.base.Optional;
 public class NTOverlayItemTranslatorNodeTest {
 
     private OverlayItemTranslator translator =
-            new OverlayItemTranslator(new NTNodeTranslator(), new NTLinkTranslator());;
+            new OverlayItemTranslator(new NTNodeTranslator(), new NTLinkTranslator());
     private static final String TOPOLOGY_NAME = "topology:1";
 
     @Mock
@@ -58,7 +58,7 @@ public class NTOverlayItemTranslatorNodeTest {
     private UnderlayItem mockPhysicalNode;
 
     /**
-     * Test case: NodeId translation
+     * Test case: NodeId translation.
      */
     @Test
     public void testNodeId() {
@@ -76,7 +76,7 @@ public class NTOverlayItemTranslatorNodeTest {
     }
 
     /**
-     * Wrap the same node more times to the wrapper, translate it, and check result for the duplicity
+     * Wrap the same node more times to the wrapper, translate it, and check result for the duplicity.
      *
      * @throws Exception Exception
      */
@@ -101,8 +101,7 @@ public class NTOverlayItemTranslatorNodeTest {
     }
 
     /**
-     * <p>Test case: one SupportingNode translation</p>
-     * <p>- includes TopologyRef and NodeRef</p>
+     * Test case: one SupportingNode translation - includes TopologyRef and NodeRef.
      */
     @Test
     public void testSupportingNode() {
@@ -138,7 +137,7 @@ public class NTOverlayItemTranslatorNodeTest {
     }
 
     /**
-     * Test case: more supporting nodes translation
+     * Test case: more supporting nodes translation.
      */
     @Test
     public void testSupportingNodes() {
@@ -187,7 +186,7 @@ public class NTOverlayItemTranslatorNodeTest {
     }
 
     /**
-     * Test case: TerminationPoint translation
+     * Test case: TerminationPoint translation.
      */
     @Test
     public void testTerminationPoint() {
@@ -256,13 +255,13 @@ public class NTOverlayItemTranslatorNodeTest {
         final Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
         targetFields.put(0, mockNormalizedNode);
         OverlayItem logicalNode1 = new OverlayItem(new ArrayList<UnderlayItem>() {{
-            add(new UnderlayItem(node1, targetFields, TOPOLOGY_NAME, physicalName1, 
+            add(new UnderlayItem(node1, targetFields, TOPOLOGY_NAME, physicalName1,
                        CorrelationItemEnum.TerminationPoint));
-            add(new UnderlayItem(node2, targetFields, TOPOLOGY_NAME, physicalName2, 
+            add(new UnderlayItem(node2, targetFields, TOPOLOGY_NAME, physicalName2,
                        CorrelationItemEnum.TerminationPoint));
         }}, CorrelationItemEnum.Node);
         OverlayItem logicalNode2 = new OverlayItem(Collections.singletonList(
-                new UnderlayItem(node3, targetFields, TOPOLOGY_NAME, physicalName3, 
+                new UnderlayItem(node3, targetFields, TOPOLOGY_NAME, physicalName3,
                            CorrelationItemEnum.TerminationPoint)
         ), CorrelationItemEnum.TerminationPoint);
         OverlayItemWrapper wrapper = new OverlayItemWrapper(logicalName, logicalNode1);

@@ -10,11 +10,13 @@ package org.opendaylight.topoprocessing.impl.request;
 
 
 import com.google.common.base.Preconditions;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
@@ -27,14 +29,14 @@ import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
 import org.opendaylight.topoprocessing.impl.operator.LinkCalculator;
-import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
-import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
-import org.opendaylight.topoprocessing.impl.operator.TopoStoreProvider;
-import org.opendaylight.topoprocessing.impl.operator.TerminationPointPreAggregationFiltrator;
-import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
-import org.opendaylight.topoprocessing.impl.operator.TerminationPointFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.LinkFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.NodeAndTPAggregator;
+import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
+import org.opendaylight.topoprocessing.impl.operator.PreAggregationFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TerminationPointAggregator;
+import org.opendaylight.topoprocessing.impl.operator.TerminationPointFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TerminationPointPreAggregationFiltrator;
+import org.opendaylight.topoprocessing.impl.operator.TopoStoreProvider;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyManager;
@@ -52,7 +54,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationAggregation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FiltrationOnly;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.InventoryRenderingModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventoryModel;
@@ -77,6 +78,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgum
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 /**
  * Picks up information from topology request, engages corresponding
  * listeners, aggregators.
@@ -101,7 +103,7 @@ public abstract class TopologyRequestHandler {
     private Class<? extends Model> outputModel;
 
     /**
-     * Default constructor
+     * Default constructor.
      * @param dataBroker         broker used for transaction operations
      * @param schemaHolder          provides model search
      * @param rpcServices           rpc services needed for rpc republishing
@@ -126,7 +128,7 @@ public abstract class TopologyRequestHandler {
     protected abstract Class<? extends Model> getModel(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
 
     /**
-     * Only for testing purposes
+     * Only for testing purposes.
      * @param translator Provides translating String to Path
      */
     public void setTranslator(PathTranslator translator) {
@@ -134,7 +136,7 @@ public abstract class TopologyRequestHandler {
     }
 
     /**
-     * Only for testing purposes
+     * Only for testing purposes.
      * @param listeners Sets UnderlayTopologyListener registrations
      */
     public void setListeners(List<ListenerRegistration<DOMDataTreeChangeListener>> listeners) {
@@ -142,7 +144,7 @@ public abstract class TopologyRequestHandler {
     }
 
     /**
-     * Only for testing purposes
+     * Only for testing purposes.
      * @return UnderlayTopologyListener registrations
      */
     public List<ListenerRegistration<DOMDataTreeChangeListener>> getListeners() {
@@ -150,7 +152,7 @@ public abstract class TopologyRequestHandler {
     }
 
     /**
-     * Only for testing purposes
+     * Only for testing purposes.
      * @return Transaction Chain
      */
     public DOMTransactionChain getTransactionChain() {
@@ -172,7 +174,7 @@ public abstract class TopologyRequestHandler {
     protected abstract String getTopologyId(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
 
     /**
-     * Process new topology request
+     * Process new topology request.
      */
     public void processNewRequest() {
         LOG.debug("Processing overlay topology creation request");
@@ -195,14 +197,14 @@ public abstract class TopologyRequestHandler {
                 } else if (FiltrationOnly.class.equals(correlation.getType())) {
                     initFiltration(correlation);
                 } else if (AggregationOnly.class.equals(correlation.getType())) {
-                    if(correlation.getCorrelationItem() == CorrelationItemEnum.Link) {
+                    if (correlation.getCorrelationItem() == CorrelationItemEnum.Link) {
                         linkAggregation = correlation.getAggregation();
                     } else {
                         if (!isAggregationOfNodesAndTp) {
                             initAggregation(correlation, false);
                         }
                     }
-                } else if (RenderingOnly.class.equals(correlation.getType())){
+                } else if (RenderingOnly.class.equals(correlation.getType())) {
                     initRendering(correlation);
                 } else {
                     throw new IllegalStateException("Filtration and Aggregation data missing: " + correlation);
@@ -237,7 +239,7 @@ public abstract class TopologyRequestHandler {
                 }
             }
         }
-        if(nodeCorrelation == null || tpCorrelation == null) {
+        if (nodeCorrelation == null || tpCorrelation == null) {
             return false;
         } else {
             initAggregationOfNodesAndTp(nodeCorrelation, nodeFiltration, tpCorrelation, tpFiltration);
@@ -264,7 +266,7 @@ public abstract class TopologyRequestHandler {
         Class<? extends Model> inputModel = tpAggregation.getMapping().get(0).getInputModel();
         Map<String, Map<Integer, YangInstanceIdentifier>> targetFieldsPerTopology = new HashMap<>();
         TerminationPointPreAggregationFiltrator tpFiltrator = null;
-        if(tpFiltration) {
+        if (tpFiltration) {
             tpFiltrator = new TerminationPointPreAggregationFiltrator(topoStoreProvider, inputModel);
             tpFiltrator.setTopologyAggregator(tpAggregator);
         }
@@ -364,8 +366,8 @@ public abstract class TopologyRequestHandler {
             pathIdentifiers.put(key++, filterPath);
         }
 
-        UnderlayTopologyListener listener = modelAdapters.get(inputModel).
-                registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
+        UnderlayTopologyListener listener = modelAdapters.get(inputModel)
+                .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
                         correlationItem, datastoreType, filtrator, listeners, pathIdentifiers);
         LOG.debug("Registering filtering underlay topology listener for topology: {}", underlayTopologyId);
         registerListener(listener, inputModel, underlayTopologyId, correlationItem);
@@ -454,7 +456,7 @@ public abstract class TopologyRequestHandler {
                     .registerUnderlayTopologyListener(pingPongDataBroker, underlayTopologyId,
                             correlation.getCorrelationItem(), datastoreType, operator, listeners, null);
             operator = listener.getOperator();
-            if(operator instanceof NotificationInterConnector) {
+            if (operator instanceof NotificationInterConnector) {
                 operator = ((NotificationInterConnector) operator).getOperator();
             }
             operator.setTopologyManager(topologyManager);
@@ -488,7 +490,7 @@ public abstract class TopologyRequestHandler {
                         getRealInputModel(linkInfo.getInputModel(), CorrelationItemEnum.Link);
                 if (linkAggregation != null) {
                     for (Mapping mapping : linkAggregation.getMapping()) {
-                        if(mapping.getUnderlayTopology().equals(underlayTopologyId)) {
+                        if (mapping.getUnderlayTopology().equals(underlayTopologyId)) {
                             for (TargetField targetField : mapping.getTargetField()) {
                                 pathIdentifiers.put(targetField.getMatchingKey(), translator.translate(
                                         targetField.getTargetFieldPath().getValue(), CorrelationItemEnum.Link,
@@ -557,7 +559,7 @@ public abstract class TopologyRequestHandler {
 
     private Class<? extends Model> getRealInputModel(Class<? extends Model> model, CorrelationItemEnum item) {
         // for Inventory model are links stored in NetworkTopology model
-        if(item == CorrelationItemEnum.Link && model.equals(OpendaylightInventoryModel.class)) {
+        if (item == CorrelationItemEnum.Link && model.equals(OpendaylightInventoryModel.class)) {
             return NetworkTopologyModel.class;
         } else {
             return model;
@@ -591,7 +593,7 @@ public abstract class TopologyRequestHandler {
     protected abstract LinkComputation getLinkComputation(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
 
     /**
-     * Closes all registered listeners and providers
+     * Closes all registered listeners and providers.
      * @param timeOut time in ms to wait for close operation to finish, if timeOut == 0, there is no waiting
      */
     public void processDeletionRequest(int timeOut) {
@@ -605,7 +607,7 @@ public abstract class TopologyRequestHandler {
         }
         listeners.clear();
         writer.tearDown();
-        if(timeOut > 0) {
+        if (timeOut > 0) {
             try {
                 writer.waitForTearDownCompletion(timeOut);
             } catch (InterruptedException i) {
@@ -616,7 +618,7 @@ public abstract class TopologyRequestHandler {
     }
 
     /**
-     * Delegate topology types to writer
+     * Delegate topology types to writer.
      * @param topologyTypes - taken from overlay topology request
      */
     public void delegateTopologyTypes(

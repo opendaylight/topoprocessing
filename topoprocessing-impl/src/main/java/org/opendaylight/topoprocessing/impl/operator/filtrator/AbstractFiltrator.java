@@ -9,6 +9,7 @@
 package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
 import com.google.common.base.Preconditions;
+
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 

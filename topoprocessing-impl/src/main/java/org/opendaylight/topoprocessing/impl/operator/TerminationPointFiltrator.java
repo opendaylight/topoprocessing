@@ -8,6 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import com.google.common.base.Optional;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
@@ -42,7 +44,6 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLe
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableMapEntryNodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Optional;
 
 /**
  * @author matus.marko
@@ -103,9 +104,9 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         Optional<NormalizedNode<?, ?>> tpMapNodeOpt = Optional.absent();
         if (model.equals(NetworkTopologyModel.class)) {
             tpMapNodeOpt = NormalizedNodes.findNode(uItem.getItem(),InstanceIdentifiers.NT_TERMINATION_POINT);
-        } else if (model.equals(I2rsModel.class)){
+        } else if (model.equals(I2rsModel.class)) {
             tpMapNodeOpt = NormalizedNodes.findNode(uItem.getItem(),InstanceIdentifiers.I2RS_TERMINATION_POINT);
-        } else if (model.equals(OpendaylightInventoryModel.class)){
+        } else if (model.equals(OpendaylightInventoryModel.class)) {
             tpMapNodeOpt = NormalizedNodes.findNode(uItem.getLeafNodes().values().iterator().next(),
                     InstanceIdentifiers.INVENTORY_NODE_CONNECTOR_IDENTIFIER);
         }
@@ -129,16 +130,16 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
             for (Map.Entry<Integer, YangInstanceIdentifier> pathIdentifier: pathIdentifiers.get().entrySet()) {
                 Optional<NormalizedNode<?, ?>> leafNode =
                         NormalizedNodes.findNode(tpMapEntryNode, pathIdentifier.getValue());
-                    if (! leafNode.isPresent() || ! passedFiltration(leafNode.get())) {
-                        passed = false;
-                        break;
-                    }
+                if (! leafNode.isPresent() || ! passedFiltration(leafNode.get())) {
+                    passed = false;
+                    break;
+                }
             }
             //check if any Filtrator filtered out
             if (passed) {
                 if (model.equals(OpendaylightInventoryModel.class)) {
                     MapEntryNode tp = createInventoryTpEntry(tpMapEntryNode, node, topologyId, itemId);
-                    if(tp != null) {
+                    if (tp != null) {
                         tpBuilder.addChild(tp);
                     }
                 } else {
@@ -161,8 +162,8 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         ListNodeBuilder<String, LeafSetEntryNode<String>> leafListBuilder =
                 ImmutableLeafSetNodeBuilder.<String>create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(TopologyQNames.TP_REF));
-        if(nodeConnectorIdOptional.isPresent()) {
-            if(tpMapNodeOpt.isPresent()) {
+        if (nodeConnectorIdOptional.isPresent()) {
+            if (tpMapNodeOpt.isPresent()) {
                 for (MapEntryNode mapEntryNode : ((MapNode) tpMapNodeOpt.get()).getValue()) {
                     Optional<DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?>> tpIdOpt =
                             mapEntryNode.getChild(InstanceIdentifiers.NT_TP_ID_IDENTIFIER.getLastPathArgument());
@@ -182,7 +183,7 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         } else {
             LOGGER.warn("No Node Connector ID is present!");
         }
-        if(tpIdFromNt == null) {
+        if (tpIdFromNt == null) {
             return null;
         }
         String tpRefVal = TranslatorHelper.createTpRefNT(topologyId, itemId, tpIdFromNt);

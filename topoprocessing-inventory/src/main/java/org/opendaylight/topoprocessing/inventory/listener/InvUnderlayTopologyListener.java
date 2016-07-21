@@ -9,6 +9,7 @@ package org.opendaylight.topoprocessing.inventory.listener;
 
 import java.util.List;
 import java.util.Map;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
@@ -32,7 +33,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  * @author matej.perina
  *
  */
-public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
+public class InvUnderlayTopologyListener extends UnderlayTopologyListener {
 
     public InvUnderlayTopologyListener(PingPongDataBroker domDataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
@@ -52,11 +53,11 @@ public class InvUnderlayTopologyListener extends UnderlayTopologyListener{
                 .node(itemQName).build();
     }
 
-    public void registerUnderlayTopologyListener(DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
-            Map<Integer, YangInstanceIdentifier> invPathIdentifiers){
-        if (correlationItem.equals(CorrelationItemEnum.Node) ||
-                correlationItem.equals(CorrelationItemEnum.TerminationPoint)) {
+    public void registerUnderlayTopologyListener(DatastoreType datastoreType, TopologyOperator operator,
+            List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
+            Map<Integer, YangInstanceIdentifier> invPathIdentifiers) {
+        if (correlationItem.equals(CorrelationItemEnum.Node)
+                || correlationItem.equals(CorrelationItemEnum.TerminationPoint)) {
             TopoStoreProvider connTopoStoreProvider = new TopoStoreProvider();
             NotificationInterConnector connector =
                     new NotificationInterConnector(correlationItem,connTopoStoreProvider);

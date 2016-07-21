@@ -16,7 +16,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 
 /**
@@ -33,7 +32,7 @@ public class ScriptFiltratorTest {
     private ScriptFiltrator filtrator;
 
     /**
-     * Test correct script filtration - exact match on ipv4 address
+     * Test correct script filtration - exact match on ipv4 address.
      */
     @Test
     public void test() {
@@ -58,17 +57,17 @@ public class ScriptFiltratorTest {
     }
 
     /**
-     * Test incorrect {@link ScriptFiltrator} creation - null scripting configuration
+     * Test incorrect {@link ScriptFiltrator} creation - null scripting configuration.
      */
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testCreationWithNullScripting() {
         filtrator = new ScriptFiltrator(null, path);
     }
 
     /**
-     * Test incorrect {@link ScriptFiltrator} creation - null path identifier
+     * Test incorrect {@link ScriptFiltrator} creation - null path identifier.
      */
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testCreationWithNullPathIdentifier() {
         String script = "println(\"hello\");";
         ScriptingBuilder scriptingBuilder = new ScriptingBuilder();
@@ -79,9 +78,9 @@ public class ScriptFiltratorTest {
     }
 
     /**
-     * Test incorrect {@link ScriptFiltrator} creation - engine not found
+     * Test incorrect {@link ScriptFiltrator} creation - engine not found.
      */
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testCreationUnknownEngine() {
         String script = "println(\"hello\");";
         ScriptingBuilder scriptingBuilder = new ScriptingBuilder();

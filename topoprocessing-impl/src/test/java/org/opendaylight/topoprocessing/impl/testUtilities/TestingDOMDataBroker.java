@@ -84,6 +84,7 @@ public class TestingDOMDataBroker implements DOMDataBroker, DOMDataTreeChangeSer
             public L getInstance() {
                 return null;
             }
+
             @Override
             public void close() {
                 listenerClosed = true;

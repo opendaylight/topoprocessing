@@ -7,11 +7,12 @@
  */
 package org.opendaylight.topoprocessing.impl.writer;
 
+import static org.mockito.Matchers.eq;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import static org.mockito.Matchers.eq;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
@@ -28,7 +29,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 @RunWith(MockitoJUnitRunner.class)
 public class PutOperationTest {
 
-    private final static String TOPOLOGY_ID = "mytopo:1";
+    private static final String TOPOLOGY_ID = "mytopo:1";
     private final YangInstanceIdentifier topologyIdentifier = YangInstanceIdentifier
             .builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
             .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY_ID).build();
@@ -36,12 +37,12 @@ public class PutOperationTest {
     @Mock private NormalizedNode<?, ?> mockNormalizedNode;
     @Mock private DOMDataWriteTransaction mockDomDataWriteTransaction;
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testClassCreationWithNullIdentifier() {
         PutOperation putOperation = new PutOperation(null, mockNormalizedNode);
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testClassCreationWithNullNode() {
         PutOperation putOperation = new PutOperation(topologyIdentifier, null);
     }

@@ -7,6 +7,8 @@
  */
 package org.opendaylight.topoprocessing.impl.operator;
 
+import com.google.common.base.Optional;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,8 +39,6 @@ import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableMapEntryNodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 /**
  * @author samuel.kontris
@@ -129,26 +129,26 @@ public class NodeAndTPAggregator implements TopologyOperator {
 
         @Override
         public void addOverlayItem(OverlayItem newOverlayItem) {
-            if(newOverlayItem.getUnderlayItems().size() != 1) {
+            if (newOverlayItem.getUnderlayItems().size() != 1) {
                 throw new IllegalStateException("In newOverlayItem should be only one underlay item");
             }
 
             UnderlayItem underlayItem = newOverlayItem.getUnderlayItems().peek();
             Optional<NormalizedNode<?, ?>> aggregatedTPsOpt = Optional.absent();
-            if(inputModel.equals(NetworkTopologyModel.class) || inputModel.equals(OpendaylightInventoryModel.class)) {
+            if (inputModel.equals(NetworkTopologyModel.class) || inputModel.equals(OpendaylightInventoryModel.class)) {
                 aggregatedTPsOpt = NormalizedNodes.findNode(underlayItem.getItem(),
                         InstanceIdentifiers.NT_TERMINATION_POINT);
-            } else if(inputModel.equals(I2rsModel.class)) {
+            } else if (inputModel.equals(I2rsModel.class)) {
                 aggregatedTPsOpt = NormalizedNodes.findNode(underlayItem.getItem(),
                         InstanceIdentifiers.I2RS_TERMINATION_POINT);
             } else {
                 throw new IllegalStateException("Not supported model - " + inputModel);
             }
 
-            if(aggregatedTPsOpt.isPresent()) {
+            if (aggregatedTPsOpt.isPresent()) {
                 Optional<NormalizedNode<?, ?>> nodeIdOpt = NormalizedNodes.findNode(underlayItem.getItem(),
                         InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Node, inputModel));
-                if(nodeIdOpt.isPresent()) {
+                if (nodeIdOpt.isPresent()) {
                     MapNode aggregatedTPs = (MapNode) aggregatedTPsOpt.get();
                     wrappers.get(Integer.parseInt(nodeIdOpt.get().getValue().toString()))
                             .setAggregatedTerminationPoints(aggregatedTPs);
@@ -174,14 +174,14 @@ public class NodeAndTPAggregator implements TopologyOperator {
         this.inputModel = inputModel;
         this.targetFieldsPerTopology = targetFieldsperTopology;
 
-        if(inputModel.equals(NetworkTopologyModel.class) || inputModel.equals(OpendaylightInventoryModel.class)){
+        if (inputModel.equals(NetworkTopologyModel.class) || inputModel.equals(OpendaylightInventoryModel.class)) {
             tpIdentifier = InstanceIdentifiers.NT_TERMINATION_POINT;
             tpIdIdentifier = InstanceIdentifiers.NT_TP_ID_IDENTIFIER;
             tpIdQname = TopologyQNames.NETWORK_TP_ID_QNAME;
             tpQName = TerminationPoint.QNAME;
             nodeQName = Node.QNAME;
             nodeIdQName = TopologyQNames.NETWORK_NODE_ID_QNAME;
-        } else if(inputModel.equals(I2rsModel.class)) {
+        } else if (inputModel.equals(I2rsModel.class)) {
             tpIdentifier = InstanceIdentifiers.I2RS_TERMINATION_POINT;
             tpIdIdentifier = InstanceIdentifiers.I2RS_TP_ID_IDENTIFIER;
             tpIdQname = TopologyQNames.I2RS_TP_ID_QNAME;
@@ -215,7 +215,7 @@ public class NodeAndTPAggregator implements TopologyOperator {
 
     @Override
     public void setTopologyManager(ITopologyManager manager) {
-        if(manager instanceof TopologyManager) {
+        if (manager instanceof TopologyManager) {
             this.manager = (TopologyManager) manager;
         } else {
             throw new IllegalStateException("Received manager should be instance of " + TopologyManager.class);
@@ -233,18 +233,18 @@ public class NodeAndTPAggregator implements TopologyOperator {
         Map<String, Map<Integer, YangInstanceIdentifier>> targetFieldsPerTP = new HashMap<>();
 
         for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
-            if(removedOverlayItem == null || removedOverlayItem != null && !overlayItem.equals(removedOverlayItem)) {
+            if (removedOverlayItem == null || removedOverlayItem != null && !overlayItem.equals(removedOverlayItem)) {
                 for (UnderlayItem underlayItemFromWrapper : overlayItem.getUnderlayItems()) {
                     Map<Integer, YangInstanceIdentifier> targetFields = targetFieldsPerTopology.get(
                             underlayItemFromWrapper.getTopologyId());
                     Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes
                             .findNode(underlayItemFromWrapper.getItem(), tpIdentifier);
-                    if(tpMapNodeOpt.isPresent()) {
+                    if (tpMapNodeOpt.isPresent()) {
                         MapNode tpMapNode = (MapNode) tpMapNodeOpt.get();
                         for (MapEntryNode tpMapEntryNode : tpMapNode.getValue()) {
                             Optional<NormalizedNode<?, ?>> tpIdOpt = NormalizedNodes.findNode(
                                     tpMapEntryNode, tpIdIdentifier);
-                            if(tpIdOpt.isPresent()) {
+                            if (tpIdOpt.isPresent()) {
                                 // copy termination point except id
                                 ArrayList<DataContainerChild<? extends PathArgument, ?>> value =
                                         new ArrayList<>(tpMapEntryNode.getValue());

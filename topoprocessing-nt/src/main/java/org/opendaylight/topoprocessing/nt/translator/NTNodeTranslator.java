@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @author matej.perina
  *
  */
-public class NTNodeTranslator implements NodeTranslator{
+public class NTNodeTranslator implements NodeTranslator {
 
     private static final Logger LOG = LoggerFactory.getLogger(NTNodeTranslator.class);
 
@@ -114,8 +114,8 @@ public class NTNodeTranslator implements NodeTranslator{
                     InstanceIdentifiers.I2RS_TP_IDENTIFIER);
         }
         if (terminationPointMapNode.isPresent()) {
-            if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint &&
-                            !FiltrationOnly.class.equals(overlayItem.getCorrelationType())) {
+            if (overlayItem.getCorrelationItem() == CorrelationItemEnum.TerminationPoint
+                    && !FiltrationOnly.class.equals(overlayItem.getCorrelationType())) {
                 Collection<MapEntryNode> terminationPointMapEntries =
                         ((MapNode) terminationPointMapNode.get()).getValue();
                 for (MapEntryNode terminationPointMapEntry : terminationPointMapEntries) {
