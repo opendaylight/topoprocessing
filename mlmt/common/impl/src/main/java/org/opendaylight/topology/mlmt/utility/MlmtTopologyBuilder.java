@@ -10,47 +10,46 @@ package org.opendaylight.topology.mlmt.utility;
 
 import com.google.common.base.Optional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopologyBuilder;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypesBuilder;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopologyBuilder;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopologyKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkBuilder;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SupportingLink;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SupportingLinkBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SupportingLinkKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypesBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopologyBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNode;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.node.attributes.SupportingNodeKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -191,7 +190,7 @@ public class MlmtTopologyBuilder {
                 return;
             }
             final Topology sourceTopology = sourceTopologyObject.get();
-            if (sourceTopology == null){
+            if (sourceTopology == null) {
                 LOG.info("MlmtTopologyBuilder.copyTopology dest sourceTopology is null");
                 return;
             }
@@ -231,7 +230,7 @@ public class MlmtTopologyBuilder {
                 return;
             }
             final TopologyTypes sourceTopologyTypes = sourceTopologyTypesObject.get();
-            if (sourceTopologyTypes == null){
+            if (sourceTopologyTypes == null) {
                 LOG.info("MlmtTopologyBuilder.copyTopologyTypes dest sourceTopology is null");
                 return;
             }
@@ -272,7 +271,7 @@ public class MlmtTopologyBuilder {
                 return;
             }
             final UnderlayTopology sourceUnderlayTopology = sourceUnderlayTopologyObject.get();
-            if (sourceUnderlayTopology == null){
+            if (sourceUnderlayTopology == null) {
                 LOG.info("MlmtTopologyBuilder.copyUnderlayTopology dest sourceUnderlayTopology is null");
                 return;
             }
@@ -378,20 +377,20 @@ public class MlmtTopologyBuilder {
         LOG.info("MlmtTopologyBuilder.createTp type {} topologyInstanceId {} nodeKey {} terminationPointKey {}",
                 type, topologyInstanceId.toString(), nodeKey.toString(), tp.getKey().toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
-             @Override
-             public void applyOperation(ReadWriteTransaction transaction) {
-                 final TpId tpId = tp.getTpId();
-                 final TerminationPointKey tpKey = new TerminationPointKey(tpId);
-                 final TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
-                 tpBuilder.setKey(tpKey);
-                 tpBuilder.setTpId(tpId);
-                 List<TpId> lTpId = new ArrayList<TpId>();
-                 lTpId.add(tpId);
-                 tpBuilder.setTpRef(lTpId);
-                 final InstanceIdentifier<TerminationPoint> instanceId = topologyInstanceId
-                           .child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
-                 transaction.merge(type, instanceId, tpBuilder.build());
-             }
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                final TpId tpId = tp.getTpId();
+                final TerminationPointKey tpKey = new TerminationPointKey(tpId);
+                final TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
+                tpBuilder.setKey(tpKey);
+                tpBuilder.setTpId(tpId);
+                List<TpId> lTpId = new ArrayList<TpId>();
+                lTpId.add(tpId);
+                tpBuilder.setTpRef(lTpId);
+                final InstanceIdentifier<TerminationPoint> instanceId = topologyInstanceId
+                        .child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
+                transaction.merge(type, instanceId, tpBuilder.build());
+            }
         });
     }
 
@@ -410,8 +409,8 @@ public class MlmtTopologyBuilder {
                 transaction.delete(type, tpInstanceId);
             }
 
-             @Override
-             public boolean isCommitNow() { return true; }
+            @Override
+            public boolean isCommitNow() { return true; }
         });
     }
 
@@ -421,20 +420,20 @@ public class MlmtTopologyBuilder {
         LOG.info("MlmtTopologyBuilder.copyTp type {} topologyInstanceId {} nodeKey {} terminationPointKey {}",
                 type, topologyInstanceId.toString(), nodeKey.toString(), tp.getKey().toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
-             @Override
-             public void applyOperation(ReadWriteTransaction transaction) {
-                 final TerminationPointKey tpKey = tp.getKey();
-                 final TpId tpId = tp.getTpId();
-                 final TerminationPointBuilder tpBuilder = new TerminationPointBuilder(tp);
-                 tpBuilder.setKey(tpKey);
-                 tpBuilder.setTpId(tpId);
-                 List<TpId> lTpId = new ArrayList<TpId>();
-                 lTpId.add(tpId);
-                 tpBuilder.setTpRef(lTpId);
-                 final InstanceIdentifier<TerminationPoint> instanceId = topologyInstanceId
-                           .child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
-                 transaction.merge(type, instanceId, tpBuilder.build());
-             }
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                final TerminationPointKey tpKey = tp.getKey();
+                final TpId tpId = tp.getTpId();
+                final TerminationPointBuilder tpBuilder = new TerminationPointBuilder(tp);
+                tpBuilder.setKey(tpKey);
+                tpBuilder.setTpId(tpId);
+                List<TpId> lTpId = new ArrayList<TpId>();
+                lTpId.add(tpId);
+                tpBuilder.setTpRef(lTpId);
+                final InstanceIdentifier<TerminationPoint> instanceId = topologyInstanceId
+                        .child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
+                transaction.merge(type, instanceId, tpBuilder.build());
+            }
         });
     }
 
@@ -443,27 +442,27 @@ public class MlmtTopologyBuilder {
         LOG.info("MlmtTopologyBuilder.createLink type {} topologyInstanceId {} linkKey {}",
                 type, topologyInstanceId.toString(), link.getKey().toString());
 
-         processor.enqueueOperation(new MlmtTopologyOperation() {
-             @Override
-             public void applyOperation(ReadWriteTransaction transaction) {
-                 final LinkBuilder linkBuilder = new LinkBuilder();
-                 final LinkKey linkKey = link.getKey();
-                 final LinkId linkId = link.getLinkId();
-                 linkBuilder.setKey(linkKey);
-                 linkBuilder.setLinkId(linkId);
-                 linkBuilder.setSource(link.getSource());
-                 linkBuilder.setDestination(link.getDestination());
-                 SupportingLinkBuilder supportingLinkBuilder = new SupportingLinkBuilder();
-                 supportingLinkBuilder.setLinkRef(linkId);
-                 SupportingLinkKey supportingLinkKey = new SupportingLinkKey(linkId);
-                 supportingLinkBuilder.setKey(supportingLinkKey);
-                 List<SupportingLink> lSupporting = new ArrayList<SupportingLink>();
-                 lSupporting.add(supportingLinkBuilder.build());
-                 linkBuilder.setSupportingLink(lSupporting);
-                 final InstanceIdentifier<Link> instanceId = topologyInstanceId
-                         .child(Link.class, linkKey);
-                 transaction.merge(type, instanceId, linkBuilder.build());
-             }
+        processor.enqueueOperation(new MlmtTopologyOperation() {
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                final LinkBuilder linkBuilder = new LinkBuilder();
+                final LinkKey linkKey = link.getKey();
+                final LinkId linkId = link.getLinkId();
+                linkBuilder.setKey(linkKey);
+                linkBuilder.setLinkId(linkId);
+                linkBuilder.setSource(link.getSource());
+                linkBuilder.setDestination(link.getDestination());
+                SupportingLinkBuilder supportingLinkBuilder = new SupportingLinkBuilder();
+                supportingLinkBuilder.setLinkRef(linkId);
+                SupportingLinkKey supportingLinkKey = new SupportingLinkKey(linkId);
+                supportingLinkBuilder.setKey(supportingLinkKey);
+                List<SupportingLink> lSupporting = new ArrayList<SupportingLink>();
+                lSupporting.add(supportingLinkBuilder.build());
+                linkBuilder.setSupportingLink(lSupporting);
+                final InstanceIdentifier<Link> instanceId = topologyInstanceId
+                        .child(Link.class, linkKey);
+                transaction.merge(type, instanceId, linkBuilder.build());
+            }
         });
     }
 
@@ -472,14 +471,14 @@ public class MlmtTopologyBuilder {
         LOG.info("MlmtTopologyBuilder.deleteLink type {} topologyInstanceId {} linkKey {}",
                 type, topologyInstanceId.toString(), linkKey.toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
-             @Override
-             public void applyOperation(ReadWriteTransaction transaction) {
-                 InstanceIdentifier<Link> linkInstanceId = topologyInstanceId.child(Link.class, linkKey);
-                 transaction.delete(type, linkInstanceId);
-             }
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                InstanceIdentifier<Link> linkInstanceId = topologyInstanceId.child(Link.class, linkKey);
+                transaction.delete(type, linkInstanceId);
+            }
 
-             @Override
-             public boolean isCommitNow() { return true; }
+            @Override
+            public boolean isCommitNow() { return true; }
         });
     }
 
@@ -488,23 +487,23 @@ public class MlmtTopologyBuilder {
         LOG.info("MlmtTopologyBuilder.copyLink type {} topologyInstanceId {} linkKey {}",
                 type, topologyInstanceId.toString(), link.getKey().toString());
         processor.enqueueOperation(new MlmtTopologyOperation() {
-             @Override
-             public void applyOperation(ReadWriteTransaction transaction) {
-                 LinkBuilder linkBuilder = new LinkBuilder(link);
-                 final LinkKey linkKey = link.getKey();
-                 final LinkId linkId = link.getLinkId();
-                 linkBuilder.setKey(linkKey);
-                 linkBuilder.setLinkId(linkId);
-                 SupportingLinkBuilder supportingLinkBuilder = new SupportingLinkBuilder();
-                 supportingLinkBuilder.setLinkRef(linkId);
-                 SupportingLinkKey supportingLinkKey = new SupportingLinkKey(linkId);
-                 supportingLinkBuilder.setKey(supportingLinkKey);
-                 List<SupportingLink> lSupporting = new ArrayList<SupportingLink>();
-                 lSupporting.add(supportingLinkBuilder.build());
-                 linkBuilder.setSupportingLink(lSupporting);
-                 InstanceIdentifier<Link> linkInstanceId = topologyInstanceId.child(Link.class, linkKey);
-                 transaction.merge(type, linkInstanceId, link);
-             }
+            @Override
+            public void applyOperation(ReadWriteTransaction transaction) {
+                LinkBuilder linkBuilder = new LinkBuilder(link);
+                final LinkKey linkKey = link.getKey();
+                final LinkId linkId = link.getLinkId();
+                linkBuilder.setKey(linkKey);
+                linkBuilder.setLinkId(linkId);
+                SupportingLinkBuilder supportingLinkBuilder = new SupportingLinkBuilder();
+                supportingLinkBuilder.setLinkRef(linkId);
+                SupportingLinkKey supportingLinkKey = new SupportingLinkKey(linkId);
+                supportingLinkBuilder.setKey(supportingLinkKey);
+                List<SupportingLink> lSupporting = new ArrayList<SupportingLink>();
+                lSupporting.add(supportingLinkBuilder.build());
+                linkBuilder.setSupportingLink(lSupporting);
+                InstanceIdentifier<Link> linkInstanceId = topologyInstanceId.child(Link.class, linkKey);
+                transaction.merge(type, linkInstanceId, link);
+            }
         });
     }
 

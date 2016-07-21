@@ -9,50 +9,50 @@
 package org.opendaylight.topology.multitechnology;
 
 import com.google.common.base.Optional;
-import java.util.List;
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
+import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.TedNodeAttributes;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.TedLinkAttributes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyTypeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.attribute.ValueBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.AttributeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.Attribute;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.AttributeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.multitechnology.topology.type.MultitechnologyTopologyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoLinkBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoLink;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoNodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.NativeL3IgpMetric;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.NativeTed;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtTedNodeAttributeValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtTedNodeAttributeValueBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtTedLinkAttributeValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtTedLinkAttributeValueBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtLinkMetricAttributeValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtLinkMetricAttributeValueBuilder;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyOperation;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.impl.rev150122.MultitechnologyTopologyProviderRuntimeMXBean;
-
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoLink;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoLinkBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoNodeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyTypeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.Attribute;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.AttributeBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.AttributeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.mt.info.attribute.ValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.multitechnology.topology.type.MultitechnologyTopologyBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtLinkMetricAttributeValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtLinkMetricAttributeValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtTedLinkAttributeValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtTedLinkAttributeValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtTedNodeAttributeValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.MtTedNodeAttributeValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.NativeL3IgpMetric;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.ted.rev150122.NativeTed;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.TedLinkAttributes;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.TedNodeAttributes;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,14 +91,14 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
         processor.enqueueOperation(new MlmtTopologyOperation() {
             @Override
             public void applyOperation(ReadWriteTransaction transaction) {
-                 final MultitechnologyTopologyBuilder multitechnologyTopologyBuilder =
-                         new MultitechnologyTopologyBuilder();
-                 final MtTopologyTypeBuilder mtTopologyTypeBuilder = new MtTopologyTypeBuilder();
-                 mtTopologyTypeBuilder.setMultitechnologyTopology(multitechnologyTopologyBuilder.build());
-                 InstanceIdentifier<MtTopologyType> target = targetTopologyId.child(TopologyTypes.class)
-                         .augmentation(MtTopologyType.class);
-                 MtTopologyType top = mtTopologyTypeBuilder.build();
-                 transaction.merge(LogicalDatastoreType.OPERATIONAL, target, top, true);
+                final MultitechnologyTopologyBuilder multitechnologyTopologyBuilder =
+                        new MultitechnologyTopologyBuilder();
+                final MtTopologyTypeBuilder mtTopologyTypeBuilder = new MtTopologyTypeBuilder();
+                mtTopologyTypeBuilder.setMultitechnologyTopology(multitechnologyTopologyBuilder.build());
+                InstanceIdentifier<MtTopologyType> target = targetTopologyId.child(TopologyTypes.class)
+                        .augmentation(MtTopologyType.class);
+                MtTopologyType top = mtTopologyTypeBuilder.build();
+                transaction.merge(LogicalDatastoreType.OPERATIONAL, target, top, true);
             }
         });
     }
@@ -224,10 +224,10 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
             final Uri uri = new Uri(path);
             final AttributeKey attributeKey = new AttributeKey(uri);
-            final InstanceIdentifier<Attribute> instanceAttributeId = targetTopologyId.child(Link.class, linkKey).
-                augmentation(MtInfoLink.class).child(Attribute.class, attributeKey);
+            final InstanceIdentifier<Attribute> instanceAttributeId = targetTopologyId.child(Link.class, linkKey)
+                    .augmentation(MtInfoLink.class).child(Attribute.class, attributeKey);
             final Optional<Attribute> sourceAttributeObject =
-                rx.read(LogicalDatastoreType.OPERATIONAL, instanceAttributeId).get();
+                    rx.read(LogicalDatastoreType.OPERATIONAL, instanceAttributeId).get();
 
             final MtLinkMetricAttributeValueBuilder mtLinkMetricAVBuilder = new MtLinkMetricAttributeValueBuilder();
             mtLinkMetricAVBuilder.setMetric(metric);
@@ -252,8 +252,7 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
                         la.add(attributeBuilder.build());
                         mtInfoLinkBuilder.setAttribute(la);
                         final InstanceIdentifier<MtInfoLink> instanceId =
-                                targetTopologyId.child(Link.class, linkKey).
-                            augmentation(MtInfoLink.class);
+                                targetTopologyId.child(Link.class, linkKey).augmentation(MtInfoLink.class);
                         transaction.merge(LogicalDatastoreType.OPERATIONAL,
                                 instanceId, mtInfoLinkBuilder.build(), true);
                     }
@@ -272,15 +271,15 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             final TedLinkAttributes ted,
             final LinkKey linkKey) {
         try {
-            LOG.info("MultitechnologyTopologyProvider.setNativeMtLinkTedAttribute type {} topology {} linkKey {}", 
+            LOG.info("MultitechnologyTopologyProvider.setNativeMtLinkTedAttribute type {} topology {} linkKey {}",
                     type, topologyInstanceId.toString(), linkKey.toString());
             final String path = "native-ted:1";
             final InstanceIdentifier<Topology> targetTopologyId = topologyInstanceId;
             final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
             final Uri uri = new Uri(path);
             final AttributeKey attributeKey = new AttributeKey(uri);
-            final InstanceIdentifier<Attribute> instanceAttributeId = targetTopologyId.child(Link.class, linkKey).
-                augmentation(MtInfoLink.class).child(Attribute.class, attributeKey);
+            final InstanceIdentifier<Attribute> instanceAttributeId = targetTopologyId.child(Link.class, linkKey)
+                    .augmentation(MtInfoLink.class).child(Attribute.class, attributeKey);
             final Optional<Attribute> sourceAttributeObject =
                 rx.read(LogicalDatastoreType.OPERATIONAL, instanceAttributeId).get();
 
@@ -351,8 +350,8 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
             final ReadOnlyTransaction rx = dataProvider.newReadOnlyTransaction();
             final Uri uri = new Uri(path);
             final AttributeKey attributeKey = new AttributeKey(uri);
-            final InstanceIdentifier<Attribute> instanceAttributeId = targetTopologyId.child(Node.class, nodeKey).
-                    augmentation(MtInfoNode.class).child(Attribute.class, attributeKey);
+            final InstanceIdentifier<Attribute> instanceAttributeId = targetTopologyId.child(Node.class, nodeKey)
+                    .augmentation(MtInfoNode.class).child(Attribute.class, attributeKey);
             final Optional<Attribute> sourceAttributeObject =
                     rx.read(LogicalDatastoreType.OPERATIONAL, instanceAttributeId).get();
 
@@ -391,17 +390,17 @@ public class MultitechnologyTopologyProvider implements MultitechnologyTopologyP
                         final List<Attribute> la = new ArrayList<Attribute>();
                         la.add(attributeBuilder.build());
                         mtInfoNodeBuilder.setAttribute(la);
-                        final InstanceIdentifier<MtInfoNode> instanceId = 
+                        final InstanceIdentifier<MtInfoNode> instanceId =
                                 targetTopologyId.child(Node.class, nodeKey).augmentation(MtInfoNode.class);
                         transaction.merge(LogicalDatastoreType.OPERATIONAL, instanceId,
                                 mtInfoNodeBuilder.build(), true);
                     }
                 }
             });
-         } catch (final InterruptedException e) {
-             LOG.error("MultitechnologyTopologyProvider.setNativeMtNodeAttributes interrupted exception", e);
-         } catch (final ExecutionException e) {
-             LOG.error("MultitechnologyTopologyProvider.setNativeMtNodeAttributes execution exception", e);
-         }
+        } catch (final InterruptedException e) {
+            LOG.error("MultitechnologyTopologyProvider.setNativeMtNodeAttributes interrupted exception", e);
+        } catch (final ExecutionException e) {
+            LOG.error("MultitechnologyTopologyProvider.setNativeMtNodeAttributes execution exception", e);
+        }
     }
 }
