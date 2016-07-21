@@ -10,8 +10,8 @@ package org.opendaylight.topology.mlmt.utility;
 
 public class MlmtInfoOpaqueAttrId {
 
-    static final public String MTINFO_OPAQUE_ATTR_ID_NODE_NAME = "NODE-NAME";
-    static final public String MTINFO_OPAQUE_ATTR_ID_TP_NAME = "TP-NAME";
-    static final public String MTINFO_OPAQUE_ATTR_ID_LINK_NAME = "LINK-NAME";
-    static final public String MTINFO_OPAQUE_ATTR_ID_CORRELATION_FIELD = "CORRELATION-FIELD";
+    public static final String MTINFO_OPAQUE_ATTR_ID_NODE_NAME = "NODE-NAME";
+    public static final String MTINFO_OPAQUE_ATTR_ID_TP_NAME = "TP-NAME";
+    public static final String MTINFO_OPAQUE_ATTR_ID_LINK_NAME = "LINK-NAME";
+    public static final String MTINFO_OPAQUE_ATTR_ID_CORRELATION_FIELD = "CORRELATION-FIELD";
 }

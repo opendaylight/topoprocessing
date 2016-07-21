@@ -8,23 +8,16 @@
 
 package org.opendaylight.topology.mlmt.utility;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.IsoSystemId;
-
-import org.opendaylight.topology.mlmt.utility.MlmtResourceNameCorrelation;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 
 public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
@@ -90,10 +83,10 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
     @Override
     public void putMlmtNodeId(final String nodeName, final NodeId nodeId) {
-        synchronized(mlmtNodeNameMap) {
+        synchronized (mlmtNodeNameMap) {
             mlmtNodeNameMap.put(nodeName, nodeId);
         }
-        synchronized(mlmtNodeIdMap) {
+        synchronized (mlmtNodeIdMap) {
             mlmtNodeIdMap.put(nodeId, nodeName);
         }
     }
@@ -101,11 +94,11 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     @Override
     public void removeMlmtNodeId(final String nodeName) {
         NodeId nodeId = getMlmtNodeId(nodeName);
-        synchronized(mlmtNodeNameMap) {
+        synchronized (mlmtNodeNameMap) {
             mlmtNodeNameMap.remove(nodeName);
         }
         if (nodeId != null) {
-            synchronized(mlmtNodeIdMap) {
+            synchronized (mlmtNodeIdMap) {
                 mlmtNodeIdMap.remove(nodeId);
             }
         }
@@ -113,21 +106,21 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
     @Override
     public String getMlmtNodeName(final NodeId nodeId) {
-        synchronized(mlmtNodeIdMap) {
+        synchronized (mlmtNodeIdMap) {
             return mlmtNodeIdMap.get(nodeId);
         }
     }
 
     @Override
     public NodeId getMlmtNodeId(final String nodeName) {
-        synchronized(mlmtNodeNameMap) {
+        synchronized (mlmtNodeNameMap) {
             return mlmtNodeNameMap.get(nodeName);
         }
     }
 
     @Override
     public void putMlmtTerminationPointId(final String nodeName, final String tpName, final TpId tpId) {
-        synchronized(mlmtTpNameMap) {
+        synchronized (mlmtTpNameMap) {
             Map<String, TpId> tpNameMap = mlmtTpNameMap.get(nodeName);
             if (tpNameMap == null) {
                 tpNameMap = new HashMap<String, TpId>();
@@ -136,7 +129,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
             mlmtTpNameMap.put(nodeName, tpNameMap);
         }
 
-        synchronized(mlmtTpIdMap) {
+        synchronized (mlmtTpIdMap) {
             Map<TpId, String> tpIdMap = mlmtTpIdMap.get(nodeName);
             if (tpIdMap == null) {
                 tpIdMap = new HashMap<TpId, String>();
@@ -149,7 +142,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     @Override
     public void removeMlmtTerminationPointId(final String nodeName, final String tpName) {
         TpId tpId = getMlmtTerminationPointId(nodeName, tpName);
-        synchronized(mlmtTpNameMap) {
+        synchronized (mlmtTpNameMap) {
             Map<String, TpId> tpNameMap = mlmtTpNameMap.get(nodeName);
             if (tpNameMap != null) {
                 tpNameMap.remove(tpName);
@@ -162,7 +155,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
         }
 
         if (tpId != null) {
-            synchronized(mlmtTpIdMap) {
+            synchronized (mlmtTpIdMap) {
                 Map<TpId, String> tpIdMap = mlmtTpIdMap.get(nodeName);
                 if (tpIdMap != null) {
                     tpIdMap.remove(tpId);
@@ -179,7 +172,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     @Override
     public TpId getMlmtTerminationPointId(final String nodeName, final String tpName) {
         Map<String, TpId> tpNameMap = null;
-        synchronized(mlmtTpNameMap) {
+        synchronized (mlmtTpNameMap) {
             tpNameMap = mlmtTpNameMap.get(nodeName);
         }
         if (tpNameMap == null) {
@@ -192,7 +185,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     @Override
     public String getMlmtTerminationPointName(final NodeId nodeId, final TpId tpId) {
         String nodeName = null;
-        synchronized(mlmtNodeIdMap) {
+        synchronized (mlmtNodeIdMap) {
             nodeName = mlmtNodeIdMap.get(nodeId);
         }
         if (nodeName == null) {
@@ -200,7 +193,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
         }
 
         Map<TpId, String> tpIdMap = null;
-        synchronized(mlmtTpIdMap) {
+        synchronized (mlmtTpIdMap) {
             tpIdMap = mlmtTpIdMap.get(nodeName);
         }
         if (tpIdMap == null) {
@@ -212,10 +205,10 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
     @Override
     public void putMlmtLinkId(final String linkName, final LinkId linkId) {
-        synchronized(mlmtLinkNameMap) {
+        synchronized (mlmtLinkNameMap) {
             mlmtLinkNameMap.put(linkName, linkId);
         }
-        synchronized(mlmtLinkIdMap) {
+        synchronized (mlmtLinkIdMap) {
             mlmtLinkIdMap.put(linkId, linkName);
         }
     }
@@ -223,12 +216,12 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     @Override
     public void removeMlmtLinkId(final String linkName) {
         LinkId linkId = null;
-        synchronized(mlmtLinkNameMap) {
+        synchronized (mlmtLinkNameMap) {
             linkId = mlmtLinkNameMap.get(linkName);
             mlmtLinkNameMap.remove(linkName);
         }
         if (linkId != null) {
-            synchronized(mlmtLinkIdMap) {
+            synchronized (mlmtLinkIdMap) {
                 mlmtLinkIdMap.remove(linkId);
             }
         }
@@ -236,24 +229,24 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
     @Override
     public LinkId getMlmtLinkId(final String linkName) {
-        synchronized(mlmtLinkNameMap) {
+        synchronized (mlmtLinkNameMap) {
             return mlmtLinkNameMap.get(linkName);
         }
     }
 
     @Override
     public String getMlmtLinkName(final LinkId linkId) {
-        synchronized(mlmtLinkIdMap) {
+        synchronized (mlmtLinkIdMap) {
             return mlmtLinkIdMap.get(linkId);
         }
     }
 
     @Override
     public void putUnderNodeId(final NodeId underNodeId, final NodeId mlmtNodeId) {
-        synchronized(underNodeId2MlmtNodeId) {
+        synchronized (underNodeId2MlmtNodeId) {
             underNodeId2MlmtNodeId.put(underNodeId, mlmtNodeId);
         }
-        synchronized(mlmtNodeId2underNodeId) {
+        synchronized (mlmtNodeId2underNodeId) {
             mlmtNodeId2underNodeId.put(mlmtNodeId, underNodeId);
         }
     }
@@ -261,11 +254,11 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     @Override
     public void removeUnderNodeId(final NodeId underNodeId) {
         NodeId mlmtNodeId = getUnderNodeId2Mlmt(underNodeId);
-        synchronized(underNodeId2MlmtNodeId) {
+        synchronized (underNodeId2MlmtNodeId) {
             underNodeId2MlmtNodeId.remove(underNodeId);
         }
         if (mlmtNodeId != null) {
-            synchronized(mlmtNodeId2underNodeId) {
+            synchronized (mlmtNodeId2underNodeId) {
                 mlmtNodeId2underNodeId.remove(mlmtNodeId);
             }
         }
@@ -273,21 +266,21 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
     @Override
     public NodeId getUnderNodeId2Mlmt(final NodeId underNodeId) {
-        synchronized(underNodeId2MlmtNodeId) {
+        synchronized (underNodeId2MlmtNodeId) {
             return underNodeId2MlmtNodeId.get(underNodeId);
         }
     }
 
     @Override
     public NodeId getMlmtNodeId2Under(final NodeId mlmtNodeId) {
-        synchronized(mlmtNodeId2underNodeId) {
+        synchronized (mlmtNodeId2underNodeId) {
             return mlmtNodeId2underNodeId.get(mlmtNodeId);
         }
     }
 
     @Override
     public void putUnderTerminationPointId2Mlmt(final NodeId underNodeId, final TpId underTpId, final TpId tpId) {
-        synchronized(underTpId2MlmtTpId) {
+        synchronized (underTpId2MlmtTpId) {
             Map<TpId, TpId> underTpIdMap = underTpId2MlmtTpId.get(underNodeId);
             if (underTpIdMap == null) {
                 underTpIdMap = new HashMap<TpId, TpId>();
@@ -299,7 +292,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
     @Override
     public void removeUnderTerminationPointId2Mlmt(final NodeId underNodeId, final TpId underTpId) {
-        synchronized(underTpId2MlmtTpId) {
+        synchronized (underTpId2MlmtTpId) {
             Map<TpId, TpId> underTpIdMap = underTpId2MlmtTpId.get(underNodeId);
             if (underTpIdMap != null) {
                 underTpIdMap.remove(underTpId);
@@ -315,7 +308,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     @Override
     public TpId getUnderTerminationPointId2Mlmt(final NodeId underNodeId, final TpId underTpId) {
         Map<TpId, TpId> underTpIdMap = null;
-        synchronized(underTpId2MlmtTpId) {
+        synchronized (underTpId2MlmtTpId) {
             underTpIdMap = underTpId2MlmtTpId.get(underNodeId);
         }
         if (underTpIdMap == null) {
@@ -326,31 +319,31 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
     @Override
     public void putIsoSystemId2NodeName(final IsoSystemId isoSystemId, final String nodeName) {
-        synchronized(isoSystemId2NodeName) {
+        synchronized (isoSystemId2NodeName) {
             isoSystemId2NodeName.put(isoSystemId, nodeName);
         }
     }
 
     @Override
     public void removeIsoSystemId2NodeName(final IsoSystemId isoSystemId) {
-        synchronized(isoSystemId2NodeName) {
+        synchronized (isoSystemId2NodeName) {
             isoSystemId2NodeName.remove(isoSystemId);
         }
     }
 
     @Override
     public String getNodeName(final IsoSystemId isoSystemId) {
-        synchronized(isoSystemId2NodeName) {
+        synchronized (isoSystemId2NodeName) {
             return isoSystemId2NodeName.get(isoSystemId);
         }
     }
 
     @Override
     public void putIsoSystemId2NodeId(final IsoSystemId isoSystemId, final NodeId nodeId) {
-        synchronized(isoSystemId2NodeId) {
+        synchronized (isoSystemId2NodeId) {
             isoSystemId2NodeId.put(isoSystemId, nodeId);
         }
-        synchronized(nodeId2IsoSystemId) {
+        synchronized (nodeId2IsoSystemId) {
             nodeId2IsoSystemId.put(nodeId, isoSystemId);
         }
     }
@@ -358,11 +351,11 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     @Override
     public void removeIsoSystemId2NodeId(final IsoSystemId isoSystemId) {
         NodeId nodeId = isoSystemId2NodeId.get(isoSystemId);
-        synchronized(isoSystemId2NodeId) {
+        synchronized (isoSystemId2NodeId) {
             isoSystemId2NodeId.remove(isoSystemId);
         }
         if (nodeId != null) {
-            synchronized(nodeId2IsoSystemId) {
+            synchronized (nodeId2IsoSystemId) {
                 nodeId2IsoSystemId.remove(nodeId);
             }
         }
@@ -371,69 +364,69 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     @Override
     public void removeNodeId2IsoSystemId(final NodeId nodeId) {
         final IsoSystemId isoSystemId = nodeId2IsoSystemId.get(nodeId);
-        synchronized(nodeId2IsoSystemId) {
+        synchronized (nodeId2IsoSystemId) {
             nodeId2IsoSystemId.remove(nodeId);
         }
-        synchronized(nodeId2IsoSystemId) {
+        synchronized (nodeId2IsoSystemId) {
             nodeId2IsoSystemId.remove(isoSystemId);
         }
     }
 
     @Override
     public NodeId getNodeId(final IsoSystemId isoSystemId) {
-        synchronized(isoSystemId2NodeName) {
+        synchronized (isoSystemId2NodeName) {
             return isoSystemId2NodeId.get(isoSystemId);
         }
     }
 
     @Override
     public IsoSystemId getIsoSystemId(final NodeId nodeId) {
-        synchronized(nodeId2IsoSystemId) {
+        synchronized (nodeId2IsoSystemId) {
             return nodeId2IsoSystemId.get(nodeId);
         }
     }
 
     @Override
     public void putIpv4Address2NodeName(final Ipv4Address ipv4Address, final String nodeName) {
-        synchronized(ipv4Address2NodeName) {
+        synchronized (ipv4Address2NodeName) {
             ipv4Address2NodeName.put(ipv4Address, nodeName);
         }
     }
 
     @Override
     public void removeIpv4Address2NodeName(final Ipv4Address ipv4Address) {
-        synchronized(ipv4Address2NodeName) {
+        synchronized (ipv4Address2NodeName) {
             ipv4Address2NodeName.remove(ipv4Address);
         }
     }
 
     @Override
     public String getNodeName(final Ipv4Address ipv4Address) {
-        synchronized(ipv4Address2NodeName) {
+        synchronized (ipv4Address2NodeName) {
             return ipv4Address2NodeName.get(ipv4Address);
         }
     }
 
     @Override
     public NodeId getNodeId(final Ipv4Address ipv4Address) {
-        synchronized(ipv4Address2NodeId) {
+        synchronized (ipv4Address2NodeId) {
             return ipv4Address2NodeId.get(ipv4Address);
         }
     }
 
     @Override
     public Ipv4Address getIpv4Address(final NodeId nodeId) {
-        synchronized(nodeId2Ipv4Address) {
+        synchronized (nodeId2Ipv4Address) {
             return nodeId2Ipv4Address.get(nodeId);
         }
     }
 
     @Override
     public void putIpv4Address2NodeId(final Ipv4Address ipv4Address, final NodeId nodeId) {
-        synchronized(ipv4Address2NodeId) {
+        synchronized (ipv4Address2NodeId) {
             ipv4Address2NodeId.put(ipv4Address, nodeId);
         }
-        synchronized(nodeId2Ipv4Address) {
+        synchronized (nodeId2Ipv4Address) {
             nodeId2Ipv4Address.put(nodeId, ipv4Address);
         }
     }
@@ -441,11 +434,11 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     @Override
     public void removeIpv4Address2NodeId(final Ipv4Address ipv4Address) {
         final NodeId nodeId = ipv4Address2NodeId.get(ipv4Address);
-        synchronized(ipv4Address2NodeId) {
+        synchronized (ipv4Address2NodeId) {
             ipv4Address2NodeId.remove(ipv4Address);
         }
         if (nodeId != null) {
-            synchronized(nodeId2Ipv4Address) {
+            synchronized (nodeId2Ipv4Address) {
                 nodeId2Ipv4Address.remove(nodeId);
             }
         }
@@ -454,17 +447,17 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     @Override
     public void removeNodeId2Ipv4Address(final NodeId nodeId) {
         final Ipv4Address ipv4Address = nodeId2Ipv4Address.get(nodeId);
-        synchronized(ipv4Address2NodeId) {
+        synchronized (ipv4Address2NodeId) {
             ipv4Address2NodeId.remove(ipv4Address);
         }
-        synchronized(nodeId2Ipv4Address) {
+        synchronized (nodeId2Ipv4Address) {
             nodeId2Ipv4Address.remove(nodeId);
         }
     }
 
     @Override
     public void putIpv4Address2TpId(final Ipv4Address ipv4Address, final String nodeName, final TpId tpId) {
-        synchronized(ipv4Address2TpId) {
+        synchronized (ipv4Address2TpId) {
             Map<String, TpId> mapTpId = ipv4Address2TpId.get(ipv4Address);
             if (mapTpId == null) {
                 mapTpId = new HashMap<String, TpId>();
@@ -476,7 +469,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
     @Override
     public TpId getTpId(final Ipv4Address ipv4Address, final String nodeName) {
-        synchronized(ipv4Address2TpId) {
+        synchronized (ipv4Address2TpId) {
             Map<String, TpId> mapTpId = ipv4Address2TpId.get(ipv4Address);
             if (mapTpId == null) {
                 return null;
@@ -487,7 +480,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
     @Override
     public void removeTpId2Ipv4Address(final Ipv4Address ipv4Address, final String nodeName) {
-        synchronized(ipv4Address2TpId) {
+        synchronized (ipv4Address2TpId) {
             Map<String, TpId> mapTpId = ipv4Address2TpId.get(ipv4Address);
             if (mapTpId == null) {
                 return;
@@ -503,28 +496,28 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
     @Override
     public void putNodeId2NodeName(final NodeId nodeId, final String nodeName) {
-        synchronized(nodeId2NodeName) {
+        synchronized (nodeId2NodeName) {
             nodeId2NodeName.put(nodeId, nodeName);
         }
     }
 
     @Override
     public String getNodeName(final NodeId nodeId) {
-        synchronized(nodeId2NodeName) {
+        synchronized (nodeId2NodeName) {
             return nodeId2NodeName.get(nodeId);
         }
     }
 
     @Override
     public NodeId getNodeId(final NodeKey invNodeKey) {
-        synchronized(invNodeKey2NodeId) {
+        synchronized (invNodeKey2NodeId) {
             return invNodeKey2NodeId.get(invNodeKey);
         }
     }
 
     @Override
     public void putInvNodeKey2NodeId(final NodeKey invNodeKey, final NodeId nodeId) {
-        synchronized(invNodeKey2NodeId) {
+        synchronized (invNodeKey2NodeId) {
             invNodeKey2NodeId.put(invNodeKey, nodeId);
         }
     }
@@ -532,7 +525,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     @Override
     public void putInvNodeConnectorKey2TpId(final NodeKey invNodeKey,
             final NodeConnectorKey nodeConnectorKey,final TpId tpId) {
-        synchronized(invNodeConnectorKey2TpId) {
+        synchronized (invNodeConnectorKey2TpId) {
             Map<NodeConnectorKey, TpId> tpIdMap = invNodeConnectorKey2TpId.get(invNodeKey);
             if (tpIdMap == null) {
                 tpIdMap = new HashMap<NodeConnectorKey, TpId>();
@@ -544,7 +537,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
     @Override
     public TpId getTpId(final NodeKey invNodeKey, final NodeConnectorKey nodeConnectorKey) {
-        synchronized(invNodeConnectorKey2TpId) {
+        synchronized (invNodeConnectorKey2TpId) {
             Map<NodeConnectorKey, TpId> tpIdMap = invNodeConnectorKey2TpId.get(invNodeKey);
             if (tpIdMap == null) {
                 return null;
@@ -555,21 +548,21 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
     @Override
     public void putUnderLinkId2Mlmt(final LinkId underLinkId, final LinkId linkId) {
-        synchronized(underLinkId2MlmtLinkId) {
+        synchronized (underLinkId2MlmtLinkId) {
             underLinkId2MlmtLinkId.put(underLinkId, linkId);
         }
     }
 
     @Override
     public LinkId getUnderLinkId2Mlmt(final LinkId underLinkId) {
-        synchronized(underLinkId2MlmtLinkId) {
+        synchronized (underLinkId2MlmtLinkId) {
             return underLinkId2MlmtLinkId.get(underLinkId);
         }
     }
 
     @Override
     public void removeUnderLinkId2Mlmt(final LinkId underLinkId) {
-        synchronized(underLinkId2MlmtLinkId) {
+        synchronized (underLinkId2MlmtLinkId) {
             underLinkId2MlmtLinkId.remove(underLinkId);
         }
     }

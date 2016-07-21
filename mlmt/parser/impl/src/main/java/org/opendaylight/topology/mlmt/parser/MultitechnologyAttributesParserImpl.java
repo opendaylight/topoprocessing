@@ -8,16 +8,15 @@
 
 package org.opendaylight.topology.mlmt.parser;
 
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.TedNodeAttributes;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.TedLinkAttributes;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.Node1;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.igp.node.attributes.IgpNodeAttributes;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.Link1;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.igp.link.attributes.IgpLinkAttributes;
 import org.opendaylight.topology.multitechnology.MultitechnologyAttributesParser;
-
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.TedLinkAttributes;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.ted.rev131021.TedNodeAttributes;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.Link1;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.Node1;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.igp.link.attributes.IgpLinkAttributes;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.igp.node.attributes.IgpNodeAttributes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,45 +24,45 @@ public class MultitechnologyAttributesParserImpl implements MultitechnologyAttri
 
     private static final Logger LOG = LoggerFactory.getLogger(MultitechnologyAttributesParserImpl.class);
 
-     private IgpNodeAttributes getIgpNodeAttributes(final Node node) {
+    private IgpNodeAttributes getIgpNodeAttributes(final Node node) {
 
-         final Node1 node1 = node.getAugmentation(Node1.class);
-         if (node1 == null) {
-             return null;
-         }
+        final Node1 node1 = node.getAugmentation(Node1.class);
+        if (node1 == null) {
+            return null;
+        }
 
-         return node1.getIgpNodeAttributes();
-     }
+        return node1.getIgpNodeAttributes();
+    }
 
-     private org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.node.attributes.IsisNodeAttributes
-             getIsIsNodeAttributes(IgpNodeAttributes igpNodeAttributes) {
+    private org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.node.attributes.IsisNodeAttributes
+            getIsIsNodeAttributes(IgpNodeAttributes igpNodeAttributes) {
 
-         org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.IgpNodeAttributes1
-                 igpNodeAttributes1 = igpNodeAttributes.getAugmentation(
-                         org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.IgpNodeAttributes1.class);
-         if (igpNodeAttributes1 == null) {
-             return null;
-         }
+        org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.IgpNodeAttributes1
+                igpNodeAttributes1 = igpNodeAttributes.getAugmentation(
+                        org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.IgpNodeAttributes1.class);
+        if (igpNodeAttributes1 == null) {
+            return null;
+        }
 
-         return igpNodeAttributes1.getIsisNodeAttributes();
-     }
+        return igpNodeAttributes1.getIsisNodeAttributes();
+    }
 
-     @Override
-     public TedNodeAttributes parseTedNodeAttributes(final Node node) {
+    @Override
+    public TedNodeAttributes parseTedNodeAttributes(final Node node) {
 
-         IgpNodeAttributes igpNodeAttributes = getIgpNodeAttributes(node);
-         if (igpNodeAttributes == null) {
-             return null;
-         }
-         final org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.node.attributes.IsisNodeAttributes
-                 isisNodeAttributes = getIsIsNodeAttributes(igpNodeAttributes);
-         if (isisNodeAttributes == null) {
-             return null;
-         }
-         final org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.node.attributes.isis.node.attributes.Ted
-         ted = isisNodeAttributes.getTed();
+        IgpNodeAttributes igpNodeAttributes = getIgpNodeAttributes(node);
+        if (igpNodeAttributes == null) {
+            return null;
+        }
+        final org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.node.attributes.IsisNodeAttributes
+                isisNodeAttributes = getIsIsNodeAttributes(igpNodeAttributes);
+        if (isisNodeAttributes == null) {
+            return null;
+        }
+        final org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.isis.topology.rev131021.isis.node.attributes.isis.node.attributes.Ted
+        ted = isisNodeAttributes.getTed();
 
-         return ted;
+        return ted;
     }
 
     @Override
@@ -71,8 +70,8 @@ public class MultitechnologyAttributesParserImpl implements MultitechnologyAttri
 
         final Link1 link1 = link.getAugmentation(Link1.class);
         if (link1 == null) {
-           LOG.debug("MultitechnologyAttributesParserImpl.parseTedLinkAttributes link1 is null");
-           return null;
+            LOG.debug("MultitechnologyAttributesParserImpl.parseTedLinkAttributes link1 is null");
+            return null;
         }
         final IgpLinkAttributes igpLinkAttributes = link1.getIgpLinkAttributes();
         if (igpLinkAttributes == null) {
@@ -93,15 +92,15 @@ public class MultitechnologyAttributesParserImpl implements MultitechnologyAttri
         ted = isisLinkAttributes.getTed();
 
         return ted;
-   }
+    }
 
     @Override
     public Long parseLinkMetric (final Link link) {
 
         final Link1 link1 = link.getAugmentation(Link1.class);
         if (link1 == null) {
-           LOG.debug("MultitechnologyAttributesParserImpl.parseLinkMetric link1 is null");
-           return null;
+            LOG.debug("MultitechnologyAttributesParserImpl.parseLinkMetric link1 is null");
+            return null;
         }
         final IgpLinkAttributes igpLinkAttributes = link1.getIgpLinkAttributes();
         if (igpLinkAttributes == null) {
