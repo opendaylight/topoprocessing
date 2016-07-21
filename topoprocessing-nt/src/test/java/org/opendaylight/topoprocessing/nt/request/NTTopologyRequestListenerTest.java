@@ -8,6 +8,9 @@
 
 package org.opendaylight.topoprocessing.nt.request;
 
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.AbstractCheckedFuture;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -66,9 +69,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableAugmentationNodeBuilder;
 
-import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.AbstractCheckedFuture;
-
 /**
  * @author matus.marko
  */
@@ -90,8 +90,7 @@ public class NTTopologyRequestListenerTest {
     private Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
     private PingPongDataBroker pingPongBroker;
 
-    private class UserDefinedFilter extends FilterBase
-    {
+    private class UserDefinedFilter extends FilterBase {
         // testing class for testing purpose
     }
 
@@ -99,7 +98,8 @@ public class NTTopologyRequestListenerTest {
     public void setUp() {
         pingPongBroker = new PingPongDataBroker(mockBroker);
         modelAdapters.put( NetworkTopologyModel.class, new NTModelAdapter());
-        listener = new NTTopologyRequestListener(pingPongBroker, mockNodeSerializer, mockSchemaHolder, mockRpcServices, modelAdapters);
+        listener = new NTTopologyRequestListener(pingPongBroker, mockNodeSerializer, mockSchemaHolder, mockRpcServices,
+                modelAdapters);
         listener.setDatastoreType(DatastoreType.OPERATIONAL);
 
         Mockito.when(mockRpcServices.getRpcService()).thenReturn(Mockito.mock(DOMRpcService.class));

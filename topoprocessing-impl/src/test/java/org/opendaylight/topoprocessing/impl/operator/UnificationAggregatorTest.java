@@ -9,6 +9,7 @@ package org.opendaylight.topoprocessing.impl.operator;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,10 +50,15 @@ public class UnificationAggregatorTest {
     public static final String script = "aggregable.setResult(true);";
 
     private TopologyAggregator aggregator;
-    private YangInstanceIdentifier leafYiid21, leafYiid22, leafYiid23, leafYiid24;
+    private YangInstanceIdentifier leafYiid21;
+    private YangInstanceIdentifier leafYiid22;
+    private YangInstanceIdentifier leafYiid23;
+    private YangInstanceIdentifier leafYiid24;
 
     @Mock
-    private NormalizedNode<?,?> mockNormalizedNode1, mockNormalizedNode2;
+    private NormalizedNode<?,?> mockNormalizedNode1;
+    @Mock
+    private NormalizedNode<?,?> mockNormalizedNode2;
     @Mock
     private TopologyManager mockManager;
     @Mock
@@ -69,7 +75,7 @@ public class UnificationAggregatorTest {
      * TOPO2 {
      *     node12: 192.168.1.2;
      * }
-     * </pre>
+     * </pre>.
      *
      * @throws Exception Exception
      */
@@ -91,13 +97,13 @@ public class UnificationAggregatorTest {
     /**
      * change 1
      * Checks that for each new physical node, one logical node is created.
-     * In this case two logical nodes are created, each for one physical node
+     * In this case two logical nodes are created, each for one physical node.
      * LogicalNode(1): {node21}
      * LogicalNode(2): {node22}
 
      * change 2
      * Because newly created node23 in TOPO3 can create aggregated topology with node21,
-     * it's logical node shall be updated
+     * it's logical node shall be updated.
      * LogicalNode(1): {node21, node23}
      * LogicalNode(2): {node22}
      *
@@ -185,7 +191,7 @@ public class UnificationAggregatorTest {
      *
      * case2
      * Verify that node22 has been removed from LogicalNode(2) by use of removeLogicalNode function
-     * (due to the fact, that it was the last node in that LogicalNode)
+     * (due to the fact, that it was the last node in that LogicalNode).
      * @throws Exception Exception
      */
     @Test
@@ -220,7 +226,7 @@ public class UnificationAggregatorTest {
     /**
      * When IP address of one node has changed the way it can create aggregated node with some other existing
      * physical node (because their IP addresses are equal), this node shall be removed from original LogicalNode
-     * (by calling updateLogicalNode method) and added into the other LogicalNode (by calling addLogicalNode method)
+     * (by calling updateLogicalNode method) and added into the other LogicalNode (by calling addLogicalNode method).
      * @throws Exception Exception
      */
     @Test

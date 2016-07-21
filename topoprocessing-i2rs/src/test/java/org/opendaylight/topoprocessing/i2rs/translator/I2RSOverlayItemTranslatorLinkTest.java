@@ -7,6 +7,8 @@
  */
 package org.opendaylight.topoprocessing.i2rs.translator;
 
+import com.google.common.base.Optional;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,8 +40,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 
-import com.google.common.base.Optional;
-
 /**
  * @author andrej.zan
  *
@@ -54,7 +54,7 @@ public class I2RSOverlayItemTranslatorLinkTest {
     @Mock private UnderlayItem mockUnderlayLink;
 
     /**
-     * Tests link-id translation
+     * Tests link-id translation.
      */
     @Test
     public void test() {
@@ -72,7 +72,7 @@ public class I2RSOverlayItemTranslatorLinkTest {
     }
 
     /**
-     * Tests supporting links translation
+     * Tests supporting links translation.
      */
     @Test
     public void testSupportingLinks() {
@@ -119,7 +119,7 @@ public class I2RSOverlayItemTranslatorLinkTest {
     }
 
     @Test
-    public void testComputedLinkTranslation(){
+    public void testComputedLinkTranslation() {
         String topologyName = "mytopo:1";
         String wrapperName = "overlaylink:1";
         String srcNodeID = "node:1";

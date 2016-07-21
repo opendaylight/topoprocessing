@@ -26,13 +26,13 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public final class InstanceIdentifiers {
 
-    /** Network-topology {@link Topology} (MapNode) identifier */
+    /** Network-topology {@link Topology} (MapNode) identifier. */
     public static final YangInstanceIdentifier TOPOLOGY_IDENTIFIER =
             YangInstanceIdentifier.of(NetworkTopology.QNAME).node(Topology.QNAME);
-    /** Network-topology {@link Link} (MapNode) identifier */
+    /** Network-topology {@link Link} (MapNode) identifier. */
     public static final YangInstanceIdentifier LINK_IDENTIFIER = YangInstanceIdentifier.builder(TOPOLOGY_IDENTIFIER)
             .node(Link.QNAME).build();
-    /** Network-topology {@link Node} (MapNode) identifier */
+    /** Network-topology {@link Node} (MapNode) identifier. */
     public static final YangInstanceIdentifier NODE_IDENTIFIER = YangInstanceIdentifier.builder(TOPOLOGY_IDENTIFIER)
             .node(Node.QNAME).build();
     private static final YangInstanceIdentifier RELATIVE_NODE_ID_IDENTIFIER =
@@ -51,17 +51,17 @@ public final class InstanceIdentifiers {
     public static final YangInstanceIdentifier NT_TP_REF_IDENTIFIER =
                     YangInstanceIdentifier.of(TopologyQNames.TP_REF);
     //I2RS
-    /** I2RS model {@link Network} (MapNode) identifier */
+    /** I2RS model {@link Network} (MapNode) identifier. */
     public static final YangInstanceIdentifier I2RS_NETWORK_IDENTIFIER =
             YangInstanceIdentifier.of(Network.QNAME);
     public static final YangInstanceIdentifier I2RS_TERMINATION_POINT =
-            YangInstanceIdentifier.of(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.
-                    ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME);
+            YangInstanceIdentifier.of(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang
+                    .ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME);
     public static final YangInstanceIdentifier I2RS_TP_ID_IDENTIFIER =
             YangInstanceIdentifier.of(TopologyQNames.I2RS_TP_ID_QNAME);
     public static final YangInstanceIdentifier I2RS_TP_IDENTIFIER =
-            YangInstanceIdentifier.of(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.
-                    ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME);
+            YangInstanceIdentifier.of(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang
+                    .ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME);
     private static final YangInstanceIdentifier I2RS_RELATIVE_NODE_ID_IDENTIFIER =
                         YangInstanceIdentifier.of(TopologyQNames.I2RS_NODE_ID_QNAME);
     private static final YangInstanceIdentifier I2RS_RELATIVE_LINK_ID_IDENTIFIER =
@@ -85,7 +85,7 @@ public final class InstanceIdentifiers {
     }
 
     /**
-     * Returns relative item id identifier (e.g. for NormalizedNodes.findNode(...))
+     * Returns relative item id identifier (e.g. for NormalizedNodes.findNode(...)).
      * @param correlationItem item type
      * @return item identifier
      */
@@ -93,21 +93,21 @@ public final class InstanceIdentifiers {
             Class<? extends Model> model) {
         YangInstanceIdentifier itemIdIdentifier;
         switch (correlationItem) {
-        case Node:
-            itemIdIdentifier = ! model.equals(I2rsModel.class) ? RELATIVE_NODE_ID_IDENTIFIER
-                    : I2RS_RELATIVE_NODE_ID_IDENTIFIER;
-            break;
-        case Link:
-            itemIdIdentifier = ! model.equals(I2rsModel.class) ? RELATIVE_LINK_ID_IDENTIFIER
-                    : I2RS_RELATIVE_LINK_ID_IDENTIFIER;
-            break;
-        case TerminationPoint:
-            itemIdIdentifier = ! model.equals(I2rsModel.class) ? RELATIVE_TP_ID_IDENTIFIER
-                    : I2RS_RELATIVE_TP_ID_IDENTIFIER;
-            break;
-        default:
-            throw new IllegalArgumentException("Wrong Correlation item set: "
-                    + correlationItem);
+            case Node:
+                itemIdIdentifier = ! model.equals(I2rsModel.class) ? RELATIVE_NODE_ID_IDENTIFIER
+                        : I2RS_RELATIVE_NODE_ID_IDENTIFIER;
+                break;
+            case Link:
+                itemIdIdentifier = ! model.equals(I2rsModel.class) ? RELATIVE_LINK_ID_IDENTIFIER
+                        : I2RS_RELATIVE_LINK_ID_IDENTIFIER;
+                break;
+            case TerminationPoint:
+                itemIdIdentifier = ! model.equals(I2rsModel.class) ? RELATIVE_TP_ID_IDENTIFIER
+                        : I2RS_RELATIVE_TP_ID_IDENTIFIER;
+                break;
+            default:
+                throw new IllegalArgumentException("Wrong Correlation item set: "
+                        + correlationItem);
         }
         return itemIdIdentifier;
     }

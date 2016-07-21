@@ -23,7 +23,7 @@ public class OverlayItemWrapper {
     private MapNode aggregatedTerminationPoints;
 
     /**
-     * Constructor
+     * Constructor.
      * @param itemId aggregated item id
      * @param overlayItem initial overlay item to be wrapped
      */

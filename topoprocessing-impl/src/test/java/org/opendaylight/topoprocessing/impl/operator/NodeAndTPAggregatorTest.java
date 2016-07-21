@@ -7,26 +7,22 @@
  */
 package org.opendaylight.topoprocessing.impl.operator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 
+import com.google.common.base.Optional;
+
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -36,23 +32,15 @@ import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyBuilder;
-import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
-import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
-import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableMapEntryNodeBuilder;
-import org.opendaylight.yangtools.yang.parser.spi.meta.QNameCacheNamespace;
-
-import com.google.common.base.Optional;
 
 /**
  * @author samuel.kontris
@@ -296,11 +284,11 @@ public class NodeAndTPAggregatorTest {
         if (model.equals(NetworkTopologyModel.class)) {
             tpMapNodeWithAllTPsOpt = NormalizedNodes.findNode(normalizedNode,
                     InstanceIdentifiers.NT_TERMINATION_POINT);
-        } else if (model.equals(I2rsModel.class)){
+        } else if (model.equals(I2rsModel.class)) {
             tpMapNodeWithAllTPsOpt = NormalizedNodes.findNode(normalizedNode,
                     InstanceIdentifiers.I2RS_TERMINATION_POINT);
         }
-        if(tpMapNodeWithAllTPsOpt.isPresent()) {
+        if (tpMapNodeWithAllTPsOpt.isPresent()) {
             MapNode tpMapNodeWithAllTPs = (MapNode) tpMapNodeWithAllTPsOpt.get();
             assertEquals("Node does not have correct amount of termination points",
                     tpMapNodeWithAllTPs.getValue().size(), amount);

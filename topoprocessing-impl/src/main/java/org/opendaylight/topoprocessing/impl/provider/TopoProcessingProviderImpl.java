@@ -8,6 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.provider;
 
+import com.google.common.base.Preconditions;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,8 +39,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
 
 /**
  * @author michal.polkorab
@@ -107,30 +107,29 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     @Override
     public void registerFiltratorFactory(Class<? extends FilterBase> filterType,
             FiltratorFactory filtratorFactory) {
-        for(TopologyRequestListener listener : listeners) {
+        for (TopologyRequestListener listener : listeners) {
             listener.registerFiltrator(filterType, filtratorFactory);
         }
     }
 
     @Override
     public void unregisterFiltratorFactory(Class<? extends FilterBase> filterType) {
-        for(TopologyRequestListener listener : listeners) {
+        for (TopologyRequestListener listener : listeners) {
             listener.unregisterFiltrator(filterType);
         }
     }
 
     @Override
     public void registerModelAdapter(Class<? extends Model> model, Object modelAdapter) {
-        if(modelAdapter instanceof ModelAdapter) {
+        if (modelAdapter instanceof ModelAdapter) {
             ModelAdapter adapter = (ModelAdapter) modelAdapter;
             modelAdapters.put(model, adapter);
             if (model.equals(I2rsModel.class)) {
                 registerTopologyRequestListener(adapter, InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER);
-            } else if (model.equals(NetworkTopologyModel.class)){
+            } else if (model.equals(NetworkTopologyModel.class)) {
                 registerTopologyRequestListener(adapter, InstanceIdentifiers.TOPOLOGY_IDENTIFIER);
             }
-        }
-        else {
+        } else {
             throw new IllegalStateException("Incorrect type of ModelAdapter");
         }
     }

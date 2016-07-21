@@ -16,13 +16,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
+import com.google.common.base.Optional;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.junit.Before;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -40,8 +42,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgum
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
-
-import com.google.common.base.Optional;
 
 /**
  * @author samuel.kontris
@@ -192,7 +192,7 @@ public class TopologyRequestListenerTest {
     }
 
     @Test
-    public void testProcessUpdatedData(){
+    public void testProcessUpdatedData() {
         DOMDataBroker domDataBrokerMock = mock(DOMDataBroker.class);
         BindingNormalizedNodeSerializer bindingNormalizedNodeSerializerMock =
                 mock(BindingNormalizedNodeSerializer.class);
@@ -223,42 +223,42 @@ public class TopologyRequestListenerTest {
         testListener.setTopologyRequestReturnValue(false);
 
         testListener.onDataChanged(changeMock);
-        Assert.assertTrue(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock) ==
-                topologyRequestHandlerMock);
+        Assert.assertTrue(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock)
+                == topologyRequestHandlerMock);
         Assert.assertEquals(1, testListener.getTopoRequestHandlers().size());
 
         testListener.setTopologyRequestReturnValue(true);
         testListener.setTopologyReturnValue(false);
 
         testListener.onDataChanged(changeMock);
-        Assert.assertTrue(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock) ==
-                topologyRequestHandlerMock);
+        Assert.assertTrue(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock)
+                == topologyRequestHandlerMock);
         Assert.assertEquals(1, testListener.getTopoRequestHandlers().size());
 
         testListener.setTopologyReturnValue(true);
 
         testListener.onDataChanged(changeMock);
-        Assert.assertTrue(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock) ==
-                topologyRequestHandlerMock);
+        Assert.assertTrue(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock)
+                == topologyRequestHandlerMock);
         Assert.assertEquals(1, testListener.getTopoRequestHandlers().size());
 
         change.put(yangInstanceIdentifierMock, normalizedNodeMock);
 
         testListener.onDataChanged(changeMock);
-        Assert.assertTrue(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock) ==
-                topologyRequestHandlerMock);
+        Assert.assertTrue(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock)
+                == topologyRequestHandlerMock);
         Assert.assertEquals(1, testListener.getTopoRequestHandlers().size());
 
         normalizedNodeMock = mapEntryNodeMock;
         change.put(yangInstanceIdentifierMock, normalizedNodeMock);
 
         testListener.onDataChanged(changeMock);
-        Assert.assertFalse(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock) ==
-                topologyRequestHandlerMock);
+        Assert.assertFalse(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock)
+                == topologyRequestHandlerMock);
     }
 
     /**
-     * Class just for testing purpose of abstract class TopologyRequestListener
+     * Class just for testing purpose of abstract class TopologyRequestListener.
      */
     private class TestListener extends TopologyRequestListener {
 
@@ -304,6 +304,7 @@ public class TopologyRequestListenerTest {
         public void setCreateTopologyRequestHandlerReturnValue(TopologyRequestHandler requestHandler) {
             this.requestHandlerReturnValue = requestHandler;
         }
+
         @Override
         protected boolean isLinkCalculation(NormalizedNode<?, ?> normalizedNode) {
             return false;

@@ -7,8 +7,8 @@
  */
 package org.opendaylight.topoprocessing.impl.request;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.mock;
@@ -43,7 +43,6 @@ import org.opendaylight.topoprocessing.impl.testUtilities.TestingDOMDataBroker;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.Network;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -126,7 +125,7 @@ public class TopologyRequestHandlerTest {
 
 
     @Before
-    public void init(){
+    public void init() {
         TestingDOMDataBroker testingDOMbroker = new TestingDOMDataBroker();
         PingPongDataBroker pingPongBroker = new PingPongDataBroker(testingDOMbroker);
         handler = new TestTopologyRequestHandler(pingPongBroker,schemaHolderMock,rpcServicesMock,null);
@@ -136,7 +135,7 @@ public class TopologyRequestHandlerTest {
     }
 
     @Test
-    public void testProcessNewRequestFiltration(){
+    public void testProcessNewRequestFiltration() {
         handler.filtrationOnly = true;
 
         setFiltrationBehaviour();
@@ -147,7 +146,7 @@ public class TopologyRequestHandlerTest {
     }
 
     @Test
-    public void testProcessNewRequestAggregation(){
+    public void testProcessNewRequestAggregation() {
         handler.aggregationOnly = true;
 
         when(mappingMock.getUnderlayTopology()).thenReturn("topo1");
@@ -175,7 +174,7 @@ public class TopologyRequestHandlerTest {
     }
 
     @Test
-    public void testProcessNewRequestRendering(){
+    public void testProcessNewRequestRendering() {
         handler.renderingOnly = true;
 
         when(renderingMock.getUnderlayTopology()).thenReturn("topo1");
@@ -191,7 +190,7 @@ public class TopologyRequestHandlerTest {
     }
 
     @Test
-    public void testProcessNewRequestFiltrationAggregation(){
+    public void testProcessNewRequestFiltrationAggregation() {
         handler.filtrationAggregation = true;
         when(mappingMock.getUnderlayTopology()).thenReturn("topo1");
         when(mappingMock.isAggregateInside()).thenReturn(true);
@@ -220,7 +219,7 @@ public class TopologyRequestHandlerTest {
     }
 
     @Test
-    public void testProcessNewRequestAggregationWithFiltrationOfNodesAndTp(){
+    public void testProcessNewRequestAggregationWithFiltrationOfNodesAndTp() {
         handler.aggregationOfNodesAndTps = true;
         setFiltrationBehaviour();
         when(mappingMock.getUnderlayTopology()).thenReturn("topo1");
@@ -244,14 +243,14 @@ public class TopologyRequestHandlerTest {
         handler.aggregationOfNodesAndTps = false;
     }
 
-    @Test(expected=IllegalStateException.class)
-    public void testProcessNewRequestDataMissing(){
+    @Test(expected = IllegalStateException.class)
+    public void testProcessNewRequestDataMissing() {
         handler.dataMissing = true;
         handler.processNewRequest();
         handler.dataMissing = false;
     }
 
-    private void setFiltrationBehaviour(){
+    private void setFiltrationBehaviour() {
         setTestHandler();
 
         when(filterMock.getTargetField()).thenReturn(leafpathMock);
@@ -267,7 +266,7 @@ public class TopologyRequestHandlerTest {
         when(abstractFiltrator.isFiltered((NormalizedNode<?, ?>) any())).thenReturn(true);
     }
 
-    private void setTestHandler(){
+    private void setTestHandler() {
         when(modelAdaptersMock.get(null)).thenReturn(modelAdapterMock);
         when(modelAdaptersMock.get(NetworkTopologyModel.class)).thenReturn(modelAdapterMock);
         when(modelAdapterMock.createOverlayItemTranslator()).thenReturn(overlayItemTranslatorMock);
@@ -286,7 +285,7 @@ public class TopologyRequestHandlerTest {
     }
 
     @Test
-    public void testInitLinkComputation(){
+    public void testInitLinkComputation() {
         LinkComputation linkComputationMock = mock(LinkComputation.class);
         NodeInfo nodeInfoMock = mock(NodeInfo.class);
         LeafPath leafPathMock = mock(LeafPath.class);
@@ -322,18 +321,18 @@ public class TopologyRequestHandlerTest {
         when(leafPathMock.getValue()).thenReturn("");
 
         //linksInformations is null, exception should be thrown
-        try{
+        try {
             handler.processNewRequest();
-        }catch(IllegalStateException e){
+        } catch (IllegalStateException e) {
             iterator++;
         }
 
         when(linkComputationMock.getLinkInfo()).thenReturn(linksInformations);
 
         //linksInformations is empty, exception should be thrown
-        try{
+        try {
             handler.processNewRequest();
-        }catch(IllegalStateException e){
+        } catch (IllegalStateException e) {
             iterator++;
             verify(linkComputationMock, times(0)).getNodeInfo();
         }
@@ -371,7 +370,7 @@ public class TopologyRequestHandlerTest {
         assertEquals(2, iterator);
     }
 
-    private LinkInfo getLinkList(){
+    private LinkInfo getLinkList() {
         return new LinkInfo() {
             @Override
             public Class<? extends Model> getInputModel() {
@@ -405,7 +404,7 @@ public class TopologyRequestHandlerTest {
         };
     }
 
-    private void initLinkComputationConfig(boolean agregationNull){
+    private void initLinkComputationConfig(boolean agregationNull) {
         handler.aggregationOnly = true;
         handler.agregationCorelationIntemLink = true;
         handler.filtrationAggregation = false;
@@ -413,8 +412,7 @@ public class TopologyRequestHandlerTest {
         handler.agregationNull = agregationNull;
     }
 
-    private class TestTopologyRequestHandler extends TopologyRequestHandler
-    {
+    private class TestTopologyRequestHandler extends TopologyRequestHandler {
         private boolean dataMissing;
         private boolean filtrationOnly;
         private boolean aggregationOnly;
@@ -444,102 +442,98 @@ public class TopologyRequestHandlerTest {
 
         @Override
         protected Correlations getCorrelations(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
-               CorrelationsBuilder correlationsBuilder = new CorrelationsBuilder();
-               List<Correlation> correlations = new ArrayList<Correlation>();
+            CorrelationsBuilder correlationsBuilder = new CorrelationsBuilder();
+            List<Correlation> correlations = new ArrayList<Correlation>();
 
-               if (!aggregationOfNodesAndTps) {
-                   CorrelationBuilder correlationBuilder = new CorrelationBuilder();
-                   if (agregationCorelationIntemLink) {
-                       correlationBuilder.setCorrelationItem(CorrelationItemEnum.Link);
-                   } else {
-                       correlationBuilder.setCorrelationItem(CorrelationItemEnum.Node);
-                   }
+            if (!aggregationOfNodesAndTps) {
+                CorrelationBuilder correlationBuilder = new CorrelationBuilder();
+                if (agregationCorelationIntemLink) {
+                    correlationBuilder.setCorrelationItem(CorrelationItemEnum.Link);
+                } else {
+                    correlationBuilder.setCorrelationItem(CorrelationItemEnum.Node);
+                }
 
-                   if (filtrationOnly || filtrationAggregation) {
-                       FiltrationBuilder filtrationBuilder = new FiltrationBuilder();
-                       filtrationBuilder.setUnderlayTopology("topo1");
+                if (filtrationOnly || filtrationAggregation) {
+                    FiltrationBuilder filtrationBuilder = new FiltrationBuilder();
+                    filtrationBuilder.setUnderlayTopology("topo1");
 
-                       List<Filter> filters = new ArrayList<Filter>();
-                       when(filterMock.getFilterId()).thenReturn("filter1");
-                       filters.add(filterMock);
-                       filters.add(filterMock);
-                       filtrationBuilder.setFilter(filters);
-                       correlationBuilder.setType(FiltrationOnly.class);
-                       correlationBuilder.setFiltration(filtrationBuilder.build());
-                   }
-                   if (aggregationOnly || filtrationAggregation) {
-                       AggregationBuilder aggregationBuilder = new AggregationBuilder();
+                    List<Filter> filters = new ArrayList<Filter>();
+                    when(filterMock.getFilterId()).thenReturn("filter1");
+                    filters.add(filterMock);
+                    filters.add(filterMock);
+                    filtrationBuilder.setFilter(filters);
+                    correlationBuilder.setType(FiltrationOnly.class);
+                    correlationBuilder.setFiltration(filtrationBuilder.build());
+                }
+                if (aggregationOnly || filtrationAggregation) {
+                    AggregationBuilder aggregationBuilder = new AggregationBuilder();
 
-                       List<Mapping> mappings = new ArrayList<Mapping>();
-                       if (realMapping) {
-                           mappings.add(getMapping(correctTopologyID));
-                       } else {
-                           mappings.add(mappingMock);
-                           mappings.add(mappingMock);
-                           mappings.add(mappingMock);
-                       }
-                       aggregationBuilder.setMapping(mappings);
-                       aggregationBuilder.setAggregationType(Equality.class);
+                    List<Mapping> mappings = new ArrayList<Mapping>();
+                    if (realMapping) {
+                        mappings.add(getMapping(correctTopologyID));
+                    } else {
+                        mappings.add(mappingMock);
+                        mappings.add(mappingMock);
+                        mappings.add(mappingMock);
+                    }
+                    aggregationBuilder.setMapping(mappings);
+                    aggregationBuilder.setAggregationType(Equality.class);
 
-                       if (filtrationAggregation) {
-                           correlationBuilder.setType(FiltrationAggregation.class);
-                       }
-                       else {
-                           correlationBuilder.setType(AggregationOnly.class);
-                       }
-                       if (agregationNull) {
-                           correlationBuilder.setAggregation(null);
-                       } else {
-                           correlationBuilder.setAggregation(aggregationBuilder.build());
-                       }
+                    if (filtrationAggregation) {
+                        correlationBuilder.setType(FiltrationAggregation.class);
+                    } else {
+                        correlationBuilder.setType(AggregationOnly.class);
+                    }
+                    if (agregationNull) {
+                        correlationBuilder.setAggregation(null);
+                    } else {
+                        correlationBuilder.setAggregation(aggregationBuilder.build());
+                    }
 
-                   }
-                   if (renderingOnly) {
-                       correlationBuilder.setType(RenderingOnly.class);
-                       correlationBuilder.setRendering(renderingMock);
-                   }
-                   if (dataMissing) {
-                       correlationBuilder.setType(null);
-                   }
+                }
+                if (renderingOnly) {
+                    correlationBuilder.setType(RenderingOnly.class);
+                    correlationBuilder.setRendering(renderingMock);
+                }
+                if (dataMissing) {
+                    correlationBuilder.setType(null);
+                }
 
-                   correlations.add(correlationBuilder.build());
-               } else {
-                   List<Filter> filters = new ArrayList<Filter>();
-                   when(filterMock.getFilterId()).thenReturn("filter1");
-                   filters.add(filterMock);
-                   filters.add(filterMock);
+                correlations.add(correlationBuilder.build());
+            } else {
+                List<Filter> filters = new ArrayList<Filter>();
+                when(filterMock.getFilterId()).thenReturn("filter1");
+                filters.add(filterMock);
+                filters.add(filterMock);
 
-                   FiltrationBuilder filtrationBuilder = new FiltrationBuilder();
-                   filtrationBuilder.setUnderlayTopology("topo1");
-                   filtrationBuilder.setFilter(filters);
+                FiltrationBuilder filtrationBuilder = new FiltrationBuilder();
+                filtrationBuilder.setUnderlayTopology("topo1");
+                filtrationBuilder.setFilter(filters);
 
-                   AggregationBuilder aggregationBuilder = new AggregationBuilder();
-                   List<Mapping> nodeMappings = new ArrayList<Mapping>();
-                   nodeMappings.add(mappingMock);
-                   nodeMappings.add(mappingMock);
-                   aggregationBuilder.setMapping(nodeMappings);
-                   aggregationBuilder.setAggregationType(Equality.class);
+                AggregationBuilder aggregationBuilder = new AggregationBuilder();
+                List<Mapping> nodeMappings = new ArrayList<Mapping>();
+                nodeMappings.add(mappingMock);
+                nodeMappings.add(mappingMock);
+                aggregationBuilder.setMapping(nodeMappings);
+                aggregationBuilder.setAggregationType(Equality.class);
 
-                   CorrelationBuilder nodeCorrelationBuilder = new CorrelationBuilder();
-                   nodeCorrelationBuilder.setCorrelationItem(CorrelationItemEnum.Node);
-                   nodeCorrelationBuilder.setType(FiltrationAggregation.class);
-                   nodeCorrelationBuilder.setAggregation(aggregationBuilder.build());
-                   nodeCorrelationBuilder.setFiltration(filtrationBuilder.build());
+                CorrelationBuilder nodeCorrelationBuilder = new CorrelationBuilder();
+                nodeCorrelationBuilder.setCorrelationItem(CorrelationItemEnum.Node);
+                nodeCorrelationBuilder.setType(FiltrationAggregation.class);
+                nodeCorrelationBuilder.setAggregation(aggregationBuilder.build());
+                nodeCorrelationBuilder.setFiltration(filtrationBuilder.build());
 
-                   CorrelationBuilder tpCorrelationBuilder = new CorrelationBuilder();
-                   tpCorrelationBuilder.setCorrelationItem(CorrelationItemEnum.TerminationPoint);
-                   tpCorrelationBuilder.setType(FiltrationAggregation.class);
-                   tpCorrelationBuilder.setAggregation(aggregationBuilder.build());
-                   tpCorrelationBuilder.setFiltration(filtrationBuilder.build());
+                CorrelationBuilder tpCorrelationBuilder = new CorrelationBuilder();
+                tpCorrelationBuilder.setCorrelationItem(CorrelationItemEnum.TerminationPoint);
+                tpCorrelationBuilder.setType(FiltrationAggregation.class);
+                tpCorrelationBuilder.setAggregation(aggregationBuilder.build());
+                tpCorrelationBuilder.setFiltration(filtrationBuilder.build());
 
-                   correlations.add(nodeCorrelationBuilder.build());
-                   correlations.add(tpCorrelationBuilder.build());
-               }
-
-               correlationsBuilder.setCorrelation(correlations);
-
-               return correlationsBuilder.build();
-
+                correlations.add(nodeCorrelationBuilder.build());
+                correlations.add(tpCorrelationBuilder.build());
+            }
+            correlationsBuilder.setCorrelation(correlations);
+            return correlationsBuilder.build();
         }
 
         @Override
@@ -547,11 +541,11 @@ public class TopologyRequestHandlerTest {
             return linkComputationReturn;
         }
 
-        public void setLinkComputation(LinkComputation linkComputation){
+        public void setLinkComputation(LinkComputation linkComputation) {
             linkComputationReturn = linkComputation;
         }
 
-        private Mapping getMapping(final boolean correctTopologyID){
+        private Mapping getMapping(final boolean correctTopologyID) {
             return new Mapping() {
                 @Override
                 public Class<? extends Model> getInputModel() {
@@ -575,9 +569,9 @@ public class TopologyRequestHandlerTest {
 
                 @Override
                 public String getUnderlayTopology() {
-                    if(correctTopologyID){
+                    if (correctTopologyID) {
                         return "underTopo1";
-                    }else{
+                    } else {
                         return "topology1";
                     }
                 }

@@ -11,10 +11,12 @@ package org.opendaylight.topoprocessing.impl.listener;
 import static org.mockito.Matchers.any;
 
 import com.google.common.base.Optional;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -59,7 +61,7 @@ public class InventoryListenerTest {
     private QName leafQname = QName.create(Node.QNAME, "leaf-node");
     private QName nodeIdQname = QName.create(Node.QNAME, "id");
 
-    /** Successful scenario */
+    /** Successful scenario. */
     @Test
     public void test() {
         String nodeName = "node:1";
@@ -103,7 +105,8 @@ public class InventoryListenerTest {
         setUpMocks(rootNode);
         rootNode.setModificationType(ModificationType.SUBTREE_MODIFIED);
         listener.onDataTreeChanged(mockCollection);
-        Mockito.verify(mockOperator).processUpdatedChanges(Matchers.eq(nodeYiid), Matchers.refEq(physicalNode), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(mockOperator).processUpdatedChanges(Matchers.eq(nodeYiid), Matchers.refEq(physicalNode),
+                Matchers.eq(TOPOLOGY_ID));
 
         // delete
         resetMocks();
@@ -132,7 +135,7 @@ public class InventoryListenerTest {
                 mockDataTreeCandidateNodeCollection, mockDataTreeCandidateNodeIterator);
     }
 
-    /** Missing specified LeafNode - no action should be taken */
+    /** Missing specified LeafNode - no action should be taken. */
     @Test
     public void testMissingLeafNode() {
         String nodeName = "node:1";
@@ -144,7 +147,8 @@ public class InventoryListenerTest {
         Map<Integer, YangInstanceIdentifier> pathIdentifiers = new HashMap<>(1);
         pathIdentifiers.put(0, pathIdentifier);
         listener.setPathIdentifier(pathIdentifiers);
-        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, leafQname);
+        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME,
+                TopologyQNames.NETWORK_NODE_ID_QNAME, leafQname);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
 
         setUpMocks(rootNode);

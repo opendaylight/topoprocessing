@@ -72,16 +72,16 @@ public class NTModelAdapter implements ModelAdapter {
     public YangInstanceIdentifier buildItemIdentifier(InstanceIdentifierBuilder builder,
             CorrelationItemEnum correlationItemEnum) {
         switch (correlationItemEnum) {
-        case Node:
-        case TerminationPoint:
-            builder.node(Node.QNAME);
-            break;
-        case Link:
-            builder.node(Link.QNAME);
-            break;
-        default:
-            throw new IllegalArgumentException("Wrong Correlation item set: "
-                    + correlationItemEnum);
+            case Node:
+            case TerminationPoint:
+                builder.node(Node.QNAME);
+                break;
+            case Link:
+                builder.node(Link.QNAME);
+                break;
+            default:
+                throw new IllegalArgumentException("Wrong Correlation item set: "
+                        + correlationItemEnum);
         }
         return builder.build();
     }

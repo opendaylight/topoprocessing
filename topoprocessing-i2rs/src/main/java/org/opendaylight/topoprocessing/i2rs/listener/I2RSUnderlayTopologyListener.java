@@ -19,7 +19,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 /**
  * @author matej.perina
  */
-public class I2RSUnderlayTopologyListener extends UnderlayTopologyListener{
+public class I2RSUnderlayTopologyListener extends UnderlayTopologyListener {
 
     public I2RSUnderlayTopologyListener(PingPongDataBroker dataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {

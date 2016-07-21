@@ -9,10 +9,12 @@
 package org.opendaylight.topoprocessing.inventoryRendering.listener;
 
 import com.google.common.base.Optional;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,7 +102,8 @@ public class IRUnderlayTopologyListenerTest {
         listener.setOperator(mockOperator);
         UnderlayItem physicalNode = new UnderlayItem(nodeValue, null, TOPOLOGY_ID, nodeName, CorrelationItemEnum.Node);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
-        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
+        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME,
+                TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
 
         // create
         rootNode.setModificationType(ModificationType.WRITE);
@@ -146,7 +149,8 @@ public class IRUnderlayTopologyListenerTest {
         pathIdentifiers.put(0, nodeYiid);
         listener.setPathIdentifier(pathIdentifiers);
         TestDataTreeCandidateNode rootNode = new TestDataTreeCandidateNode();
-        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
+        NodeIdentifierWithPredicates nodePathArgument = new NodeIdentifierWithPredicates(Node.QNAME,
+                TopologyQNames.NETWORK_NODE_ID_QNAME, nodeName);
 
         setUpMocks(rootNode);
         rootNode.setModificationType(ModificationType.WRITE);

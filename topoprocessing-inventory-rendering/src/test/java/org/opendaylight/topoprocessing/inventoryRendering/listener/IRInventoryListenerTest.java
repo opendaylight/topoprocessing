@@ -9,10 +9,12 @@
 package org.opendaylight.topoprocessing.inventoryRendering.listener;
 
 import com.google.common.base.Optional;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -56,7 +58,7 @@ public class IRInventoryListenerTest {
     private QName leafQname = QName.create(Node.QNAME, "leaf-node");
     private QName nodeIdQname = QName.create(Node.QNAME, "id");
 
-    /** Successful scenario */
+    /** Successful scenario. */
     @Test
     public void test() {
         String nodeName = "node:1";
@@ -96,7 +98,8 @@ public class IRInventoryListenerTest {
         rootNode.setModificationType(ModificationType.SUBTREE_MODIFIED);
         setUpMocks(rootNode);
         listener.onDataTreeChanged(mockCollection);
-        Mockito.verify(mockOperator).processUpdatedChanges(Matchers.eq(nodeYiid), Matchers.refEq(physicalNode), Matchers.eq(TOPOLOGY_ID));
+        Mockito.verify(mockOperator).processUpdatedChanges(Matchers.eq(nodeYiid),
+                Matchers.refEq(physicalNode), Matchers.eq(TOPOLOGY_ID));
 
         // delete
         resetMocks();

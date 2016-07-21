@@ -22,7 +22,7 @@ public class Ipv4FiltratorFactory implements FiltratorFactory {
 
     @Override
     public Filtrator createFiltrator(Filter filter, YangInstanceIdentifier pathIdentifier) {
-        if(filter.getFilterTypeBody() instanceof Ipv4AddressFilterType) {
+        if (filter.getFilterTypeBody() instanceof Ipv4AddressFilterType) {
             return new Ipv4AddressFiltrator(((Ipv4AddressFilterType)filter.getFilterTypeBody())
                     .getIpv4AddressFilter().getIpv4Address(), pathIdentifier);
         } else {

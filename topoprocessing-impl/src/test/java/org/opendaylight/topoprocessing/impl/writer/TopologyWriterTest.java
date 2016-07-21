@@ -8,6 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.writer;
 
+import com.google.common.util.concurrent.CheckedFuture;
+
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -41,33 +43,31 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableContainerNodeBuilder;
 
-import com.google.common.util.concurrent.CheckedFuture;
-
 /**
  * @author matus.marko
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyWriterTest {
 
-    private final static String TOPOLOGY_ID = "mytopo:1";
+    private static final String TOPOLOGY_ID = "mytopo:1";
     private TopologyWriter topologyWriterNTModel;
     private TopologyWriter topologyWriterI2rsModel;
 
-    private final static YangInstanceIdentifier topologyIdentifierNTModel = YangInstanceIdentifier
+    private static final YangInstanceIdentifier topologyIdentifierNTModel = YangInstanceIdentifier
             .builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
             .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY_ID).build();
-    private final static YangInstanceIdentifier nodeIdentifierNTModel = YangInstanceIdentifier
+    private static final YangInstanceIdentifier nodeIdentifierNTModel = YangInstanceIdentifier
             .builder(topologyIdentifierNTModel).node(Node.QNAME).build();
-    private final static YangInstanceIdentifier linkIdentifierNTModel = YangInstanceIdentifier
+    private static final YangInstanceIdentifier linkIdentifierNTModel = YangInstanceIdentifier
             .builder(topologyIdentifierNTModel).node(Link.QNAME).build();
 
-    private final static YangInstanceIdentifier topologyIdentifierI2rsModel = YangInstanceIdentifier
+    private static final YangInstanceIdentifier topologyIdentifierI2rsModel = YangInstanceIdentifier
             .builder(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER)
             .nodeWithKey(Network.QNAME, TopologyQNames.I2RS_NETWORK_ID_QNAME, TOPOLOGY_ID).build();
-    private final static YangInstanceIdentifier nodeIdentifierI2rsModel = YangInstanceIdentifier
+    private static final YangInstanceIdentifier nodeIdentifierI2rsModel = YangInstanceIdentifier
             .builder(topologyIdentifierI2rsModel).node(org.opendaylight.yang.gen.v1.urn.ietf.params
             .xml.ns.yang.ietf.network.rev150608.network.Node.QNAME).build();
-    private final static YangInstanceIdentifier linkIdentifierI2rsModel = YangInstanceIdentifier
+    private static final YangInstanceIdentifier linkIdentifierI2rsModel = YangInstanceIdentifier
             .builder(topologyIdentifierI2rsModel).node(org.opendaylight.yang.gen.v1.urn.ietf.params
             .xml.ns.yang.ietf.network.topology.rev150608.network.Link.QNAME).build();
 
@@ -78,7 +78,7 @@ public class TopologyWriterTest {
     @Mock private DataContainerChild<? extends YangInstanceIdentifier.PathArgument, ?> topologyTypes;
 
     /**
-     * Initializes writer
+     * Initializes writer.
      */
     @Before
     public void setUp() {
@@ -91,7 +91,7 @@ public class TopologyWriterTest {
 
     /**
      * Tests if overlay topology was correctly initialized - this means Topology with topology-id
-     * + Link and Node mapnodes are written (initialization without I2rsModel)
+     * + Link and Node mapnodes are written (initialization without I2rsModel).
      */
     @Test
     public void testInitOverlayTopologyNTModel() {
@@ -124,7 +124,7 @@ public class TopologyWriterTest {
 
     /**
      * Tests if overlay topology was correctly initialized - this means Topology with topology-id
-     * + Link and Node mapnodes are written (initialization with I2rsModel)
+     * + Link and Node mapnodes are written (initialization with I2rsModel).
      */
     @Test
     public void testInitOverlayTopologyI2rsModel() {
@@ -155,7 +155,7 @@ public class TopologyWriterTest {
     }
 
     /**
-     * Tests if topology-types node was written
+     * Tests if topology-types node was written.
      */
     @Test
     public void testWriteTopologyTypes() {
@@ -174,7 +174,7 @@ public class TopologyWriterTest {
     }
 
     /**
-     * Tests if writer release resources correctly
+     * Tests if writer release resources correctly.
      */
     @Test
     public void testTearDown() {
@@ -194,7 +194,7 @@ public class TopologyWriterTest {
 
     /**
      * Test if delete without I2rsModel initialization is working correctly with all CorrelationItemEnum input
-     * parameters
+     * parameters.
      */
     @Test
     public void testDeleteItemNTModel() {
@@ -218,7 +218,7 @@ public class TopologyWriterTest {
         }
         //TerminationPoint testing
         topologyWriterNTModel.deleteItem(wrapper, CorrelationItemEnum.TerminationPoint);
-        try{
+        try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             throw new IllegalStateException("Exception while waiting on thread pool to process transaction");
@@ -239,7 +239,7 @@ public class TopologyWriterTest {
 
     /**
      * Test if delete with I2rsModel initialization is working correctly with all CorrelationItemEnum input
-     * parameters
+     * parameters.
      */
     @Test
     public void testDeleteItemI2rsModel() {
@@ -265,7 +265,7 @@ public class TopologyWriterTest {
         }
         //TerminationPoint testing
         topologyWriterI2rsModel.deleteItem(wrapper, CorrelationItemEnum.TerminationPoint);
-        try{
+        try {
             Thread.sleep(500);
         } catch (InterruptedException e) {
             throw new IllegalStateException("Exception while waiting on thread pool to process transaction");
@@ -285,10 +285,10 @@ public class TopologyWriterTest {
     }
 
     /**
-     * Test if NullPointerException is thrown, when there is null wrapper parameter in deleteItem method
+     * Test if NullPointerException is thrown, when there is null wrapper parameter in deleteItem method.
      */
-    @Test (expected=NullPointerException.class)
-    public void testDeleteItemWrapperNull(){
+    @Test (expected = NullPointerException.class)
+    public void testDeleteItemWrapperNull() {
         topologyWriterNTModel.deleteItem(null, CorrelationItemEnum.Link);
         try {
             Thread.sleep(500);

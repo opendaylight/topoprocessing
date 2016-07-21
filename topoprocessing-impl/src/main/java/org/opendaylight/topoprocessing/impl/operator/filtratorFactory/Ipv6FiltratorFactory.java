@@ -22,7 +22,7 @@ public class Ipv6FiltratorFactory implements FiltratorFactory {
 
     @Override
     public Filtrator createFiltrator(Filter filter, YangInstanceIdentifier pathIdentifier) {
-        if(filter.getFilterTypeBody() instanceof Ipv6AddressFilterType) {
+        if (filter.getFilterTypeBody() instanceof Ipv6AddressFilterType) {
             return new Ipv6AddressFiltrator(((Ipv6AddressFilterType)filter.getFilterTypeBody())
                     .getIpv6AddressFilter().getIpv6Address(), pathIdentifier);
         } else {

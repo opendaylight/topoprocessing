@@ -8,6 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.translator;
 
+import com.google.common.base.Splitter;
+
 import java.util.Iterator;
 
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
@@ -33,8 +35,6 @@ import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Splitter;
-
 /**
  * @author martin.uhlir
  *
@@ -44,7 +44,7 @@ public class PathTranslator {
     private static final Logger LOGGER = LoggerFactory.getLogger(PathTranslator.class);
 
     /**
-     * Translates yang path into {@link YangInstanceIdentifier}
+     * Translates yang path into {@link YangInstanceIdentifier}.
      *
      * @param yangPath path to target item
      * @param correlationItem   Type of Correlation Item
@@ -86,7 +86,7 @@ public class PathTranslator {
         // if inputModel == null, than use network-topology model as default
         if (OpendaylightInventoryModel.class.equals(inputModel)) {
             itemIdentifier = createInvIdentifier(correlationItem);
-        } else if (NetworkTopologyModel.class.equals(inputModel)){
+        } else if (NetworkTopologyModel.class.equals(inputModel)) {
             itemIdentifier = createNetworkIdentifier(correlationItem, inputModel);
         } else if (I2rsModel.class.equals(inputModel)) {
             itemIdentifier = createI2rsIdentifier(correlationItem, inputModel);

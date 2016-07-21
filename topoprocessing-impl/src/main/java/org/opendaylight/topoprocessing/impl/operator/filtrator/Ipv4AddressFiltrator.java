@@ -8,14 +8,16 @@
 
 package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
+import com.google.common.base.Preconditions;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpPrefix;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Preconditions;
 
 /**
  * @author matus.marko

@@ -11,6 +11,7 @@ package org.opendaylight.topoprocessing.impl.operator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.TopologyStore;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -22,8 +23,8 @@ public class  TopoStoreProvider {
 
     private List<TopologyStore> topologyStores;
 
-    public TopoStoreProvider () {
-        topologyStores= new ArrayList<>();
+    public TopoStoreProvider() {
+        topologyStores = new ArrayList<>();
     }
 
     /**
@@ -40,10 +41,9 @@ public class  TopoStoreProvider {
     }
 
     /**
-     * Initialize Topology Store
+     * Initialize Topology Store.
      * @param underlayTopologyId Underlay Topology ID
-     * @param aggregateInside signals if aggregation should happen even inside
-     * the same topology
+     * @param aggregateInside signals if aggregation should happen even inside the same topology
      */
     public void initializeStore(String underlayTopologyId, boolean aggregateInside) {
         if (underlayTopologyId == null || underlayTopologyId.length() == 0) {

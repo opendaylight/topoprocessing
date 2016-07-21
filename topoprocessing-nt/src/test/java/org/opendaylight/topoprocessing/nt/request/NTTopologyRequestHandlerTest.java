@@ -12,11 +12,13 @@ import static org.mockito.Matchers.any;
 
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.CheckedFuture;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -140,7 +142,7 @@ public class NTTopologyRequestHandlerTest {
                 (YangInstanceIdentifier) Matchers.any())).thenReturn(mockReadFuture);
     }
 
-    @Test (expected=NullPointerException.class)
+    @Test (expected = NullPointerException.class)
     public void testTopologyWithoutAugmentation() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
@@ -156,7 +158,7 @@ public class NTTopologyRequestHandlerTest {
         return topoBuilder;
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationMissingInAugment() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = new CorrelationAugmentBuilder();
@@ -188,7 +190,7 @@ public class NTTopologyRequestHandlerTest {
         return correlationAugmentBuilder;
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationWithoutCorrelationTypeEqualityCase() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
@@ -200,7 +202,7 @@ public class NTTopologyRequestHandlerTest {
         handler.processNewRequest();
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationWithoutCorrelationTypeUnificationCase() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
@@ -212,7 +214,7 @@ public class NTTopologyRequestHandlerTest {
         handler.processNewRequest();
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationWithoutCorrelationTypeNodeIpFiltrationCase() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(FiltrationOnly.class, null,
@@ -224,7 +226,7 @@ public class NTTopologyRequestHandlerTest {
         handler.processNewRequest();
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationWithUnknownCorrelationType() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(UnknownCorrelationBase.class, null,
@@ -236,7 +238,7 @@ public class NTTopologyRequestHandlerTest {
         handler.processNewRequest();
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationWithMappingsNull() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         AggregationBuilder aggBuilder = new AggregationBuilder();
@@ -250,7 +252,7 @@ public class NTTopologyRequestHandlerTest {
         handler.processNewRequest();
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationItemNull() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         AggregationBuilder aggBuilder = new AggregationBuilder();
@@ -362,8 +364,8 @@ public class NTTopologyRequestHandlerTest {
         mappingBuilder1.setAggregateInside(false);
         mappings.add(mappingBuilder1.build());
         aggBuilder.setMapping(mappings);
-        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null, aggBuilder.build(),
-                CorrelationItemEnum.Node);
+        CorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
+                aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
@@ -393,7 +395,8 @@ public class NTTopologyRequestHandlerTest {
         fBuilder.setUnderlayTopology("pcep-topology:1");
         ArrayList<Filter> filters = new ArrayList<>();
         FilterBuilder filterBuilder1 = new FilterBuilder();
-        filterBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
+        filterBuilder1.setTargetField(
+                new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
         filterBuilder1.setInputModel(NetworkTopologyModel.class);
         Ipv4Prefix ipv4prefix = new Ipv4Prefix("192.168.0.1/24");
         IpPrefix ipPrefix = new IpPrefix(ipv4prefix);

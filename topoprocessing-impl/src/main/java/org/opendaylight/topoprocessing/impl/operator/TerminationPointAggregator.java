@@ -10,13 +10,14 @@ package org.opendaylight.topoprocessing.impl.operator;
 
 import com.google.common.base.Optional;
 
-import java.util.List;
-import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
@@ -56,8 +57,8 @@ import org.slf4j.LoggerFactory;
 public class TerminationPointAggregator extends UnificationAggregator {
 
     private static final Logger LOG = LoggerFactory.getLogger(TerminationPointAggregator.class);
-    private static final QName I2RS_TERMINATION_POINT_QNAME = org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.
-            ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME;
+    private static final QName I2RS_TERMINATION_POINT_QNAME = org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang
+            .ietf.network.topology.rev150608.network.node.TerminationPoint.QNAME;
     private Map<Integer, YangInstanceIdentifier> leafPaths;
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
     private Map<YangInstanceIdentifier, List<TemporaryTerminationPoint>> tpStore = new HashMap<>();
@@ -108,7 +109,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
     }
 
     /**
-     * Set path to the leaf which includes data necessary for comparing
+     * Set path to the leaf which includes data necessary for comparing.
      * @param path {@link LeafPath}
      */
     public void setTargetField(Map<Integer, YangInstanceIdentifier> path) {
@@ -161,9 +162,9 @@ public class TerminationPointAggregator extends UnificationAggregator {
         } else {
             // if node contains Termination points
             // and those TP have some changes inside
-            if (updatedTpMapNode.isPresent() && (underlayItem.getLeafNodes() == null ||
-                    (underlayItem.getLeafNodes() != null &&
-                            !underlayItem.getLeafNodes().equals(updatedTpMapNode.get())))) {
+            if (updatedTpMapNode.isPresent() && (underlayItem.getLeafNodes() == null
+                    || (underlayItem.getLeafNodes() != null
+                            && !underlayItem.getLeafNodes().equals(updatedTpMapNode.get())))) {
                 MapNode newTpMap = (MapNode) updatedTpMapNode.get();
                 Map<Integer, NormalizedNode<?, ?>> terminationPointMapNode = new HashMap<>(1);
                 terminationPointMapNode.put(0, newTpMap);
@@ -180,9 +181,9 @@ public class TerminationPointAggregator extends UnificationAggregator {
         Optional<NormalizedNode<?, ?>> tpMapNodeOpt = Optional.absent();
         if (model.equals(NetworkTopologyModel.class)) {
             tpMapNodeOpt = NormalizedNodes.findNode(uItem.getItem(),InstanceIdentifiers.NT_TERMINATION_POINT);
-        } else if (model.equals(I2rsModel.class)){
+        } else if (model.equals(I2rsModel.class)) {
             tpMapNodeOpt = NormalizedNodes.findNode(uItem.getItem(),InstanceIdentifiers.I2RS_TERMINATION_POINT);
-        } else if (model.equals(OpendaylightInventoryModel.class)){
+        } else if (model.equals(OpendaylightInventoryModel.class)) {
             tpMapNodeOpt = NormalizedNodes.findNode(uItem.getLeafNodes().values().iterator().next(),
                     InstanceIdentifiers.INVENTORY_NODE_CONNECTOR_IDENTIFIER);
         }
@@ -277,15 +278,15 @@ public class TerminationPointAggregator extends UnificationAggregator {
 
     private String getTerminationPointId(MapEntryNode terminationPoint) {
         YangInstanceIdentifier tpIdIdentifier;
-        if(model.equals(NetworkTopologyModel.class) || model.equals(OpendaylightInventoryModel.class)){
+        if (model.equals(NetworkTopologyModel.class) || model.equals(OpendaylightInventoryModel.class)) {
             tpIdIdentifier = InstanceIdentifiers.NT_TP_ID_IDENTIFIER;
-        } else if(model.equals(I2rsModel.class)) {
+        } else if (model.equals(I2rsModel.class)) {
             tpIdIdentifier = InstanceIdentifiers.I2RS_TP_ID_IDENTIFIER;
         } else {
             throw new IllegalStateException("Not supported model - " + model);
         }
         Optional<NormalizedNode<?, ?>> tpIdOpt = NormalizedNodes.findNode(terminationPoint, tpIdIdentifier);
-        if(tpIdOpt.isPresent()) {
+        if (tpIdOpt.isPresent()) {
             return tpIdOpt.get().getValue().toString();
         } else {
             throw new IllegalStateException("Termination point must contain id");
@@ -312,13 +313,13 @@ public class TerminationPointAggregator extends UnificationAggregator {
 
     private void removeTerminationPoints(MapNode newTpMap, List<TemporaryTerminationPoint> tempTpList) {
         for (TemporaryTerminationPoint tempTp : tempTpList) {
-                Iterator<MapEntryNode> itr = tempTp.getEntries().iterator();
-                while(itr.hasNext()) {
-                    MapEntryNode mapEN = itr.next();
-                    if (!mapContainsEntry(newTpMap, mapEN)) {
-                        itr.remove();
-                    }
+            Iterator<MapEntryNode> itr = tempTp.getEntries().iterator();
+            while(itr.hasNext()) {
+                MapEntryNode mapEN = itr.next();
+                if (!mapContainsEntry(newTpMap, mapEN)) {
+                    itr.remove();
                 }
+            }
         }
     }
 
@@ -400,7 +401,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
                     mapEntryNode.getChild(InstanceIdentifiers.NT_TP_ID_IDENTIFIER.getLastPathArgument());
             if (leaf.isPresent()) {
                 String tpId;
-                if(isAgregationInsideAggregatedNodes) {
+                if (isAgregationInsideAggregatedNodes) {
                     String[] ids = ((String) leaf.get().getValue()).split("/");
                     topologyId = ids[0];
                     nodeId = ids[1];
@@ -429,7 +430,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
                     mapEntryNode.getChild(InstanceIdentifiers.I2RS_TP_ID_IDENTIFIER.getLastPathArgument());
             if (terminationPointIdOpt.isPresent()) {
                 String tpId;
-                if(isAgregationInsideAggregatedNodes) {
+                if (isAgregationInsideAggregatedNodes) {
                     String[] ids = ((String) terminationPointIdOpt.get().getValue()).split("/");
                     topologyId = ids[0];
                     nodeId = ids[1];

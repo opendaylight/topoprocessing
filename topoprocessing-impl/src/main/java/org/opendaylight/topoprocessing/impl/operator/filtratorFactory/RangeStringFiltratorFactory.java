@@ -23,7 +23,7 @@ public class RangeStringFiltratorFactory implements FiltratorFactory {
 
     @Override
     public Filtrator createFiltrator(Filter filter, YangInstanceIdentifier pathIdentifier) {
-        if(filter.getFilterTypeBody() instanceof RangeStringFilterType) {
+        if (filter.getFilterTypeBody() instanceof RangeStringFilterType) {
             RangeStringFilter RSFilter = ((RangeStringFilterType)filter.getFilterTypeBody()).getRangeStringFilter();
             return new RangeStringFiltrator(RSFilter.getMinStringValue(), RSFilter.getMaxStringValue(), pathIdentifier);
         } else {

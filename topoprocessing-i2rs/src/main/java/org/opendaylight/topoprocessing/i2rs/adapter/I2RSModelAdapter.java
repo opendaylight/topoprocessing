@@ -72,23 +72,24 @@ public class I2RSModelAdapter implements ModelAdapter {
     public YangInstanceIdentifier buildItemIdentifier(InstanceIdentifierBuilder builder,
             CorrelationItemEnum correlationItemEnum) {
         switch (correlationItemEnum) {
-        case Node:
-        case TerminationPoint:
-            builder.node(Node.QNAME);
-            break;
-        case Link:
-            builder.node(Link.QNAME);
-            break;
-        default:
-            throw new IllegalArgumentException("Wrong Correlation item set: "
-                    + correlationItemEnum);
+            case Node:
+            case TerminationPoint:
+                builder.node(Node.QNAME);
+                break;
+            case Link:
+                builder.node(Link.QNAME);
+                break;
+            default:
+                throw new IllegalArgumentException("Wrong Correlation item set: "
+                        + correlationItemEnum);
         }
         return builder.build();
     }
 
     @Override
     public InstanceIdentifierBuilder createTopologyIdentifier(String underlayTopologyId) {
-        InstanceIdentifierBuilder identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER)
+        InstanceIdentifierBuilder identifier = YangInstanceIdentifier
+                .builder(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER)
                 .nodeWithKey(Network.QNAME, TopologyQNames.I2RS_NETWORK_ID_QNAME, underlayTopologyId);
         return identifier;
     }

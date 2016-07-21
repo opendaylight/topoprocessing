@@ -27,7 +27,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * @author matej.perina
  *
  */
-public class InvTopologyRequestHandler extends TopologyRequestHandler{
+public class InvTopologyRequestHandler extends TopologyRequestHandler {
 
 
     public InvTopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder,

@@ -18,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 public class IdentifierGenerator {
 
     /**
-     * Value for internal counter
+     * Value for internal counter.
      */
     private volatile int nodeId = 0;
     private volatile int linkId = 0;
@@ -43,7 +43,7 @@ public class IdentifierGenerator {
     }
 
     /**
-     * Create unique identifier for nodes, links and termination points
+     * Create unique identifier for nodes, links and termination points.
      * @param correlationItem Type of the Item to generate ID for
      * @return unique identifier
      */
@@ -51,13 +51,13 @@ public class IdentifierGenerator {
         String identifier = null;
         switch (correlationItem) {
             case Node:
-            identifier = new String("node:" + getNextNodeId());
+                identifier = new String("node:" + getNextNodeId());
                 break;
             case Link:
-            identifier = new String("link:" + getNextLinkId());
+                identifier = new String("link:" + getNextLinkId());
                 break;
             case TerminationPoint:
-            identifier = new String("tp:" + getNextTpId());
+                identifier = new String("tp:" + getNextTpId());
                 break;
             default:
                 throw new IllegalStateException("Unknown Correlation item used: " + correlationItem);

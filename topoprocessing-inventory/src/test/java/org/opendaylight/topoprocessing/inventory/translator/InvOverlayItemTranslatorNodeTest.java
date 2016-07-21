@@ -8,6 +8,8 @@
 
 package org.opendaylight.topoprocessing.inventory.translator;
 
+import com.google.common.base.Optional;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,15 +41,14 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 
-import com.google.common.base.Optional;
-
 /**
  * @author matus.marko
  */
 @RunWith(MockitoJUnitRunner.class)
 public class InvOverlayItemTranslatorNodeTest {
 
-    private OverlayItemTranslator translator = new OverlayItemTranslator(new InvNodeTranslator(), new InvLinkTranslator());;
+    private OverlayItemTranslator translator = new OverlayItemTranslator(
+            new InvNodeTranslator(), new InvLinkTranslator());
     private static final String TOPOLOGY_NAME = "topology:1";
 
     @Mock
@@ -57,7 +58,7 @@ public class InvOverlayItemTranslatorNodeTest {
     private UnderlayItem mockPhysicalNode;
 
     /**
-     * Test case: NodeId translation
+     * Test case: NodeId translation.
      */
     @Test
     public void testNodeId() {
@@ -75,7 +76,7 @@ public class InvOverlayItemTranslatorNodeTest {
     }
 
     /**
-     * Wrap the same node more times to the wrapper, translate it, and check result for the duplicity
+     * Wrap the same node more times to the wrapper, translate it, and check result for the duplicity.
      *
      * @throws Exception Exception
      */
@@ -100,8 +101,7 @@ public class InvOverlayItemTranslatorNodeTest {
     }
 
     /**
-     * <p>Test case: one SupportingNode translation</p>
-     * <p>- includes TopologyRef and NodeRef</p>
+     * Test case: one SupportingNode translation - includes TopologyRef and NodeRef.
      */
     @Test
     public void testSupportingNode() {
@@ -137,7 +137,7 @@ public class InvOverlayItemTranslatorNodeTest {
     }
 
     /**
-     * Test case: more supporting nodes translation
+     * Test case: more supporting nodes translation.
      */
     @Test
     public void testSupportingNodes() {
@@ -186,7 +186,7 @@ public class InvOverlayItemTranslatorNodeTest {
     }
 
     /**
-     * Test case: TerminationPoint translation
+     * Test case: TerminationPoint translation.
      */
     @Test
     public void testTerminationPoint() {
@@ -203,44 +203,53 @@ public class InvOverlayItemTranslatorNodeTest {
 
         final String physicalName1 = "node:1";
         MapNode terminationPoints1 = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME)
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId1)
+                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME,
+                        tpId1)
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId1))
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef1))
                                 .build())
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId2)
+                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME,
+                        tpId2)
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId2))
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef2))
                                 .build())
                 .build();
-        final MapEntryNode node1 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, physicalName1)
+        final MapEntryNode node1 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME,
+                physicalName1)
                 .withChild(terminationPoints1).build();
 
         final String physicalName2 = "node:2";
         MapNode terminationPoints2 = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME)
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId1)
+                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME,
+                        tpId1)
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId1))
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef1))
                                 .build())
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId3)
+                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME,
+                        tpId3)
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId3))
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef3))
                                 .build())
                 .build();
-        final MapEntryNode node2 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, physicalName2)
+        final MapEntryNode node2 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME,
+                physicalName2)
                 .withChild(terminationPoints2).build();
 
         final String physicalName3 = "node:3";
         MapNode terminationPoints3 = ImmutableNodes.mapNodeBuilder(TerminationPoint.QNAME)
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId2)
-                        .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId2))
-                        .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef2))
-                        .build())
-                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId4)
+                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME,
+                        tpId2)
+                                .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId2))
+                                .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef2))
+                                .build())
+                .withChild(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME,
+                        tpId4)
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.NETWORK_TP_ID_QNAME, tpId4))
                                 .withChild(ImmutableNodes.leafNode(TopologyQNames.TP_REF, tpRef4))
                                 .build())
                 .build();
-        final MapEntryNode node3 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, physicalName3)
+        final MapEntryNode node3 = ImmutableNodes.mapEntryBuilder(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME,
+                physicalName3)
                 .withChild(terminationPoints3).build();
 
         final Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);

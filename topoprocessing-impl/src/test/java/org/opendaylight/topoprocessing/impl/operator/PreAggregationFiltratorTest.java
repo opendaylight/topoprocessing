@@ -117,7 +117,7 @@ public class PreAggregationFiltratorTest {
     }
 
     /**
-     * Shouldn't be able to set a TopologyManager
+     * Shouldn't be able to set a TopologyManager.
      */
     @Test(expected = UnsupportedOperationException.class)
     public void testSetTopologyManager() {

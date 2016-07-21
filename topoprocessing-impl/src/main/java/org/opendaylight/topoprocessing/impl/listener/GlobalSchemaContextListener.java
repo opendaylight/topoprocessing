@@ -15,9 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Listens on {@link SchemaContext} update and updates
- * existing / stored {@link SchemaContext}
- * 
+ * Listens on {@link SchemaContext} update and updates existing / stored {@link SchemaContext}.
+ *
  * @author michal.polkorab
  */
 public class GlobalSchemaContextListener implements SchemaContextListener {

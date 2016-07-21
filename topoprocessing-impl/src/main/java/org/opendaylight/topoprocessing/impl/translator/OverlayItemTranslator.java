@@ -23,12 +23,12 @@ public class OverlayItemTranslator {
     NodeTranslator nodeTranslator;
     LinkTranslator linkTranslator;
 
-    public OverlayItemTranslator(NodeTranslator nodeTranslator, LinkTranslator linkTranslator){
+    public OverlayItemTranslator(NodeTranslator nodeTranslator, LinkTranslator linkTranslator) {
         this.nodeTranslator = nodeTranslator;
         this.linkTranslator = linkTranslator;
     }
     /**
-     * Convert LogicalNode to Node
+     * Convert LogicalNode to Node.
      * @param wrapper LogicalNodeWrapper object
      * @return Node
      */
@@ -39,16 +39,16 @@ public class OverlayItemTranslator {
             if (!overlayItems.isEmpty()) {
                 CorrelationItemEnum correlationItem = overlayItems.peek().getCorrelationItem();
                 switch (correlationItem) {
-                case Node:
-                case TerminationPoint:
-                    result = nodeTranslator.translate(wrapper);
-                    break;
-                case Link:
-                    result = linkTranslator.translate(wrapper);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Wrong Correlation item set: "
-                            + correlationItem);
+                    case Node:
+                    case TerminationPoint:
+                        result = nodeTranslator.translate(wrapper);
+                        break;
+                    case Link:
+                        result = linkTranslator.translate(wrapper);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Wrong Correlation item set: "
+                                + correlationItem);
                 }
             }
         }

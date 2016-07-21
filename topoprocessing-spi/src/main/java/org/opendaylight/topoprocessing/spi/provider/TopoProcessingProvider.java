@@ -24,20 +24,20 @@ public interface TopoProcessingProvider extends AutoCloseable {
     void startup();
 
     /**
-     * Registers user defined filtrator
+     * Registers user defined filtrator.
      * @param filterType - key under which the filtrator will be registered, represented by modeled identity
      * @param filtratorFactory - factory dealing with filtering functionality
      */
     void registerFiltratorFactory(Class<? extends FilterBase> filterType, FiltratorFactory filtratorFactory);
 
     /**
-     * Unregister user defined filtrator
+     * Unregister user defined filtrator.
      * @param filterType - key of filtrator to be unregistered - represented by modeled identity
      */
     void unregisterFiltratorFactory(Class<? extends FilterBase> filterType);
 
     /**
-     * Registers specific ModelAdaper
+     * Registers specific ModelAdaper.
      * @param model - defines topology model
      */
     void registerModelAdapter(Class<? extends Model> model, Object modelAdapter);

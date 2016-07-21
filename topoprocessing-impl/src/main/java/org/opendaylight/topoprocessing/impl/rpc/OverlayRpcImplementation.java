@@ -8,9 +8,10 @@
 
 package org.opendaylight.topoprocessing.impl.rpc;
 
-import java.util.Collection;
-
+import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
+
+import java.util.Collection;
 
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcException;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
@@ -35,8 +36,6 @@ import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import org.opendaylight.yangtools.yang.model.api.SchemaPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.util.concurrent.CheckedFuture;
 
 /**
  * Used for delegation of RPC calls.

@@ -8,10 +8,12 @@
 package org.opendaylight.topoprocessing.i2rs.translator;
 
 import com.google.common.base.Optional;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.IdentifierGenerator;
@@ -42,7 +44,7 @@ import org.opendaylight.yangtools.yang.data.impl.schema.builder.api.CollectionNo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class I2RSNodeTranslator implements NodeTranslator{
+public class I2RSNodeTranslator implements NodeTranslator {
 
     private static final Logger LOG = LoggerFactory.getLogger(I2RSNodeTranslator.class);
 
@@ -68,8 +70,8 @@ public class I2RSNodeTranslator implements NodeTranslator{
                 }
             }
         }
-        if (wrapper.getAggregatedTerminationPoints() != null &&
-                !wrapper.getAggregatedTerminationPoints().getValue().isEmpty()) {
+        if (wrapper.getAggregatedTerminationPoints() != null
+                && !wrapper.getAggregatedTerminationPoints().getValue().isEmpty()) {
             MapNode aggregatedTPs = wrapper.getAggregatedTerminationPoints();
             Optional<NormalizedNode<?, ?>> tpId = NormalizedNodes.findNode(
                     aggregatedTPs.getValue().iterator().next(), InstanceIdentifiers.NT_TP_ID_IDENTIFIER);
@@ -127,7 +129,7 @@ public class I2RSNodeTranslator implements NodeTranslator{
         for (MapEntryNode mapEntryNode : aggregatedTPs.getValue()) {
             Optional<NormalizedNode<?, ?>> tpRefsOpt = NormalizedNodes.findNode(mapEntryNode,
                     InstanceIdentifiers.NT_TP_REF_IDENTIFIER);
-            if(tpRefsOpt.isPresent()) {
+            if (tpRefsOpt.isPresent()) {
                 CollectionNodeBuilder<MapEntryNode, MapNode> suppTPs = ImmutableNodes.mapNodeBuilder(
                         SupportingTerminationPoint.QNAME);
                 LeafSetNode<String> tpRefs = (LeafSetNode<String>) tpRefsOpt.get();

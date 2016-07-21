@@ -8,6 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.testUtilities;
 
+import com.google.common.base.Optional;
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -15,8 +17,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgum
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNode;
 import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
-
-import com.google.common.base.Optional;
 
 /**
  * @author martin.uhlir

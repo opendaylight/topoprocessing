@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +38,8 @@ public class LogicalNodeTest {
     private static final String NODE_ID2 = "pcep:2";
     private static final String NODE_ID3 = "pcep:3";
     private OverlayItem logicalNode;
-    private UnderlayItem physicalNode, physicalNode2;
+    private UnderlayItem physicalNode;
+    private UnderlayItem physicalNode2;
 
     @Mock private NormalizedNode<?,?> mockNormalizedNode1;
     @Mock private NormalizedNode<?,?> mockLeafNode1;
@@ -48,7 +50,8 @@ public class LogicalNodeTest {
     public void testLogicalNodeCreation() {
         Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
         targetFields.put(0, mockLeafNode1);
-        physicalNode = new UnderlayItem(mockNormalizedNode1, targetFields, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        physicalNode = new UnderlayItem(mockNormalizedNode1, targetFields, TOPOLOGY1, NODE_ID1,
+                CorrelationItemEnum.Node);
         List<UnderlayItem> physicalNodes = new ArrayList<>();
         physicalNodes.add(physicalNode);
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
@@ -60,14 +63,16 @@ public class LogicalNodeTest {
     public void testAddPhysicalNode() {
         Map<Integer, NormalizedNode<?, ?>> targetFields1 = new HashMap<>(1);
         targetFields1.put(0, mockLeafNode1);
-        physicalNode = new UnderlayItem(mockNormalizedNode1, targetFields1, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        physicalNode = new UnderlayItem(mockNormalizedNode1, targetFields1, TOPOLOGY1, NODE_ID1,
+                CorrelationItemEnum.Node);
         List<UnderlayItem> physicalNodes = new ArrayList<>();
         physicalNodes.add(physicalNode);
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
         Map<Integer, NormalizedNode<?, ?>> targetFields2 = new HashMap<>(1);
         targetFields2.put(0, mockLeafNode2);
-        physicalNode2 = new UnderlayItem(mockNormalizedNode2, targetFields2, TOPOLOGY2, NODE_ID2, CorrelationItemEnum.Node);
+        physicalNode2 = new UnderlayItem(mockNormalizedNode2, targetFields2, TOPOLOGY2, NODE_ID2,
+                CorrelationItemEnum.Node);
         logicalNode.addUnderlayItem(physicalNode2);
         Assert.assertEquals(2, logicalNode.getUnderlayItems().size());
         Iterator<UnderlayItem> iterator = logicalNode.getUnderlayItems().iterator();
@@ -90,7 +95,8 @@ public class LogicalNodeTest {
 
         Map<Integer, NormalizedNode<?, ?>> targetFields = new HashMap<>(1);
         targetFields.put(0, mockLeafNode2);
-        physicalNode2 = new UnderlayItem(mockNormalizedNode2, targetFields, TOPOLOGY2, NODE_ID2, CorrelationItemEnum.Node);
+        physicalNode2 = new UnderlayItem(mockNormalizedNode2, targetFields, TOPOLOGY2, NODE_ID2,
+                CorrelationItemEnum.Node);
         logicalNode.updateUnderlayItem(physicalNode, physicalNode2);
         Assert.assertEquals(1, logicalNode.getUnderlayItems().size());
         Assert.assertTrue(physicalNodeEquals(physicalNode2, logicalNode.getUnderlayItems().peek()));
@@ -122,19 +128,19 @@ public class LogicalNodeTest {
         Assert.assertTrue(physicalNodeEquals(physicalNode3, logicalNode.getUnderlayItems().peek()));
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testCreationWithNull() {
         OverlayItem logicalNode = new OverlayItem(null, CorrelationItemEnum.Node);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testRemovingUnexistingNode() {
         testLogicalNodeCreation();
 
         logicalNode.removeUnderlayItem(physicalNode2);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testUpdatingUnexistingNode() {
         testLogicalNodeCreation();
         UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY2, NODE_ID3,

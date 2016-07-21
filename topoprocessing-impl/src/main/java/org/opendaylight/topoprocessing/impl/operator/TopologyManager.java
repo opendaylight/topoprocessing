@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
+
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
@@ -66,17 +67,19 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
     }
 
     /**
-     * For testing purpose only
+     * For testing purpose only.
+     *
      * @return All overlayItem wrappers
      */
-    public Deque<OverlayItemWrapper> getNodeWrappers(){
+    public Deque<OverlayItemWrapper> getNodeWrappers() {
         return nodeWrappers;
     }
 
     /**
-     * Adds new overlay item into
+     * Adds new overlay item into:
      * - existing overlay item wrapper
-     * - new overlay item wrapper
+     * - new overlay item wrapper.
+     *
      * @param newOverlayItem - OverlayItem which shall be put into wrapper
      */
     @Override
@@ -89,14 +92,15 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
 
 
     /**
-     * Adds new overlay item into existing wrapper or creates one
+     * Adds new overlay item into existing wrapper or creates one.
+     *
      * @param newOverlayItem OverlayItem which shall be put into wrapper
      * @return existing or new wrapper
      */
     public OverlayItemWrapper findOrCreateWrapper(OverlayItem newOverlayItem) {
         OverlayItemWrapper wrapper = findWrapperWithUnderlayItem(newOverlayItem.getUnderlayItems(),
                         newOverlayItem.getCorrelationItem());
-        if(wrapper != null) {
+        if (wrapper != null) {
             wrapper.addOverlayItem(newOverlayItem);
             registerOverlayRpcs(wrapper, newOverlayItem);
             return wrapper;
@@ -125,7 +129,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
     @Override
     public void updateOverlayItem(OverlayItem overlayItemIdentifier) {
         OverlayItemWrapper wrapper = findWrapper(overlayItemIdentifier);
-        if(wrapper != null) {
+        if (wrapper != null) {
             writer.writeItem(wrapper, overlayItemIdentifier.getCorrelationItem());
             registerOverlayRpcs(wrapper, overlayItemIdentifier);
         }
@@ -151,6 +155,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
 
     /**
      * Tries to find wrapper containing OverlayItem in existing wrapper.
+     *
      * @param overlayItemIdentifier
      * @return wrapper or null if wrapper is not found
      */
@@ -164,7 +169,8 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
     }
 
     /**
-     * Tries to find wrapper containing AT LEAST ONE UnderlayItem from collection
+     * Tries to find wrapper containing AT LEAST ONE UnderlayItem from collection.
+     *
      * @param underlayItems
      * @return wrapper or null if wrapper is not found
      */
@@ -205,7 +211,8 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
 
     /**
      * Gathers RPCs for all {@link UnderlayItem}s present in the {@link OverlayItem} and registers them under
-     * {@link OverlayItemWrapper} Id
+     * {@link OverlayItemWrapper} Id.
+     *
      * @param wrapper wraps LogicalNode and contains id for republished rpc
      * @param overlayItem Which contains UnderlayItems with RPCs
      */
@@ -245,15 +252,15 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
     private Deque<OverlayItemWrapper> getWrappersList(CorrelationItemEnum correlationItem) {
         Deque<OverlayItemWrapper> resultList = null;
         switch (correlationItem) {
-        case Node:
-        case TerminationPoint:
-            resultList = nodeWrappers;
-            break;
-        case Link:
-            resultList = linkWrappers;
-            break;
-        default:
-            throw new IllegalArgumentException("Wrong Correlation item set: " + correlationItem);
+            case Node:
+            case TerminationPoint:
+                resultList = nodeWrappers;
+                break;
+            case Link:
+                resultList = linkWrappers;
+                break;
+            default:
+                throw new IllegalArgumentException("Wrong Correlation item set: " + correlationItem);
         }
         return resultList;
     }

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class NotificationInterConnectorTest {
     private TestNodeCreator creator = new TestNodeCreator();
     private TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
 
-    /** Sets up NotificationInterConnector */
+    /** Sets up NotificationInterConnector. */
     @Before
     public void setUp() {
         operator = Mockito.mock(TopologyOperator.class);
@@ -62,7 +63,7 @@ public class NotificationInterConnectorTest {
         connector.setOperator(operator);
     }
 
-    /** Tests created changes - only topology node is received */
+    /** Tests created changes - only topology node is received. */
     @Test
     public void testOnlyTopologyNode() {
         String nodeId = "toponode:1";
@@ -73,7 +74,7 @@ public class NotificationInterConnectorTest {
         Mockito.verifyZeroInteractions(operator);
     }
 
-    /** Tests created changes - only inventory node is received */
+    /** Tests created changes - only inventory node is received. */
     @Test
     public void testOnlyInventoryNode() {
         String nodeId = "invnode:1";
@@ -88,7 +89,7 @@ public class NotificationInterConnectorTest {
     }
 
     /**
-     * Tests created changes - inventory node is received before topology node
+     * Tests created changes - inventory node is received before topology node.
      */
     @Test
     public void testCreateInventoryNodeFirst() {
@@ -119,7 +120,7 @@ public class NotificationInterConnectorTest {
     }
 
     /**
-     * Tests created changes - topology node is received before inventory node
+     * Tests created changes - topology node is received before inventory node.
      */
     @Test
     public void testCreateTopologyNodeFirst() {
@@ -156,7 +157,7 @@ public class NotificationInterConnectorTest {
                 Matchers.refEq(comparationItem), Matchers.eq(TOPOLOGY_ID));
     }
 
-    /** Tests removed changes - remove with inventory identifier first */
+    /** Tests removed changes - remove with inventory identifier first. */
     @Test
     public void testRemoveInventoryNode() {
         testCreateInventoryNodeFirst();
@@ -179,7 +180,7 @@ public class NotificationInterConnectorTest {
         connector.processRemovedChanges(topoNodeId, TOPOLOGY_ID);
     }
 
-    /** Tests removed changes - remove with topology identifier first */
+    /** Tests removed changes - remove with topology identifier first. */
     @Test
     public void testRemoveTopologyNode() {
         testCreateInventoryNodeFirst();
@@ -202,7 +203,7 @@ public class NotificationInterConnectorTest {
         connector.processRemovedChanges(invNodeId, TOPOLOGY_ID);
     }
 
-    /** Tests update changes - update inventory node */
+    /** Tests update changes - update inventory node. */
     @Test
     public void testUpdateInventoryNode() {
         testCreateInventoryNodeFirst();
@@ -224,7 +225,7 @@ public class NotificationInterConnectorTest {
                 Matchers.refEq(comparationItem), Matchers.eq(TOPOLOGY_ID));
     }
 
-    /** Tests update changes - update topology node */
+    /** Tests update changes - update topology node. */
     @Test
     public void testUpdateTopologyNode() {
         testCreateInventoryNodeFirst();

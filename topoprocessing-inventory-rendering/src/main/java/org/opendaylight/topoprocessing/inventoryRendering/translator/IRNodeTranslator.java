@@ -8,13 +8,13 @@
 package org.opendaylight.topoprocessing.inventoryRendering.translator;
 
 import com.google.common.base.Optional;
-import java.util.ArrayList;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
@@ -31,7 +31,6 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.NodeIdent
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
 import org.opendaylight.yangtools.yang.data.api.schema.ContainerNode;
-import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
@@ -71,12 +70,12 @@ public class IRNodeTranslator implements NodeTranslator {
             createInventoryNodeConnectorRefAugIdentifier();
 
     /**
-     * @param wrapper wraps OverlayItems
-     *
      * Translate {@link OverlayItem} item into {@linkplain NormalizedNode} node from network-topology model.
      * Expects that corresponding {@link UnderlayItem} item contains node from network-topology model in its item
      * attribute, node from inventory in its leafNode attribute and node-id from node from network-topology model in its
      * itemId attribute.
+     *
+     * @param wrapper wraps OverlayItems
      */
     @Override
     public NormalizedNode<?, ?> translate(OverlayItemWrapper wrapper) {
@@ -92,7 +91,7 @@ public class IRNodeTranslator implements NodeTranslator {
         Optional<NormalizedNode<?, ?>> nodeConnectorNode = NormalizedNodes.findNode(
                 inventoryItemNode, IRInstanceIdentifiers.NODE_CONNECTOR_IDENTIFIER);
         if (nodeConnectorNode.isPresent()) {
-            Optional<NormalizedNode<?,? >> terminationPointNode = NormalizedNodes.findNode(
+            Optional<NormalizedNode<?,?>> terminationPointNode = NormalizedNodes.findNode(
                     underlayItem.getItem(), IRInstanceIdentifiers.TP_IDENTIFIER);
             // we want tp-ids from network-topology model, so we have to map them to corresponding node-connector id
             if (terminationPointNode.isPresent()) {
@@ -199,25 +198,25 @@ public class IRNodeTranslator implements NodeTranslator {
 
             Optional<NormalizedNode<?, ?>> fieldNode = NormalizedNodes.findNode(inventoryNodeConnectorAugNode.get(),
                     IRInstanceIdentifiers.OPEN_FLOW_PORT_CURRENT_SPEED_IDENTIFIER);
-            if (fieldNode.isPresent()){
+            if (fieldNode.isPresent()) {
                 tpAugContainerBuilder.withChild(ImmutableNodes.leafNode(IRQNames.TP_AUG_CURRENT_SPEED_QNAME,
                         fieldNode.get().getValue()));
             }
             fieldNode = NormalizedNodes.findNode(inventoryNodeConnectorAugNode.get(),
                     IRInstanceIdentifiers.OPEN_FLOW_PORT_HARDWARE_ADDRESS_IDENTIFIER);
-            if (fieldNode.isPresent()){
+            if (fieldNode.isPresent()) {
                 tpAugContainerBuilder.withChild(ImmutableNodes.leafNode(IRQNames.TP_AUG_HARDWARE_ADDRESS_QNAME,
                         fieldNode.get().getValue()));
             }
             fieldNode = NormalizedNodes.findNode(inventoryNodeConnectorAugNode.get(),
                     IRInstanceIdentifiers.OPEN_FLOW_PORT_MAXIMUM_SPEED_IDENTIFIER);
-            if (fieldNode.isPresent()){
+            if (fieldNode.isPresent()) {
                 tpAugContainerBuilder.withChild(ImmutableNodes.leafNode(IRQNames.TP_AUG_MAXIMUM_SPEED_QNAME,
                         fieldNode.get().getValue()));
             }
             fieldNode = NormalizedNodes.findNode(inventoryNodeConnectorAugNode.get(),
                     IRInstanceIdentifiers.OPEN_FLOW_PORT_NAME_IDENTIFIER);
-            if (fieldNode.isPresent()){
+            if (fieldNode.isPresent()) {
                 tpAugContainerBuilder.withChild(ImmutableNodes.leafNode(IRQNames.TP_AUG_NAME_QNAME,
                         fieldNode.get().getValue()));
             }
@@ -239,7 +238,8 @@ public class IRNodeTranslator implements NodeTranslator {
             Optional<NormalizedNode<?, ?>> nodeConnectorRefAugment = NormalizedNodes.findNode(terminationPointEntry,
                     INVENTORY_NODE_CONNECTOR_REF_AUGMENTATION_IDENTIFIER);
 
-            YangInstanceIdentifier ncRefIdent = (YangInstanceIdentifier) NormalizedNodes.findNode(nodeConnectorRefAugment.get(),
+            YangInstanceIdentifier ncRefIdent =
+                    (YangInstanceIdentifier) NormalizedNodes.findNode(nodeConnectorRefAugment.get(),
                     IRInstanceIdentifiers.INVENTORY_NODE_CONNECTOR_REF_IDENTIFIER).get().getValue();
             // key is path to node-connector id and value is corresponding termination-point tp-id
             terminationPointsIds.put(ncRefIdent.getLastPathArgument(), tpId);
@@ -260,7 +260,8 @@ public class IRNodeTranslator implements NodeTranslator {
     }
 
     private static AugmentationIdentifier createInventoryNodeConnectorRefAugIdentifier() {
-        Set<QName> qnames = new HashSet<>(); qnames.add(IRQNames.INVENTORY_NODE_CONNECTOR_REF_QNAME);
+        Set<QName> qnames = new HashSet<>();
+        qnames.add(IRQNames.INVENTORY_NODE_CONNECTOR_REF_QNAME);
         return new AugmentationIdentifier(qnames);
     }
 

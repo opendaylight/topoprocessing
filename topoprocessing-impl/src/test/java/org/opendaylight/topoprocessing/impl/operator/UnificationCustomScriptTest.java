@@ -8,11 +8,9 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
-import org.opendaylight.topoprocessing.api.structure.OverlayItem;
-
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,8 +18,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.testUtilities.TestNodeCreator;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.Scripting;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.scripting.grouping.ScriptingBuilder;
 import org.opendaylight.yangtools.yang.common.QName;
@@ -47,7 +47,9 @@ public class UnificationCustomScriptTest {
     private static final String TOPO2 = "topo2";
 
     private TopologyAggregator aggregator;
-    private YangInstanceIdentifier leafYiid21, leafYiid22, leafYiid23;
+    private YangInstanceIdentifier leafYiid21;
+    private YangInstanceIdentifier leafYiid22;
+    private YangInstanceIdentifier leafYiid23;
     private CorrelationItemEnum nodeItem = CorrelationItemEnum.Node;
     private TopoStoreProvider topoStoreProvider;
 
@@ -56,7 +58,7 @@ public class UnificationCustomScriptTest {
     @Mock private TopologyManager mockManager;
 
     /**
-     * Sets aggregator up
+     * Sets aggregator up.
      */
     @Before
     public void setUp() {
@@ -80,7 +82,7 @@ public class UnificationCustomScriptTest {
     }
 
     /**
-     * Simple test for script aggregation
+     * Simple test for script aggregation.
      * @throws Exception Exception
      */
     @Test
@@ -131,9 +133,9 @@ public class UnificationCustomScriptTest {
     }
 
     /**
-     * Throws an exception when ScriptEngine was not found
+     * Throws an exception when ScriptEngine was not found.
      */
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void testIncorrectCreation() {
         aggregator = new UnificationAggregator(topoStoreProvider);
         String script = "println(\"hello\")";
