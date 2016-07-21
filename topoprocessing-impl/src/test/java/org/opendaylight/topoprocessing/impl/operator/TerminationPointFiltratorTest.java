@@ -112,7 +112,7 @@ public class TerminationPointFiltratorTest {
     }
 
     /**
-     * Test the ProcessCreatedChanges method with input based on network topology model
+     * Test the ProcessCreatedChanges method with input based on network topology model.
      */
     @Test
     public void testProcessCreatedChangesOnNTModel() {
@@ -148,10 +148,10 @@ public class TerminationPointFiltratorTest {
 
 
     /**
-     * Test the ProcessCreatedChanges method with input based on inventory model
+     * Test the ProcessCreatedChanges method with input based on inventory model.
      */
     @Test
-    public void testProcessCreatedChangesOnInventoryModel(){
+    public void testProcessCreatedChangesOnInventoryModel() {
         String nodeConnectorId1 = "tp1";
         String value1 = "15";
         String nodeConnectorId2 = "tp2";

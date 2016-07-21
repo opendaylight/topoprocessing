@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.ITopologyManager;
@@ -37,7 +38,7 @@ public class IRRenderingOperator implements TopologyOperator {
 
     @Override
     public void processCreatedChanges(YangInstanceIdentifier identifier, UnderlayItem createdEntry, String topologyId) {
-        if(createdEntry != null) {
+        if (createdEntry != null) {
             LOGGER.trace("Processing createdChnages");
             Map<YangInstanceIdentifier, UnderlayItem> items =
                     topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems();
@@ -51,7 +52,7 @@ public class IRRenderingOperator implements TopologyOperator {
 
     @Override
     public void processUpdatedChanges(YangInstanceIdentifier identifier, UnderlayItem updatedEntry, String topologyId) {
-        if(updatedEntry != null) {
+        if (updatedEntry != null) {
             LOGGER.trace("Processing updateChanges");
             Map<YangInstanceIdentifier, UnderlayItem> items =
                     topoStoreProvider.getTopologyStore(topologyId).getUnderlayItems();

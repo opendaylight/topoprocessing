@@ -17,7 +17,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 public interface Filtrator {
 
     /**
-     * Filters {@link UnderlayItem}
+     * Filters {@link UnderlayItem}.
      * @param item {@link UnderlayItem} to be filtered
      * @return true if item was filtered out false otherwise
      */

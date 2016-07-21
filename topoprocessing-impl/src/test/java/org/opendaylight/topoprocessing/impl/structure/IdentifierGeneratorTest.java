@@ -25,7 +25,7 @@ public class IdentifierGeneratorTest {
     private static final int THREADS = 5;
     private static final int IDS_PER_THREAD = 10;
 
-    ConcurrentLinkedDeque<String> concurrentDeque; 
+    ConcurrentLinkedDeque<String> concurrentDeque;
     private IdentifierGenerator idGenerator = new IdentifierGenerator();
 
     public class IdGeneratorRunnable implements Runnable {
@@ -35,7 +35,7 @@ public class IdentifierGeneratorTest {
                 concurrentDeque.add(generatedNodeId);
             }
         }
-      }
+    }
 
     @Test
     public void testNodeLinkTerminationPointIdGeneration() {
@@ -70,13 +70,14 @@ public class IdentifierGeneratorTest {
             String nodeToBeFound = "node:" + i;
             boolean nodeFound = concurrentDeque.remove(nodeToBeFound);
             if (!nodeFound) {
-                Assert.fail("Concurrent Id generation error. In generated nodes ID array, following Node was not found: "
+                Assert.fail("Concurrent Id generation error. In generated nodes ID array, "
+                        + "following Node was not found: "
                         + nodeToBeFound);
             }
         }
         if (concurrentDeque.size() > 0) {
-            Assert.fail("Concurrent Id generation error. Following Nodes should not be present in the generated Nodes ID"
-                    + concurrentDeque.toString());
+            Assert.fail("Concurrent Id generation error. "
+                    + "Following Nodes should not be present in the generated Nodes ID " + concurrentDeque.toString());
         }
     }
 

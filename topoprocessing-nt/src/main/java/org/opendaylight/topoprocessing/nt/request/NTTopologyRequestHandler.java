@@ -27,7 +27,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * @author matej.perina
  *
  */
-public class NTTopologyRequestHandler extends TopologyRequestHandler{
+public class NTTopologyRequestHandler extends TopologyRequestHandler {
 
     public NTTopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices, Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {

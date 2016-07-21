@@ -30,7 +30,7 @@ public class TopoStoreProviderTest {
 
     @Before
     public void setUp() {
-         provider =  new TopoStoreProviderImpl();
+        provider =  new TopoStoreProviderImpl();
     }
 
     @Test
@@ -68,13 +68,13 @@ public class TopoStoreProviderTest {
         Assert.assertEquals(true, provider.getTopologyStore(TOPOLOGY2_ID).isAggregateInside());
     }
 
-    @Test(expected=IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void testInitializeStoreWithNull() {
         provider.initializeStore(null, true);
         Assert.assertEquals(0, provider.getTopologyStores().size());
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testInitializeStoreWithEmptyString() {
         provider.initializeStore(EMPTY_STRING, true);
         Assert.assertEquals(0, provider.getTopologyStores().size());

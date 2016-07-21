@@ -55,7 +55,7 @@ public class InvOverlayItemTranslatorLinkTest {
     @Mock private UnderlayItem mockUnderlayLink;
 
     /**
-     * Tests link-id translation
+     * Tests link-id translation.
      */
     @Test
     public void test() {
@@ -73,7 +73,7 @@ public class InvOverlayItemTranslatorLinkTest {
     }
 
     /**
-     * Tests supporting links translation
+     * Tests supporting links translation.
      */
     @Test
     public void testSupportingLinks() {
@@ -120,7 +120,7 @@ public class InvOverlayItemTranslatorLinkTest {
     }
 
     @Test
-    public void testComputedLinkTranslation(){
+    public void testComputedLinkTranslation() {
         String topologyName = "mytopo:1";
         String wrapperName = "overlaylink:1";
         String srcNodeID = "node:1";

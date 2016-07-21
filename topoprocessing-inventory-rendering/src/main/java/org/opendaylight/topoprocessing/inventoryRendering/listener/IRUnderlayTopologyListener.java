@@ -33,9 +33,10 @@ import org.slf4j.LoggerFactory;
  * @author matej.perina
  *
  */
-public class IRUnderlayTopologyListener extends UnderlayTopologyListener{
+public class IRUnderlayTopologyListener extends UnderlayTopologyListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IRUnderlayTopologyListener.class);
+
     public IRUnderlayTopologyListener(PingPongDataBroker dataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         super(dataBroker, underlayTopologyId, correlationItem);
@@ -53,7 +54,7 @@ public class IRUnderlayTopologyListener extends UnderlayTopologyListener{
     }
 
     public void registerUnderlayTopologyListener(DatastoreType datastoreType,
-            List<ListenerRegistration<DOMDataTreeChangeListener>> listeners){
+            List<ListenerRegistration<DOMDataTreeChangeListener>> listeners) {
         if (correlationItem.equals(CorrelationItemEnum.Node)) {
             TopoStoreProvider connTopoStoreProvider = new TopoStoreProvider();
             connTopoStoreProvider.initializeStore(underlayTopologyId, false);
@@ -75,11 +76,11 @@ public class IRUnderlayTopologyListener extends UnderlayTopologyListener{
             } else {
                 treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, invId);
             }
-            ListenerRegistration<DOMDataTreeChangeListener> invListenerRegistration=
+            ListenerRegistration<DOMDataTreeChangeListener> invListenerRegistration =
                     dataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) invListener);
             listeners.add(invListenerRegistration);
         } else {
             throw new IllegalStateException("Rendering has to have CorrelationItem set to Node");
         }
-    };
+    }
 }

@@ -8,6 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
+import com.google.common.base.Optional;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,8 +27,6 @@ import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.Correlations;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.link.computation.rev150824.link.computation.grouping.LinkComputation;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yangtools.binding.data.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -40,10 +40,8 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Optional;
-
 /**
- * Listens on new overlay topology requests
+ * Listens on new overlay topology requests.
  *
  * @author michal.polkorab
  */
@@ -62,15 +60,17 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     private Map<Class<? extends Model>, ModelAdapter> modelAdapters;
 
     /**
-     * Default constructor
+     * Default constructor.
      * @param dataBroker        access to Datastore
-     * @param nodeSerializer    translates Topology into BindingAware object - for easier handling in TopologyRequestHandler
+     * @param nodeSerializer    translates Topology into BindingAware object - for easier handling in
+     *                          TopologyRequestHandler
      * @param schemaHolder      access to SchemaContext and SchemaListener
      * @param rpcServices       rpcServices for rpc republishing
      * @param modelAdapters     list of registered model adapters
      */
     public TopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
-            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
+            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
+            Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
         this.dataBroker = dataBroker;
         this.nodeSerializer = nodeSerializer;
         this.schemaHolder = schemaHolder;
@@ -102,8 +102,8 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
         for (Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : map.entrySet()) {
             YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
             NormalizedNode<?, ?> normalizedNode = entry.getValue();
-            if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)){
-                if (isTopologyRequest(normalizedNode) || isLinkCalculation(normalizedNode)){
+            if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)) {
+                if (isTopologyRequest(normalizedNode) || isLinkCalculation(normalizedNode)) {
                     Map.Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode =
                             nodeSerializer.fromNormalizedNode(identifier, normalizedNode);
                     TopologyRequestHandler requestHandler =
@@ -127,7 +127,6 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     }
 
     /**
-     *
      * @param removedPaths set of removed paths
      * @param timeOut time in ms to wait for remove to finish, if timeout == 0 there is no waiting
      */
@@ -147,11 +146,11 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
             YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
             NormalizedNode<?, ?> normalizedNode = entry.getValue();
 
-            if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)){
-                if (isTopologyRequest(normalizedNode) || isLinkCalculation(normalizedNode)){
-                        Set<YangInstanceIdentifier> key = new HashSet<>();
-                        key.add(yangInstanceIdentifier);
-                        processRemovedData(key,250);
+            if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)) {
+                if (isTopologyRequest(normalizedNode) || isLinkCalculation(normalizedNode)) {
+                    Set<YangInstanceIdentifier> key = new HashSet<>();
+                    key.add(yangInstanceIdentifier);
+                    processRemovedData(key,250);
                 }
             }
         }
@@ -176,7 +175,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     }
 
     /**
-     * For testing purposes only
+     * For testing purposes only.
      * @return Topology Request Handler List
      */
     public Map<YangInstanceIdentifier, TopologyRequestHandler> getTopoRequestHandlers() {
@@ -184,7 +183,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     }
 
     /**
-     * For testing purpose
+     * For testing purpose.
      * @return All Filtrators
      */
     public Map<Class<? extends FilterBase>, FiltratorFactory> getFiltrators() {
@@ -192,7 +191,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     }
 
     /**
-     * Register new filtrator with its own factory
+     * Register new filtrator with its own factory.
      * @param filtrator         filter type
      * @param filtratorFactory  creates Filtrators based on Filter configuration
      */
@@ -202,7 +201,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     }
 
     /**
-     * Unregister Filtrator from Listener
+     * Unregister Filtrator from Listener.
      * @param filtrator unregisters FiltratorFactory for specifier filter type,
      *                  filtrators for this filter type can no longer be created
      */

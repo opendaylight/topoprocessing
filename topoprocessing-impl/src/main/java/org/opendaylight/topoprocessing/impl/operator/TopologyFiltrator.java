@@ -10,13 +10,15 @@ package org.opendaylight.topoprocessing.impl.operator;
 
 
 
+import com.google.common.base.Preconditions;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import com.google.common.base.Preconditions;
+
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -104,18 +106,21 @@ public class TopologyFiltrator implements TopologyOperator {
     }
 
     /**
-     * Add new filtrator
+     * Add new filtrator.
+     *
      * @param filter Node Ip Filtrator
      */
     public void addFilter(Filtrator filter) {
-        Preconditions.checkArgument(filter instanceof AbstractFiltrator,"Filtrator must be subclass of " +
-                "AbstractFiltrator!");
+        Preconditions.checkArgument(filter instanceof AbstractFiltrator,"Filtrator must be subclass of "
+                + "AbstractFiltrator!");
         filtrators.add(filter);
     }
 
     boolean passedFiltration(Collection<NormalizedNode<?, ?>> nodes) {
         //check if there is same count of Filtrators and TargetFields (nodes)
-        if (nodes.size() != filtrators.size()) return false;
+        if (nodes.size() != filtrators.size()) {
+            return false;
+        }
         for (NormalizedNode<?, ?> node: nodes) {
             if (! passedFiltration(node)) {
                 return false;

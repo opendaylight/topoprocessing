@@ -18,7 +18,7 @@ public interface TransactionOperation {
 
     /**
      * Adds this operation into provided transaction (.put(), .delete())
-     * @param transaction {@link DOMDataWriteTransaction} to be filled with operation
+     * @param transaction {@link DOMDataWriteTransaction} to be filled with operation.
      */
     void addOperationIntoTransaction(DOMDataWriteTransaction transaction);
 

@@ -21,14 +21,16 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 public class InstanceIdentifiersTest {
 
     /**
-     * Tests buildRelativeItemIdIdentifier(...)
+     * Tests buildRelativeItemIdIdentifier(...).
      */
     @Test
     public void testRelativeItemIdIdentifier() {
         Assert.assertEquals("Wrong identifiers", YangInstanceIdentifier.of(TopologyQNames.NETWORK_NODE_ID_QNAME),
-                        InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Node, NetworkTopologyModel.class));
+                        InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Node,
+                                NetworkTopologyModel.class));
         Assert.assertEquals("Wrong identifiers", YangInstanceIdentifier.of(TopologyQNames.NETWORK_LINK_ID_QNAME),
-                        InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Link, NetworkTopologyModel.class));
+                        InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.Link,
+                                NetworkTopologyModel.class));
         Assert.assertEquals("Wrong identifiers", YangInstanceIdentifier.of(TopologyQNames.NETWORK_TP_ID_QNAME),
                         InstanceIdentifiers.relativeItemIdIdentifier(CorrelationItemEnum.TerminationPoint,
                                 NetworkTopologyModel.class));

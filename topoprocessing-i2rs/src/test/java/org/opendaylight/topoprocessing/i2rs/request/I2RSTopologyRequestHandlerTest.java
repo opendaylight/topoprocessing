@@ -11,11 +11,13 @@ import static org.mockito.Matchers.any;
 
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.CheckedFuture;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -134,7 +136,7 @@ public class I2RSTopologyRequestHandlerTest {
                 (YangInstanceIdentifier) Matchers.any())).thenReturn(mockReadFuture);
     }
 
-    @Test (expected=NullPointerException.class)
+    @Test (expected = NullPointerException.class)
     public void testTopologyWithoutAugmentation() {
         NetworkBuilder networkBuilder = createNetworkBuilder(TOPO1);
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
@@ -150,7 +152,7 @@ public class I2RSTopologyRequestHandlerTest {
         return networkBuilder;
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationMissingInAugment() {
         NetworkBuilder networkBuilder = createNetworkBuilder(TOPO1);
         I2rsCorrelationAugmentBuilder correlationAugmentBuilder = new I2rsCorrelationAugmentBuilder();
@@ -182,7 +184,7 @@ public class I2RSTopologyRequestHandlerTest {
         return correlationAugmentBuilder;
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationWithoutCorrelationTypeEqualityCase() {
         NetworkBuilder networkBuilder = createNetworkBuilder(TOPO1);
         I2rsCorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
@@ -194,7 +196,7 @@ public class I2RSTopologyRequestHandlerTest {
         handler.processNewRequest();
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationWithoutCorrelationTypeUnificationCase() {
         NetworkBuilder networkBuilder = createNetworkBuilder(TOPO1);
         I2rsCorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
@@ -206,7 +208,7 @@ public class I2RSTopologyRequestHandlerTest {
         handler.processNewRequest();
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationWithoutCorrelationTypeNodeIpFiltrationCase() {
         NetworkBuilder networkBuilder = createNetworkBuilder(TOPO1);
         I2rsCorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(FiltrationOnly.class, null,
@@ -218,7 +220,7 @@ public class I2RSTopologyRequestHandlerTest {
         handler.processNewRequest();
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationWithUnknownCorrelationType() {
         NetworkBuilder networkBuilder = createNetworkBuilder(TOPO1);
         I2rsCorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(UnknownCorrelationBase.class, null,
@@ -230,7 +232,7 @@ public class I2RSTopologyRequestHandlerTest {
         handler.processNewRequest();
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationWithMappingsNull() {
         NetworkBuilder networkBuilder = createNetworkBuilder(TOPO1);
         AggregationBuilder aggBuilder = new AggregationBuilder();
@@ -244,7 +246,7 @@ public class I2RSTopologyRequestHandlerTest {
         handler.processNewRequest();
     }
 
-    @Test (expected=IllegalStateException.class)
+    @Test (expected = IllegalStateException.class)
     public void testCorrelationItemNull() {
         NetworkBuilder networkBuilder = createNetworkBuilder(TOPO1);
         AggregationBuilder aggBuilder = new AggregationBuilder();
@@ -348,8 +350,8 @@ public class I2RSTopologyRequestHandlerTest {
         mappingBuilder1.setAggregateInside(false);
         mappings.add(mappingBuilder1.build());
         aggBuilder.setMapping(mappings);
-        I2rsCorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null, aggBuilder.build(),
-                CorrelationItemEnum.Node);
+        I2rsCorrelationAugmentBuilder correlationAugmentBuilder = createCorrelation(AggregationOnly.class, null,
+                aggBuilder.build(), CorrelationItemEnum.Node);
         networkBuilder.addAugmentation(I2rsCorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
@@ -375,7 +377,8 @@ public class I2RSTopologyRequestHandlerTest {
         fBuilder.setUnderlayTopology("pcep-topology:1");
         ArrayList<Filter> filters = new ArrayList<>();
         FilterBuilder filterBuilder1 = new FilterBuilder();
-        filterBuilder1.setTargetField(new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
+        filterBuilder1.setTargetField(
+                new LeafPath("network-topology-pcep:path-computation-client/network-topology-pcep:ip-address"));
         filterBuilder1.setInputModel(I2rsModel.class);
         Ipv4Prefix ipv4prefix = new Ipv4Prefix("192.168.0.1/24");
         IpPrefix ipPrefix = new IpPrefix(ipv4prefix);

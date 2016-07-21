@@ -70,13 +70,13 @@ public class IRModelAdapter implements ModelAdapter {
     public YangInstanceIdentifier buildItemIdentifier(InstanceIdentifierBuilder builder,
             CorrelationItemEnum correlationItemEnum) {
         switch (correlationItemEnum) {
-        case Node:
-        case TerminationPoint:
-            builder.node(Node.QNAME);
-            break;
-        default:
-            throw new IllegalArgumentException("Wrong Correlation item set: "
-                    + correlationItemEnum);
+            case Node:
+            case TerminationPoint:
+                builder.node(Node.QNAME);
+                break;
+            default:
+                throw new IllegalArgumentException("Wrong Correlation item set: "
+                        + correlationItemEnum);
         }
         return builder.build();
     }

@@ -18,7 +18,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 public interface LinkTranslator {
 
     /**
-     * Converts OverlayItemWrapper object containing links to datastore link object
+     * Converts OverlayItemWrapper object containing links to datastore link object.
      * @param wrapper OverlayItemWrapper object containing link OverlayItems
      * @return {@link Link} in datastore format
      */

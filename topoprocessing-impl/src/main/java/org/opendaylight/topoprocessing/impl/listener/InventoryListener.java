@@ -9,11 +9,13 @@
 package org.opendaylight.topoprocessing.impl.listener;
 
 import com.google.common.base.Optional;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
@@ -47,7 +49,7 @@ public class InventoryListener implements DOMDataTreeChangeListener {
     private CorrelationItemEnum correlationItem;
 
     /**
-     * Default constructor
+     * Default constructor.
      * @param underlayTopologyId underlay topology id
      */
     public InventoryListener(String underlayTopologyId) {
@@ -69,11 +71,11 @@ public class InventoryListener implements DOMDataTreeChangeListener {
             while (iteratorChildNodes.hasNext()) {
                 DataTreeCandidateNode dataTreeCandidateNode = iteratorChildNodes.next();
                 ModificationType modificationType = dataTreeCandidateNode.getModificationType();
-                if ((modificationType.equals(ModificationType.WRITE) ||
-                        modificationType.equals(ModificationType.SUBTREE_MODIFIED))
+                if ((modificationType.equals(ModificationType.WRITE)
+                        || modificationType.equals(ModificationType.SUBTREE_MODIFIED))
                         && dataTreeCandidateNode.getDataAfter().isPresent()) {
-                    boolean updated = dataTreeCandidateNode.getDataBefore().isPresent() ||
-                            modificationType.equals(ModificationType.SUBTREE_MODIFIED);
+                    boolean updated = dataTreeCandidateNode.getDataBefore().isPresent()
+                            || modificationType.equals(ModificationType.SUBTREE_MODIFIED);
                     proceedChangeRequest(itemIdentifier.node(dataTreeCandidateNode.getIdentifier()),
                             dataTreeCandidateNode.getDataAfter().get(), updated);
                 } else if (modificationType.equals(ModificationType.DELETE)) {

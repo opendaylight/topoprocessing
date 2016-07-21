@@ -26,7 +26,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * @author matej.perina
  *
  */
-public class IRTopologyRequestHandler extends TopologyRequestHandler{
+public class IRTopologyRequestHandler extends TopologyRequestHandler {
 
 
     public IRTopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder,

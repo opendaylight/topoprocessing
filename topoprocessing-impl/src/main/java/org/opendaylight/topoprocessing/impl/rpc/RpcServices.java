@@ -12,7 +12,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 
 /**
- * Stores {@link DOMRpcService} and {@link DOMRpcProviderService} for RPC republishing operations
+ * Stores {@link DOMRpcService} and {@link DOMRpcProviderService} for RPC republishing operations.
  * @author michal.polkorab
  */
 public class RpcServices {
@@ -21,7 +21,7 @@ public class RpcServices {
     private DOMRpcProviderService rpcProviderService;
 
     /**
-     * Default constructor
+     * Default constructor.
      * @param rpcService            registers new RpcListeners and invokes Rpcs
      * @param rpcProviderService    registers new RpcImplementations
      */

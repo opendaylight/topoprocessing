@@ -29,6 +29,7 @@ public class I2RSTopologyRequestHandler extends TopologyRequestHandler {
             RpcServices rpcServices, Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {
         super(domDataBroker, schemaHolder, rpcServices, fromNormalizedNode);
     }
+
     @Override
     protected Class<? extends Model> getModel(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
         return ((Network) fromNormalizedNode.getValue()).getAugmentation(I2rsCorrelationAugment.class)
@@ -45,6 +46,7 @@ public class I2RSTopologyRequestHandler extends TopologyRequestHandler {
         return ((Network) fromNormalizedNode.getValue()).getAugmentation(I2rsCorrelationAugment.class)
                 .getCorrelations();
     }
+
     @Override
     protected LinkComputation getLinkComputation(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
         I2rsLinkComputationAugment augment = ((Network) fromNormalizedNode.getValue())

@@ -9,6 +9,7 @@ package org.opendaylight.topoprocessing.i2rs.translator;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.opendaylight.topoprocessing.api.structure.ComputedLink;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -46,7 +47,7 @@ public class I2RSLinkTranslator implements LinkTranslator {
         MapNode supportingLinks = buildSupportingLinks(wrapper);
         linkNode.withChild(supportingLinks);
         UnderlayItem link = wrapper.getOverlayItems().peek().getUnderlayItems().peek();
-        if(link instanceof ComputedLink) {
+        if (link instanceof ComputedLink) {
             setSrcDestNode(link, linkNode);
         }
 

@@ -7,6 +7,8 @@
  */
 package org.opendaylight.topoprocessing.i2rs.translator;
 
+import com.google.common.base.Optional;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,8 +46,6 @@ import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLeafSetEntryNodeBuilder;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableLeafSetNodeBuilder;
 
-import com.google.common.base.Optional;
-
 /**
  * @author andrej.zan
  *
@@ -64,7 +64,7 @@ public class I2RSOverlayItemTranslatorNodeTest {
     private UnderlayItem mockPhysicalNode;
 
     /**
-     * Test case: NodeId translation
+     * Test case: NodeId translation.
      */
     @Test
     public void testNodeId() {
@@ -82,7 +82,7 @@ public class I2RSOverlayItemTranslatorNodeTest {
     }
 
     /**
-     * Wrap the same node more times to the wrapper, translate it, and check result for the duplicity
+     * Wrap the same node more times to the wrapper, translate it, and check result for the duplicity.
      *
      * @throws Exception Exception
      */
@@ -107,8 +107,7 @@ public class I2RSOverlayItemTranslatorNodeTest {
     }
 
     /**
-     * <p>Test case: one SupportingNode translation</p>
-     * <p>- includes TopologyRef and NodeRef</p>
+     * Test case: one SupportingNode translation - includes TopologyRef and NodeRef.
      */
     @Test
     public void testSupportingNode() {
@@ -144,7 +143,7 @@ public class I2RSOverlayItemTranslatorNodeTest {
     }
 
     /**
-     * Test case: more supporting nodes translation
+     * Test case: more supporting nodes translation.
      */
     @Test
     public void testSupportingNodes() {
@@ -193,7 +192,7 @@ public class I2RSOverlayItemTranslatorNodeTest {
     }
 
     /**
-     * Test case: TerminationPoint translation
+     * Test case: TerminationPoint translation.
      */
     @Test
     public void testTerminationPoint() {
@@ -350,7 +349,7 @@ public class I2RSOverlayItemTranslatorNodeTest {
                     MapNode suppTps = (MapNode) suppTpsOpt.get();
                     if (suppTps.getValue().size() == 2) {
                         for (MapEntryNode suppTp : suppTps.getValue()) {
-                            if(suppTp.toString().contains(tpId1)) {
+                            if (suppTp.toString().contains(tpId1)) {
                                 Assert.assertTrue(suppTp.toString().contains(nodeId1));
                                 Assert.assertTrue(suppTp.toString().contains(topoId1));
                             } else {
@@ -359,7 +358,7 @@ public class I2RSOverlayItemTranslatorNodeTest {
                                 Assert.assertTrue(suppTp.toString().contains(topoId2));
                             }
                         }
-                    } else if(suppTps.getValue().size() == 1) {
+                    } else if (suppTps.getValue().size() == 1) {
                         Assert.assertTrue(suppTps.toString().contains(tpId3));
                         Assert.assertTrue(suppTps.toString().contains(nodeId3));
                         Assert.assertTrue(suppTps.toString().contains(topoId3));

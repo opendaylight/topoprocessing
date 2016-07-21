@@ -9,6 +9,7 @@
 package org.opendaylight.topoprocessing.impl.structure;
 
 import java.util.concurrent.ConcurrentMap;
+
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -23,13 +24,14 @@ public class TopologyStore {
     private ConcurrentMap<YangInstanceIdentifier, UnderlayItem> underlayItems;
 
     /**
-     * Default constructor
+     * Default constructor.
      * @param id topology-id of stored topology
      * @param aggregateInside signals if aggregation should happen even inside
      *        the same topology
      * @param underlayItem all items (either nodes, links or termination points) present in this topology
      */
-    public TopologyStore(String id, boolean aggregateInside, ConcurrentMap<YangInstanceIdentifier, UnderlayItem> underlayItem) {
+    public TopologyStore(String id, boolean aggregateInside, ConcurrentMap<YangInstanceIdentifier,
+            UnderlayItem> underlayItem) {
         this.id = id;
         this.aggregateInside = aggregateInside;
         this.underlayItems = underlayItem;

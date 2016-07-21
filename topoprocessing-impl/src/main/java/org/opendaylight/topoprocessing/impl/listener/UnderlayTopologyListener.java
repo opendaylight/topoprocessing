@@ -9,11 +9,13 @@
 package org.opendaylight.topoprocessing.impl.listener;
 
 import com.google.common.base.Optional;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -52,7 +54,7 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
     protected CorrelationItemEnum correlationItem;
 
     /**
-     * Default constructor
+     * Default constructor.
      * @param dataBroker DOM Data Broker
      * @param underlayTopologyId underlay topology identifier
      * @param correlationItem can be either Node or Link or TerminationPoint
@@ -77,11 +79,11 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
             while (iteratorChildNodes.hasNext()) {
                 DataTreeCandidateNode dataTreeCandidateNode = iteratorChildNodes.next();
                 ModificationType modificationType = dataTreeCandidateNode.getModificationType();
-                if ((modificationType.equals(ModificationType.WRITE) ||
-                        modificationType.equals(ModificationType.SUBTREE_MODIFIED))
+                if ((modificationType.equals(ModificationType.WRITE)
+                        || modificationType.equals(ModificationType.SUBTREE_MODIFIED))
                         && dataTreeCandidateNode.getDataAfter().isPresent()) {
-                    boolean updated = dataTreeCandidateNode.getDataBefore().isPresent() ||
-                            modificationType.equals(ModificationType.SUBTREE_MODIFIED);
+                    boolean updated = dataTreeCandidateNode.getDataBefore().isPresent()
+                            || modificationType.equals(ModificationType.SUBTREE_MODIFIED);
                     proceedChangeRequest(itemIdentifier.node(dataTreeCandidateNode.getIdentifier()),
                             dataTreeCandidateNode.getDataAfter().get(), updated);
                 } else if (modificationType.equals(ModificationType.DELETE)) {

@@ -7,16 +7,17 @@
  */
 package org.opendaylight.topoprocessing.impl.operator.filtratorFactory;
 
-import org.opendaylight.topoprocessing.api.filtration.Filtrator;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Script;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Ipv6Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.RangeNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.RangeString;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Script;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.SpecificNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.SpecificString;
 

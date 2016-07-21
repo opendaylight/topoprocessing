@@ -8,20 +8,19 @@
 
 package org.opendaylight.topoprocessing.impl.translator;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.Mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Queue;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.impl.structure.OverlayItemWrapper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -50,7 +49,7 @@ public class OverlayItemTranslatorTest {
     }
 
     /**
-     * Null input test
+     * Null input test.
      */
     @Test
     public void testTranslateNullInput() {
@@ -58,7 +57,7 @@ public class OverlayItemTranslatorTest {
     }
 
     /**
-     * Test of input without overlay item
+     * Test of input without overlay item.
      */
     @Test
     public void testTranslateOverlayItemIsEmpty() {
@@ -70,7 +69,7 @@ public class OverlayItemTranslatorTest {
     }
 
     /**
-     * Test of overlay item with correlation item value "Node"
+     * Test of overlay item with correlation item value "Node".
      */
     @Test
     public void testTranslateCorrelationItemNode() {
@@ -83,7 +82,7 @@ public class OverlayItemTranslatorTest {
     }
 
     /**
-     * Test of overlay item with correlation item value "TerminationPoint"
+     * Test of overlay item with correlation item value "TerminationPoint".
      */
     @Test
     public void testTranslateCorrelationItemTerminationPoint() {
@@ -96,7 +95,7 @@ public class OverlayItemTranslatorTest {
     }
 
     /**
-     * Test of overlay item with correlation item value "Link"
+     * Test of overlay item with correlation item value "Link".
      */
     @Test
     public void testTranslateCorrelationItemLink() {

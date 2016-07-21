@@ -9,6 +9,7 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import com.google.common.base.Optional;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.opendaylight.topoprocessing.api.structure.ComputedLink;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
@@ -71,7 +73,7 @@ public class LinkCalculator implements TopologyOperator {
     @Override
     public void processCreatedChanges(YangInstanceIdentifier itemIdentifier, UnderlayItem item, String topologyId) {
         LOGGER.trace("Processing created item: {}", item);
-        synchronized(this) {
+        synchronized (this) {
             if (CorrelationItemEnum.Node.equals(item.getCorrelationItem())) {
                 // process nodes from overlay topology
                 storedOverlayNodes.getUnderlayItems().put(itemIdentifier, item);
@@ -93,12 +95,12 @@ public class LinkCalculator implements TopologyOperator {
     @Override
     public void processUpdatedChanges(YangInstanceIdentifier itemIdentifier, UnderlayItem item, String topologyId) {
         LOGGER.trace("Processing updatedChanges");
-        synchronized(this) {
+        synchronized (this) {
             if (matchedLinks.containsKey(itemIdentifier)) {
                 // updated item was a matched link
                 updateMatchedLinks(itemIdentifier, item);
             } else if (waitingLinks.containsKey(itemIdentifier)) {
-                if(calculatePossibleLink(itemIdentifier, item, true)){
+                if (calculatePossibleLink(itemIdentifier, item, true)) {
                     waitingLinks.remove(itemIdentifier);
                 }
             } else if (storedOverlayNodes.getUnderlayItems().containsKey(itemIdentifier)) {
@@ -115,7 +117,7 @@ public class LinkCalculator implements TopologyOperator {
         //check waiting links for promotion
         while (waitingLinksIterator.hasNext()) {
             Entry<YangInstanceIdentifier, UnderlayItem> waitingLink = waitingLinksIterator.next();
-            if(calculatePossibleLink(waitingLink.getKey(),waitingLink.getValue(), true)){
+            if (calculatePossibleLink(waitingLink.getKey(),waitingLink.getValue(), true)) {
                 waitingLinksIterator.remove();
             }
         }
@@ -124,7 +126,7 @@ public class LinkCalculator implements TopologyOperator {
                 matchedLinks.entrySet().iterator();
         List<YangInstanceIdentifier> matchedLinksToRemove = new LinkedList<>();
         Map<YangInstanceIdentifier, ComputedLink> matchedLinksToUpdate = new HashMap<>();
-        while(matchedLinksIterator.hasNext()){
+        while (matchedLinksIterator.hasNext()) {
             Entry<YangInstanceIdentifier, ComputedLink> matchedLink = matchedLinksIterator.next();
             ComputedLink computedLink = matchedLink.getValue();
             NormalizedNode<?, ?> linkUnderlaySrc = getLinkSourceNode(computedLink);
@@ -132,27 +134,26 @@ public class LinkCalculator implements TopologyOperator {
             NormalizedNode<?, ?> oldOverlaySrcNode = computedLink.getSrcNode();
             NormalizedNode<?, ?> oldOverlayDstNode = computedLink.getDstNode();
             ComputedLink updatedLink = updateComputedLink(computedLink, linkUnderlaySrc, linkUnderlayDst);
-            if(updatedLink == null){
+            if (updatedLink == null) {
                 //if the link lacks a double-sided match, it has to be demoted
                 waitingLinks.put(matchedLink.getKey(), computedLink);
                 matchedLinksToRemove.add(matchedLink.getKey());
-            } else if(!updatedLink.getSrcNode().equals(oldOverlaySrcNode) ||
-                    !updatedLink.getDstNode().equals(oldOverlayDstNode)){
+            } else if (!updatedLink.getSrcNode().equals(oldOverlaySrcNode) ||
+                    !updatedLink.getDstNode().equals(oldOverlayDstNode)) {
                     //if a change happened, store the updated version
                     matchedLinksToUpdate.put(matchedLink.getKey(), updatedLink);
             }
         }
-        for(YangInstanceIdentifier yiid: matchedLinksToRemove){
+        for(YangInstanceIdentifier yiid: matchedLinksToRemove) {
             removeMatchedLink(yiid);
         }
-        for(Map.Entry<YangInstanceIdentifier, ComputedLink> updatedLinkEntry: matchedLinksToUpdate.entrySet()){
+        for(Map.Entry<YangInstanceIdentifier, ComputedLink> updatedLinkEntry: matchedLinksToUpdate.entrySet()) {
             YangInstanceIdentifier yiid = updatedLinkEntry.getKey();
             ComputedLink updatedLink = updatedLinkEntry.getValue();
             matchedLinks.put(yiid, updatedLink);
-            if(aggregator != null) {
+            if (aggregator != null) {
                 aggregator.processUpdatedChanges(yiid, updatedLink, updatedLink.getTopologyId());
-            }
-            else {
+            } else {
                 manager.updateOverlayItem(updatedLink.getOverlayItem());
             }
         }
@@ -165,7 +166,7 @@ public class LinkCalculator implements TopologyOperator {
         NormalizedNode<?, ?> updatedLinkDst = getLinkDestNode(item);
         ComputedLink newLink = updateComputedLink(computedLink, updatedLinkSrc, updatedLinkDst);
         OverlayItem overlayItem = computedLink.getOverlayItem();
-        if(newLink == null) {
+        if (newLink == null) {
             waitingLinks.put(itemIdentifier, computedLink);
             removeMatchedLink(itemIdentifier);
         } else {
@@ -176,7 +177,7 @@ public class LinkCalculator implements TopologyOperator {
     @Override
     public void processRemovedChanges(YangInstanceIdentifier itemIdentifier, final String topologyId) {
         LOGGER.trace("Processing removedChanges");
-        synchronized(this) {
+        synchronized (this) {
             UnderlayItem removedOverlayNode = storedOverlayNodes.getUnderlayItems().remove(itemIdentifier);
             if (removedOverlayNode != null) {
                 // removed item was an overlay node
@@ -272,8 +273,7 @@ public class LinkCalculator implements TopologyOperator {
                     } else {
                         aggregator.processCreatedChanges(linkId, computedLink, computedLink.getTopologyId());
                     }
-                }
-                else {
+                } else {
                     OverlayItem overlayItem = wrapUnderlayItem(computedLink);
                     manager.addOverlayItem(overlayItem);
                 }
@@ -307,9 +307,9 @@ public class LinkCalculator implements TopologyOperator {
             NormalizedNode<?, ?> overlayNode = overlayNodeEntry.getValue().getItem();
             Collection<?> supportingNodes = null;
             if (outputModel.equals(I2rsModel.class)) {
-            supportingNodes = (Collection<?>) ((MapEntryNode) overlayNode)
-                    .getChild(new NodeIdentifier(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
-                            .network.rev150608.network.node.SupportingNode.QNAME)).get().getValue();
+                supportingNodes = (Collection<?>) ((MapEntryNode) overlayNode)
+                        .getChild(new NodeIdentifier(org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf
+                                .network.rev150608.network.node.SupportingNode.QNAME)).get().getValue();
             } else {
                 supportingNodes = (Collection<?>) ((MapEntryNode) overlayNode)
                         .getChild(new NodeIdentifier(SupportingNode.QNAME)).get().getValue();
@@ -378,7 +378,7 @@ public class LinkCalculator implements TopologyOperator {
         return overlayItem;
     }
 
-    public void setTopologyAggregator(TopologyAggregator aggregator){
+    public void setTopologyAggregator(TopologyAggregator aggregator) {
         this.aggregator = aggregator;
     }
 

@@ -31,7 +31,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
  * @author matej.perina
  *
  */
-public class NTTopologyRequestListener extends TopologyRequestListener{
+public class NTTopologyRequestListener extends TopologyRequestListener {
 
 
     private HashSet<QName> correlationHashSet;
@@ -54,7 +54,7 @@ public class NTTopologyRequestListener extends TopologyRequestListener{
     }
 
     @Override
-    protected boolean isTopologyRequest(NormalizedNode <?,?> normalizedNode) {
+    protected boolean isTopologyRequest(NormalizedNode<?, ?> normalizedNode) {
         return NormalizedNodes.findNode(normalizedNode, new AugmentationIdentifier(correlationHashSet)).isPresent();
     }
 

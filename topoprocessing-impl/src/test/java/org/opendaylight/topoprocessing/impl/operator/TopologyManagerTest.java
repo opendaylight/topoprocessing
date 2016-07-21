@@ -45,6 +45,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import org.opendaylight.yangtools.yang.model.api.SchemaPath;
+
 /**
  * @author martin.uhlir
  *
@@ -79,7 +80,7 @@ public class TopologyManagerTest {
     private OverlayItem logicalNode2;
 
     /**
-     * Initialize mockitoRpcServiceCall and set writer in manager
+     * Initialize mockitoRpcServiceCall and set writer in manager.
      */
     @Before
     public void setUp() {
@@ -90,7 +91,7 @@ public class TopologyManagerTest {
         manager.setWriter(writer);
     }
 
-    @Test(expected=NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void addLogicalNodeNullOrEmpty() {
         manager.addOverlayItem(null);
         Mockito.verify(writer, Mockito.times(0)).writeItem((OverlayItemWrapper) any(), (CorrelationItemEnum) any());
@@ -100,12 +101,13 @@ public class TopologyManagerTest {
     }
 
     /**
-     * For one logical node, new wrapper shall be created and then sent to writer's class
+     * For one logical node, new wrapper shall be created and then sent to writer's class.
      */
     @Test
     public void addLogicalNode() {
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1,
+                CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode);
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
@@ -115,14 +117,16 @@ public class TopologyManagerTest {
 
     /**
      * For one logical node with two physical nodes,
-     * one wrapper shall be created and writer's writeNode() method shall be called once
+     * one wrapper shall be created and writer's writeNode() method shall be called once.
      */
     @Test
     public void addLogicalNodeWithTwoPhysicalNodes() {
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1,
+                CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2,
+                CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode2);
 
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
@@ -134,18 +138,20 @@ public class TopologyManagerTest {
 
     /**
      * For two calls of addLogicalNode method with one logical node in each call,
-     * two wrappers shall be created and writer's writeNode() method shall be called twice as well
+     * two wrappers shall be created and writer's writeNode() method shall be called twice as well.
      */
     @Test
     public void addTwoLogicalNodesInTwoCalls() {
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1,
+                CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
         manager.addOverlayItem(logicalNode);
 
         physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2,
+                CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode2);
         logicalNode2 = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
         manager.addOverlayItem(logicalNode2);
@@ -156,18 +162,20 @@ public class TopologyManagerTest {
 
     /**
      * For two calls of addLogicalNode method with the same logical node,
-     * one wrappers shall be created and writer's writeNode() method shall be called twice
+     * one wrappers shall be created and writer's writeNode() method shall be called twice.
      */
     @Test
     public void addTwoSameLogicalNodesInTwoCalls() {
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1,
+                CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
         OverlayItem newLogicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
         manager.addOverlayItem(newLogicalNode);
 
         physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1,
+                CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode2);
         newLogicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
@@ -178,7 +186,7 @@ public class TopologyManagerTest {
 
     /**
      * When removing existing LogicalNode, it should be removed from wrapper and writer's deleteNode method
-     * should also be called
+     * should also be called.
      */
     @Test
     public void removeTheOnlyExistingNode() {
@@ -192,7 +200,7 @@ public class TopologyManagerTest {
 
     /**
      * Trying to remove node not existing in wrapper shall not provoke call of writer's methods
-     * nor have impact on the wrapper
+     * nor have impact on the wrapper.
      */
     @Test
     public void removeUnexistingNode() {
@@ -210,7 +218,7 @@ public class TopologyManagerTest {
     }
 
     /**
-     * When removing one existing logical node, this and only this one should be removed from datastore
+     * When removing one existing logical node, this and only this one should be removed from datastore.
      */
     @Test
     public void  removeOneOfTwoExistingNodes() {
@@ -230,15 +238,18 @@ public class TopologyManagerTest {
     @Test
     public void removeOneOfTwoLogicalNodesOfTheSameWrapper() {
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode1 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1,
+                CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2,
+                CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
         physicalNodes.add(physicalNode2);
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
         manager.addOverlayItem(logicalNode);
 
         physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID3, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode3 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID3,
+                CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode1);
         physicalNodes.add(physicalNode3);
         logicalNode2 = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
@@ -263,7 +274,8 @@ public class TopologyManagerTest {
                 (DOMRpcImplementation) any(),(DOMRpcIdentifier) any()))
                 .thenReturn(mockDomRpcImplementationRegistration);
 
-        YangInstanceIdentifier contextReference = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
+        YangInstanceIdentifier contextReference = YangInstanceIdentifier
+                .builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
                 .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY1)
                 .node(Node.QNAME)
                 .nodeWithKey(Node.QNAME, TopologyQNames.NETWORK_NODE_ID_QNAME, NODE_ID1)
@@ -276,7 +288,8 @@ public class TopologyManagerTest {
         manager.onRpcAvailable(rpcs);
 
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID1,
+                CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode);
         logicalNode = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 
@@ -291,7 +304,8 @@ public class TopologyManagerTest {
         addLogicalNode();
         Mockito.reset(writer);
 
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2,
+                CorrelationItemEnum.Node);
         physicalNode2.setOverlayItem(logicalNode);
         logicalNode.getUnderlayItems().add(physicalNode2);
         manager.updateOverlayItem(logicalNode);
@@ -304,7 +318,8 @@ public class TopologyManagerTest {
         Mockito.reset(writer);
 
         List<UnderlayItem> physicalNodes = new ArrayList<>();
-        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2, CorrelationItemEnum.Node);
+        UnderlayItem physicalNode2 = new UnderlayItem(mockNormalizedNode1, null, TOPOLOGY1, NODE_ID2,
+                CorrelationItemEnum.Node);
         physicalNodes.add(physicalNode2);
         logicalNode2 = new OverlayItem(physicalNodes, CorrelationItemEnum.Node);
 

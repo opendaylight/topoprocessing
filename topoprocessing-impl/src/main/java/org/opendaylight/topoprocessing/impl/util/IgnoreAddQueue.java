@@ -33,7 +33,7 @@ public class IgnoreAddQueue<E> extends AbstractQueue<E> {
     }
 
     /**
-     * Always return null as if Queue is empty
+     * Always return null as if Queue is empty.
      */
     @Override
     public E peek() {
@@ -41,7 +41,7 @@ public class IgnoreAddQueue<E> extends AbstractQueue<E> {
     }
 
     /**
-     * Always return null as if Queue is empty
+     * Always return null as if Queue is empty.
      */
     @Override
     public E poll() {

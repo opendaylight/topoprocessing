@@ -22,7 +22,7 @@ public class SpecificNumberFiltratorFactory implements FiltratorFactory {
 
     @Override
     public Filtrator createFiltrator(Filter filter, YangInstanceIdentifier pathIdentifier) {
-        if(filter.getFilterTypeBody() instanceof SpecificNumberFilterType) {
+        if (filter.getFilterTypeBody() instanceof SpecificNumberFilterType) {
             return new SpecificValueFiltrator<>(((SpecificNumberFilterType)filter.getFilterTypeBody())
                     .getSpecificNumberFilter().getSpecificNumber(), pathIdentifier);
         } else {

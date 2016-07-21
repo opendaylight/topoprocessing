@@ -8,6 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.operator;
 
+import com.google.common.base.Optional;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -23,8 +25,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 /**
  * @author michal.polkorab
@@ -61,8 +61,8 @@ public class NotificationInterConnector implements TopologyOperator {
                     return;
                 }
                 if (items.containsKey(key)) {
-                    if (createdEntry.getItemId()!=null && items.get(key).getItemId()!=null &&
-                            !items.get(key).getItemId().equals(createdEntry.getItemId())) {
+                    if (createdEntry.getItemId()!= null && items.get(key).getItemId()!= null
+                            && !items.get(key).getItemId().equals(createdEntry.getItemId())) {
                         for (YangInstanceIdentifier id : topoToInvIds.keySet()) {
                             if (items.get(topoToInvIds.get(id)).getItemId().equals(items.get(key).getItemId())) {
                                 processRemovedChanges(id, topologyId);

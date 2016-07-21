@@ -1,11 +1,13 @@
 package org.opendaylight.topoprocessing.impl.operator;
 
 import com.google.common.base.Optional;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -199,9 +201,8 @@ public class TerminationPointAggregatorTest {
     /**
      * INVENTORY MODEL Create 5 Termination points: TP1, TP3, TP5 - with ip
      * address 192.168.1.10 TP2, TP4 - with ip address 192.168.1.11
-     *
      * after aggregation: myTP1 with refs to TP1, TP3, TP5 myTP2 with refs to
-     * TP2, TP4
+     * TP2, TP4.
      */
     @Test
     public void testCreateNodeInv() {
@@ -287,9 +288,8 @@ public class TerminationPointAggregatorTest {
     /**
      * Create 5 Termination points: TP1, TP3, TP5 - with ip address 192.168.1.10
      * TP2, TP4 - with ip address 192.168.1.11
-     *
      * after aggregation: myTP1 with refs to TP1, TP3, TP5 myTP2 with refs to
-     * TP2, TP4
+     * TP2, TP4.
      */
     @Test
     public void testCreateNodeNt() {
@@ -428,7 +428,7 @@ public class TerminationPointAggregatorTest {
             } else if (2 == tpRefs.size()) {
                 // TP 6 and 7
                 for (LeafSetEntryNode<String> tpRef : tpRefs) {
-                    if(tpRef.getValue().contains(tpId6)) {
+                    if (tpRef.getValue().contains(tpId6)) {
                         Assert.assertTrue(tpRef.getValue().contains(tpId6));
                         Assert.assertTrue(tpRef.getValue().contains(nodeId6));
                         Assert.assertTrue(tpRef.getValue().contains(topoId6));
@@ -447,9 +447,8 @@ public class TerminationPointAggregatorTest {
     /**
      * Create 5 Termination points: TP1, TP3, TP5 - with ip address 192.168.1.10
      * TP2, TP4 - with ip address 192.168.1.11
-     *
      * after aggregation: myTP1 with refs to TP1, TP3, TP5 myTP2 with refs to
-     * TP2, TP4
+     * TP2, TP4.
      */
     @Test
     public void testCreateNodeI2rs() {
@@ -511,9 +510,9 @@ public class TerminationPointAggregatorTest {
     }
 
     /**
-     * create 5 TPs and aggregate them change IP address of th 5th Termination
+     * Create 5 TPs and aggregate them change IP address of th 5th Termination
      * Point result should be: myTP1 with refs to TP1, TP3 myTP2 with refs to
-     * TP2, TP4 myTP3 with refs to TP5 id's of myTPs should not change
+     * TP2, TP4 myTP3 with refs to TP5 id's of myTPs should not change.
      */
     @Test
     public void testUpdateNodeDifferentTPsNt() {

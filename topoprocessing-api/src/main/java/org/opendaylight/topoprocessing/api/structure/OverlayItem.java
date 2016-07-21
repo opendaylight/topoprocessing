@@ -9,6 +9,7 @@
 package org.opendaylight.topoprocessing.api.structure;
 
 import com.google.common.base.Preconditions;
+
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -27,7 +28,7 @@ public class OverlayItem {
     private Class<? extends CorrelationBase> correlationType;
 
     /**
-     * Creates overlay item
+     * Creates overlay item.
      * @param underlayItems list of underlayItems that form this OverlayItem
      * @param correlationItem type of underlayItems
      */
@@ -38,7 +39,7 @@ public class OverlayItem {
     }
 
     /**
-     * Adds an underlay item to the list of items
+     * Adds an underlay item to the list of items.
      * @param underlayItem to be added
      */
     public void addUnderlayItem(UnderlayItem underlayItem) {
@@ -46,7 +47,7 @@ public class OverlayItem {
     }
 
     /**
-     * Removes underlay item from the list of items
+     * Removes underlay item from the list of items.
      * @param itemToRemove underlay item to be removed
      */
     public void removeUnderlayItem(UnderlayItem itemToRemove) {
@@ -78,7 +79,7 @@ public class OverlayItem {
     }
 
     /**
-     * Sets {@link UnderlayItem}s
+     * Sets {@link UnderlayItem}s.
      * @param underlayItems underlay items
      */
     public void setUnderlayItems(Queue<UnderlayItem> underlayItems) {

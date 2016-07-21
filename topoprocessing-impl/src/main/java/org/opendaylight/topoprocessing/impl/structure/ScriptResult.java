@@ -8,8 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.structure;
 
-import org.opendaylight.topoprocessing.impl.operator.filtrator.ScriptFiltrator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
+import org.opendaylight.topoprocessing.impl.operator.filtrator.ScriptFiltrator;
 
 /**
  * This class is used for receiving the value from scripts.
