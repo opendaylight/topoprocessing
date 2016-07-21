@@ -8,12 +8,12 @@
 
 package org.opendaylight.topoprocessing.impl.writer;
 
+import com.google.common.base.Preconditions;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Stores information that will be used for transaction configuration (.put() case)

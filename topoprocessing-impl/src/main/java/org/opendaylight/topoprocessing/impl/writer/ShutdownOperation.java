@@ -8,11 +8,11 @@
 
 package org.opendaylight.topoprocessing.impl.writer;
 
+import com.google.common.base.Preconditions;
+
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Stores information that will be used for deleting overlay topology (as part of releasing allocated resources)

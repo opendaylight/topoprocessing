@@ -9,6 +9,7 @@
 package org.opendaylight.topoprocessing.api.structure;
 
 import com.google.common.base.Preconditions;
+
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;

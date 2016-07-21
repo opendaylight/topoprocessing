@@ -8,13 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.operator.filtrator;
 
+import com.google.common.base.Preconditions;
+
 import java.math.BigDecimal;
 
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Preconditions;
 
 /**
  * @author matus.marko

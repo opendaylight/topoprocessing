@@ -27,18 +27,19 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.Augmentat
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 
-/** *
+/**
  * @author matej.perina
  *
  */
-public class InvTopologyRequestListener extends TopologyRequestListener{
+public class InvTopologyRequestListener extends TopologyRequestListener {
 
 
     private HashSet<QName> correlationHashSet;
     private HashSet<QName> linkComputationHashSet;
 
     public InvTopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
-            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
+            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, Map<Class<? extends Model>,
+            ModelAdapter> modelAdapters) {
         super(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
         correlationHashSet = new HashSet<>();
         correlationHashSet.add(TopologyQNames.TOPOLOGY_CORRELATION_AUGMENT);
@@ -53,7 +54,7 @@ public class InvTopologyRequestListener extends TopologyRequestListener{
     }
 
     @Override
-    protected boolean isTopologyRequest(NormalizedNode <?,?> normalizedNode) {
+    protected boolean isTopologyRequest(NormalizedNode<?, ?> normalizedNode) {
         return NormalizedNodes.findNode(normalizedNode, new AugmentationIdentifier(correlationHashSet)).isPresent();
     }
 

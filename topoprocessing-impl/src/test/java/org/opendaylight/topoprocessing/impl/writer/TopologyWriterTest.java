@@ -8,6 +8,8 @@
 
 package org.opendaylight.topoprocessing.impl.writer;
 
+import com.google.common.util.concurrent.CheckedFuture;
+
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -40,8 +42,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableContainerNodeBuilder;
-
-import com.google.common.util.concurrent.CheckedFuture;
 
 /**
  * @author matus.marko

@@ -10,6 +10,9 @@ package org.opendaylight.topoprocessing.inventoryRendering.request;
 
 import static org.mockito.Matchers.any;
 
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.CheckedFuture;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,9 +68,6 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
-
-import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.CheckedFuture;
 
 /**
  *

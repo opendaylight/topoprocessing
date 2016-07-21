@@ -11,10 +11,12 @@ package org.opendaylight.topoprocessing.impl.listener;
 import static org.mockito.Matchers.any;
 
 import com.google.common.base.Optional;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;

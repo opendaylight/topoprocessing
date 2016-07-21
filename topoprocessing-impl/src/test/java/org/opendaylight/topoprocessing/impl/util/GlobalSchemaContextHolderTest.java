@@ -1,6 +1,11 @@
 package org.opendaylight.topoprocessing.impl.util;
 
 import com.google.common.collect.SetMultimap;
+
+import java.net.URI;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,10 +15,6 @@ import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.ModuleIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import org.opendaylight.yangtools.yang.model.util.AbstractSchemaContext;
-
-import java.net.URI;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author matus.marko

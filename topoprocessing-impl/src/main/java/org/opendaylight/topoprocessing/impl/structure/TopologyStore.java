@@ -9,6 +9,7 @@
 package org.opendaylight.topoprocessing.impl.structure;
 
 import java.util.concurrent.ConcurrentMap;
+
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;

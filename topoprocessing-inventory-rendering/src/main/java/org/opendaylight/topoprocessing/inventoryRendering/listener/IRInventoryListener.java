@@ -46,8 +46,8 @@ public class IRInventoryListener implements DOMDataTreeChangeListener {
     private YangInstanceIdentifier pathIdentifier;
 
     /**
-     * Default constructor
-     * @param underlayTopologyId underlay topology id
+     * Default constructor.
+     * @param underlayTopologyId Underlay topology id
      */
     public IRInventoryListener(String underlayTopologyId) {
         this.topologyId = underlayTopologyId;
@@ -98,7 +98,8 @@ public class IRInventoryListener implements DOMDataTreeChangeListener {
     }
 
     /**
-     * @param removedPaths identifies removed structures
+     * Process removed changes identified by path argument.
+     * @param removedPaths identifies removed structures.
      */
     private void processRemovedChanges(PathArgument pathArgument) {
         if (! (pathArgument instanceof AugmentationIdentifier)
@@ -109,14 +110,16 @@ public class IRInventoryListener implements DOMDataTreeChangeListener {
     }
 
     /**
-     * @param operator processes received notifications (aggregates / filters them)
+     * Set topology operator.
+     * @param operator Processes received notifications (aggregates / filters them).
      */
     public void setOperator(TopologyOperator operator) {
         this.operator = operator;
     }
 
     /**
-     * @param pathIdentifier identifies leaf (node), which aggregation / filtering will be based on
+     * Set path identifier.
+     * @param pathIdentifier Identifies leaf (node), which aggregation / filtering will be based on.
      */
     public void setPathIdentifier(YangInstanceIdentifier pathIdentifier) {
         this.pathIdentifier = pathIdentifier;
