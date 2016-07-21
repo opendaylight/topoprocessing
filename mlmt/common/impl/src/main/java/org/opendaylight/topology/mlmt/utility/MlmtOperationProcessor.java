@@ -9,19 +9,20 @@
 package org.opendaylight.topology.mlmt.utility;
 
 import com.google.common.base.Preconditions;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncTransaction;
+import org.opendaylight.controller.md.sal.common.api.data.OptimisticLockFailedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChain;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.controller.md.sal.common.api.data.OptimisticLockFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public final class MlmtOperationProcessor implements AutoCloseable, Runnable, TransactionChainListener {
     private static final Logger LOG = LoggerFactory.getLogger(MlmtOperationProcessor.class);
@@ -69,49 +70,49 @@ public final class MlmtOperationProcessor implements AutoCloseable, Runnable, Tr
 
     @Override
     public void run() {
-            while (!finishing) {
+        while (!finishing) {
+            try {
+                MlmtTopologyOperation op = queue.take();
+                LOG.debug("New {} operation available, starting transaction", op);
+                final ReadWriteTransaction tx = transactionChain.newReadWriteTransaction();
+                int ops = 0;
+                do {
+                    op.applyOperation(tx);
+                    ops++;
+                    if (ops < MAX_TRANSACTION_OPERATIONS && !op.isCommitNow()) {
+                        op = queue.poll();
+                    } else {
+                        op = null;
+                    }
+
+                    LOG.debug("Next operation {}", op);
+                } while (op != null);
+
+                LOG.debug("Processed {} operations, submitting transaction", ops);
                 try {
-                    MlmtTopologyOperation op = queue.take();
-                    LOG.debug("New {} operation available, starting transaction", op);
-                    final ReadWriteTransaction tx = transactionChain.newReadWriteTransaction();
-                    int ops = 0;
-                    do {
-                        op.applyOperation(tx);
-                        ops++;
-                        if (ops < MAX_TRANSACTION_OPERATIONS && !op.isCommitNow()) {
-                            op = queue.poll();
-                        } else {
-                            op = null;
-                        }
-
-                        LOG.debug("Next operation {}", op);
-                    } while (op != null);
-
-                    LOG.debug("Processed {} operations, submitting transaction", ops);
-                    try {
-                        submit(tx);
-                    } catch (final TransactionCommitFailedException e) {
-                        LOG.warn("Stat DataStoreOperation unexpected State!", e);
-                        transactionChain.close();
-                        transactionChain = dataBroker.createTransactionChain(this);
-                        cleanDataStoreOperQueue();
-                    }
-
-                    if (Thread.currentThread().isInterrupted()) {
-                        finishing = true;
-                    }
-                } catch (final IllegalStateException e) {
+                    submit(tx);
+                } catch (final TransactionCommitFailedException e) {
                     LOG.warn("Stat DataStoreOperation unexpected State!", e);
                     transactionChain.close();
                     transactionChain = dataBroker.createTransactionChain(this);
                     cleanDataStoreOperQueue();
-                } catch (final InterruptedException e) {
-                    LOG.warn("Stat Manager DS Operation thread interupted!", e);
-                    finishing = true;
-                } catch (final Exception e) {
-                    LOG.warn("Stat DataStore Operation executor fail!", e);
                 }
+
+                if (Thread.currentThread().isInterrupted()) {
+                    finishing = true;
+                }
+            } catch (final IllegalStateException e) {
+                LOG.warn("Stat DataStoreOperation unexpected State!", e);
+                transactionChain.close();
+                transactionChain = dataBroker.createTransactionChain(this);
+                cleanDataStoreOperQueue();
+            } catch (final InterruptedException e) {
+                LOG.warn("Stat Manager DS Operation thread interupted!", e);
+                finishing = true;
+            } catch (final Exception e) {
+                LOG.warn("Stat DataStore Operation executor fail!", e);
             }
+        }
         // Drain all events, making sure any blocked threads are unblocked
         cleanDataStoreOperQueue();
     }

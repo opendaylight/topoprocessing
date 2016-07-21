@@ -1,9 +1,8 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.impl.rev150123;
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.topology.forwarding.adjacency.ForwardingAdjacencyTopologyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 
 public class ForwardingAdjacencyTopologyProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.impl.rev150123.AbstractForwardingAdjacencyTopologyProviderModule {
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingAdjacencyTopologyProviderModule.class);

@@ -22,8 +22,6 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.IdentifiableIt
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
-import com.google.common.base.Predicate;
-
 public class InstanceIdentifiersTest {
 
     private InstanceIdentifier<Topology> topoIid;

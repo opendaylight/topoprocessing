@@ -8,10 +8,10 @@
 
 package org.opendaylight.topology.mlmt.utility.instanceidentifier;
 
+import com.google.common.base.Predicate;
+
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
-
-import com.google.common.base.Predicate;
 
 public class ItemOfClass<T> implements Predicate<InstanceIdentifier.PathArgument> {
 
