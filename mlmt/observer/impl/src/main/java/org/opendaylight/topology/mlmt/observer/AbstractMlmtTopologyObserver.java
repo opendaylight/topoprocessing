@@ -8,47 +8,45 @@
 
 package org.opendaylight.topology.mlmt.observer;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
-import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
-import org.opendaylight.topology.mlmt.utility.MlmtTopologyBuilder;
-import org.opendaylight.topology.mlmt.utility.MlmtProviderFactory;
+import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.topology.mlmt.observer.AbstractMlmtTopologyObserver.MlmtDataChangeEventType;
 import org.opendaylight.topology.mlmt.utility.MlmtConsequentAction;
 import org.opendaylight.topology.mlmt.utility.MlmtDataChangeObserver;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.topology.mlmt.utility.MlmtProviderFactory;
+import org.opendaylight.topology.mlmt.utility.MlmtTopologyBuilder;
+import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,7 +138,7 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
                 mlmtTopologyBuilder.createNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId,
                         topology.getTopologyId(), node);
                 for (MlmtTopologyProvider provider : mlmtProviders) {
-                   provider.onNodeCreated(type, mlmtTopologyId, node);
+                    provider.onNodeCreated(type, mlmtTopologyId, node);
                 }
                 List<TerminationPoint> lTp = node.getTerminationPoint();
                 if (lTp != null && !lTp.isEmpty()) {
@@ -157,8 +155,8 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
         if (lLink != null && !lLink.isEmpty()) {
             for (Link link : lLink) {
                 mlmtTopologyBuilder.createLink(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, link);
-                   for (MlmtTopologyProvider provider : mlmtProviders) {
-                       provider.onLinkCreated(type, mlmtTopologyId, link);
+                for (MlmtTopologyProvider provider : mlmtProviders) {
+                    provider.onLinkCreated(type, mlmtTopologyId, link);
                 }
             }
         }
@@ -200,10 +198,10 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
             mlmtConsequentAction = mlmtProviderFactory.consequentAction(topology.getTopologyTypes());
         }
         if (mlmtConsequentAction == MlmtConsequentAction.BUILD) {
-             buildTopology(type, topologyInstanceId, topology);
+            buildTopology(type, topologyInstanceId, topology);
         } else if (mlmtConsequentAction == MlmtConsequentAction.COPY) {
-             copyTopology(type, topologyInstanceId, topology);
-             return;
+            copyTopology(type, topologyInstanceId, topology);
+            return;
         }
         for (MlmtTopologyProvider provider : mlmtProviders) {
             provider.onTopologyCreated(type, topologyInstanceId, topology);
@@ -285,8 +283,7 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
                             rxTopologyTypes.toString());
                     mlmtConsequentAction = mlmtProviderFactory.consequentAction(rxTopologyTypes);
                 }
-            }
-            else {
+            } else {
                 optional = rTx.read(LogicalDatastoreType.OPERATIONAL, topologyTypesIid).get();
                 if (optional.isPresent()) {
                     rxTopologyTypes = optional.get();
@@ -298,9 +295,9 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
                 }
             }
         } catch (InterruptedException e) {
-          LOG.error("MlmtTopologyObserver.getMlmtConsequentAction interrupted exception", e);
+            LOG.error("MlmtTopologyObserver.getMlmtConsequentAction interrupted exception", e);
         } catch (ExecutionException e) {
-          LOG.error("MlmtTopologyObserver.getMlmtConsequentAction execution exception", e);
+            LOG.error("MlmtTopologyObserver.getMlmtConsequentAction execution exception", e);
         }
         LOG.info("MlmtTopologyObserver.getMlmtConsequentAction {}", mlmtConsequentAction.toString());
         return mlmtConsequentAction;
@@ -317,8 +314,7 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
             mlmtTopologyBuilder.copyNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId,
                     topologyKey.getTopologyId(), node);
             return;
-        }
-        else if (mlmtConsequentAction == MlmtConsequentAction.BUILD) {
+        } else if (mlmtConsequentAction == MlmtConsequentAction.BUILD) {
             TopologyKey topologyKey = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
             mlmtTopologyBuilder.createNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId,
                     topologyKey.getTopologyId(), node);
@@ -338,8 +334,7 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
         if (mlmtConsequentAction == MlmtConsequentAction.COPY) {
             mlmtTopologyBuilder.copyTp(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, nodeKey, tp);
             return;
-        }
-        else if (mlmtConsequentAction == MlmtConsequentAction.BUILD) {
+        } else if (mlmtConsequentAction == MlmtConsequentAction.BUILD) {
             mlmtTopologyBuilder.createTp(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, nodeKey, tp);
         }
         for (MlmtTopologyProvider provider : mlmtProviders) {
@@ -356,8 +351,7 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
         if (mlmtConsequentAction == MlmtConsequentAction.COPY) {
             mlmtTopologyBuilder.copyLink(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, link);
             return;
-        }
-        else if (mlmtConsequentAction == MlmtConsequentAction.BUILD) {
+        } else if (mlmtConsequentAction == MlmtConsequentAction.BUILD) {
             mlmtTopologyBuilder.createLink(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, link);
         }
         for (MlmtTopologyProvider provider : mlmtProviders) {
@@ -389,14 +383,14 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
     @Override
     public void onNodeUpdated(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId, final Node node) {
-         LOG.info("MlmtTopologyObserver.onNodeUpdated topologyInstanceId {} nodeKey {}",
-                 topologyInstanceId.toString(), node.getKey().toString());
-         MlmtConsequentAction mlmtConsequentAction = getMlmtConsequentAction(topologyInstanceId);
-         if (mlmtConsequentAction == MlmtConsequentAction.COPY) {
-             TopologyKey topologyKey = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
-             mlmtTopologyBuilder.copyNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId,
-                     topologyKey.getTopologyId(), node);
-             return;
+        LOG.info("MlmtTopologyObserver.onNodeUpdated topologyInstanceId {} nodeKey {}",
+                topologyInstanceId.toString(), node.getKey().toString());
+        MlmtConsequentAction mlmtConsequentAction = getMlmtConsequentAction(topologyInstanceId);
+        if (mlmtConsequentAction == MlmtConsequentAction.COPY) {
+            TopologyKey topologyKey = topologyInstanceId.firstKeyOf(Topology.class, TopologyKey.class);
+            mlmtTopologyBuilder.copyNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId,
+                    topologyKey.getTopologyId(), node);
+            return;
         }
         for (MlmtTopologyProvider provider : mlmtProviders) {
             provider.onNodeUpdated(type, topologyInstanceId, node);
@@ -451,26 +445,26 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
     @Override
     public void onNodeDeleted(final LogicalDatastoreType type,
             final InstanceIdentifier<Topology> topologyInstanceId, final NodeKey nodeKey) {
-         LOG.info("MlmtTopologyObserver.onNodeDeleted topologyInstanceId {} nodeKey {}",
-                 topologyInstanceId.toString(), nodeKey.toString());
-         for (MlmtTopologyProvider provider : mlmtProviders) {
-             provider.onNodeDeleted(type, topologyInstanceId, nodeKey);
-         }
-         MlmtConsequentAction mlmtConsequentAction = getMlmtConsequentAction(topologyInstanceId);
-         if (mlmtConsequentAction != MlmtConsequentAction.CORRELATE) {
-             mlmtTopologyBuilder.deleteNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, nodeKey);
-         }
+        LOG.info("MlmtTopologyObserver.onNodeDeleted topologyInstanceId {} nodeKey {}",
+                topologyInstanceId.toString(), nodeKey.toString());
+        for (MlmtTopologyProvider provider : mlmtProviders) {
+            provider.onNodeDeleted(type, topologyInstanceId, nodeKey);
+        }
+        MlmtConsequentAction mlmtConsequentAction = getMlmtConsequentAction(topologyInstanceId);
+        if (mlmtConsequentAction != MlmtConsequentAction.CORRELATE) {
+            mlmtTopologyBuilder.deleteNode(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, nodeKey);
+        }
     }
 
     @Override
     public void onTpDeleted(final LogicalDatastoreType type, final InstanceIdentifier<Topology> topologyInstanceId,
             final NodeKey nodeKey, final TerminationPointKey tpKey) {
-         LOG.info("MlmtTopologyObserver.onTpDeleted topologyInstanceId {} nodeKey {} tpKey {}",
-                 topologyInstanceId.toString(), nodeKey.toString(), tpKey.toString());
-         for (MlmtTopologyProvider provider : mlmtProviders) {
-             provider.onTpDeleted(type, topologyInstanceId, nodeKey, tpKey);
-         }
-         mlmtTopologyBuilder.deleteTp(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, nodeKey, tpKey);
+        LOG.info("MlmtTopologyObserver.onTpDeleted topologyInstanceId {} nodeKey {} tpKey {}",
+                topologyInstanceId.toString(), nodeKey.toString(), tpKey.toString());
+        for (MlmtTopologyProvider provider : mlmtProviders) {
+            provider.onTpDeleted(type, topologyInstanceId, nodeKey, tpKey);
+        }
+        mlmtTopologyBuilder.deleteTp(LogicalDatastoreType.OPERATIONAL, mlmtTopologyId, nodeKey, tpKey);
     }
 
     @Override
@@ -495,14 +489,14 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
                     LOG.debug("Value: {}", dataObject.toString());
                 }
             } catch (final IllegalArgumentException e) {
-               LOG.error("MlmtTopologyObserver.dumpMap: IllegalArgumentException", e);
+                LOG.error("MlmtTopologyObserver.dumpMap: IllegalArgumentException", e);
             } catch (final java.lang.UnsupportedOperationException e) {
-               LOG.error("MlmtTopologyObserver.dumpMap: UnsupportedOperationException", e);
+                LOG.error("MlmtTopologyObserver.dumpMap: UnsupportedOperationException", e);
             } catch (final IllegalStateException e) {
-               LOG.error("MlmtTopologyObserver.dumpMap: IllegalStateException", e);
+                LOG.error("MlmtTopologyObserver.dumpMap: IllegalStateException", e);
             }
-         }
-     }
+        }
+    }
 
     protected synchronized void handleCreatedData(final LogicalDatastoreType storageType,
             final Map<InstanceIdentifier<?>, DataObject> mapIidObject, final MlmtDataChangeEventType type) {
@@ -625,7 +619,7 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
     @Override
     public void onDataChanged(LogicalDatastoreType type,
             AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
-        synchronized( this ) {
+        synchronized (this) {
             try {
                 LOG.info("MlmtTopologyObserver.onDataChanged");
                 Preconditions.checkNotNull(change);
@@ -654,14 +648,14 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
 
     @Override
     public void closeListeners() {
-        if (mapConfigurationDataChangeObserver != null &&
-                !mapConfigurationDataChangeObserver.isEmpty()) {
+        if (mapConfigurationDataChangeObserver != null
+                && !mapConfigurationDataChangeObserver.isEmpty()) {
             for (MlmtDataChangeEventListener listener : mapConfigurationDataChangeObserver) {
                 listener.close();
             }
         }
-        if (mapOperationalDataChangeObserver != null &&
-                !mapOperationalDataChangeObserver.isEmpty()) {
+        if (mapOperationalDataChangeObserver != null
+                && !mapOperationalDataChangeObserver.isEmpty()) {
             for (MlmtDataChangeEventListener listener : mapOperationalDataChangeObserver) {
                 listener.close();
             }

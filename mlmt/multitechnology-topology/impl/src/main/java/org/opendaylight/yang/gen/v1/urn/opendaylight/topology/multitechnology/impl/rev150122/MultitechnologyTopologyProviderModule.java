@@ -1,9 +1,9 @@
 package org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.impl.rev150122;
 
+import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.topology.multitechnology.MultitechnologyTopologyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 
 public class MultitechnologyTopologyProviderModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.impl.rev150122.AbstractMultitechnologyTopologyProviderModule {
     private static final Logger LOG = LoggerFactory.getLogger(MultitechnologyTopologyProviderModule.class);

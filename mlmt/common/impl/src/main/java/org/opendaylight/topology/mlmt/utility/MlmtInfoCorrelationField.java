@@ -10,11 +10,11 @@ package org.opendaylight.topology.mlmt.utility;
 
 public class MlmtInfoCorrelationField {
 
-    static final public String MTINFO_ATTR_CORRELATION_NODE_INV_ID = "INV-NODE-ID";
-    static final public String MTINFO_ATTR_CORRELATION_NODE_ISO_SYSTEM_ID = "ISO-SYSTEM-ID";
-    static final public String MTINFO_ATTR_CORRELATION_NODE_IPV4_ADDRESS = "IPV4-ADDRESS";
-    static final public String MTINFO_ATTR_CORRELATION_INV_TP_ID = "INV-TP-ID";
-    static final public String MTINFO_ATTR_CORRELATION_TP_IPV4_ADDRESS = "IPV4-ADDRESS";
-    static final public String MTINFO_ATTR_CORRELATION_SOURCE_TP_NAME = "SOURCE-TP-NAME";
-    static final public String MTINFO_ATTR_CORRELATION_FIELD_SEP = "::";
+    public static final String MTINFO_ATTR_CORRELATION_NODE_INV_ID = "INV-NODE-ID";
+    public static final String MTINFO_ATTR_CORRELATION_NODE_ISO_SYSTEM_ID = "ISO-SYSTEM-ID";
+    public static final String MTINFO_ATTR_CORRELATION_NODE_IPV4_ADDRESS = "IPV4-ADDRESS";
+    public static final String MTINFO_ATTR_CORRELATION_INV_TP_ID = "INV-TP-ID";
+    public static final String MTINFO_ATTR_CORRELATION_TP_IPV4_ADDRESS = "IPV4-ADDRESS";
+    public static final String MTINFO_ATTR_CORRELATION_SOURCE_TP_NAME = "SOURCE-TP-NAME";
+    public static final String MTINFO_ATTR_CORRELATION_FIELD_SEP = "::";
 }

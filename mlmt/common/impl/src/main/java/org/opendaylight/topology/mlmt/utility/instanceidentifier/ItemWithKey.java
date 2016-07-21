@@ -8,11 +8,11 @@
 
 package org.opendaylight.topology.mlmt.utility.instanceidentifier;
 
+import com.google.common.base.Predicate;
+
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.IdentifiableItem;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
-
-import com.google.common.base.Predicate;
 
 public class ItemWithKey<T,K> implements Predicate<InstanceIdentifier.PathArgument> {
 
@@ -60,8 +60,7 @@ public class ItemWithKey<T,K> implements Predicate<InstanceIdentifier.PathArgume
                 }
             }
             return false;
-        }
-        else {
+        } else {
             return true;
         }
     }

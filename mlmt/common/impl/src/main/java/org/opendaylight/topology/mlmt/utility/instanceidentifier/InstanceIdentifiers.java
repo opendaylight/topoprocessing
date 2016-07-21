@@ -8,6 +8,8 @@
 
 package org.opendaylight.topology.mlmt.utility.instanceidentifier;
 
+import com.google.common.base.Predicate;
+
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,8 +17,6 @@ import java.util.List;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
-
-import com.google.common.base.Predicate;
 
 public class InstanceIdentifiers {
 
