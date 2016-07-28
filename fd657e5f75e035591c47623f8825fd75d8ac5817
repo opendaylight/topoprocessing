@@ -22,6 +22,30 @@
       "revId": "fd657e5f75e035591c47623f8825fd75d8ac5817",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a561d44_23969e3f",
+        "filename": "mlmt/observer/impl/src/test/java/org/opendaylight/topology/mlmt/observer/MlmtTopologyObserverTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 71,
+      "author": {
+        "id": 5007
+      },
+      "writtenOn": "2016-07-28T07:33:15Z",
+      "side": 0,
+      "message": "Thanks, I was just looking at it. \"Organize imports\" in Eclipse removed it. Sorry for spam :).",
+      "parentUuid": "9a561d44_c3e882e4",
+      "range": {
+        "startLine": 69,
+        "startChar": 0,
+        "endLine": 71,
+        "endChar": 103
+      },
+      "revId": "fd657e5f75e035591c47623f8825fd75d8ac5817",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
