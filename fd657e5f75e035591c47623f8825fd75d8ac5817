@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "9a561d44_83b20a04",
+        "filename": "mlmt/observer/impl/src/test/java/org/opendaylight/topology/mlmt/observer/MlmtTopologyObserverTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 3277
+      },
+      "writtenOn": "2016-07-28T08:31:01Z",
+      "side": 0,
+      "message": "Those imports should be kept.",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 42
+      },
+      "revId": "fd657e5f75e035591c47623f8825fd75d8ac5817",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a561d44_c3e882e4",
         "filename": "mlmt/observer/impl/src/test/java/org/opendaylight/topology/mlmt/observer/MlmtTopologyObserverTest.java",
         "patchSetId": 3
