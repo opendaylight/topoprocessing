@@ -145,11 +145,14 @@ public class MlmtTopologyBuilder {
             public void applyOperation(ReadWriteTransaction transaction) {
                 tbuilder.setKey(key);
                 TopologyTypesBuilder topologyTypesBuilder = new TopologyTypesBuilder();
-                final Topology top = tbuilder.setServerProvided(Boolean.FALSE)
-                        .setUnderlayTopology(Collections.<UnderlayTopology>emptyList())
+                tbuilder.setUnderlayTopology(Collections.<UnderlayTopology>emptyList())
                         .setTopologyTypes(topologyTypesBuilder.build())
                         .setLink(Collections.<Link>emptyList())
-                        .setNode(Collections.<Node>emptyList()).build();
+                        .setNode(Collections.<Node>emptyList());
+                if (type == LogicalDatastoreType.OPERATIONAL) {
+                    tbuilder.setServerProvided(Boolean.FALSE);
+                }
+                final Topology top = tbuilder.build();
                 transaction.merge(type, topologyInstanceId, top);
             }
 
