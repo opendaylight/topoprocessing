@@ -108,8 +108,7 @@ public class MultitechnologyNameHandlerTest extends AbstractDataBrokerTest {
         final TopologyBuilder tbuilder = new TopologyBuilder();
         tbuilder.setKey(mlmtTopologyKey);
         tbuilder.setTopologyId(topologyId);
-        final Topology top = tbuilder.setServerProvided(Boolean.FALSE)
-                .setTopologyTypes(topologyTypesBuilder.build())
+        final Topology top = tbuilder.setTopologyTypes(topologyTypesBuilder.build())
                 .setUnderlayTopology(lUnderlayTopology).build();
 
         return top;
