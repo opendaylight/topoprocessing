@@ -6,6 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.topoprocessing.impl.operator;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
@@ -80,7 +81,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
      * @param newOverlayItem - OverlayItem which shall be put into wrapper
      */
     @Override
-    public void addOverlayItem(OverlayItem newOverlayItem) {
+    public synchronized void addOverlayItem(OverlayItem newOverlayItem) {
         if (newOverlayItem != null && !newOverlayItem.getUnderlayItems().isEmpty()) {
             OverlayItemWrapper wrapper = findOrCreateWrapper(newOverlayItem);
             writer.writeItem(wrapper, newOverlayItem.getCorrelationItem());
@@ -123,7 +124,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
      * @param overlayItemIdentifier OverlayItem with new changes to update
      */
     @Override
-    public void updateOverlayItem(OverlayItem overlayItemIdentifier) {
+    public synchronized void updateOverlayItem(OverlayItem overlayItemIdentifier) {
         OverlayItemWrapper wrapper = findWrapper(overlayItemIdentifier);
         if(wrapper != null) {
             writer.writeItem(wrapper, overlayItemIdentifier.getCorrelationItem());
@@ -135,7 +136,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
      * @param overlayItemIdentifier OverlayItem to remove
      */
     @Override
-    public void removeOverlayItem(OverlayItem overlayItemIdentifier) {
+    public synchronized void removeOverlayItem(OverlayItem overlayItemIdentifier) {
         OverlayItemWrapper foundWrapper = findWrapper(overlayItemIdentifier);
         if (foundWrapper != null) {
             foundWrapper.getOverlayItems().remove(overlayItemIdentifier);
