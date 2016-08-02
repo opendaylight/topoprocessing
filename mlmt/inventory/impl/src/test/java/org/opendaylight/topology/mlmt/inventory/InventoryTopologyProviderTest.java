@@ -127,8 +127,7 @@ public class InventoryTopologyProviderTest extends AbstractDataBrokerTest {
         final TopologyBuilder tbuilder = new TopologyBuilder();
         tbuilder.setKey(mlmtTopologyKey);
         tbuilder.setTopologyId(topologyId);
-        final Topology top = tbuilder.setServerProvided(Boolean.FALSE)
-                .setTopologyTypes(topologyTypesBuilder.build())
+        final Topology top = tbuilder.setTopologyTypes(topologyTypesBuilder.build())
                 .setUnderlayTopology(lUnderlayTopology).build();
 
         return top;
@@ -140,7 +139,7 @@ public class InventoryTopologyProviderTest extends AbstractDataBrokerTest {
         final TopologyBuilder tbuilder = new TopologyBuilder();
         tbuilder.setKey(key);
         tbuilder.setTopologyId(topologyId);
-        final Topology top = tbuilder.setServerProvided(Boolean.FALSE).build();
+        final Topology top = tbuilder.build();
 
         return top;
     }

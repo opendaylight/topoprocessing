@@ -139,8 +139,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
             mtTopologyTypeBuilder.setMultitechnologyTopology(multitechnologyTopologyBuilder.build());
             topologyTypesBuilder.addAugmentation(MtTopologyType.class, mtTopologyTypeBuilder.build());
         }
-        final Topology top = tbuilder.setTopologyTypes(topologyTypesBuilder.build())
-                .setServerProvided(Boolean.FALSE).build();
+        final Topology top = tbuilder.setTopologyTypes(topologyTypesBuilder.build()).build();
 
         return top;
     }
@@ -161,8 +160,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         final TopologyBuilder tbuilder = new TopologyBuilder();
         tbuilder.setKey(key);
         tbuilder.setTopologyId(topologyId);
-        final Topology top = tbuilder.setServerProvided(Boolean.FALSE)
-                .setTopologyTypes(topologyTypesBuilder.build())
+        final Topology top = tbuilder.setTopologyTypes(topologyTypesBuilder.build())
                 .setUnderlayTopology(lUnderlayTopology)
                 .setLink(Collections.<Link>emptyList())
                 .setNode(Collections.<Node>emptyList())
@@ -467,7 +465,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         lNode.add(nodeBuilder.build());
 
         tbuilder.setNode(lNode);
-        final Topology wrTopology = tbuilder.setServerProvided(Boolean.FALSE).build();
+        final Topology wrTopology = tbuilder.build();
 
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
         rwTx.merge(LogicalDatastoreType.OPERATIONAL, exampleIid, wrTopology, true);
@@ -504,7 +502,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         lNode.add(nodeBuilder.build());
 
         tbuilder.setNode(lNode);
-        final Topology wrTopology = tbuilder.setServerProvided(Boolean.FALSE).build();
+        final Topology wrTopology = tbuilder.build();
 
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
         rwTx.merge(LogicalDatastoreType.CONFIGURATION, mlmtTopologyIid, wrTopology, true);
@@ -528,7 +526,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         final TopologyBuilder tbuilder = new TopologyBuilder();
         tbuilder.setKey(key);
         tbuilder.setTopologyId(topologyId);
-        final Topology wrTopology = tbuilder.setServerProvided(Boolean.FALSE).build();
+        final Topology wrTopology = tbuilder.build();
 
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
         rwTx.merge(LogicalDatastoreType.OPERATIONAL, exampleIid, wrTopology, true);
