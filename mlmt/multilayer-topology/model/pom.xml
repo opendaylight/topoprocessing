@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.opendaylight.topoprocessing</groupId>
     <artifactId>multilayer-topology</artifactId>
-    <version>0.1.3-SNAPSHOT</version>
+    <version>0.1.4-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>multilayer-topology-model</artifactId>
