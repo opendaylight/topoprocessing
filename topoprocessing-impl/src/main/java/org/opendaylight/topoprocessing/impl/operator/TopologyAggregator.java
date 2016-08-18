@@ -232,7 +232,7 @@ public abstract class TopologyAggregator implements TopologyOperator {
                 underlayItem.setItem(updatedItem.getItem());
                 if (underlayItem.getCorrelationItem() == CorrelationItemEnum.Link) {
                     if (underlayItem instanceof ComputedLink && updatedItem instanceof ComputedLink) {
-                        updateLinks(underlayItem, updatedItem);
+                        updateLinks((ComputedLink) underlayItem, (ComputedLink) updatedItem);
                         break;
                     }
                 } else {
@@ -254,22 +254,20 @@ public abstract class TopologyAggregator implements TopologyOperator {
         }
     }
 
-    private void updateLinks(UnderlayItem underlayItem, UnderlayItem updatedItem) {
-        ComputedLink underlayLink = (ComputedLink) underlayItem;
-        ComputedLink updatedLink = (ComputedLink) updatedItem;
-        if (! matchTargetFields(underlayItem, updatedItem)
+    private void updateLinks(ComputedLink underlayLink, ComputedLink updatedLink) {
+        if (! matchTargetFields(underlayLink, updatedLink)
                 || ! underlayLink.getSrcNode().equals(updatedLink.getSrcNode())
                 || ! underlayLink.getDstNode().equals(updatedLink.getDstNode())) {
             underlayLink.setLeafNodes(updatedLink.getLeafNodes());
             underlayLink.setSrcNode(updatedLink.getSrcNode());
             underlayLink.setDstNode(updatedLink.getDstNode());
-            if (underlayItem.getOverlayItem() != null) {
-                removeUnderlayItemFromOverlayItem(underlayItem);
+            if (underlayLink.getOverlayItem() != null) {
+                removeUnderlayItemFromOverlayItem(underlayLink);
             }
             checkForPossibleAggregationOfLinks(updatedLink, underlayLink);
-        } else if (underlayItem.getOverlayItem() != null) {
+        } else if (underlayLink.getOverlayItem() != null) {
             // in case that only Link value was changed
-            manager.updateOverlayItem(underlayItem.getOverlayItem());
+            manager.updateOverlayItem(underlayLink.getOverlayItem());
         }
     }
 

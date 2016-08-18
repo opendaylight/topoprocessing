@@ -72,14 +72,14 @@ public class TerminationPointAggregator extends UnificationAggregator {
         this.model = model;
     }
 
-    private class TemporaryTerminationPoint {
+    private static class TemporaryTerminationPoint {
         private Map<Integer, Object> targetFieldsValues;
         private String tpId;
         private List<MapEntryNode> terminationPointEntries = new ArrayList<>();
 
-        public TemporaryTerminationPoint(Map<Integer, Object> targetFieldsValues) {
+        public TemporaryTerminationPoint(Map<Integer, Object> targetFieldsValues, String tpId) {
             this.targetFieldsValues = targetFieldsValues;
-            this.tpId = idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint);
+            this.tpId = tpId;
         }
 
         public MapEntryNode getByIdentifier(YangInstanceIdentifier.NodeIdentifierWithPredicates nodeIdentifier) {
@@ -213,7 +213,8 @@ public class TerminationPointAggregator extends UnificationAggregator {
                 }
             }
             if (isNew) {
-                TemporaryTerminationPoint tmpTp = new TemporaryTerminationPoint(targetFieldsValues);
+                TemporaryTerminationPoint tmpTp = new TemporaryTerminationPoint(targetFieldsValues,
+                        idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint));
                 tmpTp.getEntries().add(tpMapEntry);
                 terminationPointList.add(tmpTp);
             }
@@ -248,7 +249,8 @@ public class TerminationPointAggregator extends UnificationAggregator {
                     }
                 }
                 if (isNew) {
-                    TemporaryTerminationPoint ttp = new TemporaryTerminationPoint(targetFieldsValues);
+                    TemporaryTerminationPoint ttp = new TemporaryTerminationPoint(targetFieldsValues,
+                            idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint));
                     List<MapEntryNode> terminationPointEntries = new ArrayList<>();
                     terminationPointEntries.add(newTpEntry);
                     ttp.setEntries(terminationPointEntries);

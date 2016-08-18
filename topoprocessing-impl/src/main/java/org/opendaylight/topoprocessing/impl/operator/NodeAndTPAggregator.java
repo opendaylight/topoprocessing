@@ -233,7 +233,7 @@ public class NodeAndTPAggregator implements TopologyOperator {
         Map<String, Map<Integer, YangInstanceIdentifier>> targetFieldsPerTP = new HashMap<>();
 
         for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
-            if (removedOverlayItem == null || removedOverlayItem != null && !overlayItem.equals(removedOverlayItem)) {
+            if (removedOverlayItem == null || !overlayItem.equals(removedOverlayItem)) {
                 for (UnderlayItem underlayItemFromWrapper : overlayItem.getUnderlayItems()) {
                     Map<Integer, YangInstanceIdentifier> targetFields = targetFieldsPerTopology.get(
                             underlayItemFromWrapper.getTopologyId());
