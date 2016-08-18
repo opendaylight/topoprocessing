@@ -83,8 +83,7 @@ public class IRRenderingOperator implements TopologyOperator {
 
     private OverlayItem wrapUnderlayItem(UnderlayItem underlayItem) {
         List<UnderlayItem> underlayItems = Collections.singletonList(underlayItem);
-        OverlayItem overlayItem = new OverlayItem(underlayItems, underlayItem.getCorrelationItem());
-        return overlayItem;
+        return new OverlayItem(underlayItems, underlayItem.getCorrelationItem());
     }
 
     @Override

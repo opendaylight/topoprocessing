@@ -51,13 +51,13 @@ public class IdentifierGenerator {
         String identifier = null;
         switch (correlationItem) {
             case Node:
-                identifier = new String("node:" + getNextNodeId());
+                identifier = "node:" + getNextNodeId();
                 break;
             case Link:
-                identifier = new String("link:" + getNextLinkId());
+                identifier = "link:" + getNextLinkId();
                 break;
             case TerminationPoint:
-                identifier = new String("tp:" + getNextTpId());
+                identifier = "tp:" + getNextTpId();
                 break;
             default:
                 throw new IllegalStateException("Unknown Correlation item used: " + correlationItem);

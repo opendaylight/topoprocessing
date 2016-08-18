@@ -9,6 +9,7 @@ package org.opendaylight.topoprocessing.inventoryRendering.request;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
@@ -33,7 +34,7 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
  */
 public class IRTopologyRequestListener extends TopologyRequestListener {
 
-    private HashSet<QName> hashSet;
+    private Set<QName> hashSet;
 
     public IRTopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
             GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, Map<Class<? extends Model>,

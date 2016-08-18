@@ -18,6 +18,9 @@ import org.opendaylight.yangtools.yang.common.QName;
  */
 public final class IRQNames {
 
+    private static final String INVENTORY_NAMESPACE = "urn:opendaylight:flow:inventory";
+    private static final String REV_2013_08_19 = "2013-08-19";
+
     /** Inventory node-connector id. */
     public static final QName NODE_CONNECTOR_ID_QNAME =
         QName.create(NodeConnector.QNAME, "id").intern();
@@ -68,35 +71,35 @@ public final class IRQNames {
 
     /** Flow-inventory manufacturer QName. */
     public static final QName OPEN_FLOW_NODE_MANUFACTURER_QNAME =
-        QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "manufacturer").intern();
+        QName.create(INVENTORY_NAMESPACE, REV_2013_08_19, "manufacturer").intern();
     /** Flow-inventory hardware QName. */
     public static final QName OPEN_FLOW_NODE_HARDWARE_QNAME =
-        QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "hardware").intern();
+        QName.create(INVENTORY_NAMESPACE, REV_2013_08_19, "hardware").intern();
     /** Flow-inventory software QName. */
     public static final QName OPEN_FLOW_NODE_SOFTWARE_QNAME =
-        QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "software").intern();
+        QName.create(INVENTORY_NAMESPACE, REV_2013_08_19, "software").intern();
     /** Flow-inventory serial-number QName. */
     public static final QName OPEN_FLOW_NODE_SERIAL_NUMBER_QNAME =
-        QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "serial-number").intern();
+        QName.create(INVENTORY_NAMESPACE, REV_2013_08_19, "serial-number").intern();
     /** Flow-inventory description QName. */
     public static final QName OPEN_FLOW_NODE_DESCRIPTION_QNAME =
-        QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "description").intern();
+        QName.create(INVENTORY_NAMESPACE, REV_2013_08_19, "description").intern();
     /** Flow-inventory ip-address QName. */
     public static final QName OPEN_FLOW_NODE_IP_ADDRESS_QNAME =
-        QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "ip-address").intern();
+        QName.create(INVENTORY_NAMESPACE, REV_2013_08_19, "ip-address").intern();
 
     /** Flow-inventory port name QName. */
     public static final QName OPEN_FLOW_PORT_NAME_QNAME =
-        QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "name").intern();
+        QName.create(INVENTORY_NAMESPACE, REV_2013_08_19, "name").intern();
     /** Flow-inventory port hardware-address QName. */
     public static final QName OPEN_FLOW_PORT_HARDWARE_ADDRESS_QNAME =
-        QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "hardware-address").intern();
+        QName.create(INVENTORY_NAMESPACE, REV_2013_08_19, "hardware-address").intern();
     /** Flow-inventory port current-speed QName. */
     public static final QName OPEN_FLOW_PORT_CURRENT_SPEED_QNAME =
-        QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "current-speed").intern();
+        QName.create(INVENTORY_NAMESPACE, REV_2013_08_19, "current-speed").intern();
     /** Flow-inventory port maximum-speed QName. */
     public static final QName OPEN_FLOW_PORT_MAXIMUM_SPEED_QNAME =
-        QName.create("urn:opendaylight:flow:inventory", "2013-08-19", "maximum-speed").intern();
+        QName.create(INVENTORY_NAMESPACE, REV_2013_08_19, "maximum-speed").intern();
 
     private IRQNames() {
         throw new UnsupportedOperationException("InventoryRenderingQNames can't be instantiated.");
