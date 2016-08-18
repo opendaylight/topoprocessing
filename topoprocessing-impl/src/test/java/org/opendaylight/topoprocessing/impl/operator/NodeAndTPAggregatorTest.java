@@ -283,7 +283,7 @@ public class NodeAndTPAggregatorTest {
         Optional<NormalizedNode<?, ?>> tpMapNodeWithAllTPsOpt = Optional.absent();
         if (model.equals(NetworkTopologyModel.class)) {
             tpMapNodeWithAllTPsOpt = NormalizedNodes.findNode(normalizedNode,
-                    InstanceIdentifiers.NT_TERMINATION_POINT);
+                    InstanceIdentifiers.NT_TP_IDENTIFIER);
         } else if (model.equals(I2rsModel.class)) {
             tpMapNodeWithAllTPsOpt = NormalizedNodes.findNode(normalizedNode,
                     InstanceIdentifiers.I2RS_TERMINATION_POINT);

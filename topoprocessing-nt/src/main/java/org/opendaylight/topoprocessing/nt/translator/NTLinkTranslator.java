@@ -53,15 +53,14 @@ public class NTLinkTranslator implements LinkTranslator {
         linkNode.withChild(supportingLinks);
         UnderlayItem link = wrapper.getOverlayItems().peek().getUnderlayItems().peek();
         if (link instanceof ComputedLink) {
-            setSrcDestNode(link, linkNode);
+            setSrcDestNode((ComputedLink) link, linkNode);
         }
 
         return linkNode.build();
     }
 
-    private void setSrcDestNode(UnderlayItem link,
+    private void setSrcDestNode(ComputedLink computedLink,
             DataContainerNodeBuilder<NodeIdentifierWithPredicates, MapEntryNode> linkNode) {
-        ComputedLink computedLink = (ComputedLink) link;
         ContainerNode sourceNode = ImmutableContainerNodeBuilder.create()
                 .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(Source.QNAME))
                 .withChild(ImmutableNodes.leafNode(TopologyQNames.LINK_SOURCE_NODE_QNAME,
@@ -88,10 +87,10 @@ public class NTLinkTranslator implements LinkTranslator {
                     writtenLinks.add(underlayItem);
                     // prepare supporting nodes
                     StringBuilder linkRef = new StringBuilder();
-                    linkRef.append("/").append(NetworkTopology.QNAME.getLocalName()).append("/")
-                            .append(Topology.QNAME.getLocalName()).append("/")
-                            .append(underlayItem.getTopologyId()).append("/")
-                            .append(Link.QNAME.getLocalName()).append("/")
+                    linkRef.append('/').append(NetworkTopology.QNAME.getLocalName()).append('/')
+                            .append(Topology.QNAME.getLocalName()).append('/')
+                            .append(underlayItem.getTopologyId()).append('/')
+                            .append(Link.QNAME.getLocalName()).append('/')
                             .append(underlayItem.getItemId());
                     supportingLinks.withChild(ImmutableNodes.mapEntryBuilder(SupportingLink.QNAME,
                             TopologyQNames.LINK_REF, linkRef.toString()).build());

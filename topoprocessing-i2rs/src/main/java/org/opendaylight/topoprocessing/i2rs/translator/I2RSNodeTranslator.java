@@ -140,7 +140,7 @@ public class I2RSNodeTranslator implements NodeTranslator {
                      *  /network-topology:network-topology/topology/TOPOLOGY-ID/node/NODE-ID/termination-point/TP-ID
                      */
                     String[] split = tpRef.getValue().split("/");
-                    suppTPs.addChild(createSupportingTerminationPoint(idGenerator, split[7], split[3], split[5]));
+                    suppTPs.addChild(createSupportingTerminationPoint(split[7], split[3], split[5]));
                 }
 
                 String tpId = idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint);
@@ -169,8 +169,7 @@ public class I2RSNodeTranslator implements NodeTranslator {
                 String tpRefId = (String)terminationPointIdOpt.get().getValue();
                 CollectionNodeBuilder<MapEntryNode, MapNode> supportingTermPoints = ImmutableNodes.mapNodeBuilder(
                         SupportingTerminationPoint.QNAME);
-                supportingTermPoints.withChild(createSupportingTerminationPoint(idGenerator, tpRefId, topologyId,
-                        nodeId));
+                supportingTermPoints.withChild(createSupportingTerminationPoint(tpRefId, topologyId, nodeId));
                 String tpId = idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint);
                 terminationPointEntries.add(ImmutableNodes.mapEntryBuilder(TerminationPoint.QNAME,
                         TopologyQNames.I2RS_TP_ID_QNAME, tpId).withChild(supportingTermPoints.build()).build());
@@ -179,8 +178,7 @@ public class I2RSNodeTranslator implements NodeTranslator {
         return terminationPointEntries;
     }
 
-    private MapEntryNode createSupportingTerminationPoint(IdentifierGenerator idGenerator, String tpRefId,
-            String topologyId, String nodeId) {
+    private MapEntryNode createSupportingTerminationPoint(String tpRefId, String topologyId, String nodeId) {
         Map<QName, Object> keys = new HashMap<>();
         keys.put(TopologyQNames.I2RS_TP_REF, tpRefId);
         keys.put(TopologyQNames.I2RS_TP_NETWORK_REF, topologyId);

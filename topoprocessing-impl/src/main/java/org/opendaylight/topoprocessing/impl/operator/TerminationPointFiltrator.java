@@ -103,7 +103,7 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
     private Optional<NormalizedNode<?, ?>> findTerminationPoint(UnderlayItem uItem) {
         Optional<NormalizedNode<?, ?>> tpMapNodeOpt = Optional.absent();
         if (model.equals(NetworkTopologyModel.class)) {
-            tpMapNodeOpt = NormalizedNodes.findNode(uItem.getItem(),InstanceIdentifiers.NT_TERMINATION_POINT);
+            tpMapNodeOpt = NormalizedNodes.findNode(uItem.getItem(),InstanceIdentifiers.NT_TP_IDENTIFIER);
         } else if (model.equals(I2rsModel.class)) {
             tpMapNodeOpt = NormalizedNodes.findNode(uItem.getItem(),InstanceIdentifiers.I2RS_TERMINATION_POINT);
         } else if (model.equals(OpendaylightInventoryModel.class)) {
@@ -157,11 +157,8 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         Optional<NormalizedNode<?, ?>> nodeConnectorIdOptional = NormalizedNodes
                 .findNode(tpMapEntryNode, InstanceIdentifiers.INVENTORY_NODE_ID_IDENTIFIER);
         Optional<NormalizedNode<?, ?>> tpMapNodeOpt =
-                NormalizedNodes.findNode(node,InstanceIdentifiers.NT_TERMINATION_POINT);
+                NormalizedNodes.findNode(node,InstanceIdentifiers.NT_TP_IDENTIFIER);
         String tpIdFromNt = null;
-        ListNodeBuilder<String, LeafSetEntryNode<String>> leafListBuilder =
-                ImmutableLeafSetNodeBuilder.<String>create()
-                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(TopologyQNames.TP_REF));
         if (nodeConnectorIdOptional.isPresent()) {
             if (tpMapNodeOpt.isPresent()) {
                 for (MapEntryNode mapEntryNode : ((MapNode) tpMapNodeOpt.get()).getValue()) {
@@ -190,6 +187,9 @@ public class TerminationPointFiltrator extends TopologyFiltrator {
         LeafSetEntryNode<String> tpRef = ImmutableLeafSetEntryNodeBuilder.<String>create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeWithValue<String>(
                         TopologyQNames.TP_REF, tpRefVal)).withValue(tpRefVal).build();
+        ListNodeBuilder<String, LeafSetEntryNode<String>> leafListBuilder =
+                ImmutableLeafSetNodeBuilder.<String>create()
+                .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(TopologyQNames.TP_REF));
         leafListBuilder.addChild(tpRef);
         MapEntryNode tp = ImmutableNodes
                 .mapEntryBuilder(TerminationPoint.QNAME, TopologyQNames.NETWORK_TP_ID_QNAME, tpId)

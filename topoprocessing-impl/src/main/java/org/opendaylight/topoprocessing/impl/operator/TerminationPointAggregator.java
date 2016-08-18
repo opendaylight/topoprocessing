@@ -72,14 +72,14 @@ public class TerminationPointAggregator extends UnificationAggregator {
         this.model = model;
     }
 
-    private class TemporaryTerminationPoint {
+    private static class TemporaryTerminationPoint {
         private Map<Integer, Object> targetFieldsValues;
         private String tpId;
         private List<MapEntryNode> terminationPointEntries = new ArrayList<>();
 
-        public TemporaryTerminationPoint(Map<Integer, Object> targetFieldsValues) {
+        public TemporaryTerminationPoint(Map<Integer, Object> targetFieldsValues, String tpId) {
             this.targetFieldsValues = targetFieldsValues;
-            this.tpId = idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint);
+            this.tpId = tpId;
         }
 
         public MapEntryNode getByIdentifier(YangInstanceIdentifier.NodeIdentifierWithPredicates nodeIdentifier) {
@@ -157,7 +157,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
         UnderlayItem underlayItem = ts.getUnderlayItems().get(identifier);
         MapEntryNode newNode = (MapEntryNode) updatedEntry.getItem();
         Optional<NormalizedNode<?, ?>> updatedTpMapNode = findTerminationPoint(updatedEntry);
-        if ((!updatedTpMapNode.isPresent() || ((MapNode)updatedTpMapNode.get()).getValue().size() == 0)) {
+        if (!updatedTpMapNode.isPresent() || ((MapNode)updatedTpMapNode.get()).getValue().isEmpty()) {
             nodeTps.clear();
         } else {
             // if node contains Termination points
@@ -180,7 +180,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
     private Optional<NormalizedNode<?, ?>> findTerminationPoint(UnderlayItem uItem) {
         Optional<NormalizedNode<?, ?>> tpMapNodeOpt = Optional.absent();
         if (model.equals(NetworkTopologyModel.class)) {
-            tpMapNodeOpt = NormalizedNodes.findNode(uItem.getItem(),InstanceIdentifiers.NT_TERMINATION_POINT);
+            tpMapNodeOpt = NormalizedNodes.findNode(uItem.getItem(),InstanceIdentifiers.NT_TP_IDENTIFIER);
         } else if (model.equals(I2rsModel.class)) {
             tpMapNodeOpt = NormalizedNodes.findNode(uItem.getItem(),InstanceIdentifiers.I2RS_TERMINATION_POINT);
         } else if (model.equals(OpendaylightInventoryModel.class)) {
@@ -213,7 +213,8 @@ public class TerminationPointAggregator extends UnificationAggregator {
                 }
             }
             if (isNew) {
-                TemporaryTerminationPoint tmpTp = new TemporaryTerminationPoint(targetFieldsValues);
+                TemporaryTerminationPoint tmpTp = new TemporaryTerminationPoint(targetFieldsValues,
+                        idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint));
                 tmpTp.getEntries().add(tpMapEntry);
                 terminationPointList.add(tmpTp);
             }
@@ -248,7 +249,8 @@ public class TerminationPointAggregator extends UnificationAggregator {
                     }
                 }
                 if (isNew) {
-                    TemporaryTerminationPoint ttp = new TemporaryTerminationPoint(targetFieldsValues);
+                    TemporaryTerminationPoint ttp = new TemporaryTerminationPoint(targetFieldsValues,
+                            idGenerator.getNextIdentifier(CorrelationItemEnum.TerminationPoint));
                     List<MapEntryNode> terminationPointEntries = new ArrayList<>();
                     terminationPointEntries.add(newTpEntry);
                     ttp.setEntries(terminationPointEntries);
@@ -353,7 +355,7 @@ public class TerminationPointAggregator extends UnificationAggregator {
         ListNodeBuilder<String, LeafSetEntryNode<String>> leafListBuilder = ImmutableLeafSetNodeBuilder.<String>create()
                 .withNodeIdentifier(new YangInstanceIdentifier.NodeIdentifier(TopologyQNames.TP_REF));
         Optional<NormalizedNode<?, ?>> tpMapNodeOpt =
-                NormalizedNodes.findNode(node,InstanceIdentifiers.NT_TERMINATION_POINT);
+                NormalizedNodes.findNode(node,InstanceIdentifiers.NT_TP_IDENTIFIER);
         for (MapEntryNode mapEntryNode : tmpTp.getEntries()) {
             Optional<NormalizedNode<?, ?>> nodeConnectorIdOptional = NormalizedNodes
                     .findNode(mapEntryNode, InstanceIdentifiers.INVENTORY_NODE_ID_IDENTIFIER);

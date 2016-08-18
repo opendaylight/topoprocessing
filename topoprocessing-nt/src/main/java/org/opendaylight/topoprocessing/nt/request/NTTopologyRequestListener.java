@@ -9,6 +9,7 @@ package org.opendaylight.topoprocessing.nt.request;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
@@ -34,8 +35,8 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNodes;
 public class NTTopologyRequestListener extends TopologyRequestListener {
 
 
-    private HashSet<QName> correlationHashSet;
-    private HashSet<QName> linkComputationHashSet;
+    private Set<QName> correlationHashSet;
+    private Set<QName> linkComputationHashSet;
 
     public NTTopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
             GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,

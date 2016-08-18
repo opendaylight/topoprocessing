@@ -13,6 +13,7 @@ import com.google.common.base.Optional;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
@@ -63,9 +64,10 @@ public class NotificationInterConnector implements TopologyOperator {
                 if (items.containsKey(key)) {
                     if (createdEntry.getItemId()!= null && items.get(key).getItemId()!= null
                             && !items.get(key).getItemId().equals(createdEntry.getItemId())) {
-                        for (YangInstanceIdentifier id : topoToInvIds.keySet()) {
-                            if (items.get(topoToInvIds.get(id)).getItemId().equals(items.get(key).getItemId())) {
-                                processRemovedChanges(id, topologyId);
+                        for (Entry<YangInstanceIdentifier, YangInstanceIdentifier> idsMapEntry
+                                : topoToInvIds.entrySet()) {
+                            if (items.get(idsMapEntry.getValue()).getItemId().equals(items.get(key).getItemId())) {
+                                processRemovedChanges(idsMapEntry.getKey(), topologyId);
                                 break;
                             }
                         }

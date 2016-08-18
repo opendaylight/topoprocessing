@@ -29,8 +29,7 @@ public class OverlayItemWrapper {
      */
     public OverlayItemWrapper(String itemId, OverlayItem overlayItem) {
         this.id = itemId;
-        addOverlayItem(overlayItem);
-        aggregatedTerminationPoints = null;
+        overlayItems.add(overlayItem);
     }
 
     /**

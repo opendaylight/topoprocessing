@@ -48,15 +48,14 @@ public class I2RSLinkTranslator implements LinkTranslator {
         linkNode.withChild(supportingLinks);
         UnderlayItem link = wrapper.getOverlayItems().peek().getUnderlayItems().peek();
         if (link instanceof ComputedLink) {
-            setSrcDestNode(link, linkNode);
+            setSrcDestNode((ComputedLink) link, linkNode);
         }
 
         return linkNode.build();
     }
 
-    private void setSrcDestNode(UnderlayItem link,
+    private void setSrcDestNode(ComputedLink computedLink,
             DataContainerNodeBuilder<NodeIdentifierWithPredicates, MapEntryNode> linkNode) {
-        ComputedLink computedLink = (ComputedLink) link;
         ContainerNode sourceNode = ImmutableContainerNodeBuilder.create()
                 .withNodeIdentifier(YangInstanceIdentifier.NodeIdentifier.create(Source.QNAME))
                 .withChild(ImmutableNodes.leafNode(TopologyQNames.I2RS_LINK_SOURCE_NODE_QNAME,

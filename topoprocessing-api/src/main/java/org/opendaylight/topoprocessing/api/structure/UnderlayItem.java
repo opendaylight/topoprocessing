@@ -24,7 +24,7 @@ public class UnderlayItem {
 
     private NormalizedNode<?, ?> item;
     private Map<Integer, NormalizedNode<?, ?>> leafNodes;
-    private OverlayItem overlayItem = null;
+    private OverlayItem overlayItem;
     private String topologyId;
     private String itemId;
     private CorrelationItemEnum correlationItem;

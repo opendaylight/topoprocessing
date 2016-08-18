@@ -53,7 +53,7 @@ public class TerminationPointPreAggregationFiltrator extends PreAggregationFiltr
         NormalizedNode<?, ?> node = createdEntry.getItem();
         Optional<NormalizedNode<?, ?>> tpMapNodeOpt = null;
         if (model.equals(NetworkTopologyModel.class)) {
-            tpMapNodeOpt = NormalizedNodes.findNode(node, InstanceIdentifiers.NT_TERMINATION_POINT);
+            tpMapNodeOpt = NormalizedNodes.findNode(node, InstanceIdentifiers.NT_TP_IDENTIFIER);
         } else if (model.equals(I2rsModel.class)) {
             tpMapNodeOpt = NormalizedNodes.findNode(node, InstanceIdentifiers.I2RS_TERMINATION_POINT);
         } else if (model.equals(OpendaylightInventoryModel.class)) {
@@ -75,7 +75,7 @@ public class TerminationPointPreAggregationFiltrator extends PreAggregationFiltr
         UnderlayItem newUnderlayItem = updatedEntry;
         NormalizedNode<?, ?> newNode = newUnderlayItem.getItem();
         Optional<NormalizedNode<?, ?>> tpMapNodeOpt = NormalizedNodes.findNode(newNode,
-                InstanceIdentifiers.NT_TERMINATION_POINT);
+                InstanceIdentifiers.NT_TP_IDENTIFIER);
 
         if (tpMapNodeOpt.isPresent()) {
             newNode = filterTerminationPoints(newNode, (MapNode) tpMapNodeOpt.get());

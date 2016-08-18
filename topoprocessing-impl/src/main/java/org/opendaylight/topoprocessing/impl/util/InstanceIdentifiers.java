@@ -41,13 +41,10 @@ public final class InstanceIdentifiers {
                         YangInstanceIdentifier.of(TopologyQNames.NETWORK_LINK_ID_QNAME);
     private static final YangInstanceIdentifier RELATIVE_TP_ID_IDENTIFIER =
                         YangInstanceIdentifier.of(TopologyQNames.NETWORK_TP_ID_QNAME);
-    public static final YangInstanceIdentifier NT_TERMINATION_POINT =
+    public static final YangInstanceIdentifier NT_TP_IDENTIFIER =
             YangInstanceIdentifier.of(TerminationPoint.QNAME);
     public static final YangInstanceIdentifier NT_TP_ID_IDENTIFIER =
             YangInstanceIdentifier.of(TopologyQNames.NETWORK_TP_ID_QNAME);
-    public static final YangInstanceIdentifier NT_TP_IDENTIFIER = YangInstanceIdentifier.of(org.opendaylight.yang.gen
-            .v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node
-            .TerminationPoint.QNAME);
     public static final YangInstanceIdentifier NT_TP_REF_IDENTIFIER =
                     YangInstanceIdentifier.of(TopologyQNames.TP_REF);
     //I2RS

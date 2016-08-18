@@ -137,7 +137,7 @@ public class NodeAndTPAggregator implements TopologyOperator {
             Optional<NormalizedNode<?, ?>> aggregatedTPsOpt = Optional.absent();
             if (inputModel.equals(NetworkTopologyModel.class) || inputModel.equals(OpendaylightInventoryModel.class)) {
                 aggregatedTPsOpt = NormalizedNodes.findNode(underlayItem.getItem(),
-                        InstanceIdentifiers.NT_TERMINATION_POINT);
+                        InstanceIdentifiers.NT_TP_IDENTIFIER);
             } else if (inputModel.equals(I2rsModel.class)) {
                 aggregatedTPsOpt = NormalizedNodes.findNode(underlayItem.getItem(),
                         InstanceIdentifiers.I2RS_TERMINATION_POINT);
@@ -175,7 +175,7 @@ public class NodeAndTPAggregator implements TopologyOperator {
         this.targetFieldsPerTopology = targetFieldsperTopology;
 
         if (inputModel.equals(NetworkTopologyModel.class) || inputModel.equals(OpendaylightInventoryModel.class)) {
-            tpIdentifier = InstanceIdentifiers.NT_TERMINATION_POINT;
+            tpIdentifier = InstanceIdentifiers.NT_TP_IDENTIFIER;
             tpIdIdentifier = InstanceIdentifiers.NT_TP_ID_IDENTIFIER;
             tpIdQname = TopologyQNames.NETWORK_TP_ID_QNAME;
             tpQName = TerminationPoint.QNAME;
@@ -233,7 +233,7 @@ public class NodeAndTPAggregator implements TopologyOperator {
         Map<String, Map<Integer, YangInstanceIdentifier>> targetFieldsPerTP = new HashMap<>();
 
         for (OverlayItem overlayItem : wrapper.getOverlayItems()) {
-            if (removedOverlayItem == null || removedOverlayItem != null && !overlayItem.equals(removedOverlayItem)) {
+            if (removedOverlayItem == null || !overlayItem.equals(removedOverlayItem)) {
                 for (UnderlayItem underlayItemFromWrapper : overlayItem.getUnderlayItems()) {
                     Map<Integer, YangInstanceIdentifier> targetFields = targetFieldsPerTopology.get(
                             underlayItemFromWrapper.getTopologyId());

@@ -98,7 +98,7 @@ public class InvNodeTranslator implements NodeTranslator {
             CollectionNodeBuilder<MapEntryNode, MapNode> terminationPoints, IdentifierGenerator idGenerator) {
         NormalizedNode<?, ?> itemNode = underlayItem.getItem();
         Optional<NormalizedNode<?, ?>> terminationPointMapNode = NormalizedNodes.findNode(
-                itemNode, InstanceIdentifiers.NT_TERMINATION_POINT);
+                itemNode, InstanceIdentifiers.NT_TP_IDENTIFIER);
         if (terminationPointMapNode.isPresent()) {
             Collection<MapEntryNode> terminationPointMapEntries =
                     ((MapNode) terminationPointMapNode.get()).getValue();

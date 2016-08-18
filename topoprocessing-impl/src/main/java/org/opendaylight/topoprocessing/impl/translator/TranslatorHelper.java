@@ -16,16 +16,20 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
  * @author samuel.kontris
  *
  */
-public class TranslatorHelper {
+public final class TranslatorHelper {
+
+    private TranslatorHelper(){
+    }
+
     public static String createTpRefNT(String topologyId, String nodeId, String tpId) {
         StringBuilder tpRefValue = new StringBuilder();
-        tpRefValue.append("/").append(NetworkTopology.QNAME.getLocalName()).append(":")
-                .append(NetworkTopology.QNAME.getLocalName()).append("/")
-                .append(Topology.QNAME.getLocalName()).append("/")
-                .append(topologyId).append("/")
-                .append(Node.QNAME.getLocalName()).append("/")
-                .append(nodeId).append("/")
-                .append(TerminationPoint.QNAME.getLocalName()).append("/")
+        tpRefValue.append('/').append(NetworkTopology.QNAME.getLocalName()).append(':')
+                .append(NetworkTopology.QNAME.getLocalName()).append('/')
+                .append(Topology.QNAME.getLocalName()).append('/')
+                .append(topologyId).append('/')
+                .append(Node.QNAME.getLocalName()).append('/')
+                .append(nodeId).append('/')
+                .append(TerminationPoint.QNAME.getLocalName()).append('/')
                 .append(tpId);
         return tpRefValue.toString();
     }
