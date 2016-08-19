@@ -8,16 +8,15 @@
 
 package org.opendaylight.topoprocessing.impl.listener;
 
-import com.google.common.base.Optional;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
-import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -35,6 +34,8 @@ import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Optional;
+
 
 /**
  * Listens on underlay topology changes
@@ -43,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UnderlayTopologyListener.class);
-    protected final PingPongDataBroker dataBroker;
+    protected final DOMDataTreeChangeService domDataTreeChangeService;
 
     private TopologyOperator operator;
     private Map<Integer, YangInstanceIdentifier> pathIdentifiers;
@@ -55,13 +56,13 @@ public abstract class UnderlayTopologyListener implements DOMDataTreeChangeListe
 
     /**
      * Default constructor.
-     * @param dataBroker DOM Data Broker
+     * @param domDataBroker pingPong DOM Data Broker
      * @param underlayTopologyId underlay topology identifier
      * @param correlationItem can be either Node or Link or TerminationPoint
      */
-    public UnderlayTopologyListener(PingPongDataBroker dataBroker, String underlayTopologyId,
+    public UnderlayTopologyListener(DOMDataTreeChangeService domDataTreeChangeService, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
-        this.dataBroker = dataBroker;
+        this.domDataTreeChangeService = domDataTreeChangeService;
         this.underlayTopologyId = underlayTopologyId;
         this.correlationItem = correlationItem;
     }

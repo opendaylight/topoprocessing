@@ -16,8 +16,7 @@ import org.slf4j.LoggerFactory;
 
 public class TopoProcessingProviderI2RS implements AutoCloseable {
 
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(TopoProcessingProviderI2RS.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TopoProcessingProviderI2RS.class);
 
     @Override
     public void close() throws Exception {
