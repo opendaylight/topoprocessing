@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+  xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+  odl:use-default-for-reference-types="true">
+
+  <reference id="dataBrokerImpl"
+    interface="org.opendaylight.controller.md.sal.dom.api.DOMDataBroker"
+    odl:type="pingpong" />
+  <reference id="brokerImpl"
+    interface="org.opendaylight.controller.sal.core.api.Broker" />
+  <reference id="schemaServiceImpl"
+    interface="org.opendaylight.controller.sal.core.api.model.SchemaService" />
+  <reference id="bindingNormalizedNodeSerializer"
+    interface="org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer" />
+    
+  <bean id="topoprocessingProviderImpl"
+    class="org.opendaylight.topoprocessing.impl.provider.TopoProcessingProviderImpl"
+    init-method="startup" destroy-method="close">
+    <property name="dataBroker" ref="dataBrokerImpl" />
+    <property name="broker" ref="brokerImpl" />
+    <property name="schemaService" ref="schemaServiceImpl" />
+    <property name="nodeSerializer" ref="bindingNormalizedNodeSerializer" />
+    <property name="dataStoreType" value="CONFIGURATION" />
+  </bean>
+  
+  <service ref="topoprocessingProviderImpl" 
+    interface="org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider" />
+
+</blueprint>

@@ -13,8 +13,6 @@
 
     import topoprocessing-provider {prefix topoproc;}
     import config {prefix config; revision-date 2013-04-05;}
-    import opendaylight-md-sal-dom {prefix dom; revision-date 2013-10-28;}
-    import opendaylight-md-sal-binding-v1-codec {prefix binding;}
 
     description
         "Topology Processing Framework module definition";
@@ -47,38 +45,6 @@
     augment "/config:modules/config:module/config:configuration" {
         case topoprocessing-provider-impl {
             when "/config:modules/config:module/config:type = 'topoprocessing-provider-impl'";
-            container schema-service {
-                uses config:service-ref {
-                    refine type {
-                        mandatory true;
-                        config:required-identity dom:schema-service;
-                    }
-                }
-            }
-            container dom-data-broker {
-                uses config:service-ref {
-                    refine type {
-                        mandatory true;
-                        config:required-identity dom:dom-async-data-broker;
-                    }
-                }
-            }
-            container broker {
-                uses config:service-ref {
-                    refine type {
-                        mandatory true;
-                        config:required-identity dom:dom-broker-osgi-registry;
-                    }
-                }
-            }
-            container binding-normalized-node-serializer {
-                uses config:service-ref {
-                    refine type {
-                        mandatory true;
-                        config:required-identity binding:binding-v1-normalized-node-serializer;
-                    }
-                }
-            }
             leaf datastore-type {
                 description "Specifies which logical datastore should be used for listening
                              on node, link, termination point, ... changes";
