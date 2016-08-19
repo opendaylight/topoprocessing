@@ -15,8 +15,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.SetMultimap;
-
 import java.net.URI;
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +39,6 @@ import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.InventoryRenderingModel;
@@ -52,6 +49,8 @@ import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.ModuleIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 import org.opendaylight.yangtools.yang.model.util.AbstractSchemaContext;
+
+import com.google.common.collect.SetMultimap;
 
 /**
  * @author marek.korenciak
@@ -107,8 +106,7 @@ public class TopoProcessingProviderImplTest {
         when(rpcServicesMock.getRpcService()).thenReturn(mock(DOMRpcService.class));
         when(rpcServicesMock.getRpcProviderService()).thenReturn(mock(DOMRpcProviderService.class));
         when(schemaMock.getGlobalContext()).thenReturn(schemaContext);
-        provider = new TopoProcessingProviderImpl(schemaMock, dataBrokerMock,
-                serializerMock, rpcServicesMock, DatastoreType.CONFIGURATION);
+        provider = new TopoProcessingProviderImpl();
     }
 
     @Test
