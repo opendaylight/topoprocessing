@@ -7,16 +7,13 @@
  */
 package org.opendaylight.topoprocessing.impl.listener;
 
-import static org.mockito.Mockito.mock;
-
-import com.google.common.base.Optional;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
@@ -24,7 +21,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataBrokerExtension;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.operator.TopologyAggregator;
 import org.opendaylight.topoprocessing.impl.operator.TopologyFiltrator;
@@ -47,6 +45,8 @@ import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNod
 import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 
+import com.google.common.base.Optional;
+
 @RunWith(MockitoJUnitRunner.class)
 public class UnderlayTopologyListenerTest {
     private static final String TOPOLOGY_ID = "test:1";
@@ -63,9 +63,20 @@ public class UnderlayTopologyListenerTest {
     private Collection<DataTreeCandidateNode> mockDataTreeCandidateNodeCollection;
     @Mock
     private Iterator<DataTreeCandidateNode> mockDataTreeCandidateNodeIterator;
-    private PingPongDataBroker dataBrokerMock = new PingPongDataBroker(mock(DOMDataBroker.class));
-    private UnderlayTopologyListener listener = new TestUnderlayTopologyListener(dataBrokerMock, TOPOLOGY_ID,
-            CorrelationItemEnum.Node);
+    @Mock
+    private DOMDataBroker mockDataBroker;
+    private UnderlayTopologyListener listener;
+
+    @Before
+    public void setUp(){
+        DOMDataTreeChangeService mockExtension = Mockito.mock(DOMDataTreeChangeService.class);
+        Map<Class <? extends DOMDataBrokerExtension>, DOMDataBrokerExtension> map =
+                new HashMap<Class<? extends DOMDataBrokerExtension>, DOMDataBrokerExtension>();
+        map.put(DOMDataTreeChangeService.class, mockExtension);
+        Mockito.when(mockDataBroker.getSupportedExtensions()).thenReturn(map);
+        this.listener = new TestUnderlayTopologyListener(mockDataBroker, TOPOLOGY_ID,
+                CorrelationItemEnum.Node);
+    }
 
     @Test
     public void test() {
@@ -140,7 +151,7 @@ public class UnderlayTopologyListenerTest {
     @Test
     public void testAggregationTP() {
         Assert.assertEquals(TOPOLOGY_ID, listener.getUnderlayTopologyId());
-        listener = new TestUnderlayTopologyListener(dataBrokerMock, TOPOLOGY_ID, CorrelationItemEnum.TerminationPoint);
+        listener = new TestUnderlayTopologyListener(mockDataBroker, TOPOLOGY_ID, CorrelationItemEnum.TerminationPoint);
         Assert.assertEquals(CorrelationItemEnum.TerminationPoint, listener.getCorrelationItem());
         String nodeName = "node:1";
         String ipAddress = "10.0.0.1";
@@ -225,7 +236,7 @@ public class UnderlayTopologyListenerTest {
 
     private class TestUnderlayTopologyListener extends UnderlayTopologyListener {
 
-        public TestUnderlayTopologyListener(PingPongDataBroker dataBroker, String underlayTopologyId,
+        public TestUnderlayTopologyListener(DOMDataBroker dataBroker, String underlayTopologyId,
                 CorrelationItemEnum correlationItem) {
             super(dataBroker, underlayTopologyId, correlationItem);
             if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
