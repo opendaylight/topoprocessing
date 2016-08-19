@@ -8,8 +8,6 @@
 
 package org.opendaylight.topoprocessing.inventory.provider;
 
-import com.google.common.collect.SetMultimap;
-
 import java.net.URI;
 import java.util.Map;
 import java.util.Set;
@@ -33,13 +31,14 @@ import org.opendaylight.topoprocessing.impl.provider.TopoProcessingProviderImpl;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.inventory.adapter.InvModelAdapter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.ModuleIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 import org.opendaylight.yangtools.yang.model.util.AbstractSchemaContext;
+
+import com.google.common.collect.SetMultimap;
 
 /**
  * @author matus.marko
@@ -98,8 +97,8 @@ public class InvTopoProcessingProviderImplTest {
                 (DataChangeScope) Matchers.any())).thenReturn(topologyRequestListenerRegistration);
 
         // startup
-        topoProcessingProvider = new TopoProcessingProviderImpl(
-                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
+//        topoProcessingProvider = new TopoProcessingProviderImpl(
+//                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
         topoProcessingProvider.startup();
         TopoProcessingProviderInv invProvider = new TopoProcessingProviderInv();
         invProvider.startup(topoProcessingProvider);
