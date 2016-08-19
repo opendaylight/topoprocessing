@@ -9,7 +9,6 @@
         <!-- topoprocessing -->
         <capability>urn:opendaylight:params:xml:ns:yang:topoprocessing:provider?module=topoprocessing-provider&amp;revision=2015-02-09</capability>
         <capability>urn:opendaylight:params:xml:ns:yang:topoprocessing:provider:impl?module=topoprocessing-provider-impl&amp;revision=2015-02-09</capability>
-        <capability>urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom?module=opendaylight-md-sal-dom&amp;revision=2013-10-28</capability>
     </required-capabilities>
     <configuration>
 
@@ -19,25 +18,6 @@
                     <type xmlns:topo="urn:opendaylight:params:xml:ns:yang:topoprocessing:provider:impl">topo:topoprocessing-provider-impl</type>
                     <name>topoprocessing-provider-module</name>
                     <datastore-type>OPERATIONAL</datastore-type>
-                    <schema-service>
-                        <type xmlns:dom="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom">dom:schema-service</type>
-                        <name>yang-schema-service</name>
-                    </schema-service>
-                    <dom-data-broker>
-                        <type xmlns:dom="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom">dom:dom-async-data-broker</type>
-                        <name>pingpong-broker</name>
-                        <!-- this value is used because of DataTreeService; if it is changed, it needs to be handled in
-                            TopologyRequestHandler and UnderlayTopologyListener -->
-                        <!-- <name>inmemory-data-broker</name> -->
-                    </dom-data-broker>
-                    <binding-normalized-node-serializer>
-                        <type xmlns:binding="urn:opendaylight:params:xml:ns:yang:controller:md:sal:binding:v1:codec">binding:binding-v1-normalized-node-serializer</type>
-                        <name>runtime-mapping-singleton</name>
-                    </binding-normalized-node-serializer>
-                    <broker>
-                        <type xmlns:dom="urn:opendaylight:params:xml:ns:yang:controller:md:sal:dom">dom:dom-broker-osgi-registry</type>
-                        <name>dom-broker</name>
-                    </broker>
                 </module>
             </modules>
 

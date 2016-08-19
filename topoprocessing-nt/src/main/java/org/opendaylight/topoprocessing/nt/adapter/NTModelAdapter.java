@@ -12,7 +12,6 @@ import java.util.Map;
 
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
-import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
@@ -44,7 +43,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceI
 public class NTModelAdapter implements ModelAdapter {
 
     @Override
-    public UnderlayTopologyListener registerUnderlayTopologyListener(PingPongDataBroker dataBroker,
+    public UnderlayTopologyListener registerUnderlayTopologyListener(DOMDataBroker dataBroker,
             String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType,
             TopologyOperator operator, List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
             Map<Integer, YangInstanceIdentifier> pathIdentifiers) {

@@ -10,9 +10,9 @@ package org.opendaylight.topoprocessing.inventoryRendering.listener;
 import java.util.List;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
-import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
 import org.opendaylight.topoprocessing.impl.operator.TopoStoreProvider;
@@ -37,7 +37,7 @@ public class IRUnderlayTopologyListener extends UnderlayTopologyListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IRUnderlayTopologyListener.class);
 
-    public IRUnderlayTopologyListener(PingPongDataBroker dataBroker, String underlayTopologyId,
+    public IRUnderlayTopologyListener(DOMDataBroker dataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         super(dataBroker, underlayTopologyId, correlationItem);
      // this needs to be done because for processing TerminationPoints we need to filter Node instead of TP
@@ -77,7 +77,7 @@ public class IRUnderlayTopologyListener extends UnderlayTopologyListener {
                 treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, invId);
             }
             ListenerRegistration<DOMDataTreeChangeListener> invListenerRegistration =
-                    dataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) invListener);
+                    domDataTreeChangeService.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) invListener);
             listeners.add(invListenerRegistration);
         } else {
             throw new IllegalStateException("Rendering has to have CorrelationItem set to Node");
