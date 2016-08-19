@@ -7,7 +7,7 @@
  */
 package org.opendaylight.topoprocessing.nt.listener;
 
-import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
@@ -22,7 +22,7 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public class NTUnderlayTopologyListener extends UnderlayTopologyListener {
 
-    public NTUnderlayTopologyListener(PingPongDataBroker domDataBroker, String underlayTopologyId,
+    public NTUnderlayTopologyListener(DOMDataBroker domDataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         super(domDataBroker, underlayTopologyId, correlationItem);
         // this needs to be done because for processing TerminationPoints we need to filter Node instead of TP

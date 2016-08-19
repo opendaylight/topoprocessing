@@ -8,8 +8,6 @@
 
 package org.opendaylight.topoprocessing.nt.provider;
 
-import com.google.common.collect.SetMultimap;
-
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +34,6 @@ import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -45,6 +42,8 @@ import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.ModuleIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 import org.opendaylight.yangtools.yang.model.util.AbstractSchemaContext;
+
+import com.google.common.collect.SetMultimap;
 
 /**
  * @author matus.marko
@@ -104,8 +103,7 @@ public class NTTopoProcessingProviderImplTest {
                 (DataChangeScope) Matchers.any())).thenReturn(topologyRequestListenerRegistration);
 
         // startup
-        topoProcessingProvider = new TopoProcessingProviderImpl(
-                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
+        topoProcessingProvider = new TopoProcessingProviderImpl();
         topoProcessingProvider.startup();
         TopoProcessingProviderNT NTProvider = new TopoProcessingProviderNT();
         NTProvider.startup(topoProcessingProvider);
@@ -129,8 +127,7 @@ public class NTTopoProcessingProviderImplTest {
                 (GlobalSchemaContextHolder) Matchers.any(),
                 (RpcServices) Matchers.any(),
                 (Map<Class<? extends Model>, ModelAdapter>) Matchers.any())).thenReturn(mockTopoRequestListener);
-        topoProcessingProvider = new TopoProcessingProviderImpl(
-                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
+        topoProcessingProvider = new TopoProcessingProviderImpl();
         topoProcessingProvider.registerModelAdapter(NetworkTopologyModel.class, mockNTModelAdapter);
 
         Map<Class<? extends Model>, ModelAdapter> expectedModelAdapters = new HashMap<>();
