@@ -24,7 +24,6 @@ import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.impl.provider.TopoProcessingProviderImpl;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
@@ -60,8 +59,7 @@ public class IRTopoProcessingProviderImplTest {
                 (DataChangeScope) Matchers.any())).thenReturn(topologyRequestListenerRegistration);
 
         // startup
-        topoProcessingProvider = new TopoProcessingProviderImpl(
-                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
+        topoProcessingProvider = new TopoProcessingProviderImpl();
         topoProcessingProvider.startup();
         TopoProcessingProviderIR InvProvider = new TopoProcessingProviderIR();
         InvProvider.startup(topoProcessingProvider);
