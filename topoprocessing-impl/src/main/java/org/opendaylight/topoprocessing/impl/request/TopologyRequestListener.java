@@ -8,14 +8,13 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
-import com.google.common.base.Optional;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
@@ -25,7 +24,6 @@ import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFil
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
@@ -39,6 +37,8 @@ import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Optional;
 
 /**
  * Listens on new overlay topology requests.
@@ -55,7 +55,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     private Map<YangInstanceIdentifier, TopologyRequestHandler> topoRequestHandlers = new HashMap<>();
     private GlobalSchemaContextHolder schemaHolder;
     private RpcServices rpcServices;
-    private DatastoreType datastoreType;
+    private LogicalDatastoreType datastoreType;
     private Map<Class<? extends FilterBase>, FiltratorFactory> filtrators;
     private Map<Class<? extends Model>, ModelAdapter> modelAdapters;
 
@@ -170,7 +170,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     /**
      * @param datastoreType defines whether to use CONFIGURATION or OPERATIONAL Datastore
      */
-    public void setDatastoreType(DatastoreType datastoreType) {
+    public void setDatastoreType(LogicalDatastoreType datastoreType) {
         this.datastoreType = datastoreType;
     }
 

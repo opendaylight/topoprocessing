@@ -7,9 +7,6 @@
  */
 package org.opendaylight.topoprocessing.i2rs.request;
 
-import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.AbstractCheckedFuture;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,8 +24,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataBrokerExtension;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
@@ -48,7 +48,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.NetworkId;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.NetworkKey;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.rev150608.network.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsCorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
@@ -67,6 +66,9 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableAugmentationNodeBuilder;
 
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.AbstractCheckedFuture;
+
 /**
  * @author andrej.zan
  *
@@ -78,6 +80,7 @@ public class I2RSTopologyRequestListenerTest {
     private static final String TOPO_NAME = "mytopo:1";
 
     @Mock private DOMDataBroker mockBroker;
+    @Mock private DOMDataTreeChangeService mockDataTreeChangeService;
     @Mock private BindingNormalizedNodeSerializer mockNodeSerializer;
     @Mock private GlobalSchemaContextHolder mockSchemaHolder;
     @Mock private RpcServices mockRpcServices;
@@ -87,7 +90,6 @@ public class I2RSTopologyRequestListenerTest {
     @Mock private UserDefinedFilter userDefinedFilter;
     @Mock private FiltratorFactory userDefinedFiltratorFactory;
     private Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
-    private PingPongDataBroker pingPongBroker;
 
     private class UserDefinedFilter extends FilterBase {
         // testing class for testing purpose
@@ -95,11 +97,13 @@ public class I2RSTopologyRequestListenerTest {
 
     @Before
     public void setUp() {
-        pingPongBroker = new PingPongDataBroker(mockBroker);
+        Map<Class<? extends DOMDataBrokerExtension>, DOMDataBrokerExtension> brokerExtensions = new HashMap<>();
+        brokerExtensions.put(DOMDataTreeChangeService.class, mockDataTreeChangeService);
+        Mockito.when(mockBroker.getSupportedExtensions()).thenReturn(brokerExtensions);
         modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
-        listener = new I2RSTopologyRequestListener(pingPongBroker, mockNodeSerializer, mockSchemaHolder,
+        listener = new I2RSTopologyRequestListener(mockBroker, mockNodeSerializer, mockSchemaHolder,
                 mockRpcServices, modelAdapters);
-        listener.setDatastoreType(DatastoreType.OPERATIONAL);
+        listener.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
 
         Mockito.when(mockRpcServices.getRpcService()).thenReturn(Mockito.mock(DOMRpcService.class));
         Mockito.when(mockBroker.createTransactionChain((TransactionChainListener) Matchers.any())).thenReturn(
