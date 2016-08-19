@@ -19,6 +19,11 @@ import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataCh
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
+import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
+import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
+import org.opendaylight.controller.sal.core.api.Broker;
+import org.opendaylight.controller.sal.core.api.Broker.ProviderSession;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
@@ -30,6 +35,7 @@ import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.NoOpTopoprocessingProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
@@ -48,41 +54,38 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopoProcessingProviderImpl.class);
 
-    private DOMDataBroker dataBroker;
-    private List<ListenerRegistration<DOMDataChangeListener>> topologyRequestListenerRegistrations;
-    private SchemaService schemaService;
-    private ListenerRegistration<SchemaContextListener> schemaContextListenerRegistration;
+    private final List<ListenerRegistration<DOMDataChangeListener>> topologyRequestListenerRegistrations;
     private GlobalSchemaContextHolder schemaHolder;
-    private Map<Class<? extends Model>, ModelAdapter> modelAdapters;
+    private final Map<Class<? extends Model>, ModelAdapter> modelAdapters;
+    private final List<TopologyRequestListener> listeners;
+
+    // blueprint autowired fields
+    private DOMDataBroker dataBroker;
+    private Broker broker;
+    private SchemaService schemaService;
     private BindingNormalizedNodeSerializer nodeSerializer;
-    private RpcServices rpcServices;
-    private List<TopologyRequestListener> listeners;
     private DatastoreType dataStoreType;
 
+    // set-up in startup method
+    private ListenerRegistration<SchemaContextListener> schemaContextListenerRegistration;
+    private RpcServices rpcServices;
+
     /**
-     * @param schemaService     provides schema context for lookup in models
-     * @param dataBroker        access to data store
-     * @param nodeSerializer    translates BindingIndependent objects to BindingAware objects
-     *                          (used for Topology request handling)
-     * @param rpcServices       provides rpc services needed for rpc republishing
-     * @param datastoreType     Configures if framework should listen on CONFIGURATION or OPERATIONAL datastore changes
+     * @param schemaService
+     *            provides schema context for lookup in models
+     * @param dataBroker
+     *            access to data store
+     * @param nodeSerializer
+     *            translates BindingIndependent objects to BindingAware objects
+     *            (used for Topology request handling)
+     * @param rpcServices
+     *            provides rpc services needed for rpc republishing
+     * @param datastoreType
+     *            Configures if framework should listen on CONFIGURATION or
+     *            OPERATIONAL datastore changes
      */
-    public TopoProcessingProviderImpl(SchemaService schemaService, DOMDataBroker dataBroker,
-            BindingNormalizedNodeSerializer nodeSerializer, RpcServices rpcServices,
-            DatastoreType datastoreType) {
+    public TopoProcessingProviderImpl() {
         LOGGER.trace("Creating TopoProcessingProvider");
-        Preconditions.checkNotNull(schemaService, "SchemaService can't be null");
-        Preconditions.checkNotNull(dataBroker, "DOMDataBroker can't be null");
-        Preconditions.checkNotNull(nodeSerializer, "BindingNormalizedNodeSerializer can't be null");
-        Preconditions.checkNotNull(rpcServices.getRpcService(), "RpcService can't be null");
-        Preconditions.checkNotNull(rpcServices.getRpcProviderService(), "RpcProviderService can't be null");
-        Preconditions.checkNotNull(datastoreType, "DatastoreType can't be null");
-        this.schemaService = schemaService;
-        this.dataBroker = dataBroker;
-        this.nodeSerializer = nodeSerializer;
-        this.rpcServices = rpcServices;
-        this.dataStoreType = datastoreType;
-        schemaHolder = new GlobalSchemaContextHolder(schemaService.getGlobalContext());
         listeners = new ArrayList<>();
         topologyRequestListenerRegistrations = new ArrayList<>();
         modelAdapters = new HashMap<>();
@@ -90,23 +93,43 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
     @Override
     public void startup() {
-        schemaContextListenerRegistration =
-                schemaService.registerSchemaContextListener(new GlobalSchemaContextListener(schemaHolder));
+        Preconditions.checkNotNull(schemaService, "SchemaService can't be null");
+        Preconditions.checkNotNull(dataBroker, "DOMDataBroker can't be null");
+        Preconditions.checkNotNull(nodeSerializer, "BindingNormalizedNodeSerializer can't be null");
+        Preconditions.checkNotNull(dataStoreType, "DatastoreType can't be null");
+        Preconditions.checkNotNull(broker, "Broker can't be null");
+        LOGGER.error("Datastore type provided: " + dataStoreType.getName());
+        if (dataBroker instanceof PingPongDataBroker) {
+            LOGGER.error("dataBroker is instance of pp");
+        }
+        else {
+            LOGGER.error("Databroker instance given at startup(should be pingpong): " + dataBroker);
+        }
+
+        Class<? extends DOMDataBroker> class1 = dataBroker.getClass();
+        LOGGER.error("canonical name of databroker: " + class1.getCanonicalName());
+
+        this.schemaHolder = new GlobalSchemaContextHolder(schemaService.getGlobalContext());
+        schemaContextListenerRegistration = schemaService
+                .registerSchemaContextListener(new GlobalSchemaContextListener(schemaHolder));
+
+        ProviderSession session = broker.registerProvider(new NoOpTopoprocessingProvider());
+        DOMRpcService rpcService = session.getService(DOMRpcService.class);
+        DOMRpcProviderService rpcProviderService = session.getService(DOMRpcProviderService.class);
+        rpcServices = new RpcServices(rpcService, rpcProviderService);
     }
 
     @Override
     public void close() throws Exception {
         LOGGER.trace("TopoProcessingProvider - close()");
         schemaContextListenerRegistration.close();
-        for (ListenerRegistration<DOMDataChangeListener> topologyRequestListenerRegistration :
-                topologyRequestListenerRegistrations) {
+        for (ListenerRegistration<DOMDataChangeListener> topologyRequestListenerRegistration : topologyRequestListenerRegistrations) {
             topologyRequestListenerRegistration.close();
         }
     }
 
     @Override
-    public void registerFiltratorFactory(Class<? extends FilterBase> filterType,
-            FiltratorFactory filtratorFactory) {
+    public void registerFiltratorFactory(Class<? extends FilterBase> filterType, FiltratorFactory filtratorFactory) {
         for (TopologyRequestListener listener : listeners) {
             listener.registerFiltrator(filterType, filtratorFactory);
         }
@@ -135,14 +158,61 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     }
 
     private void registerTopologyRequestListener(ModelAdapter modelAdapter, YangInstanceIdentifier path) {
-        TopologyRequestListener listener = modelAdapter.createTopologyRequestListener(dataBroker,
-                nodeSerializer, schemaHolder, rpcServices, modelAdapters);
+        TopologyRequestListener listener = modelAdapter.createTopologyRequestListener(dataBroker, nodeSerializer,
+                schemaHolder, rpcServices, modelAdapters);
         listener.setDatastoreType(dataStoreType);
         listeners.add(listener);
         LOGGER.debug("Registering Topology Request Listener");
-        topologyRequestListenerRegistrations.add(
-                dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                        path, listener, DataChangeScope.SUBTREE));
+        topologyRequestListenerRegistrations.add(dataBroker.registerDataChangeListener(
+                LogicalDatastoreType.CONFIGURATION, path, listener, DataChangeScope.SUBTREE));
+    }
+
+    public DOMDataBroker getDataBroker() {
+        return dataBroker;
+    }
+
+    public void setDataBroker(DOMDataBroker dataBroker) {
+        this.dataBroker = dataBroker;
+    }
+
+    public SchemaService getSchemaService() {
+        return schemaService;
+    }
+
+    public void setSchemaService(SchemaService schemaService) {
+        this.schemaService = schemaService;
+    }
+
+    public RpcServices getRpcServices() {
+        return rpcServices;
+    }
+
+    public void setRpcServices(RpcServices rpcServices) {
+        this.rpcServices = rpcServices;
+    }
+
+    public BindingNormalizedNodeSerializer getNodeSerializer() {
+        return nodeSerializer;
+    }
+
+    public void setNodeSerializer(BindingNormalizedNodeSerializer nodeSerializer) {
+        this.nodeSerializer = nodeSerializer;
+    }
+
+    public DatastoreType getDataStoreType() {
+        return dataStoreType;
+    }
+
+    public void setDataStoreType(DatastoreType dataStoreType) {
+        this.dataStoreType = dataStoreType;
+    }
+
+    public Broker getBroker() {
+        return broker;
+    }
+
+    public void setBroker(Broker broker) {
+        this.broker = broker;
     }
 
 }

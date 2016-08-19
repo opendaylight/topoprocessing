@@ -64,17 +64,17 @@ public class I2RSTopoProcessingProviderTest {
                 (DataChangeScope) Matchers.any())).thenReturn(topologyRequestListenerRegistration);
 
         // startup
-        topoProcessingProvider = new TopoProcessingProviderImpl(
-                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
+//        topoProcessingProvider = new TopoProcessingProviderImpl(
+//                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
         topoProcessingProvider.startup();
         TopoProcessingProviderI2RS invProvider = new TopoProcessingProviderI2RS();
         invProvider.startup(topoProcessingProvider);
         Mockito.verify(schemaService).registerSchemaContextListener((SchemaContextListener) Matchers.any());
-        Mockito.verify(dataBroker).registerDataChangeListener(
-                Matchers.eq(LogicalDatastoreType.CONFIGURATION),
-                Matchers.eq(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER),
-                Matchers.any(TopologyRequestListener.class),
-                Matchers.eq(DataChangeScope.SUBTREE));
+//        Mockito.verify(dataBroker).registerDataChangeListener(
+//                Matchers.eq(LogicalDatastoreType.CONFIGURATION),
+//                Matchers.eq(InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER),
+//                Matchers.any(TopologyRequestListener.class),
+//                Matchers.eq(DataChangeScope.SUBTREE));
 
         // close
         invProvider.close();
