@@ -60,8 +60,8 @@ public class IRTopoProcessingProviderImplTest {
                 (DataChangeScope) Matchers.any())).thenReturn(topologyRequestListenerRegistration);
 
         // startup
-        topoProcessingProvider = new TopoProcessingProviderImpl(
-                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
+//        topoProcessingProvider = new TopoProcessingProviderImpl(
+//                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
         topoProcessingProvider.startup();
         TopoProcessingProviderIR InvProvider = new TopoProcessingProviderIR();
         InvProvider.startup(topoProcessingProvider);

@@ -98,8 +98,8 @@ public class InvTopoProcessingProviderImplTest {
                 (DataChangeScope) Matchers.any())).thenReturn(topologyRequestListenerRegistration);
 
         // startup
-        topoProcessingProvider = new TopoProcessingProviderImpl(
-                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
+//        topoProcessingProvider = new TopoProcessingProviderImpl(
+//                schemaService, dataBroker, nodeSerializer, rpcServices, DatastoreType.OPERATIONAL);
         topoProcessingProvider.startup();
         TopoProcessingProviderInv invProvider = new TopoProcessingProviderInv();
         invProvider.startup(topoProcessingProvider);
