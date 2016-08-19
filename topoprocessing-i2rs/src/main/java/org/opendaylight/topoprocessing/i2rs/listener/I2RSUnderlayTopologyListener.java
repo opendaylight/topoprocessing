@@ -7,7 +7,7 @@
  */
 package org.opendaylight.topoprocessing.i2rs.listener;
 
-import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
@@ -21,9 +21,9 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
  */
 public class I2RSUnderlayTopologyListener extends UnderlayTopologyListener {
 
-    public I2RSUnderlayTopologyListener(PingPongDataBroker dataBroker, String underlayTopologyId,
+    public I2RSUnderlayTopologyListener(DOMDataTreeChangeService domDataTreeChangeService, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
-        super(dataBroker, underlayTopologyId, correlationItem);
+        super(domDataTreeChangeService, underlayTopologyId, correlationItem);
         // this needs to be done because for processing TerminationPoints we need to filter Node instead of TP
         if (CorrelationItemEnum.TerminationPoint.equals(correlationItem)) {
             this.relativeItemIdIdentifier =

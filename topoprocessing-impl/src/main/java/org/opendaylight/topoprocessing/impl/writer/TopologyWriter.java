@@ -85,6 +85,7 @@ public class TopologyWriter implements TransactionChainListener {
     /**
      * Default constructor.
      * @param topologyId topologyId of overlay topology
+     * @param model model (NT, I2RS...)
      */
     public TopologyWriter(String topologyId, Class<? extends Model> model) {
         this.topologyId = topologyId;
@@ -291,7 +292,7 @@ public class TopologyWriter implements TransactionChainListener {
     /**
      * Wait until all threads/writes are finished.
      * @param timeOut timeout to wait for threads/writes to finish in ms
-     * @throws InterruptedException
+     * @throws InterruptedException when interrupted, what a surprise
      */
     public void waitForTearDownCompletion(int timeOut)throws InterruptedException {
         pool.awaitTermination(timeOut,TimeUnit.MILLISECONDS);

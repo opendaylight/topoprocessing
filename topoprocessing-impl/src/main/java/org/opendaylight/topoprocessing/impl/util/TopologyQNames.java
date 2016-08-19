@@ -148,6 +148,7 @@ public final class TopologyQNames {
     /**
      * Returns corresponding item QName.
      * @param correlationItem item type
+     * @param model (NT, I2RS...)
      * @return corresponding item QName
      */
     public static QName buildItemQName(CorrelationItemEnum correlationItem, Class<? extends Model> model) {
@@ -190,6 +191,7 @@ public final class TopologyQNames {
     /**
      * Returns corresponding item id QName.
      * @param correlationItem item type
+     * @param model (NT, I2RS...)
      * @return corresponding item id QName
      */
     public static QName buildItemIdQName(CorrelationItemEnum correlationItem, Class<? extends Model> model) {

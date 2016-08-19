@@ -10,9 +10,10 @@ package org.opendaylight.topoprocessing.inventoryRendering.adapter;
 import java.util.List;
 import java.util.Map;
 
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
-import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
@@ -27,7 +28,6 @@ import org.opendaylight.topoprocessing.inventoryRendering.listener.IRUnderlayTop
 import org.opendaylight.topoprocessing.inventoryRendering.request.IRTopologyRequestListener;
 import org.opendaylight.topoprocessing.inventoryRendering.translator.IRLinkTranslator;
 import org.opendaylight.topoprocessing.inventoryRendering.translator.IRNodeTranslator;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
@@ -43,13 +43,13 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceI
 public class IRModelAdapter implements ModelAdapter {
 
     @Override
-    public UnderlayTopologyListener registerUnderlayTopologyListener(PingPongDataBroker dataBroker,
-            String underlayTopologyId, CorrelationItemEnum correlationItem, DatastoreType datastoreType,
+    public UnderlayTopologyListener registerUnderlayTopologyListener(DOMDataTreeChangeService domDataTreeChangeService,
+            String underlayTopologyId, CorrelationItemEnum correlationItem, LogicalDatastoreType datastoreType,
             TopologyOperator operator, List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
             Map<Integer, YangInstanceIdentifier> pathIdentifier) {
 
         IRUnderlayTopologyListener listener =
-                new IRUnderlayTopologyListener(dataBroker, underlayTopologyId, correlationItem);
+                new IRUnderlayTopologyListener(domDataTreeChangeService, underlayTopologyId, correlationItem);
         listener.registerUnderlayTopologyListener(datastoreType,listeners);
         return listener;
     }
