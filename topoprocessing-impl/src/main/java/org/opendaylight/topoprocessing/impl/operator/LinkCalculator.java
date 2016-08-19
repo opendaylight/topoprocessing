@@ -63,6 +63,7 @@ public class LinkCalculator implements TopologyOperator {
     /**
      * Constructor
      * @param topologyId overlayTopologyId
+     * @param outputModel output model (NT, I2RS...)
      */
     public LinkCalculator(String topologyId, Class<? extends Model> outputModel) {
         storedOverlayNodes = new TopologyStore(topologyId, false,

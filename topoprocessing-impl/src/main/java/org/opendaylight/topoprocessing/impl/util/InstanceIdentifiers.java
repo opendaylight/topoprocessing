@@ -84,6 +84,7 @@ public final class InstanceIdentifiers {
     /**
      * Returns relative item id identifier (e.g. for NormalizedNodes.findNode(...)).
      * @param correlationItem item type
+     * @param model model (NT, I2RS...)
      * @return item identifier
      */
     public static YangInstanceIdentifier relativeItemIdIdentifier(CorrelationItemEnum correlationItem,

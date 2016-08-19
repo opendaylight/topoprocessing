@@ -56,6 +56,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
      * @param rpcServices used for rpc republishing
      * @param schemaHolder access to SchemaContext
      * @param topologyIdentifier topology identifier
+     * @param outputModel output model (NT, I2RS...)
      */
     public TopologyManager(RpcServices rpcServices, GlobalSchemaContextHolder schemaHolder,
             YangInstanceIdentifier topologyIdentifier, Class<? extends Model> outputModel) {
@@ -157,7 +158,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
     /**
      * Tries to find wrapper containing OverlayItem in existing wrapper.
      *
-     * @param overlayItemIdentifier
+     * @param overlayItemIdentifier overlayItemIdentifier
      * @return wrapper or null if wrapper is not found
      */
     public OverlayItemWrapper findWrapper(OverlayItem overlayItemIdentifier) {

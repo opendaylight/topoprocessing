@@ -23,7 +23,7 @@ public abstract class AbstractFiltrator implements Filtrator {
      * Stores PathIdentifier for later use.
      * If PathIdentifier is null, throws {@link NullPointerException}
      * @param pathIdentifier PathIdentifier identifying target field which on this filtrator operate
-     * @throws NullPointerException
+     * @throws NullPointerException if the path identifier is null
      */
     public AbstractFiltrator(YangInstanceIdentifier pathIdentifier) {
         Preconditions.checkNotNull(pathIdentifier);
@@ -34,7 +34,7 @@ public abstract class AbstractFiltrator implements Filtrator {
      * Returns stored PathIdentifier identifying target field which on this filtrator operate.
      * If PathIdentifier is null, throws {@link NullPointerException}
      * @return stored PathIdentifier
-     * @throws NullPointerException
+     * @throws NullPointerException if the path identifier is null
      */
     public YangInstanceIdentifier getPathIdentifier() {
         Preconditions.checkNotNull(pathIdentifier);

@@ -11,9 +11,10 @@ package org.opendaylight.topoprocessing.impl.adapter;
 import java.util.List;
 import java.util.Map;
 
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
-import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
@@ -21,7 +22,6 @@ import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -35,18 +35,18 @@ public interface ModelAdapter {
 
     /**
      * Create model specific UnderlayTopologyListener.
-     * @param dataBroker            PingPong Data Broker
-     * @param underlayTopologyId    underlay topology identifier
-     * @param correlationItem       can be either Node or Link or TerminationPoint
-     * @param datastoreType         type of data store
-     * @param operator              topology operator to use
-     * @param listeners             list of registered change listeners
-     * @param pathIdentifier        identifier of the node on which the listener is registrated
+     * @param domDataTreeChangeService    provides srvice for registering dataTree listeners
+     * @param underlayTopologyId          underlay topology identifier
+     * @param correlationItem             can be either Node or Link or TerminationPoint
+     * @param datastoreType               type of data store
+     * @param operator                    topology operator to use
+     * @param listeners                   list of registered change listeners
+     * @param pathIdentifier              identifier of the node on which the listener is registrated
      * @return new instance of model specific UnderlayTopologyListener
      */
-    UnderlayTopologyListener registerUnderlayTopologyListener(PingPongDataBroker dataBroker, String underlayTopologyId,
-            CorrelationItemEnum correlationItem, DatastoreType datastoreType, TopologyOperator operator
-            ,List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
+    UnderlayTopologyListener registerUnderlayTopologyListener(DOMDataTreeChangeService domDataTreeChangeService,
+            String underlayTopologyId, CorrelationItemEnum correlationItem, LogicalDatastoreType datastoreType,
+            TopologyOperator operator, List<ListenerRegistration<DOMDataTreeChangeListener>> listeners,
             Map<Integer, YangInstanceIdentifier> pathIdentifier);
 
     /**
@@ -81,7 +81,7 @@ public interface ModelAdapter {
 
     /**
      * Creates model specific (topology or network) identifier builder.
-     * @param underlayTopologyId
+     * @param underlayTopologyId ID of the underlay topo
      * @return new model specific topology builder
      */
     InstanceIdentifierBuilder createTopologyIdentifier(String underlayTopologyId);
