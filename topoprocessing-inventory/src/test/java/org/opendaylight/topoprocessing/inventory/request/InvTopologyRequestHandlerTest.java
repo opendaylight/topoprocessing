@@ -10,9 +10,6 @@ package org.opendaylight.topoprocessing.inventory.request;
 
 import static org.mockito.Matchers.any;
 
-import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.CheckedFuture;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +49,6 @@ import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.inventory.adapter.InvModelAdapter;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpPrefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugment;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationAugmentBuilder;
@@ -88,6 +84,9 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
+
+import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.CheckedFuture;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InvTopologyRequestHandlerTest {
@@ -311,7 +310,7 @@ public class InvTopologyRequestHandlerTest {
         handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
-        handler.setDatastoreType(DatastoreType.CONFIGURATION);
+        handler.setDatastoreType(LogicalDatastoreType.CONFIGURATION);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);
@@ -328,7 +327,7 @@ public class InvTopologyRequestHandlerTest {
         handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
-        handler.setDatastoreType(DatastoreType.OPERATIONAL);
+        handler.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
@@ -371,7 +370,7 @@ public class InvTopologyRequestHandlerTest {
         handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
-        handler.setDatastoreType(DatastoreType.OPERATIONAL);
+        handler.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);
@@ -415,7 +414,7 @@ public class InvTopologyRequestHandlerTest {
         handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
-        handler.setDatastoreType(DatastoreType.OPERATIONAL);
+        handler.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
         handler.setFiltrators(DefaultFiltrators.getDefaultFiltrators());
         pathIdentifier = InstanceIdentifiers.NODE_IDENTIFIER;
         Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
@@ -433,7 +432,7 @@ public class InvTopologyRequestHandlerTest {
         handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
-        handler.setDatastoreType(DatastoreType.CONFIGURATION);
+        handler.setDatastoreType(LogicalDatastoreType.CONFIGURATION);
         handler.setFiltrators(DefaultFiltrators.getDefaultFiltrators());
         pathIdentifier = InstanceIdentifiers.NODE_IDENTIFIER;
         Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
@@ -471,7 +470,7 @@ public class InvTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
-        handler.setDatastoreType(DatastoreType.CONFIGURATION);
+        handler.setDatastoreType(LogicalDatastoreType.CONFIGURATION);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
                 (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);

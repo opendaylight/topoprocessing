@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
@@ -43,7 +44,6 @@ import org.opendaylight.topoprocessing.impl.testUtilities.TestingDOMDataBroker;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Equality;
@@ -131,7 +131,7 @@ public class TopologyRequestHandlerTest {
         handler = new TestTopologyRequestHandler(pingPongBroker,schemaHolderMock,rpcServicesMock,null);
         handler.setTranslator(pathTranslatorMock);
         handler.setFiltrators(filtratorsMock);
-        handler.setDatastoreType(DatastoreType.OPERATIONAL);
+        handler.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
     }
 
     @Test
@@ -277,7 +277,7 @@ public class TopologyRequestHandlerTest {
                 CorrelationItemEnum.Node)).thenReturn(yangInstanceIdentifierMock);
         when(rpcServicesMock.getRpcService()).thenReturn(domRpcServiceMock);
         when(modelAdapterMock.registerUnderlayTopologyListener((PingPongDataBroker)any(),(String) any(),
-                (CorrelationItemEnum) any(),(DatastoreType) any(),(TopologyAggregator) any(),(List) any(),
+                (CorrelationItemEnum) any(),(LogicalDatastoreType) any(),(TopologyAggregator) any(),(List) any(),
                 (Map<Integer, YangInstanceIdentifier>) any())).thenReturn(underlayTopologyListenerMock);
         when(pathTranslatorMock.translate("f1",CorrelationItemEnum.Node,
                 schemaHolderMock,null)).thenReturn(yangInstanceIdentifierMock);
@@ -302,7 +302,7 @@ public class TopologyRequestHandlerTest {
 
         when(modelAdaptersMock.get(I2rsModel.class)).thenReturn(modelAdapterMock);
         when(modelAdapterMock.registerUnderlayTopologyListener((PingPongDataBroker)any(), (String)any(),
-                (CorrelationItemEnum)any(), (DatastoreType)any(),
+                (CorrelationItemEnum)any(), (LogicalDatastoreType)any(),
                 (LinkCalculator)any(), (List<ListenerRegistration<DOMDataTreeChangeListener>>)any(),
                 (Map<Integer, YangInstanceIdentifier>)any())).thenReturn(mock(UnderlayTopologyListener.class));
         when(modelAdapterMock.createTopologyIdentifier("underTopo1")).thenReturn(instanceIdentifierBuilderMock);
