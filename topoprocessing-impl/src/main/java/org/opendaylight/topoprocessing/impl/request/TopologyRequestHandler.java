@@ -9,8 +9,6 @@
 package org.opendaylight.topoprocessing.impl.request;
 
 
-import com.google.common.base.Preconditions;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,9 +18,9 @@ import java.util.Map.Entry;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
-import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
@@ -46,7 +44,6 @@ import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.PathTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.AggregationOnly;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
@@ -79,6 +76,8 @@ import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+
 /**
  * Picks up information from topology request, engages corresponding
  * listeners, aggregators.
@@ -87,7 +86,8 @@ import org.slf4j.LoggerFactory;
 public abstract class TopologyRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
-    private PingPongDataBroker pingPongDataBroker;
+    private final DOMDataBroker pingPongDataBroker;
+    private final DOMDataTreeChangeService domDataTreeChangeService;
     private PathTranslator translator = new PathTranslator();
     private List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
     private String topologyId;
@@ -95,7 +95,7 @@ public abstract class TopologyRequestHandler {
     private RpcServices rpcServices;
     private DOMTransactionChain transactionChain;
     private TopologyWriter writer;
-    private DatastoreType datastoreType;
+    private LogicalDatastoreType datastoreType;
     private Map<Class<? extends FilterBase>, FiltratorFactory> filtrators;
     private Map<Class<? extends Model>, ModelAdapter> modelAdapters;
     private Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode;
@@ -104,18 +104,22 @@ public abstract class TopologyRequestHandler {
 
     /**
      * Default constructor.
-     * @param dataBroker         broker used for transaction operations
+     * @param pingPongDataBroker    broker used for transaction operations
      * @param schemaHolder          provides model search
      * @param rpcServices           rpc services needed for rpc republishing
      * @param fromNormalizedNode    Normalized node with topology information
      */
-    public TopologyRequestHandler(DOMDataBroker dataBroker, GlobalSchemaContextHolder schemaHolder,
+    public TopologyRequestHandler(DOMDataBroker pingPongDataBroker, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices,Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {
-        if (dataBroker instanceof PingPongDataBroker) {
-            this.pingPongDataBroker = (PingPongDataBroker) dataBroker;
+        this.pingPongDataBroker = pingPongDataBroker;
+        DOMDataTreeChangeService domDataTreeService = (DOMDataTreeChangeService)
+                pingPongDataBroker.getSupportedExtensions().get(DOMDataTreeChangeService.class);
+        if (domDataTreeService  != null) {
+            this.domDataTreeChangeService = domDataTreeService;
         } else {
-            throw new IllegalArgumentException("Received dom-data-broker instance is different than expected."
-                    + "Expected: pingpong-broker (in 01-md-sal.xml); Actual: " + dataBroker);
+            throw new IllegalArgumentException("Received DOMDataBroker instance does not provide "
+                    + "DOMDataTreeChangeService functionality. Expected PingPongDataBroker or similar instance,"
+                    + " received toString(): " + pingPongDataBroker);
         }
         this.schemaHolder = schemaHolder;
         this.rpcServices = rpcServices;
@@ -522,7 +526,7 @@ public abstract class TopologyRequestHandler {
             LOG.debug("Registering link calculation overlay topology listener for topology: {}", overlayTopologyId);
             DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
             ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
-                    pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
+                    domDataTreeChangeService.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
             listeners.add(listenerRegistration);
         } else {
             throw new IllegalStateException("link computation data missing: " + linkComputation);
@@ -536,16 +540,10 @@ public abstract class TopologyRequestHandler {
                 .createTopologyIdentifier(topologyId);
         YangInstanceIdentifier itemIdentifier = modelAdapters.get(model)
                 .buildItemIdentifier(topologyIdentifier, correlationItem);
-        DOMDataTreeIdentifier treeId = createDOMDataTreeIdentifier(itemIdentifier);
+        DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(datastoreType, itemIdentifier);
         ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
-                pingPongDataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
+                domDataTreeChangeService.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
         listeners.add(listenerRegistration);
-    }
-
-    private DOMDataTreeIdentifier createDOMDataTreeIdentifier(YangInstanceIdentifier itemIdentifier) {
-        return datastoreType.equals(DatastoreType.OPERATIONAL) ?
-                new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier) :
-                new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, itemIdentifier);
     }
 
     private Filter findFilter(List<Filter> filters, String filterId) {
@@ -629,7 +627,7 @@ public abstract class TopologyRequestHandler {
     /**
      * @param datastoreType configures whether to use CONFIGURATION or OPERATIONAL datastore
      */
-    public void setDatastoreType(DatastoreType datastoreType) {
+    public void setDatastoreType(LogicalDatastoreType datastoreType) {
         this.datastoreType = datastoreType;
     }
 
