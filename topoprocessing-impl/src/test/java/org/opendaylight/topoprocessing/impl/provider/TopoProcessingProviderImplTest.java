@@ -15,8 +15,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.SetMultimap;
-
 import java.net.URI;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +30,8 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
+import org.opendaylight.controller.sal.core.api.Broker;
+import org.opendaylight.controller.sal.core.api.Broker.ProviderSession;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
@@ -41,7 +41,6 @@ import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.InventoryRenderingModel;
@@ -52,6 +51,8 @@ import org.opendaylight.yangtools.yang.model.api.Module;
 import org.opendaylight.yangtools.yang.model.api.ModuleIdentifier;
 import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 import org.opendaylight.yangtools.yang.model.util.AbstractSchemaContext;
+
+import com.google.common.collect.SetMultimap;
 
 /**
  * @author marek.korenciak
@@ -75,6 +76,14 @@ public class TopoProcessingProviderImplTest {
     private ModelAdapter modelAdapterMock;
     @Mock
     private TopologyRequestListener topologyRequestListenerMock;
+    @Mock
+    private Broker brokerMock;
+    @Mock
+    private ProviderSession sessionMock;
+    @Mock
+    private DOMRpcService rpcServiceMock;
+    @Mock
+    private DOMRpcProviderService rpcProviderServiceMock;
 
     private TopoProcessingProviderImpl provider;
     private SchemaContextTmp schemaContext = new SchemaContextTmp();
@@ -104,11 +113,19 @@ public class TopoProcessingProviderImplTest {
 
     @Before
     public void init() {
-        when(rpcServicesMock.getRpcService()).thenReturn(mock(DOMRpcService.class));
-        when(rpcServicesMock.getRpcProviderService()).thenReturn(mock(DOMRpcProviderService.class));
+        when(rpcServicesMock.getRpcService()).thenReturn(rpcServiceMock);
+        when(rpcServicesMock.getRpcProviderService()).thenReturn(rpcProviderServiceMock);
         when(schemaMock.getGlobalContext()).thenReturn(schemaContext);
-        provider = new TopoProcessingProviderImpl(schemaMock, dataBrokerMock,
-                serializerMock, rpcServicesMock, DatastoreType.CONFIGURATION);
+        when(brokerMock.registerProvider(any())).thenReturn(sessionMock);
+        when(sessionMock.getService(DOMRpcService.class)).thenReturn(rpcServiceMock);
+        when(sessionMock.getService(DOMRpcProviderService.class)).thenReturn(rpcProviderServiceMock);
+        provider = new TopoProcessingProviderImpl();
+        provider.setSchemaService(schemaMock);
+        provider.setDataBroker(dataBrokerMock);
+        provider.setNodeSerializer(serializerMock);
+        provider.setRpcServices(rpcServicesMock);
+        provider.setDataStoreType(LogicalDatastoreType.CONFIGURATION);
+        provider.setBroker(brokerMock);
     }
 
     @Test
