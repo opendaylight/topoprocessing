@@ -10,9 +10,9 @@ package org.opendaylight.topoprocessing.inventoryRendering.listener;
 import java.util.List;
 
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
-import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.NotificationInterConnector;
 import org.opendaylight.topoprocessing.impl.operator.TopoStoreProvider;
@@ -20,7 +20,6 @@ import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.inventoryRendering.operator.IRRenderingOperator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.DatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.InventoryRenderingModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
@@ -37,7 +36,7 @@ public class IRUnderlayTopologyListener extends UnderlayTopologyListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IRUnderlayTopologyListener.class);
 
-    public IRUnderlayTopologyListener(PingPongDataBroker dataBroker, String underlayTopologyId,
+    public IRUnderlayTopologyListener(DOMDataBroker dataBroker, String underlayTopologyId,
             CorrelationItemEnum correlationItem) {
         super(dataBroker, underlayTopologyId, correlationItem);
      // this needs to be done because for processing TerminationPoints we need to filter Node instead of TP
@@ -53,7 +52,7 @@ public class IRUnderlayTopologyListener extends UnderlayTopologyListener {
         this.itemIdentifier = YangInstanceIdentifier.of(itemQName);
     }
 
-    public void registerUnderlayTopologyListener(DatastoreType datastoreType,
+    public void registerUnderlayTopologyListener(LogicalDatastoreType datastoreType,
             List<ListenerRegistration<DOMDataTreeChangeListener>> listeners) {
         if (correlationItem.equals(CorrelationItemEnum.Node)) {
             TopoStoreProvider connTopoStoreProvider = new TopoStoreProvider();
@@ -70,14 +69,9 @@ public class IRUnderlayTopologyListener extends UnderlayTopologyListener {
             invListener.setOperator(connector);
             YangInstanceIdentifier invId = YangInstanceIdentifier.of(Nodes.QNAME)
                     .node(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.QNAME);
-            DOMDataTreeIdentifier treeId;
-            if (datastoreType.equals(DatastoreType.OPERATIONAL)) {
-                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, invId);
-            } else {
-                treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.CONFIGURATION, invId);
-            }
+            DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(datastoreType, invId);;
             ListenerRegistration<DOMDataTreeChangeListener> invListenerRegistration =
-                    dataBroker.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) invListener);
+                    domDataTreeChangeService.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) invListener);
             listeners.add(invListenerRegistration);
         } else {
             throw new IllegalStateException("Rendering has to have CorrelationItem set to Node");
