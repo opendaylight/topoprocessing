@@ -22,6 +22,30 @@
       "revId": "a858fe8820a9de4490ba88c5e7375e028c4be4f3",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d0834f54",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/translator/TranslatorHelper.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 5872
+      },
+      "writtenOn": "2016-08-24T08:55:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_6de1c499",
+      "range": {
+        "startLine": 19,
+        "startChar": 6,
+        "endLine": 19,
+        "endChar": 7
+      },
+      "revId": "a858fe8820a9de4490ba88c5e7375e028c4be4f3",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
