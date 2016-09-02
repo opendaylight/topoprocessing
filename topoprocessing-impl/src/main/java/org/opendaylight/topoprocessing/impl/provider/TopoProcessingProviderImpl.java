@@ -9,6 +9,8 @@
 package org.opendaylight.topoprocessing.impl.provider;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.sal.core.api.Broker;
 import org.opendaylight.controller.sal.core.api.Broker.ProviderSession;
+import org.opendaylight.controller.sal.core.api.Provider;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
@@ -31,7 +34,6 @@ import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topoprocessing.provider.impl.rev150209.NoOpTopoprocessingProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
@@ -86,7 +88,17 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         schemaContextListenerRegistration = schemaService
                 .registerSchemaContextListener(new GlobalSchemaContextListener(schemaHolder));
 
-        ProviderSession session = broker.registerProvider(new NoOpTopoprocessingProvider());
+        ProviderSession session = broker.registerProvider(new Provider(){
+            @Override
+            public void onSessionInitiated(ProviderSession session) {
+                // NOOP
+            }
+
+            @Override
+            public Collection<ProviderFunctionality> getProviderFunctionality() {
+                return Collections.EMPTY_LIST;
+            }
+        });
         DOMRpcService rpcService = session.getService(DOMRpcService.class);
         DOMRpcProviderService rpcProviderService = session.getService(DOMRpcProviderService.class);
         rpcServices = new RpcServices(rpcService, rpcProviderService);
