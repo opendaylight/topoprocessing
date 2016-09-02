@@ -187,12 +187,6 @@
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>topoprocessing-config</artifactId>
-            <classifier>config-nt</classifier>
-            <type>xml</type>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.topoprocessing</groupId>
-            <artifactId>topoprocessing-config</artifactId>
             <classifier>config-inventory</classifier>
             <type>xml</type>
         </dependency>

@@ -29,7 +29,8 @@ public class NTTopoProcessingProviderImplTest {
     @Test
     public void testStartup() throws Exception {
         TopoProcessingProviderNT ntProvider = new TopoProcessingProviderNT();
-        ntProvider.startup(mockTopoProcessingProvider);
+        ntProvider.setTopoProvider(mockTopoProcessingProvider);
+        ntProvider.startup();
         Mockito.verify(mockTopoProcessingProvider).registerModelAdapter(Mockito.eq(NetworkTopologyModel.class),
                 Mockito.any(NTModelAdapter.class));
     }
