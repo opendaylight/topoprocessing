@@ -5,15 +5,12 @@
    xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
     <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/${mdsal.model.version}/xml/features</repository>
-    <repository>mvn:org.opendaylight.controller/features-protocol-framework/${protocol-framework.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-config/${config.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
     <feature name='odl-topoprocessing-framework' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Framework">
         <feature version='${yangtools.version}'>odl-yangtools-common</feature>
         <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
-        <feature version='${protocol-framework.version}'>odl-protocol-framework</feature>
-        <feature version='${config.version}'>odl-config-api</feature>
         <feature version='${mdsal.version}'>odl-mdsal-common</feature>
         <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
         <bundle>mvn:org.opendaylight.controller.thirdparty/net.sf.jung2/${jung2.version}</bundle>
@@ -22,10 +19,10 @@
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-impl/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-spi/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-common/${project.version}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/80-topoprocessing-config.xml">mvn:org.opendaylight.topoprocessing/topoprocessing-config/${project.version}/xml/config-framework</configfile>
     </feature>
     <feature name='odl-topoprocessing-mlmt' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Mlmt">
         <feature version='${project.version}'>odl-topoprocessing-framework</feature>
+        <feature version='${config.version}'>odl-config-api</feature>
         <bundle>mvn:org.opendaylight.controller.model/model-topology/${mdsal.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/administrative-topology-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/rwa-model/${project.version}</bundle>
