@@ -185,12 +185,6 @@
             <type>xml</type>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.topoprocessing</groupId>
-            <artifactId>topoprocessing-config</artifactId>
-            <classifier>config-inventory-rendering</classifier>
-            <type>xml</type>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.mdsal.model</groupId>
             <artifactId>ietf-network-2015-06-08</artifactId>
         </dependency>

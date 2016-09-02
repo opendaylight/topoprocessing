@@ -29,7 +29,8 @@ public class IRTopoProcessingProviderImplTest {
     @Test
     public void testStartup() throws Exception {
         TopoProcessingProviderIR irProvider = new TopoProcessingProviderIR();
-        irProvider.startup(mockTopoProcessingProvider);
+        irProvider.setTopoProvider(mockTopoProcessingProvider);
+        irProvider.startup();
         Mockito.verify(mockTopoProcessingProvider).registerModelAdapter(Mockito.eq(InventoryRenderingModel.class),
                 Mockito.any(IRModelAdapter.class));
     }
