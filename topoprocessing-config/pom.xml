@@ -22,7 +22,6 @@
 
   <properties>
       <configframework>80-topoprocessing-config.xml</configframework>
-      <configinventory-rendering>81-topoprocessing-inventory-rendering-config.xml</configinventory-rendering>
   </properties>
 
   <build>
@@ -43,22 +42,6 @@
                   <file>${project.build.directory}/classes/${configframework}</file>
                   <type>xml</type>
                   <classifier>config-framework</classifier>
-                </artifact>
-              </artifacts>
-            </configuration>
-          </execution>
-          <execution>
-            <id>attach-ir-artifacts</id>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>${project.build.directory}/classes/${configinventory-rendering}</file>
-                  <type>xml</type>
-                  <classifier>config-inventory-rendering</classifier>
                 </artifact>
               </artifacts>
             </configuration>
