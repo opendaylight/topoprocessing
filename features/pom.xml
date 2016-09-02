@@ -62,12 +62,6 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>features-protocol-framework</artifactId>
-            <classifier>features</classifier>
-            <type>xml</type>
-        </dependency>
 
         <!-- bundle dependencies -->
         <dependency>
@@ -177,12 +171,6 @@
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>topoprocessing-inventory-rendering</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.topoprocessing</groupId>
-            <artifactId>topoprocessing-config</artifactId>
-            <classifier>config-framework</classifier>
-            <type>xml</type>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal.model</groupId>
