@@ -53,7 +53,6 @@
     <feature name='odl-topoprocessing-inventory' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Inventory Model">
         <feature version='${project.version}'>odl-topoprocessing-framework</feature>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-inventory/${project.version}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/81-topoprocessing-inventory-config.xml">mvn:org.opendaylight.topoprocessing/topoprocessing-config/${project.version}/xml/config-inventory</configfile>
     </feature>
     <feature name='odl-topoprocessing-i2rs' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: I2RS Model">
         <feature version='${project.version}'>odl-topoprocessing-framework</feature>
