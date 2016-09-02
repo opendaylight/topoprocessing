@@ -18,13 +18,24 @@ public class TopoProcessingProviderNT implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopoProcessingProviderNT.class);
 
+    //main Topoprocessing provider implementation wired via blueprint
+    private TopoProcessingProvider topoProvider;
+
     @Override
     public void close() throws Exception {
         LOGGER.info("TopoprocessingProviderNT close");
     }
 
-    public void startup(TopoProcessingProvider topoProvider) {
+    public void startup() {
         LOGGER.info("TopoprocessingProviderNT startup");
         topoProvider.registerModelAdapter(NetworkTopologyModel.class, new NTModelAdapter());
+    }
+
+    public TopoProcessingProvider getTopoProvider() {
+        return topoProvider;
+    }
+
+    public void setTopoProvider(TopoProcessingProvider topoProvider) {
+        this.topoProvider = topoProvider;
     }
 }
