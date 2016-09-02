@@ -49,7 +49,6 @@
     <feature name='odl-topoprocessing-network-topology' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Network Topology Model">
         <feature version='${project.version}'>odl-topoprocessing-framework</feature>
         <bundle>mvn:org.opendaylight.topoprocessing/topoprocessing-nt/${project.version}</bundle>
-        <configfile finalname="etc/opendaylight/karaf/81-topoprocessing-nt-config.xml">mvn:org.opendaylight.topoprocessing/topoprocessing-config/${project.version}/xml/config-nt</configfile>
     </feature>
     <feature name='odl-topoprocessing-inventory' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Inventory Model">
         <feature version='${project.version}'>odl-topoprocessing-framework</feature>
