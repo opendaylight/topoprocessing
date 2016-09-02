@@ -18,13 +18,24 @@ public class TopoProcessingProviderInv implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopoProcessingProviderInv.class);
 
+    //main Topoprocessing provider implementation wired via blueprint
+    private TopoProcessingProvider topoProvider;
+
     @Override
     public void close() throws Exception {
         LOGGER.info("TopoprocessingProviderInv close");
     }
 
-    public void startup(TopoProcessingProvider topoProvider) {
+    public void startup() {
         LOGGER.info("TopoprocessingProviderInv startup");
         topoProvider.registerModelAdapter(OpendaylightInventoryModel.class, new InvModelAdapter());
+    }
+
+    public TopoProcessingProvider getTopoProvider() {
+        return topoProvider;
+    }
+
+    public void setTopoProvider(TopoProcessingProvider topoProvider) {
+        this.topoProvider = topoProvider;
     }
 }

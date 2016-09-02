@@ -29,7 +29,8 @@ public class InvTopoProcessingProviderImplTest {
     @Test
     public void testStartup() {
         TopoProcessingProviderInv invProvider = new TopoProcessingProviderInv();
-        invProvider.startup(mockTopoProcessingProvider);
+        invProvider.setTopoProvider(mockTopoProcessingProvider);
+        invProvider.startup();
         Mockito.verify(mockTopoProcessingProvider).registerModelAdapter(Mockito.eq(OpendaylightInventoryModel.class),
                 Mockito.any(InvModelAdapter.class));
     }
