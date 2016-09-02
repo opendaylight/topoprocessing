@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+  xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+  xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+  odl:use-default-for-reference-types="true"
+  odl:restart-dependents-on-updates="true">
+
+  <reference id="topoprocessingProviderImpl"
+    interface="org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider"/>
+
+  <bean id="topoprocessingProviderInv"
+    class="org.opendaylight.topoprocessing.inventory.provider.TopoProcessingProviderInv"
+    init-method="startup" destroy-method="close">
+    <property name="topoProvider" ref="topoprocessingProviderImpl" />
+  </bean>
+
+</blueprint>
