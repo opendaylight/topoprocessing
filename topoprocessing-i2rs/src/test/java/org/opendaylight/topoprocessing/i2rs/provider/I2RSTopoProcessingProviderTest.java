@@ -31,7 +31,8 @@ public class I2RSTopoProcessingProviderTest {
     @Test
     public void testStartup() throws Exception {
         TopoProcessingProviderI2RS i2rsProvider = new TopoProcessingProviderI2RS();
-        i2rsProvider.startup(mockTopoProcessingProvider);
+        i2rsProvider.setTopoProvider(mockTopoProcessingProvider);
+        i2rsProvider.startup();
         Mockito.verify(mockTopoProcessingProvider).registerModelAdapter(Mockito.eq(I2rsModel.class),
                 Mockito.any(I2RSModelAdapter.class));
     }
