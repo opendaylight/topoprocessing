@@ -23,7 +23,6 @@
   <properties>
       <configframework>80-topoprocessing-config.xml</configframework>
       <configinventory>81-topoprocessing-inventory-config.xml</configinventory>
-      <configi2rs>81-topoprocessing-i2rs-config.xml</configi2rs>
       <configinventory-rendering>81-topoprocessing-inventory-rendering-config.xml</configinventory-rendering>
   </properties>
 
@@ -61,22 +60,6 @@
                   <file>${project.build.directory}/classes/${configinventory}</file>
                   <type>xml</type>
                   <classifier>config-inventory</classifier>
-                </artifact>
-              </artifacts>
-            </configuration>
-          </execution>
-          <execution>
-            <id>attach-i2rs-artifacts</id>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>${project.build.directory}/classes/${configi2rs}</file>
-                  <type>xml</type>
-                  <classifier>config-i2rs</classifier>
                 </artifact>
               </artifacts>
             </configuration>

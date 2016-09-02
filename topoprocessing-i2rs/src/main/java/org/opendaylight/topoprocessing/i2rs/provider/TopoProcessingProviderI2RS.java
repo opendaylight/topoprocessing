@@ -18,14 +18,24 @@ public class TopoProcessingProviderI2RS implements AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopoProcessingProviderI2RS.class);
 
+    //main Topoprocessing provider implementation wired via blueprint
+    private TopoProcessingProvider topoProvider;
+
     @Override
     public void close() throws Exception {
         LOGGER.info("TopoprocessingProviderI2RS close");
     }
 
-    public void startup(TopoProcessingProvider topoProvider) {
+    public void startup() {
         LOGGER.info("TopoprocessingProviderI2RS startup");
         topoProvider.registerModelAdapter(I2rsModel.class, new I2RSModelAdapter());
     }
 
+    public TopoProcessingProvider getTopoProvider() {
+        return topoProvider;
+    }
+
+    public void setTopoProvider(TopoProcessingProvider topoProvider) {
+        this.topoProvider = topoProvider;
+    }
 }
