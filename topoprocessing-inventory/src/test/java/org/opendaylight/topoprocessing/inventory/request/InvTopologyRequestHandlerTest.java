@@ -33,6 +33,7 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
@@ -94,6 +95,7 @@ public class InvTopologyRequestHandlerTest {
     private static final String TOPO1 = "TOPO1";
 
     @Mock private DOMDataBroker mockDomDataBroker;
+    @Mock private DOMDataTreeChangeService mockDomDataTreeChangeService;
     @Mock private PathTranslator mockTranslator;
     @Mock private GlobalSchemaContextHolder mockSchemaHolder;
     @Mock private RpcServices mockRpcServices;
@@ -103,7 +105,7 @@ public class InvTopologyRequestHandlerTest {
     @Mock private DOMDataWriteTransaction mockDomDataWriteTransaction;
     @Mock private CheckedFuture<Void, TransactionCommitFailedException> domCheckedFuture;
     @Mock private SchemaContext mockGlobalSchemaContext;
-    @Mock private ListenerRegistration<DOMDataChangeListener> mockDOMDataChangeListener;
+    @Mock private ListenerRegistration<DOMDataTreeChangeListener> mockDOMDataTreeChangeListener;
     @Mock private Map.Entry<InstanceIdentifier<?>,DataObject> mockFromNormalizedNode;
 
     private YangInstanceIdentifier pathIdentifier;
@@ -143,7 +145,7 @@ public class InvTopologyRequestHandlerTest {
     public void testTopologyWithoutAugmentation() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
+        handler = new InvTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder, mockRpcServices,
                 (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }

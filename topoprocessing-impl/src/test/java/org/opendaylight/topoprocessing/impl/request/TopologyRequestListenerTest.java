@@ -10,31 +10,35 @@ package org.opendaylight.topoprocessing.impl.request;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-import com.google.common.base.Optional;
-
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -42,6 +46,11 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgum
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNode;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
+
+import com.google.common.base.Optional;
 
 /**
  * @author samuel.kontris
@@ -50,230 +59,194 @@ import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
 @RunWith(MockitoJUnitRunner.class)
 public class TopologyRequestListenerTest {
 
-    private AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> changeMock;
-    private HashMap<YangInstanceIdentifier, NormalizedNode<?, ?>> createdData;
-    private HashSet<YangInstanceIdentifier> removedPaths;
-    private HashMap<YangInstanceIdentifier, NormalizedNode<?, ?>> updatedData;
+    @Mock
+    private DataTreeCandidate mockRootChange;
+    @Mock
+    private DataTreeCandidateNode mockRootNode;
+    @Mock
+    private DataTreeCandidateNode mockTopology;
+    @Mock
+    private TopologyRequestHandler mockRequestHandler;
+    @Mock
+    private Optional<DataContainerChild<? extends PathArgument, ?>> mockTopologyTypes;
+    private NormalizedNode<?, ?> mockMapEntryNode;
+
+    private Collection<DataTreeCandidate> changes;
+    private Collection<DataTreeCandidateNode> topologies;
+    private TestListener testListener;
+
+    private final YangInstanceIdentifier rootYangID = YangInstanceIdentifier.of(NetworkTopology.QNAME)
+            .node(Topology.QNAME);
+    @Mock
+    private PathArgument mockTopologyPathArgument;
 
     @Before
     public void before() {
-        changeMock = mock(AsyncDataChangeEvent.class);
-        createdData = new HashMap<YangInstanceIdentifier, NormalizedNode<?, ?>>();
-        removedPaths = new HashSet<YangInstanceIdentifier>();
-        updatedData = new HashMap<YangInstanceIdentifier, NormalizedNode<?, ?>>();
+        topologies = new LinkedList<>();
+        topologies.add(mockTopology);
+        when(mockRootNode.getChildNodes()).thenReturn(topologies);
+        when(mockRootChange.getRootNode()).thenReturn(mockRootNode);
+        when(mockRootChange.getRootPath()).thenReturn(rootYangID);
+        when(mockTopology.getIdentifier()).thenReturn(mockTopologyPathArgument);
+        changes = new LinkedList<>();
+        changes.add(mockRootChange);
 
-        when(changeMock.getCreatedData()).thenReturn(createdData);
-        when(changeMock.getRemovedPaths()).thenReturn(removedPaths);
-        when(changeMock.getUpdatedData()).thenReturn(updatedData);
-    }
-
-    @Test
-    public void testOnDataChangedEmptyCreatedAndRemovedPaths() {
-        TestListener testListener = new TestListener();
-        testListener.onDataChanged(changeMock);
-
-        assertEquals(testListener.getTopoRequestHandlers().size(), 0);
-        verify(changeMock, times(1)).getUpdatedData();
-        verify(changeMock, times(1)).getCreatedData();
-        verify(changeMock, times(1)).getRemovedPaths();
-    }
-
-    @Test
-    public void testProcessCreatedDataNodeIsNotTopologyOrCorrelationsAreMissing() {
-        YangInstanceIdentifier yangId1 = mock(YangInstanceIdentifier.class);
-        YangInstanceIdentifier yangId2 = mock(YangInstanceIdentifier.class);
-
-        NormalizedNode<?, ?> nodeMock = mock(NormalizedNode.class);
-        NormalizedNode<?, ?> mapEntryNodeMock = mock(NormalizedNode.class,
-                        withSettings().extraInterfaces(MapEntryNode.class));
-
-        TestListener testListener = new TestListener();
-
-        // case 1
-        testListener.setTopologyReturnValue(false);
-        createdData.put(yangId1, mapEntryNodeMock);
-        createdData.put(yangId2, nodeMock);
-
-        testListener.onDataChanged(changeMock);
-        assertEquals(testListener.getTopoRequestHandlers().size(), 0);
-
-        // case 2
-        testListener.setTopologyReturnValue(true);
-        createdData.clear();
-        createdData.put(yangId1, nodeMock);
-
-        testListener.onDataChanged(changeMock);
-        assertEquals(testListener.getTopoRequestHandlers().size(), 0);
-
-        // case 3
-        testListener.setTopologyReturnValue(true);
-        testListener.setTopologyRequestReturnValue(false);
-        createdData.clear();
-        createdData.put(yangId1, mapEntryNodeMock);
-
-        testListener.onDataChanged(changeMock);
-        assertEquals(testListener.getTopoRequestHandlers().size(), 0);
-    }
-
-    @Test
-    public void testProcessCreatedDataNodeIsTopologyAndTopologyRequest() {
-        // preparing nodeSerializer mock
-        BindingNormalizedNodeSerializer nodeSerializerMock = mock(BindingNormalizedNodeSerializer.class);
-        Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNodeMock = mock(Entry.class);
-        when(nodeSerializerMock.fromNormalizedNode(any(YangInstanceIdentifier.class), any(NormalizedNode.class)))
-                        .thenReturn(fromNormalizedNodeMock);
-
-        // preparing normalized node mock that "implements" MapEntryNode
-        NormalizedNode<?, ?> mapEntryNodeMock = mock(NormalizedNode.class,
-                        withSettings().extraInterfaces(MapEntryNode.class));
-        Optional<DataContainerChild<? extends PathArgument, ?>> topologyTypesMock = mock(Optional.class);
-        when(topologyTypesMock.isPresent()).thenReturn(false);
-        when(((MapEntryNode) mapEntryNodeMock).getChild(any(YangInstanceIdentifier.PathArgument.class)))
-                        .thenReturn(topologyTypesMock);
-
-        // preparing createdData - filling it with mocks
-        YangInstanceIdentifier yangId1 = mock(YangInstanceIdentifier.class);
-        YangInstanceIdentifier yangId2 = mock(YangInstanceIdentifier.class);
-        createdData.put(yangId1, mapEntryNodeMock);
+       // preparing normalized node mock that "implements" MapEntryNode
+        mockMapEntryNode = mock(NormalizedNode.class,
+                withSettings().extraInterfaces(MapEntryNode.class));
+        when(((MapEntryNode) mockMapEntryNode).getChild(any(YangInstanceIdentifier.PathArgument.class)))
+                .thenReturn(mockTopologyTypes);
 
         // preparing other mocks
-        TopologyRequestHandler requestHandlerMock = mock(TopologyRequestHandler.class);
         DOMDataBroker dataBrokerMock = mock(DOMDataBroker.class);
         GlobalSchemaContextHolder schemaHolderMock = mock(GlobalSchemaContextHolder.class);
         RpcServices rpcServicesMock = mock(RpcServices.class);
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
-
+        DOMDataTreeChangeService mockDomDataTreeChangeService = mock(DOMDataTreeChangeService.class);
+        // preparing nodeSerializer mock
+        BindingNormalizedNodeSerializer nodeSerializerMock = mock(BindingNormalizedNodeSerializer.class);
+        Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNodeMock = mock(Entry.class);
+        when(nodeSerializerMock.fromNormalizedNode(any(YangInstanceIdentifier.class), any(NormalizedNode.class)))
+                .thenReturn(fromNormalizedNodeMock);
         // preparing tested TopologyRequestListener (testListener)
-        TestListener testListener = new TestListener(dataBrokerMock, nodeSerializerMock, schemaHolderMock,
-                        rpcServicesMock, modelAdapters);
-        testListener.setCreateTopologyRequestHandlerReturnValue(requestHandlerMock);
-        testListener.setTopologyRequestReturnValue(true);
+        testListener = new TestListener(dataBrokerMock, mockDomDataTreeChangeService, nodeSerializerMock,
+                schemaHolderMock, rpcServicesMock, modelAdapters);
+        testListener.setCreateTopologyRequestHandlerReturnValue(mockRequestHandler);
+    }
+
+    @Test
+    public void testOnDataTreeChangedUnmodified() {
+        when(mockRootNode.getModificationType()).thenReturn(ModificationType.UNMODIFIED);
+        testListener.onDataTreeChanged(changes);
+        assertEquals(0, testListener.getTopoRequestHandlers().size());
+    }
+
+    /**
+     * Tests writing a new topology request into empty datastore.
+     */
+    @Test
+    public void testWritingTopologyRequest() {
+        when(mockTopology.getDataAfter()).thenReturn(Optional.of(mockMapEntryNode));
+        when(mockRootNode.getModificationType()).thenReturn(ModificationType.WRITE);
+        when(mockTopologyTypes.isPresent()).thenReturn(true);
+
         testListener.setTopologyReturnValue(true);
+        testListener.setTopologyRequestReturnValue(true);
 
-        // case1 - topologyTypes is not present
-        testListener.onDataChanged(changeMock);
+        // case 1 - no topologyTypes defined
+        testListener.onDataTreeChanged(changes);
+        assertEquals(1, testListener.getTopoRequestHandlers().size());
+        verify(mockRequestHandler).processNewRequest();
+        verify(mockRequestHandler, times(1)).delegateTopologyTypes(any());
 
-        verify(requestHandlerMock, times(1)).processNewRequest();
-        assertEquals(testListener.getTopoRequestHandlers().size(), 1);
-        assertEquals(testListener.getTopoRequestHandlers().get(yangId1), requestHandlerMock);
-
-        // case2 - topologyTypes is present
+        // case 2 - when topologyTypes is not present
         testListener.getTopoRequestHandlers().clear();
-        createdData.clear();
-        createdData.put(yangId2, mapEntryNodeMock);
-        when(topologyTypesMock.isPresent()).thenReturn(true);
-        testListener.onDataChanged(changeMock);
-
-        verify(requestHandlerMock, times(2)).processNewRequest();
-        verify(requestHandlerMock, times(1)).delegateTopologyTypes(any(DataContainerChild.class));
+        when(mockTopologyTypes.isPresent()).thenReturn(false);
+        testListener.onDataTreeChanged(changes);
+        verify(mockRequestHandler, times(2)).processNewRequest();
+        verify(mockRequestHandler, times(1)).delegateTopologyTypes(any());
         assertEquals(testListener.getTopoRequestHandlers().size(), 1);
-        assertEquals(testListener.getTopoRequestHandlers().get(yangId2), requestHandlerMock);
     }
 
+    /**
+     * Tests adding a new topology request alongside others.
+     */
     @Test
-    public void testProcessRemovedData() {
-        TestListener testListener = new TestListener();
-        YangInstanceIdentifier yangId1 = mock(YangInstanceIdentifier.class);
-        YangInstanceIdentifier yangId2 = mock(YangInstanceIdentifier.class);
-        YangInstanceIdentifier yangId3 = mock(YangInstanceIdentifier.class);
-        TopologyRequestHandler requestHandlerMock = mock(TopologyRequestHandler.class);
+    public void testAddingTopologyRequest() {
+        when(mockTopology.getDataAfter()).thenReturn(Optional.of(mockMapEntryNode));
+        when(mockTopology.getDataBefore()).thenReturn(Optional.absent());
+        when(mockRootNode.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        when(mockTopologyTypes.isPresent()).thenReturn(true);
 
-        removedPaths.add(yangId1);
-        removedPaths.add(yangId2);
-        removedPaths.add(yangId3);
-
-        testListener.getTopoRequestHandlers().put(yangId1, requestHandlerMock);
-        testListener.getTopoRequestHandlers().put(yangId2, null);
-
-        testListener.onDataChanged(changeMock);
-
-        assertEquals(testListener.getTopoRequestHandlers().size(), 0);
-        verify(requestHandlerMock, times(1)).processDeletionRequest(0);
+        testListener.setTopologyReturnValue(true);
+        testListener.setTopologyRequestReturnValue(true);
+        testListener.onDataTreeChanged(changes);
+        assertEquals(1, testListener.getTopoRequestHandlers().size());
+        verify(mockRequestHandler).processNewRequest();
+        verify(mockRequestHandler, times(1)).delegateTopologyTypes(any());
     }
 
+    /**
+     * Tests the handling of writing a data topology (no request).
+     */
     @Test
-    public void testProcessUpdatedData() {
-        DOMDataBroker domDataBrokerMock = mock(DOMDataBroker.class);
-        BindingNormalizedNodeSerializer bindingNormalizedNodeSerializerMock =
-                mock(BindingNormalizedNodeSerializer.class);
-        GlobalSchemaContextHolder globalSchemaContextHolderMock = mock(GlobalSchemaContextHolder.class);
-        RpcServices rpcServicesMock = mock(RpcServices.class);
-        HashMap<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<Class<? extends Model>,
-                ModelAdapter>();
-
-        MapEntryNode mapEntryNodeMock = mock(MapEntryNode.class);
-        Optional<DataContainerChild<? extends PathArgument, ?>> optionalMock = mock(Optional.class);
-
-        TestListener testListener = new TestListener(domDataBrokerMock, bindingNormalizedNodeSerializerMock,
-                globalSchemaContextHolderMock, rpcServicesMock, modelAdapters);
-
-        testListener.setCreateTopologyRequestHandlerReturnValue(mock(TopologyRequestHandler.class));
-
-        YangInstanceIdentifier yangInstanceIdentifierMock = mock(YangInstanceIdentifier.class);
-        NormalizedNode<?, ?> normalizedNodeMock = mock(NormalizedNode.class);
-        HashMap<YangInstanceIdentifier, NormalizedNode<?, ?>> change = new HashMap<YangInstanceIdentifier,
-                NormalizedNode<?, ?>>();
-
-        TopologyRequestHandler topologyRequestHandlerMock = mock(TopologyRequestHandler.class);
-        testListener.getTopoRequestHandlers().put(yangInstanceIdentifierMock, topologyRequestHandlerMock);
-
-        when(changeMock.getUpdatedData()).thenReturn(change);
-        when(mapEntryNodeMock.getChild((PathArgument)any())).thenReturn((optionalMock));
-
+    public void testWritingDataTopology() {
+        when(mockTopology.getDataAfter()).thenReturn(Optional.of(mockMapEntryNode));
+        when(mockRootNode.getModificationType()).thenReturn(ModificationType.WRITE);
+        testListener.setTopologyReturnValue(true);
         testListener.setTopologyRequestReturnValue(false);
 
-        testListener.onDataChanged(changeMock);
-        Assert.assertTrue(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock)
-                == topologyRequestHandlerMock);
-        Assert.assertEquals(1, testListener.getTopoRequestHandlers().size());
+        testListener.onDataTreeChanged(changes);
+        assertEquals(0, testListener.getTopoRequestHandlers().size());
+        verify(mockRequestHandler, never()).processNewRequest();
+        verify(mockRequestHandler, never()).delegateTopologyTypes(any());
+    }
 
-        testListener.setTopologyRequestReturnValue(true);
-        testListener.setTopologyReturnValue(false);
+    @Test
+    public void testRemovingTopologyRequestFromOthers() {
+        YangInstanceIdentifier yangIDToRemove = YangInstanceIdentifier.builder(mockRootChange.getRootPath())
+                .node(mockTopologyPathArgument).build();
+        testListener.getTopoRequestHandlers().put(yangIDToRemove, mockRequestHandler);
 
-        testListener.onDataChanged(changeMock);
-        Assert.assertTrue(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock)
-                == topologyRequestHandlerMock);
-        Assert.assertEquals(1, testListener.getTopoRequestHandlers().size());
-
+        // preparing topology mock
+        when(mockTopology.getDataAfter()).thenReturn(Optional.absent());
+        when(mockRootNode.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
         testListener.setTopologyReturnValue(true);
+        testListener.setTopologyRequestReturnValue(true);
 
-        testListener.onDataChanged(changeMock);
-        Assert.assertTrue(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock)
-                == topologyRequestHandlerMock);
-        Assert.assertEquals(1, testListener.getTopoRequestHandlers().size());
+        testListener.onDataTreeChanged(changes);
 
-        change.put(yangInstanceIdentifierMock, normalizedNodeMock);
+        assertEquals(0, testListener.getTopoRequestHandlers().size());
+        verify(mockRequestHandler, times(1)).processDeletionRequest(Mockito.anyInt());
+    }
 
-        testListener.onDataChanged(changeMock);
-        Assert.assertTrue(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock)
-                == topologyRequestHandlerMock);
-        Assert.assertEquals(1, testListener.getTopoRequestHandlers().size());
+    @Test
+    public void testRemovingDataTopologyFromOthers() {
+        YangInstanceIdentifier yangIDToRemove = mock(YangInstanceIdentifier.class);
+        testListener.getTopoRequestHandlers().put(yangIDToRemove, mockRequestHandler);
 
-        normalizedNodeMock = mapEntryNodeMock;
-        change.put(yangInstanceIdentifierMock, normalizedNodeMock);
+        // preparing topology mock
+        when(mockTopology.getDataAfter()).thenReturn(Optional.absent());
+        when(mockRootNode.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        testListener.setTopologyReturnValue(true);
+        testListener.setTopologyRequestReturnValue(true);
 
-        testListener.onDataChanged(changeMock);
-        Assert.assertFalse(testListener.getTopoRequestHandlers().get(yangInstanceIdentifierMock)
-                == topologyRequestHandlerMock);
+        testListener.onDataTreeChanged(changes);
+        assertEquals(1, testListener.getTopoRequestHandlers().size());
+        verify(mockRequestHandler, never()).processDeletionRequest(anyInt());
+    }
+
+    @Test
+    public void testUpdatingTopologyRequest() {
+        when(mockRootNode.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        when(mockTopology.getDataAfter()).thenReturn(Optional.of(mockMapEntryNode));
+        when(mockTopology.getDataBefore()).thenReturn(Optional.of(mockMapEntryNode));
+        testListener.setTopologyReturnValue(true);
+        testListener.setTopologyRequestReturnValue(true);
+        YangInstanceIdentifier yangIDToUpdate = YangInstanceIdentifier.builder(mockRootChange.getRootPath())
+                .node(mockTopologyPathArgument).build();
+        testListener.getTopoRequestHandlers().put(yangIDToUpdate, mockRequestHandler);
+
+        testListener.onDataTreeChanged(changes);
+        assertEquals(mockRequestHandler, testListener.getTopoRequestHandlers().get(yangIDToUpdate));
+        assertEquals(1, testListener.getTopoRequestHandlers().size());
+        verify(mockRequestHandler).processDeletionRequest(anyInt());
+        verify(mockRequestHandler).processNewRequest();
     }
 
     /**
      * Class just for testing purpose of abstract class TopologyRequestListener.
      */
-    private class TestListener extends TopologyRequestListener {
+    private static class TestListener extends TopologyRequestListener {
 
-        boolean isTopologyReturnValue;
-        boolean isTopologyRequestReturnValue;
+        private boolean isTopologyReturnValue;
+        private boolean isTopologyRequestReturnValue;
         TopologyRequestHandler requestHandlerReturnValue;
 
-        public TestListener() {
-            this(null, null, null, null, null);
-        }
-
-        public TestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
-                        GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
-                        Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
-            super(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
+        public TestListener(DOMDataBroker dataBroker, DOMDataTreeChangeService domDataTreeChangeService,
+                BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
+                RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
+            super(dataBroker, domDataTreeChangeService, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
         }
 
         @Override
@@ -288,8 +261,8 @@ public class TopologyRequestListenerTest {
 
         @Override
         protected TopologyRequestHandler createTopologyRequestHandler(DOMDataBroker dataBroker,
-                        GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
-                        Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
+                DOMDataTreeChangeService domDataTreeChangeService, GlobalSchemaContextHolder schemaHolder,
+                RpcServices rpcServices, Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
             return requestHandlerReturnValue;
         }
 
