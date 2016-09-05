@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
@@ -38,10 +39,11 @@ public class I2RSTopologyRequestListener extends TopologyRequestListener {
     private HashSet<QName> correlationHashSet;
     private HashSet<QName> linkComputationHashSet;
 
-    public I2RSTopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
+    public I2RSTopologyRequestListener(DOMDataBroker dataBroker, DOMDataTreeChangeService domDataTreeChangeService,
+            BindingNormalizedNodeSerializer nodeSerializer,
             GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
             Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
-        super(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
+        super(dataBroker, domDataTreeChangeService, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
         correlationHashSet = new HashSet<>();
         correlationHashSet.add(TopologyQNames.TOPOLOGY_CORRELATION_AUGMENT);
         linkComputationHashSet = new HashSet<>();
@@ -66,9 +68,11 @@ public class I2RSTopologyRequestListener extends TopologyRequestListener {
 
     @Override
     protected TopologyRequestHandler createTopologyRequestHandler(DOMDataBroker dataBroker,
+            DOMDataTreeChangeService domDataTreeChangeService,
             GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
             Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
 
-        return new I2RSTopologyRequestHandler(dataBroker, schemaHolder, rpcServices, fromNormalizedNode);
+        return new I2RSTopologyRequestHandler(dataBroker, domDataTreeChangeService, schemaHolder, rpcServices,
+                fromNormalizedNode);
     }
 }

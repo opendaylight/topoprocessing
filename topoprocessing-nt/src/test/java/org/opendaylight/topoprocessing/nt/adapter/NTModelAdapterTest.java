@@ -17,6 +17,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
@@ -61,12 +62,13 @@ public class NTModelAdapterTest {
     @Test
     public void testCreateTopologyRequestListener() {
         TestingDOMDataBroker dataBroker = new TestingDOMDataBroker();
+        DOMDataTreeChangeService domDataTreeChangeServiceMock = mock(DOMDataTreeChangeService.class);
         BindingNormalizedNodeSerializer nodeSerializer = mock(BindingNormalizedNodeSerializer.class);
         GlobalSchemaContextHolder schemaHolder = mock(GlobalSchemaContextHolder.class);
         RpcServices rpcServices = mock(RpcServices.class);
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
-        TopologyRequestListener listener = adapter.createTopologyRequestListener(dataBroker, nodeSerializer,
-                schemaHolder, rpcServices, modelAdapters);
+        TopologyRequestListener listener = adapter.createTopologyRequestListener(dataBroker,
+                domDataTreeChangeServiceMock, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
         assertEquals(0, listener.getTopoRequestHandlers().size());
         // 7 default filtrators are added
         assertEquals(7, listener.getFiltrators().size());
