@@ -109,18 +109,11 @@ public abstract class TopologyRequestHandler {
      * @param rpcServices           rpc services needed for rpc republishing
      * @param fromNormalizedNode    Normalized node with topology information
      */
-    public TopologyRequestHandler(DOMDataBroker pingPongDataBroker, GlobalSchemaContextHolder schemaHolder,
-            RpcServices rpcServices,Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {
+    public TopologyRequestHandler(DOMDataBroker pingPongDataBroker, DOMDataTreeChangeService domDataTreeChangeService,
+            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
+            Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {
         this.pingPongDataBroker = pingPongDataBroker;
-        DOMDataTreeChangeService domDataTreeService = (DOMDataTreeChangeService)
-                pingPongDataBroker.getSupportedExtensions().get(DOMDataTreeChangeService.class);
-        if (domDataTreeService  != null) {
-            this.domDataTreeChangeService = domDataTreeService;
-        } else {
-            throw new IllegalArgumentException("Received DOMDataBroker instance does not provide "
-                    + "DOMDataTreeChangeService functionality. Expected PingPongDataBroker or similar instance,"
-                    + " received toString(): " + pingPongDataBroker);
-        }
+        this.domDataTreeChangeService = domDataTreeChangeService;
         this.schemaHolder = schemaHolder;
         this.rpcServices = rpcServices;
         this.fromNormalizedNode = fromNormalizedNode;

@@ -14,6 +14,7 @@ import java.util.Map;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
@@ -59,6 +60,7 @@ public interface ModelAdapter {
      * @return new instance of model specific TopologyRequestListener
      */
     TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
+            DOMDataTreeChangeService domDataTreeChangeService,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters);
 

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
@@ -38,10 +39,11 @@ public class NTTopologyRequestListener extends TopologyRequestListener {
     private Set<QName> correlationHashSet;
     private Set<QName> linkComputationHashSet;
 
-    public NTTopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
+    public NTTopologyRequestListener(DOMDataBroker dataBroker, DOMDataTreeChangeService domDataTreeChangeService,
+            BindingNormalizedNodeSerializer nodeSerializer,
             GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
             Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
-        super(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
+        super(dataBroker, domDataTreeChangeService, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
         correlationHashSet = new HashSet<>();
         correlationHashSet.add(TopologyQNames.TOPOLOGY_CORRELATION_AUGMENT);
         linkComputationHashSet = new HashSet<>();
@@ -66,10 +68,11 @@ public class NTTopologyRequestListener extends TopologyRequestListener {
 
     @Override
     protected TopologyRequestHandler createTopologyRequestHandler(DOMDataBroker dataBroker,
-            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
-            Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {
+            DOMDataTreeChangeService domDataTreeChangeService, GlobalSchemaContextHolder schemaHolder,
+            RpcServices rpcServices, Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {
 
-        return new NTTopologyRequestHandler(dataBroker, schemaHolder, rpcServices, fromNormalizedNode);
+        return new NTTopologyRequestHandler(dataBroker, domDataTreeChangeService, schemaHolder, rpcServices,
+                fromNormalizedNode);
     }
 
 }
