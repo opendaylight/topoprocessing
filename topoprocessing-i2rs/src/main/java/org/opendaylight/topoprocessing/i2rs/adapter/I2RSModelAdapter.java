@@ -57,10 +57,12 @@ public class I2RSModelAdapter implements ModelAdapter {
 
     @Override
     public TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
+            DOMDataTreeChangeService domDataTreeChangeService,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
 
-        return new I2RSTopologyRequestListener(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
+        return new I2RSTopologyRequestListener(dataBroker, domDataTreeChangeService, nodeSerializer, schemaHolder,
+                rpcServices, modelAdapters);
     }
 
     @Override

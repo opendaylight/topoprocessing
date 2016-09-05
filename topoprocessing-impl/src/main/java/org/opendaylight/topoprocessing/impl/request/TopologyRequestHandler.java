@@ -86,7 +86,7 @@ import com.google.common.base.Preconditions;
 public abstract class TopologyRequestHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyRequestHandler.class);
-    private final DOMDataBroker pingPongDataBroker;
+    private final DOMDataBroker domDataBroker;
     private final DOMDataTreeChangeService domDataTreeChangeService;
     private PathTranslator translator = new PathTranslator();
     private List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
@@ -109,18 +109,11 @@ public abstract class TopologyRequestHandler {
      * @param rpcServices           rpc services needed for rpc republishing
      * @param fromNormalizedNode    Normalized node with topology information
      */
-    public TopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder,
-            RpcServices rpcServices,Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {
-        this.pingPongDataBroker = domDataBroker;
-        DOMDataTreeChangeService domDataTreeService = (DOMDataTreeChangeService)
-                domDataBroker.getSupportedExtensions().get(DOMDataTreeChangeService.class);
-        if (domDataTreeService  != null) {
-            this.domDataTreeChangeService = domDataTreeService;
-        } else {
-            throw new IllegalArgumentException("Received DOMDataBroker instance does not provide "
-                    + "DOMDataTreeChangeService functionality. Expected PingPongDataBroker or similar instance,"
-                    + " received toString(): " + domDataBroker);
-        }
+    public TopologyRequestHandler(DOMDataBroker domDataBroker, DOMDataTreeChangeService domDataTreeChangeService,
+            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
+            Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {
+        this.domDataBroker = domDataBroker;
+        this.domDataTreeChangeService = domDataTreeChangeService;
         this.schemaHolder = schemaHolder;
         this.rpcServices = rpcServices;
         this.fromNormalizedNode = fromNormalizedNode;
@@ -166,7 +159,7 @@ public abstract class TopologyRequestHandler {
     public void setModelAdapters(Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
         this.modelAdapters = modelAdapters;
         writer.setTranslator(modelAdapters.get(outputModel).createOverlayItemTranslator());
-        transactionChain = pingPongDataBroker.createTransactionChain(writer);
+        transactionChain = domDataBroker.createTransactionChain(writer);
         writer.setTransactionChain(transactionChain);
         topologyManager = new TopologyManager(rpcServices, schemaHolder,
                 modelAdapters.get(outputModel).createTopologyIdentifier(topologyId).build(), outputModel);

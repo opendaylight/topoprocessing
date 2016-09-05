@@ -26,9 +26,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
@@ -103,7 +103,8 @@ public class I2RSTopologyRequestHandlerTest {
     @Mock private DOMDataWriteTransaction mockDomDataWriteTransaction;
     @Mock private CheckedFuture<Void, TransactionCommitFailedException> domCheckedFuture;
     @Mock private SchemaContext mockGlobalSchemaContext;
-    @Mock private ListenerRegistration<DOMDataChangeListener> mockDOMDataChangeListener;
+    @Mock private ListenerRegistration<DOMDataTreeChangeListener> mockDOMDataTreeChangeListenerRegistrations;
+    @Mock private DOMDataTreeChangeService mockDomDataTreeChangeService;
     @Mock private Map.Entry<InstanceIdentifier<?>,DataObject> mockFromNormalizedNode;
 
     private YangInstanceIdentifier pathIdentifier;
@@ -133,14 +134,16 @@ public class I2RSTopologyRequestHandlerTest {
         CheckedFuture mockReadFuture = Mockito.mock(CheckedFuture.class);
         Mockito.when(mockTransaction.read((LogicalDatastoreType) Matchers.any(),
                 (YangInstanceIdentifier) Matchers.any())).thenReturn(mockReadFuture);
+        Mockito.when(mockDomDataTreeChangeService.registerDataTreeChangeListener(any(), any()))
+            .thenReturn(mockDOMDataTreeChangeListenerRegistrations);
     }
 
     @Test (expected = NullPointerException.class)
     public void testTopologyWithoutAugmentation() {
         NetworkBuilder networkBuilder = createNetworkBuilder(TOPO1);
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -160,8 +163,8 @@ public class I2RSTopologyRequestHandlerTest {
         correlationAugmentBuilder.setCorrelations(cBuilder.build());
         networkBuilder.addAugmentation(I2rsCorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -190,8 +193,8 @@ public class I2RSTopologyRequestHandlerTest {
                 null, CorrelationItemEnum.Node);
         networkBuilder.addAugmentation(I2rsCorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -202,8 +205,8 @@ public class I2RSTopologyRequestHandlerTest {
                 null, CorrelationItemEnum.Node);
         networkBuilder.addAugmentation(I2rsCorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -214,8 +217,8 @@ public class I2RSTopologyRequestHandlerTest {
                 null, CorrelationItemEnum.Node);
         networkBuilder.addAugmentation(I2rsCorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -226,8 +229,8 @@ public class I2RSTopologyRequestHandlerTest {
                 null, CorrelationItemEnum.Node);
         networkBuilder.addAugmentation(I2rsCorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -240,8 +243,8 @@ public class I2RSTopologyRequestHandlerTest {
                 aggBuilder.build(), CorrelationItemEnum.Node);
         networkBuilder.addAugmentation(I2rsCorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -268,8 +271,8 @@ public class I2RSTopologyRequestHandlerTest {
                 aggBuilder.build(), null);
         networkBuilder.addAugmentation(I2rsCorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
 
         Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
                 (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);
@@ -303,8 +306,8 @@ public class I2RSTopologyRequestHandlerTest {
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
         // CONFIGURATION listener registration
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(LogicalDatastoreType.CONFIGURATION);
 
@@ -316,8 +319,8 @@ public class I2RSTopologyRequestHandlerTest {
         handler.processNewRequest();
         Assert.assertEquals(1, listeners.size());
         // OPERATIONAL listener registration
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
@@ -355,8 +358,8 @@ public class I2RSTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
 
@@ -365,6 +368,8 @@ public class I2RSTopologyRequestHandlerTest {
         handler.setTranslator(mockTranslator);
         List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
+        Mockito.when(mockDomDataTreeChangeService.registerDataTreeChangeListener(any(), any()))
+            .thenReturn(mockDOMDataTreeChangeListenerRegistrations);
         handler.processNewRequest();
         Assert.assertEquals(1, listeners.size());
     }
@@ -395,8 +400,8 @@ public class I2RSTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
         handler.setFiltrators(DefaultFiltrators.getDefaultFiltrators());
@@ -409,8 +414,8 @@ public class I2RSTopologyRequestHandlerTest {
         handler.processNewRequest();
         Assert.assertEquals(1, listeners.size());
         // test registration CONFIGURATION listener registration
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(LogicalDatastoreType.CONFIGURATION);
         handler.setFiltrators(DefaultFiltrators.getDefaultFiltrators());
@@ -428,7 +433,7 @@ public class I2RSTopologyRequestHandlerTest {
         testUnificationCase();
 
         handler.processDeletionRequest(0);
-        Assert.assertTrue("Listener wasn't closed", testingBroker.getListenerClosed());
+        Mockito.verify(mockDOMDataTreeChangeListenerRegistrations).close();
         Assert.assertEquals(0, handler.getListeners().size());
     }
 
@@ -444,8 +449,8 @@ public class I2RSTopologyRequestHandlerTest {
                 aggBuilder.build(), CorrelationItemEnum.Node);
         networkBuilder.addAugmentation(I2rsCorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) networkBuilder.build());
-        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new I2RSTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setDatastoreType(LogicalDatastoreType.CONFIGURATION);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
