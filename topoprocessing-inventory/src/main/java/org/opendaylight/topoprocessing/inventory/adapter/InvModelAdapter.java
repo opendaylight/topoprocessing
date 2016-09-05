@@ -57,9 +57,11 @@ public class InvModelAdapter implements ModelAdapter {
 
     @Override
     public TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
-            BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
-            RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
-        return new InvTopologyRequestListener(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
+            DOMDataTreeChangeService domDataTreeChangeService, BindingNormalizedNodeSerializer nodeSerializer,
+            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, Map<Class<? extends Model>,
+            ModelAdapter> modelAdapters) {
+        return new InvTopologyRequestListener(dataBroker, domDataTreeChangeService, nodeSerializer, schemaHolder,
+                rpcServices, modelAdapters);
     }
 
     @Override
