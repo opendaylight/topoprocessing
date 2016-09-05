@@ -56,9 +56,11 @@ public class IRModelAdapter implements ModelAdapter {
 
     @Override
     public TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
+            DOMDataTreeChangeService domDataTreeChangeService,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
-        return new IRTopologyRequestListener(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
+        return new IRTopologyRequestListener(dataBroker, domDataTreeChangeService, nodeSerializer, schemaHolder,
+                rpcServices, modelAdapters);
     }
 
     @Override
