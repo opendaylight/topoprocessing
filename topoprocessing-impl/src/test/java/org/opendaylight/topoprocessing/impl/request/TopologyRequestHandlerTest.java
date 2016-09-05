@@ -30,6 +30,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.broker.impl.PingPongDataBroker;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
@@ -119,6 +120,8 @@ public class TopologyRequestHandlerTest {
     private GlobalSchemaContextHolder schemaHolderMock;
     @Mock
     private TargetField targetFieldMock;
+    @Mock
+    private DOMDataTreeChangeService domDataTreeChangeServiceMock;
 
 
     private TestTopologyRequestHandler handler;
@@ -128,7 +131,8 @@ public class TopologyRequestHandlerTest {
     public void init() {
         TestingDOMDataBroker testingDOMbroker = new TestingDOMDataBroker();
         PingPongDataBroker pingPongBroker = new PingPongDataBroker(testingDOMbroker);
-        handler = new TestTopologyRequestHandler(pingPongBroker,schemaHolderMock,rpcServicesMock,null);
+        handler = new TestTopologyRequestHandler(pingPongBroker, domDataTreeChangeServiceMock, schemaHolderMock,
+                rpcServicesMock, null);
         handler.setTranslator(pathTranslatorMock);
         handler.setFiltrators(filtratorsMock);
         handler.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
@@ -425,9 +429,10 @@ public class TopologyRequestHandlerTest {
         private boolean aggregationOfNodesAndTps = false;
         private LinkComputation linkComputationReturn;
 
-        public TestTopologyRequestHandler(DOMDataBroker dataBroker, GlobalSchemaContextHolder schemaHolder,
-                RpcServices rpcServices, Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
-            super(dataBroker, schemaHolder, rpcServices, fromNormalizedNode);
+        public TestTopologyRequestHandler(DOMDataBroker dataBroker, DOMDataTreeChangeService domDataTreeChangeService,
+                GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
+                Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
+            super(dataBroker, domDataTreeChangeService, schemaHolder, rpcServices, fromNormalizedNode);
         }
 
         @Override
