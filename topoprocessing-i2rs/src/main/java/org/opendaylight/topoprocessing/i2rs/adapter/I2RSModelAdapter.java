@@ -13,6 +13,7 @@ import java.util.Map;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.i2rs.listener.I2RSUnderlayTopologyListener;
 import org.opendaylight.topoprocessing.i2rs.request.I2RSTopologyRequestListener;
@@ -56,10 +57,12 @@ public class I2RSModelAdapter implements ModelAdapter {
 
     @Override
     public TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
+            DOMDataTreeChangeService domDataTreeChangeService,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
 
-        return new I2RSTopologyRequestListener(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
+        return new I2RSTopologyRequestListener(dataBroker, domDataTreeChangeService, nodeSerializer, schemaHolder,
+                rpcServices, modelAdapters);
     }
 
     @Override
