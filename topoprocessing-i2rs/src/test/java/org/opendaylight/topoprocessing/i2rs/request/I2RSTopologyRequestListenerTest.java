@@ -101,8 +101,8 @@ public class I2RSTopologyRequestListenerTest {
         brokerExtensions.put(DOMDataTreeChangeService.class, mockDataTreeChangeService);
         Mockito.when(mockBroker.getSupportedExtensions()).thenReturn(brokerExtensions);
         modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
-        listener = new I2RSTopologyRequestListener(mockBroker, mockNodeSerializer, mockSchemaHolder,
-                mockRpcServices, modelAdapters);
+        listener = new I2RSTopologyRequestListener(mockBroker, mockDataTreeChangeService, mockNodeSerializer,
+                mockSchemaHolder, mockRpcServices, modelAdapters);
         listener.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
 
         Mockito.when(mockRpcServices.getRpcService()).thenReturn(Mockito.mock(DOMRpcService.class));
