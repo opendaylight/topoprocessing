@@ -60,6 +60,7 @@ public interface ModelAdapter {
      * @return new instance of model specific TopologyRequestListener
      */
     TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
+            DOMDataTreeChangeService domDataTreeChangeService,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters);
 

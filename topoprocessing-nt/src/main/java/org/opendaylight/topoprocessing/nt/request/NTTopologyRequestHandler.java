@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
@@ -29,9 +30,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public class NTTopologyRequestHandler extends TopologyRequestHandler {
 
-    public NTTopologyRequestHandler(DOMDataBroker domDataBroker, GlobalSchemaContextHolder schemaHolder,
-            RpcServices rpcServices, Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {
-        super(domDataBroker, schemaHolder, rpcServices, fromNormalizedNode);
+    public NTTopologyRequestHandler(DOMDataBroker domDataBroker, DOMDataTreeChangeService domDataTreeChangeService,
+            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
+            Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {
+        super(domDataBroker, domDataTreeChangeService, schemaHolder, rpcServices, fromNormalizedNode);
     }
 
     @Override

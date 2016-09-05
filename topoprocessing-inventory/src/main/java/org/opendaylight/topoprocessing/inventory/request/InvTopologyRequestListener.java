@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestHandler;
@@ -38,10 +39,10 @@ public class InvTopologyRequestListener extends TopologyRequestListener {
     private Set<QName> correlationHashSet;
     private Set<QName> linkComputationHashSet;
 
-    public InvTopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
-            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices, Map<Class<? extends Model>,
-            ModelAdapter> modelAdapters) {
-        super(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
+    public InvTopologyRequestListener(DOMDataBroker dataBroker, DOMDataTreeChangeService domDataTreeChangeService,
+            BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
+            RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
+        super(dataBroker, domDataTreeChangeService, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
         correlationHashSet = new HashSet<>();
         correlationHashSet.add(TopologyQNames.TOPOLOGY_CORRELATION_AUGMENT);
         linkComputationHashSet = new HashSet<>();
@@ -50,7 +51,6 @@ public class InvTopologyRequestListener extends TopologyRequestListener {
 
     @Override
     protected boolean isTopology(NormalizedNode<?, ?> normalizedNode) {
-
         return normalizedNode.getNodeType().equals(Topology.QNAME);
     }
 
@@ -66,10 +66,12 @@ public class InvTopologyRequestListener extends TopologyRequestListener {
 
     @Override
     protected TopologyRequestHandler createTopologyRequestHandler(DOMDataBroker dataBroker,
+            DOMDataTreeChangeService domDataTreeChangeService,
             GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
             Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {
 
-        return new InvTopologyRequestHandler(dataBroker, schemaHolder, rpcServices, fromNormalizedNode);
+        return new InvTopologyRequestHandler(dataBroker, domDataTreeChangeService, schemaHolder, rpcServices,
+                fromNormalizedNode);
     }
 
 }

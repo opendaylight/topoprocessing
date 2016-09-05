@@ -20,19 +20,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainClosedException;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
@@ -85,7 +83,6 @@ import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
-import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.CheckedFuture;
@@ -96,6 +93,7 @@ public class NTTopologyRequestHandlerTest {
     private static final String TOPO1 = "TOPO1";
 
     @Mock private DOMDataBroker mockDomDataBroker;
+    @Mock private DOMDataTreeChangeService mockDomDataTreeChangeService;
     @Mock private PathTranslator mockTranslator;
     @Mock private GlobalSchemaContextHolder mockSchemaHolder;
     @Mock private RpcServices mockRpcServices;
@@ -104,14 +102,12 @@ public class NTTopologyRequestHandlerTest {
     @Mock private DOMTransactionChain mockDomTransactionChain;
     @Mock private DOMDataWriteTransaction mockDomDataWriteTransaction;
     @Mock private CheckedFuture<Void, TransactionCommitFailedException> domCheckedFuture;
-    @Mock private SchemaContext mockGlobalSchemaContext;
-    @Mock private ListenerRegistration<DOMDataChangeListener> mockDOMDataChangeListener;
+    @Mock private ListenerRegistration<DOMDataTreeChangeListener> mockDOMDataTreeChangeListenerRegistrations;
     @Mock private Map.Entry<InstanceIdentifier<?>,DataObject> mockFromNormalizedNode;
 
     private YangInstanceIdentifier pathIdentifier;
-    private Topology topology;
     private TopologyRequestHandler handler;
-    private InstanceIdentifier<?> identifier = InstanceIdentifier.create(Topology.class);
+    private final InstanceIdentifier<?> identifier = InstanceIdentifier.create(Topology.class);
 
     private PingPongDataBroker pingPongDataBroker;
     private TestingDOMDataBroker testingBroker;
@@ -137,16 +133,18 @@ public class NTTopologyRequestHandlerTest {
         DOMDataReadOnlyTransaction mockTransaction = Mockito.mock(DOMDataReadOnlyTransaction.class);
         Mockito.when(mockDomDataBroker.newReadOnlyTransaction()).thenReturn(mockTransaction);
         CheckedFuture mockReadFuture = Mockito.mock(CheckedFuture.class);
-        Mockito.when(mockTransaction.read((LogicalDatastoreType) Matchers.any(),
-                (YangInstanceIdentifier) Matchers.any())).thenReturn(mockReadFuture);
+        Mockito.when(mockTransaction.read((LogicalDatastoreType) any(),
+                (YangInstanceIdentifier) any())).thenReturn(mockReadFuture);
+        Mockito.when(mockDomDataTreeChangeService.registerDataTreeChangeListener(any(), any()))
+            .thenReturn(mockDOMDataTreeChangeListenerRegistrations);
     }
 
     @Test (expected = NullPointerException.class)
     public void testTopologyWithoutAugmentation() {
         TopologyBuilder topoBuilder = createTopologyBuilder(TOPO1);
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -166,8 +164,8 @@ public class NTTopologyRequestHandlerTest {
         correlationAugmentBuilder.setCorrelations(cBuilder.build());
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -196,8 +194,8 @@ public class NTTopologyRequestHandlerTest {
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -208,8 +206,8 @@ public class NTTopologyRequestHandlerTest {
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -220,8 +218,8 @@ public class NTTopologyRequestHandlerTest {
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -232,8 +230,8 @@ public class NTTopologyRequestHandlerTest {
                 null, CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -246,8 +244,8 @@ public class NTTopologyRequestHandlerTest {
                 aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.processNewRequest();
     }
 
@@ -274,8 +272,8 @@ public class NTTopologyRequestHandlerTest {
                 aggBuilder.build(), null);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
 
         Mockito.when(mockTranslator.translate((String) any(), (CorrelationItemEnum) any(),
                 (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);
@@ -309,8 +307,8 @@ public class NTTopologyRequestHandlerTest {
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(NetworkTopologyModel.class, new NTModelAdapter());
         // CONFIGURATION listener registration
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(LogicalDatastoreType.CONFIGURATION);
 
@@ -319,15 +317,13 @@ public class NTTopologyRequestHandlerTest {
         handler.setTranslator(mockTranslator);
         List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
-        Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.CONFIGURATION),
-                (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
-                Mockito.eq(DataChangeScope.SUBTREE)))
-                .thenReturn(mockDOMDataChangeListener);
+        Mockito.when(mockDomDataTreeChangeService.registerDataTreeChangeListener(any(), any()))
+            .thenReturn(mockDOMDataTreeChangeListenerRegistrations);
         handler.processNewRequest();
         Assert.assertEquals(1, listeners.size());
         // OPERATIONAL listener registration
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
@@ -335,10 +331,8 @@ public class NTTopologyRequestHandlerTest {
         handler.setTranslator(mockTranslator);
         listeners = new ArrayList<>();
         handler.setListeners(listeners);
-        Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.OPERATIONAL),
-                (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
-                Mockito.eq(DataChangeScope.SUBTREE)))
-                .thenReturn(mockDOMDataChangeListener);
+        Mockito.when(mockDomDataTreeChangeService.registerDataTreeChangeListener(any(), any()))
+            .thenReturn(mockDOMDataTreeChangeListenerRegistrations);
         handler.processNewRequest();
         Assert.assertEquals(1, listeners.size());
     }
@@ -369,8 +363,8 @@ public class NTTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(NetworkTopologyModel.class, new NTModelAdapter());
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
 
@@ -379,10 +373,8 @@ public class NTTopologyRequestHandlerTest {
         handler.setTranslator(mockTranslator);
         List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
-        Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.OPERATIONAL),
-                (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
-                Mockito.eq(DataChangeScope.SUBTREE)))
-                .thenReturn(mockDOMDataChangeListener);
+        Mockito.when(mockDomDataTreeChangeService.registerDataTreeChangeListener(any(), any()))
+            .thenReturn(mockDOMDataTreeChangeListenerRegistrations);
         handler.processNewRequest();
         Assert.assertEquals(1, listeners.size());
     }
@@ -413,8 +405,8 @@ public class NTTopologyRequestHandlerTest {
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
         modelAdapters.put(NetworkTopologyModel.class, new NTModelAdapter());
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
         handler.setFiltrators(DefaultFiltrators.getDefaultFiltrators());
@@ -424,15 +416,13 @@ public class NTTopologyRequestHandlerTest {
         handler.setTranslator(mockTranslator);
         List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
-        Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.OPERATIONAL),
-                (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
-                Mockito.eq(DataChangeScope.SUBTREE)))
-                .thenReturn(mockDOMDataChangeListener);
+        Mockito.when(mockDomDataTreeChangeService.registerDataTreeChangeListener(any(), any()))
+            .thenReturn(mockDOMDataTreeChangeListenerRegistrations);
         handler.processNewRequest();
         Assert.assertEquals(1, listeners.size());
         // test registration CONFIGURATION listener registration
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setModelAdapters(modelAdapters);
         handler.setDatastoreType(LogicalDatastoreType.CONFIGURATION);
         handler.setFiltrators(DefaultFiltrators.getDefaultFiltrators());
@@ -441,10 +431,8 @@ public class NTTopologyRequestHandlerTest {
                 (GlobalSchemaContextHolder) any(), (Class<? extends Model>) any())).thenReturn(pathIdentifier);
         handler.setTranslator(mockTranslator);
         handler.setListeners(listeners);
-        Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.CONFIGURATION),
-                (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
-                Mockito.eq(DataChangeScope.SUBTREE)))
-                .thenReturn(mockDOMDataChangeListener);
+        Mockito.when(mockDomDataTreeChangeService.registerDataTreeChangeListener(any(), any()))
+            .thenReturn(mockDOMDataTreeChangeListenerRegistrations);
         handler.processNewRequest();
         Assert.assertEquals(2, listeners.size());
     }
@@ -454,7 +442,7 @@ public class NTTopologyRequestHandlerTest {
         testUnificationCase();
 
         handler.processDeletionRequest(0);
-        Assert.assertTrue("Listener wasn't closed", testingBroker.getListenerClosed());
+        Mockito.verify(mockDOMDataTreeChangeListenerRegistrations).close();
         Assert.assertEquals(0, handler.getListeners().size());
     }
 
@@ -470,8 +458,8 @@ public class NTTopologyRequestHandlerTest {
                 aggBuilder.build(), CorrelationItemEnum.Node);
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
-        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockSchemaHolder, mockRpcServices,
-                (Entry<InstanceIdentifier<?>, DataObject>) entry);
+        handler = new NTTopologyRequestHandler(pingPongDataBroker, mockDomDataTreeChangeService, mockSchemaHolder,
+                mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
         handler.setDatastoreType(LogicalDatastoreType.CONFIGURATION);
 
         Mockito.when(mockTranslator.translate((String) any(), Mockito.eq(CorrelationItemEnum.Node),
@@ -479,10 +467,8 @@ public class NTTopologyRequestHandlerTest {
         handler.setTranslator(mockTranslator);
         List<ListenerRegistration<DOMDataTreeChangeListener>> listeners = new ArrayList<>();
         handler.setListeners(listeners);
-        Mockito.when(mockDomDataBroker.registerDataChangeListener(Mockito.eq(LogicalDatastoreType.CONFIGURATION),
-                (YangInstanceIdentifier) any(), (DOMDataChangeListener) any(),
-                Mockito.eq(DataChangeScope.SUBTREE)))
-                .thenReturn(mockDOMDataChangeListener);
+        Mockito.when(mockDomDataTreeChangeService.registerDataTreeChangeListener(any(), any()))
+            .thenReturn(mockDOMDataTreeChangeListenerRegistrations);
         handler.processNewRequest();
         Assert.assertEquals(0, listeners.size());
         // process deletion request
@@ -523,7 +509,8 @@ public class NTTopologyRequestHandlerTest {
         topoBuilder.addAugmentation(CorrelationAugment.class, correlationAugmentBuilder.build());
         Entry<?, DataObject> entry = Maps.immutableEntry(identifier, (DataObject) topoBuilder.build());
         NTTopologyRequestHandler handler = new NTTopologyRequestHandler(pingPongDataBroker,
-                mockSchemaHolder, mockRpcServices, (Entry<InstanceIdentifier<?>, DataObject>) entry);
+                mockDomDataTreeChangeService, mockSchemaHolder, mockRpcServices,
+                (Entry<InstanceIdentifier<?>, DataObject>) entry);
 
         Assert.assertEquals(handler.getLinkComputation(mockFromNormalizedNode), mockLinkComputation);
 

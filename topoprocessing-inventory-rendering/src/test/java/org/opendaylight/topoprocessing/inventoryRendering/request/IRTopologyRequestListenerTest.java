@@ -8,9 +8,13 @@
 
 package org.opendaylight.topoprocessing.inventoryRendering.request;
 
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,7 +28,6 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
@@ -60,13 +63,19 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNode;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNodes;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableAugmentationNodeBuilder;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractCheckedFuture;
 
@@ -84,12 +93,18 @@ public class IRTopologyRequestListenerTest {
     @Mock private BindingNormalizedNodeSerializer mockNodeSerializer;
     @Mock private GlobalSchemaContextHolder mockSchemaHolder;
     @Mock private RpcServices mockRpcServices;
-    @Mock private AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> mockChange;
     @Mock private DOMTransactionChain mockTransactionChain;
     @Mock private DOMDataWriteTransaction mockTransaction;
-    @Mock private UserDefinedFilter userDefinedFilter;
     @Mock private FiltratorFactory userDefinedFiltratorFactory;
-    private Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
+    @Mock private DataTreeCandidate mockRootChange;
+    @Mock private DataTreeCandidateNode mockRootNode;
+    @Mock private DataTreeCandidateNode mockTopology;
+    @Mock private PathArgument mockTopologyPathArgument;
+    private final Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
+    private Collection<DataTreeCandidate> changes;
+    private Collection<DataTreeCandidateNode> topologies;
+
+    private final YangInstanceIdentifier rootYangID = YangInstanceIdentifier.of(NetworkTopology.QNAME).node(Topology.QNAME);
 
     private class UserDefinedFilter extends FilterBase {
         // testing class for testing purpose
@@ -97,19 +112,27 @@ public class IRTopologyRequestListenerTest {
 
     @Before
     public void setUp() {
+        topologies = new LinkedList<>();
+        when(mockRootNode.getChildNodes()).thenReturn(topologies);
+        when(mockRootChange.getRootNode()).thenReturn(mockRootNode);
+        when(mockRootChange.getRootPath()).thenReturn(rootYangID);
+        when(mockTopology.getIdentifier()).thenReturn(mockTopologyPathArgument);
+        changes = new LinkedList<>();
+        changes.add(mockRootChange);
+
         Map<Class<? extends DOMDataBrokerExtension>, DOMDataBrokerExtension> brokerExtensions = new HashMap<>();
         brokerExtensions.put(DOMDataTreeChangeService.class, mockDataTreeChangeService);
-        Mockito.when(mockBroker.getSupportedExtensions()).thenReturn(brokerExtensions);
+        when(mockBroker.getSupportedExtensions()).thenReturn(brokerExtensions);
         modelAdapters.put(InventoryRenderingModel.class, new IRModelAdapter());
-        listener = new IRTopologyRequestListener(mockBroker, mockNodeSerializer, mockSchemaHolder, mockRpcServices,
-                modelAdapters);
+        listener = new IRTopologyRequestListener(mockBroker, mockDataTreeChangeService, mockNodeSerializer,
+                mockSchemaHolder, mockRpcServices, modelAdapters);
         listener.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
 
-        Mockito.when(mockRpcServices.getRpcService()).thenReturn(Mockito.mock(DOMRpcService.class));
-        Mockito.when(mockBroker.createTransactionChain((TransactionChainListener) Matchers.any())).thenReturn(
+        when(mockRpcServices.getRpcService()).thenReturn(Mockito.mock(DOMRpcService.class));
+        when(mockBroker.createTransactionChain((TransactionChainListener) Matchers.any())).thenReturn(
                 mockTransactionChain);
-        Mockito.when(mockTransactionChain.newWriteOnlyTransaction()).thenReturn(mockTransaction);
-        Mockito.when(mockTransaction.submit()).thenReturn(Mockito.mock(AbstractCheckedFuture.class));
+        when(mockTransactionChain.newWriteOnlyTransaction()).thenReturn(mockTransaction);
+        when(mockTransaction.submit()).thenReturn(Mockito.mock(AbstractCheckedFuture.class));
     }
 
     @Test
@@ -118,14 +141,14 @@ public class IRTopologyRequestListenerTest {
                 .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPO_NAME).build();
         MapEntryNode node = ImmutableNodes.mapEntryBuilder(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPO_NAME)
                 .addChild(createAugNode()).build();
-        Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map = new HashMap<>();
-        map.put(yiid, node);
-        Mockito.when(mockChange.getCreatedData()).thenReturn(map);
+        when(mockRootNode.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        DataTreeCandidateNode topologyCandidateNode = DataTreeCandidateNodes.fromNormalizedNode(node);
+        topologies.add(topologyCandidateNode);
         // augmentation
         CorrelationAugment mockCorrelationAugument = Mockito.mock(CorrelationAugment.class);
         Correlations mockCorrelations = Mockito.mock(Correlations.class);
-        Mockito.when(mockCorrelationAugument.getCorrelations()).thenReturn(mockCorrelations);
-        Mockito.when(mockCorrelations.getCorrelation()).thenReturn(new ArrayList<Correlation>());
+        when(mockCorrelationAugument.getCorrelations()).thenReturn(mockCorrelations);
+        when(mockCorrelations.getCorrelation()).thenReturn(new ArrayList<Correlation>());
         Answer<Class<? extends Model>> answer = new Answer<Class<? extends Model>>() {
             @Override
             public Class<? extends Model> answer(InvocationOnMock invocation)
@@ -133,7 +156,7 @@ public class IRTopologyRequestListenerTest {
                 return InventoryRenderingModel.class;
             }
         };
-        Mockito.when(mockCorrelations.getOutputModel()).then(answer);
+        when(mockCorrelations.getOutputModel()).then(answer);
         // topology
         TopologyBuilder topoBuilder = new TopologyBuilder();
         TopologyId topoId = TopologyId.getDefaultInstance(TOPO_NAME);
@@ -143,11 +166,11 @@ public class IRTopologyRequestListenerTest {
                 .build();
         Map.Entry<? extends InstanceIdentifier<?>, DataObject> topoEntry = Maps.immutableEntry(
                 (InstanceIdentifier<?>) Mockito.mock(InstanceIdentifier.class), (DataObject) topology);
-        Mockito.when(mockNodeSerializer.fromNormalizedNode(
+        when(mockNodeSerializer.fromNormalizedNode(
                 (YangInstanceIdentifier) Matchers.any(), (NormalizedNode<?, ?>) Matchers.any())).thenReturn(
                 (Map.Entry<InstanceIdentifier<?>, DataObject>) topoEntry);
 
-        listener.onDataChanged(mockChange);
+        listener.onDataTreeChanged(changes);
         TopologyRequestHandler handler = listener.getTopoRequestHandlers().get(yiid);
         Assert.assertNotNull("RequestHandler should be created", handler);
     }
@@ -169,11 +192,11 @@ public class IRTopologyRequestListenerTest {
 
         MapNode node = ImmutableNodes.mapNodeBuilder(Topology.QNAME).withChild(
                 ImmutableNodes.mapEntry(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPO_NAME)).build();
-        Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map = new HashMap<>();
-        map.put(yiid, node);
-        Mockito.when(mockChange.getCreatedData()).thenReturn(map);
+        when(mockRootNode.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        DataTreeCandidateNode topologyCandidateNode = DataTreeCandidateNodes.fromNormalizedNode(node);
+        topologies.add(topologyCandidateNode);
 
-        listener.onDataChanged(mockChange);
+        listener.onDataTreeChanged(changes);
         Mockito.verify(mockNodeSerializer, Mockito.times(0)).fromNormalizedNode(
                 (YangInstanceIdentifier) Matchers.any(), (NormalizedNode<?, ?>) Matchers.any());
     }
@@ -186,11 +209,11 @@ public class IRTopologyRequestListenerTest {
                 .node(Node.QNAME)
                 .build();
         MapNode node = ImmutableNodes.mapNodeBuilder(Node.QNAME).build();
-        Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map = new HashMap<>();
-        map.put(yiid, node);
-        Mockito.when(mockChange.getCreatedData()).thenReturn(map);
+        when(mockRootNode.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        DataTreeCandidateNode topologyCandidateNode = DataTreeCandidateNodes.fromNormalizedNode(node);
+        topologies.add(topologyCandidateNode);
 
-        listener.onDataChanged(mockChange);
+        listener.onDataTreeChanged(changes);
         Mockito.verify(mockNodeSerializer, Mockito.times(0)).fromNormalizedNode(
                 (YangInstanceIdentifier) Matchers.any(), (NormalizedNode<?, ?>) Matchers.any());
     }
@@ -200,14 +223,17 @@ public class IRTopologyRequestListenerTest {
         YangInstanceIdentifier yiid = YangInstanceIdentifier.builder().node(NetworkTopology.QNAME).node(Topology.QNAME)
                 .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPO_NAME).build();
         Map<YangInstanceIdentifier, TopologyRequestHandler> handlers = listener.getTopoRequestHandlers();
+        MapEntryNode node = ImmutableNodes.mapEntryBuilder(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPO_NAME)
+                .addChild(createAugNode()).build();
         // pre insert topology request handler
         TopologyRequestHandler mockRequestHandler = Mockito.mock(TopologyRequestHandler.class);
         handlers.put(yiid, mockRequestHandler);
         // process removal
-        Set<YangInstanceIdentifier> removedPaths = new HashSet<>();
-        removedPaths.add(yiid);
-        Mockito.when(mockChange.getRemovedPaths()).thenReturn(removedPaths);
-        listener.onDataChanged(mockChange);
+        when(mockRootNode.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        when(mockTopology.getDataAfter()).thenReturn(Optional.absent());
+        when(mockTopology.getIdentifier()).thenReturn(node.getIdentifier());
+        topologies.add(mockTopology);
+        listener.onDataTreeChanged(changes);
         Mockito.verify(mockRequestHandler).processDeletionRequest(0);
         Assert.assertEquals("RequestHandlersMap should be empty", 0, handlers.size());
     }
