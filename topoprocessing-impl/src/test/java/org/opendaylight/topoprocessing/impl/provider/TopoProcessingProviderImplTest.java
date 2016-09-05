@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,11 +24,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataBrokerExtension;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.sal.core.api.Broker;
@@ -40,7 +43,6 @@ import org.opendaylight.topoprocessing.impl.listener.GlobalSchemaContextListener
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
-import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.InventoryRenderingModel;
@@ -61,7 +63,9 @@ import com.google.common.collect.SetMultimap;
 public class TopoProcessingProviderImplTest {
 
     @Mock
-    private DOMDataBroker dataBrokerMock;
+    private DOMDataBroker domDataBrokerMock;
+    @Mock
+    private DOMDataTreeChangeService domDataTreeChangeServiceMock;
     @Mock
     private SchemaService schemaMock;
     @Mock
@@ -71,7 +75,7 @@ public class TopoProcessingProviderImplTest {
     @Mock
     private ListenerRegistration<SchemaContextListener> listenerSchemaRegistrationMock;
     @Mock
-    private ListenerRegistration<DOMDataChangeListener> listenerRegistrationMock;
+    private ListenerRegistration<TopologyRequestListener> listenerRegistrationMock;
     @Mock
     private ModelAdapter modelAdapterMock;
     @Mock
@@ -121,11 +125,15 @@ public class TopoProcessingProviderImplTest {
         when(sessionMock.getService(DOMRpcProviderService.class)).thenReturn(rpcProviderServiceMock);
         provider = new TopoProcessingProviderImpl();
         provider.setSchemaService(schemaMock);
-        provider.setDataBroker(dataBrokerMock);
+        provider.setDataBroker(domDataBrokerMock);
         provider.setNodeSerializer(serializerMock);
         provider.setRpcServices(rpcServicesMock);
         provider.setDataStoreType(LogicalDatastoreType.CONFIGURATION);
         provider.setBroker(brokerMock);
+        provider.setDomDataTreeChangeService(domDataTreeChangeServiceMock);
+        Map<Class<? extends DOMDataBrokerExtension>, DOMDataBrokerExtension> brokerExtensions = new HashMap<>();
+        brokerExtensions.put(DOMDataTreeChangeService.class, domDataTreeChangeServiceMock);
+        Mockito.when(domDataBrokerMock.getSupportedExtensions()).thenReturn(brokerExtensions);
     }
 
     @Test
@@ -144,6 +152,7 @@ public class TopoProcessingProviderImplTest {
         when(schemaMock.registerSchemaContextListener((GlobalSchemaContextListener)any()))
             .thenReturn(listenerSchemaRegistrationMock);
         provider.startup();
+        provider.registerModelAdapter(I2rsModel.class, modelAdapterMock);
         provider.close();
         verify(listenerSchemaRegistrationMock,times(1)).close();
         verify(listenerRegistrationMock,times(1)).close();
@@ -153,6 +162,7 @@ public class TopoProcessingProviderImplTest {
     public void registerFiltratorFactoryTest() {
         setTopologyRequestListener();
 
+        provider.registerModelAdapter(I2rsModel.class, modelAdapterMock);
         FiltratorFactory filtratorFactoryMock = mock(FiltratorFactory.class);
         provider.registerFiltratorFactory(FilterBase.class, filtratorFactoryMock);
         verify(topologyRequestListenerMock, times(1)).registerFiltrator(FilterBase.class, filtratorFactoryMock);
@@ -162,23 +172,15 @@ public class TopoProcessingProviderImplTest {
     public void unregisterFiltratorFactoryTest() {
         setTopologyRequestListener();
 
+        provider.registerModelAdapter(I2rsModel.class, modelAdapterMock);
         provider.unregisterFiltratorFactory(FilterBase.class);
         verify(topologyRequestListenerMock, times(1)).unregisterFiltrator(FilterBase.class);
     }
 
     @Test
     public void registerModelAdapterAndRegisterTopologyRequestListenerTest() {
-        ModelAdapter modelAdapterMock = mock(ModelAdapter.class);
+        setTopologyRequestListener();
 
-        when(modelAdapterMock.createTopologyRequestListener((DOMDataBroker)any(),
-                (BindingNormalizedNodeSerializer)any(), (GlobalSchemaContextHolder)any(), (RpcServices)any(),
-                (Map<Class<? extends Model>, ModelAdapter>)any())).thenReturn(topologyRequestListenerMock);
-        when(dataBrokerMock.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER, topologyRequestListenerMock, DataChangeScope.SUBTREE))
-                .thenReturn(listenerRegistrationMock);
-        when(dataBrokerMock.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                InstanceIdentifiers.TOPOLOGY_IDENTIFIER, topologyRequestListenerMock, DataChangeScope.SUBTREE))
-                .thenReturn(listenerRegistrationMock);
         int iterator = 0;
 
         try {
@@ -190,29 +192,22 @@ public class TopoProcessingProviderImplTest {
         provider.registerModelAdapter(I2rsModel.class, modelAdapterMock);
         provider.registerModelAdapter(NetworkTopologyModel.class, modelAdapterMock);
         verify(modelAdapterMock, times(2)).createTopologyRequestListener((DOMDataBroker)any(),
-                (BindingNormalizedNodeSerializer)any(), (GlobalSchemaContextHolder)any(), (RpcServices)any(),
-                (Map<Class<? extends Model>, ModelAdapter>)any());
+                (DOMDataTreeChangeService) any(), (BindingNormalizedNodeSerializer)any(),
+                (GlobalSchemaContextHolder)any(), (RpcServices)any(), (Map<Class<? extends Model>, ModelAdapter>)any());
 
         provider.registerModelAdapter(InventoryRenderingModel.class, modelAdapterMock);
         verify(modelAdapterMock, times(2)).createTopologyRequestListener((DOMDataBroker)any(),
-                (BindingNormalizedNodeSerializer)any(), (GlobalSchemaContextHolder)any(), (RpcServices)any(),
-                (Map<Class<? extends Model>, ModelAdapter>)any());
+                (DOMDataTreeChangeService) any(), (BindingNormalizedNodeSerializer)any(),
+                (GlobalSchemaContextHolder)any(), (RpcServices)any(), (Map<Class<? extends Model>, ModelAdapter>)any());
 
         assertEquals(1, iterator);
     }
 
     private void setTopologyRequestListener() {
-        ModelAdapter modelAdapterMock = mock(ModelAdapter.class);
-
-        when(modelAdapterMock.createTopologyRequestListener((DOMDataBroker)any(),
+        when(modelAdapterMock.createTopologyRequestListener((DOMDataBroker)any(), (DOMDataTreeChangeService) any(),
                 (BindingNormalizedNodeSerializer)any(), (GlobalSchemaContextHolder)any(), (RpcServices)any(),
                 (Map<Class<? extends Model>, ModelAdapter>)any())).thenReturn(topologyRequestListenerMock);
-        when(dataBrokerMock.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER, topologyRequestListenerMock, DataChangeScope.SUBTREE))
-                .thenReturn(listenerRegistrationMock);
-        when(dataBrokerMock.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                InstanceIdentifiers.TOPOLOGY_IDENTIFIER, topologyRequestListenerMock, DataChangeScope.SUBTREE))
-                .thenReturn(listenerRegistrationMock);
-        provider.registerModelAdapter(I2rsModel.class, modelAdapterMock);
+        when(domDataTreeChangeServiceMock.registerDataTreeChangeListener((DOMDataTreeIdentifier) any(),
+                (TopologyRequestListener) any())).thenReturn(listenerRegistrationMock);
     }
 }

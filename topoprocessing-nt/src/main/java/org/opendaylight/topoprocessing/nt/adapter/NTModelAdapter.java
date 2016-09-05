@@ -57,9 +57,11 @@ public class NTModelAdapter implements ModelAdapter {
 
     @Override
     public TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
+            DOMDataTreeChangeService domDataTreeChangeService,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
             RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
-        return new NTTopologyRequestListener(dataBroker, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
+        return new NTTopologyRequestListener(dataBroker, domDataTreeChangeService, nodeSerializer, schemaHolder,
+                rpcServices, modelAdapters);
     }
 
     @Override
