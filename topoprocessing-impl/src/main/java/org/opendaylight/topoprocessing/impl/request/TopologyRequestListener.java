@@ -8,15 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
+import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
@@ -35,6 +34,9 @@ import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgum
 import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNode;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,19 +47,20 @@ import com.google.common.base.Optional;
  *
  * @author michal.polkorab
  */
-public abstract class TopologyRequestListener implements DOMDataChangeListener {
+public abstract class TopologyRequestListener implements DOMDataTreeChangeListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyRequestListener.class);
 
-    private DOMDataBroker dataBroker;
+    private final DOMDataBroker dataBroker;
+    private final DOMDataTreeChangeService domDataTreeChangeService;
     protected YangInstanceIdentifier identifier = InstanceIdentifiers.TOPOLOGY_IDENTIFIER;
-    private BindingNormalizedNodeSerializer nodeSerializer;
-    private Map<YangInstanceIdentifier, TopologyRequestHandler> topoRequestHandlers = new HashMap<>();
-    private GlobalSchemaContextHolder schemaHolder;
-    private RpcServices rpcServices;
+    private final BindingNormalizedNodeSerializer nodeSerializer;
+    private final Map<YangInstanceIdentifier, TopologyRequestHandler> topoRequestHandlers = new HashMap<>();
+    private final GlobalSchemaContextHolder schemaHolder;
+    private final RpcServices rpcServices;
     private LogicalDatastoreType datastoreType;
-    private Map<Class<? extends FilterBase>, FiltratorFactory> filtrators;
-    private Map<Class<? extends Model>, ModelAdapter> modelAdapters;
+    private final Map<Class<? extends FilterBase>, FiltratorFactory> filtrators;
+    private final Map<Class<? extends Model>, ModelAdapter> modelAdapters;
 
     /**
      * Default constructor.
@@ -68,10 +71,11 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
      * @param rpcServices       rpcServices for rpc republishing
      * @param modelAdapters     list of registered model adapters
      */
-    public TopologyRequestListener(DOMDataBroker dataBroker, BindingNormalizedNodeSerializer nodeSerializer,
-            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
-            Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
+    public TopologyRequestListener(DOMDataBroker dataBroker, DOMDataTreeChangeService domDataTreeChangeService,
+            BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
+            RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
         this.dataBroker = dataBroker;
+        this.domDataTreeChangeService = domDataTreeChangeService;
         this.nodeSerializer = nodeSerializer;
         this.schemaHolder = schemaHolder;
         this.rpcServices = rpcServices;
@@ -81,91 +85,99 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
     }
 
     @Override
-    public void onDataChanged(
-            AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
-        LOGGER.debug("DataChange event notification received");
-
-        if (! change.getCreatedData().isEmpty()) {
-            processCreatedData(change.getCreatedData());
-        }
-        if (! change.getRemovedPaths().isEmpty()) {
-            processRemovedData(change.getRemovedPaths(),0);
-        }
-        if (! change.getUpdatedData().isEmpty()) {
-            processUpdatedData(change.getUpdatedData());
+    public void onDataTreeChanged(Collection<DataTreeCandidate> changes) {
+        LOGGER.debug("DataTreeChange event notification received");
+        for (DataTreeCandidate change : changes) {
+            ModificationType rootModificationType = change.getRootNode().getModificationType();
+            Collection<DataTreeCandidateNode> topologies = change.getRootNode().getChildNodes();
+            for (DataTreeCandidateNode topology : topologies) {
+                YangInstanceIdentifier yiid = YangInstanceIdentifier.builder(change.getRootPath())
+                        .node(topology.getIdentifier()).build();
+                Optional<NormalizedNode<?, ?>> dataAfter = topology.getDataAfter();// topology mapEntryNode
+                switch (rootModificationType) {
+                    case APPEARED:
+                    case WRITE:
+                        processCreatedData(dataAfter.get(), yiid);
+                        break;
+                    case DELETE:
+                    case DISAPPEARED:
+                        processRemovedData(yiid, 0);
+                        break;
+                    case SUBTREE_MODIFIED: // subtree of network-topology changed, i.e. a new topology entry was added
+                        if (dataAfter.isPresent()) {
+                            // we may have a Write or an Update of a topo
+                            if (topology.getDataBefore().isPresent()) {
+                                processUpdatedData(dataAfter.get(), yiid);
+                            } else {
+                                processCreatedData(dataAfter.get(), yiid);
+                            }
+                        } else {
+                            processRemovedData(yiid, 0);
+                        }
+                        break;
+                }
+            }
         }
     }
 
-    private void processCreatedData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map) {
+    private void processCreatedData(NormalizedNode<?, ?> normalizedNode,
+            YangInstanceIdentifier yangInstanceIdentifier) {
         LOGGER.debug("Processing created data changes");
+        if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)) {
+            if (isTopologyRequest(normalizedNode) || isLinkCalculation(normalizedNode)) {
+                Map.Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode = nodeSerializer
+                        .fromNormalizedNode(identifier, normalizedNode);
+                TopologyRequestHandler requestHandler = createTopologyRequestHandler(dataBroker,
+                        domDataTreeChangeService, schemaHolder, rpcServices, fromNormalizedNode);
+                requestHandler.setDatastoreType(datastoreType);
+                requestHandler.setFiltrators(filtrators);
+                requestHandler.setModelAdapters(modelAdapters);
+                requestHandler.processNewRequest();
+                topoRequestHandlers.put(yangInstanceIdentifier, requestHandler);
 
-        for (Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : map.entrySet()) {
-            YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
-            NormalizedNode<?, ?> normalizedNode = entry.getValue();
-            if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)) {
-                if (isTopologyRequest(normalizedNode) || isLinkCalculation(normalizedNode)) {
-                    Map.Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode =
-                            nodeSerializer.fromNormalizedNode(identifier, normalizedNode);
-                    TopologyRequestHandler requestHandler =
-                            createTopologyRequestHandler(dataBroker, schemaHolder, rpcServices, fromNormalizedNode);
-                    requestHandler.setDatastoreType(datastoreType);
-                    requestHandler.setFiltrators(filtrators);
-                    requestHandler.setModelAdapters(modelAdapters);
-                    requestHandler.processNewRequest();
-                    topoRequestHandlers.put(yangInstanceIdentifier,requestHandler);
-
-                    Optional<DataContainerChild<? extends PathArgument, ?>> topologyTypes =
-                            ((MapEntryNode) normalizedNode).getChild(new NodeIdentifier(TopologyTypes.QNAME));
-                    if (topologyTypes.isPresent()) {
-                        requestHandler.delegateTopologyTypes(topologyTypes.get());
-                    }
-                } else {
-                    LOGGER.debug("Missing Correlations or Link Computation. At least one of them must be present");
+                Optional<DataContainerChild<? extends PathArgument, ?>> topologyTypes = ((MapEntryNode) normalizedNode)
+                        .getChild(new NodeIdentifier(TopologyTypes.QNAME));
+                if (topologyTypes.isPresent()) {
+                    requestHandler.delegateTopologyTypes(topologyTypes.get());
                 }
+            } else {
+                LOGGER.debug("Missing Correlations or Link Computation. At least one of them must be present");
             }
         }
     }
 
     /**
-     * @param removedPaths set of removed paths
+     * @param yangInstanceIdentifier removed path
      * @param timeOut time in ms to wait for remove to finish, if timeout == 0 there is no waiting
      */
-    private void processRemovedData(Set<YangInstanceIdentifier> removedPaths,int timeOut) {
+    private void processRemovedData(YangInstanceIdentifier yangInstanceIdentifier, int timeOut) {
         LOGGER.debug("Processing removed data changes");
-        for (YangInstanceIdentifier yangInstanceIdentifier : removedPaths) {
-            TopologyRequestHandler topologyRequestHandler = topoRequestHandlers.remove(yangInstanceIdentifier);
-            if (null != topologyRequestHandler) {
-                topologyRequestHandler.processDeletionRequest(timeOut);
-            }
+        TopologyRequestHandler topologyRequestHandler = topoRequestHandlers.remove(yangInstanceIdentifier);
+        if (null != topologyRequestHandler) {
+            topologyRequestHandler.processDeletionRequest(timeOut);
         }
     }
 
-    private void processUpdatedData(Map<YangInstanceIdentifier, NormalizedNode<?, ?>> change) {
+    private void processUpdatedData(NormalizedNode<?, ?> normalizedNode,
+            YangInstanceIdentifier yangInstanceIdentifier) {
         LOGGER.debug("Processing updated data changes");
-        for (Map.Entry<YangInstanceIdentifier, NormalizedNode<?, ?>> entry : change.entrySet()) {
-            YangInstanceIdentifier yangInstanceIdentifier = entry.getKey();
-            NormalizedNode<?, ?> normalizedNode = entry.getValue();
-
-            if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)) {
-                if (isTopologyRequest(normalizedNode) || isLinkCalculation(normalizedNode)) {
-                    Set<YangInstanceIdentifier> key = new HashSet<>();
-                    key.add(yangInstanceIdentifier);
-                    processRemovedData(key,250);
-                }
+        if (normalizedNode instanceof MapEntryNode && isTopology(normalizedNode)) {
+            if (isTopologyRequest(normalizedNode) || isLinkCalculation(normalizedNode)) {
+                processRemovedData(yangInstanceIdentifier, 250);
             }
         }
-        processCreatedData(change);
+        processCreatedData(normalizedNode, yangInstanceIdentifier);
     }
 
-    protected abstract boolean isTopology(NormalizedNode<?,?> normalizedNode);
+    protected abstract boolean isTopology(NormalizedNode<?, ?> normalizedNode);
 
-    protected abstract boolean isTopologyRequest(NormalizedNode<?,?> normalizedNode);
+    protected abstract boolean isTopologyRequest(NormalizedNode<?, ?> normalizedNode);
 
     protected abstract boolean isLinkCalculation(NormalizedNode<?, ?> normalizedNode);
 
     protected abstract TopologyRequestHandler createTopologyRequestHandler(DOMDataBroker dataBroker,
-            GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
-            Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode);
+            DOMDataTreeChangeService domDataTreeChangeService, GlobalSchemaContextHolder schemaHolder,
+            RpcServices rpcServices, Map.Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
 
     /**
      * @param datastoreType defines whether to use CONFIGURATION or OPERATIONAL Datastore
@@ -176,6 +188,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
 
     /**
      * For testing purposes only.
+     *
      * @return Topology Request Handler List
      */
     public Map<YangInstanceIdentifier, TopologyRequestHandler> getTopoRequestHandlers() {
@@ -184,6 +197,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
 
     /**
      * For testing purpose.
+     *
      * @return All Filtrators
      */
     public Map<Class<? extends FilterBase>, FiltratorFactory> getFiltrators() {
@@ -195,8 +209,7 @@ public abstract class TopologyRequestListener implements DOMDataChangeListener {
      * @param filtrator         filter type
      * @param filtratorFactory  creates Filtrators based on Filter configuration
      */
-    public void registerFiltrator(Class<? extends FilterBase> filtrator,
-            FiltratorFactory filtratorFactory) {
+    public void registerFiltrator(Class<? extends FilterBase> filtrator, FiltratorFactory filtratorFactory) {
         filtrators.put(filtrator, filtratorFactory);
     }
 
