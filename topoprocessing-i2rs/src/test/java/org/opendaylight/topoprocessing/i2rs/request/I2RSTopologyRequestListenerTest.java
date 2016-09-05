@@ -7,9 +7,13 @@
  */
 package org.opendaylight.topoprocessing.i2rs.request;
 
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,18 +58,27 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.Correlations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.correlations.grouping.correlations.Correlation;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.AugmentationIdentifier;
+import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.data.api.schema.AugmentationNode;
+import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.opendaylight.yangtools.yang.data.api.schema.MapEntryNode;
 import org.opendaylight.yangtools.yang.data.api.schema.MapNode;
 import org.opendaylight.yangtools.yang.data.api.schema.NormalizedNode;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidate;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNode;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNodes;
+import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.opendaylight.yangtools.yang.data.impl.schema.ImmutableNodes;
 import org.opendaylight.yangtools.yang.data.impl.schema.builder.impl.ImmutableAugmentationNodeBuilder;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.AbstractCheckedFuture;
 
@@ -84,12 +97,31 @@ public class I2RSTopologyRequestListenerTest {
     @Mock private BindingNormalizedNodeSerializer mockNodeSerializer;
     @Mock private GlobalSchemaContextHolder mockSchemaHolder;
     @Mock private RpcServices mockRpcServices;
-    @Mock private AsyncDataChangeEvent<YangInstanceIdentifier, NormalizedNode<?, ?>> mockChange;
     @Mock private DOMTransactionChain mockTransactionChain;
     @Mock private DOMDataWriteTransaction mockTransaction;
     @Mock private UserDefinedFilter userDefinedFilter;
     @Mock private FiltratorFactory userDefinedFiltratorFactory;
+
+    @Mock
+    private DataTreeCandidate mockRootChange;
+    @Mock
+    private DataTreeCandidateNode mockRootNode;
+    @Mock
+    private DataTreeCandidateNode mockTopology;
+    @Mock
+    private TopologyRequestHandler mockRequestHandler;
+    @Mock
+    private Optional<DataContainerChild<? extends PathArgument, ?>> mockTopologyTypes;
+    private NormalizedNode<?, ?> mockMapEntryNode;
     private Map<Class<? extends Model>, ModelAdapter> modelAdapters = new HashMap<>();
+
+    private Collection<DataTreeCandidate> changes;
+    private Collection<DataTreeCandidateNode> topologies;
+
+    private final YangInstanceIdentifier rootYangID = YangInstanceIdentifier.of(NetworkTopology.QNAME)
+            .node(Topology.QNAME);
+    @Mock
+    private PathArgument mockTopologyPathArgument;
 
     private class UserDefinedFilter extends FilterBase {
         // testing class for testing purpose
@@ -97,12 +129,20 @@ public class I2RSTopologyRequestListenerTest {
 
     @Before
     public void setUp() {
+        topologies = new LinkedList<>();
+        when(mockRootNode.getChildNodes()).thenReturn(topologies);
+        when(mockRootChange.getRootNode()).thenReturn(mockRootNode);
+        when(mockRootChange.getRootPath()).thenReturn(rootYangID);
+        when(mockTopology.getIdentifier()).thenReturn(mockTopologyPathArgument);
+        changes = new LinkedList<>();
+        changes.add(mockRootChange);
+
         Map<Class<? extends DOMDataBrokerExtension>, DOMDataBrokerExtension> brokerExtensions = new HashMap<>();
         brokerExtensions.put(DOMDataTreeChangeService.class, mockDataTreeChangeService);
         Mockito.when(mockBroker.getSupportedExtensions()).thenReturn(brokerExtensions);
         modelAdapters.put(I2rsModel.class, new I2RSModelAdapter());
-        listener = new I2RSTopologyRequestListener(mockBroker, mockNodeSerializer, mockSchemaHolder,
-                mockRpcServices, modelAdapters);
+        listener = new I2RSTopologyRequestListener(mockBroker, mockDataTreeChangeService, mockNodeSerializer,
+                mockSchemaHolder, mockRpcServices, modelAdapters);
         listener.setDatastoreType(LogicalDatastoreType.OPERATIONAL);
 
         Mockito.when(mockRpcServices.getRpcService()).thenReturn(Mockito.mock(DOMRpcService.class));
@@ -118,9 +158,9 @@ public class I2RSTopologyRequestListenerTest {
                 .nodeWithKey(Network.QNAME, TopologyQNames.I2RS_NETWORK_ID_QNAME, TOPO_NAME).build();
         MapEntryNode node = ImmutableNodes.mapEntryBuilder(Network.QNAME, TopologyQNames.I2RS_NETWORK_ID_QNAME,
                 TOPO_NAME).addChild(createAugNode()).build();
-        Map<YangInstanceIdentifier, NormalizedNode<?, ?>> map = new HashMap<>();
-        map.put(yiid, node);
-        Mockito.when(mockChange.getCreatedData()).thenReturn(map);
+        when(mockRootNode.getModificationType()).thenReturn(ModificationType.SUBTREE_MODIFIED);
+        DataTreeCandidateNode topologyCandidateNode = DataTreeCandidateNodes.fromNormalizedNode(node);
+        topologies.add(topologyCandidateNode);
         // augmentation
         I2rsCorrelationAugment mockCorrelationAugument = Mockito.mock(I2rsCorrelationAugment.class);
         Correlations mockCorrelations = Mockito.mock(Correlations.class);
@@ -147,7 +187,7 @@ public class I2RSTopologyRequestListenerTest {
                 (YangInstanceIdentifier) Matchers.any(), (NormalizedNode<?, ?>) Matchers.any())).thenReturn(
                 (Map.Entry<InstanceIdentifier<?>, DataObject>) topoEntry);
 
-        listener.onDataChanged(mockChange);
+        listener.onDataTreeChanged(changes);
         TopologyRequestHandler handler = listener.getTopoRequestHandlers().get(yiid);
         Assert.assertNotNull("RequestHandler should be created", handler);
     }
