@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_94f7ddd2",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 5872
+      },
+      "writtenOn": "2016-09-06T14:05:47Z",
+      "side": 1,
+      "message": "This can go probably away (nothing is left to configure through CSS)",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 107
+      },
+      "revId": "c42e69ede751c3b1a8757c93746f5c9d2e915be8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d46675ba",
+        "filename": "features/src/main/resources/features.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 5872
+      },
+      "writtenOn": "2016-09-06T14:05:47Z",
+      "side": 1,
+      "message": "This can go away",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 25,
+        "endChar": 69
+      },
+      "revId": "c42e69ede751c3b1a8757c93746f5c9d2e915be8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d414b5ea",
+        "filename": "mlmt/observer/impl/pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 5872
+      },
+      "writtenOn": "2016-09-06T14:05:47Z",
+      "side": 1,
+      "message": "This plugin can probably go away,since it has no executions defined",
+      "range": {
+        "startLine": 145,
+        "startChar": 6,
+        "endLine": 148,
+        "endChar": 15
+      },
+      "revId": "c42e69ede751c3b1a8757c93746f5c9d2e915be8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
