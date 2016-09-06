@@ -22,7 +22,6 @@ import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyOperation;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.impl.rev150122.MultitechnologyTopologyProviderRuntimeMXBean;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoLink;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoLinkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtInfoNode;
@@ -56,8 +55,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MultitechnologyTopologyProvider implements MultitechnologyTopologyProviderRuntimeMXBean,
-            AutoCloseable, MlmtTopologyProvider {
+public class MultitechnologyTopologyProvider implements AutoCloseable, MlmtTopologyProvider {
     private static final Logger LOG = LoggerFactory.getLogger(MultitechnologyTopologyProvider.class);
     private DataBroker dataProvider;
     private MlmtOperationProcessor processor;

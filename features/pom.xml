@@ -92,12 +92,6 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.topoprocessing</groupId>
-            <artifactId>mlmt-topology-observer-impl</artifactId>
-            <type>xml</type>
-            <classifier>config</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.topoprocessing</groupId>
             <artifactId>multitechnology-topology-model</artifactId>
         </dependency>
         <dependency>
