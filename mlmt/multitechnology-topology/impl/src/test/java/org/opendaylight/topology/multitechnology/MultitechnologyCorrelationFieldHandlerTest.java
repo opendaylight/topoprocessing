@@ -160,7 +160,7 @@ public class MultitechnologyCorrelationFieldHandlerTest extends AbstractDataBrok
                 mlmtTopologyIid, nodeKey, correlation_field, iso_system_id);
 
         synchronized (waitObject) {
-            waitObject.wait();
+            waitObject.wait(2000);
         }
 
         String rxCorrelation = MultitechnologyNodeCorrelationFieldHandler.getCorrelationField(
@@ -183,7 +183,7 @@ public class MultitechnologyCorrelationFieldHandlerTest extends AbstractDataBrok
                 mlmtTopologyIid, nodeKey, tpKey, correlation_field, ip_address);
 
         synchronized (waitObject) {
-            waitObject.wait();
+            waitObject.wait(2000);
         }
 
         String rxCorrelation = MultitechnologyTpCorrelationFieldHandler.getCorrelationField(
@@ -203,7 +203,7 @@ public class MultitechnologyCorrelationFieldHandlerTest extends AbstractDataBrok
                 mlmtTopologyIid, linkKey, correlation_field, source_tp_name);
 
         synchronized (waitObject) {
-            waitObject.wait();
+            waitObject.wait(2000);
         }
 
         String rxCorrelationField = MultitechnologyLinkCorrelationFieldHandler.getCorrelationField(

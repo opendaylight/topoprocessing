@@ -240,7 +240,7 @@ public class MultitechnologyNameHandlerTest extends AbstractDataBrokerTest {
                 nodeName);
 
         synchronized (waitObject) {
-            waitObject.wait();
+            waitObject.wait(2000);
         }
 
         String rxNodeName = MultitechnologyNodeNameHandler.getNodeName(dataBroker, processor,
@@ -252,7 +252,7 @@ public class MultitechnologyNameHandlerTest extends AbstractDataBrokerTest {
                 mlmtTopologyIid, nodeKey, NODENAMEFIELD, nodeName);
 
         synchronized (waitObject) {
-            waitObject.wait();
+            waitObject.wait(2000);
         }
 
         rxNodeName = MultitechnologyNodeNameHandler.getNodeName(dataBroker, processor,
@@ -274,7 +274,7 @@ public class MultitechnologyNameHandlerTest extends AbstractDataBrokerTest {
                 mlmtTopologyIid, nodeKey, tpKey, TPNAMEFIELD, tpName);
 
         synchronized (waitObject) {
-            waitObject.wait();
+            waitObject.wait(2000);
         }
 
         String rxTpName = MultitechnologyTpNameHandler.getTpName(dataBroker, processor,
@@ -286,7 +286,7 @@ public class MultitechnologyNameHandlerTest extends AbstractDataBrokerTest {
                 mlmtTopologyIid, nodeKey, tpKey, TPNAMEFIELD, tpName);
 
         synchronized (waitObject) {
-            waitObject.wait();
+            waitObject.wait(2000);
         }
 
         rxTpName = MultitechnologyTpNameHandler.getTpName(dataBroker, processor,
@@ -304,7 +304,7 @@ public class MultitechnologyNameHandlerTest extends AbstractDataBrokerTest {
                 mlmtTopologyIid, linkKey, LINKNAMEFIELD, linkName);
 
         synchronized (waitObject) {
-            waitObject.wait();
+            waitObject.wait(2000);
         }
 
         String rxLinkName = MultitechnologyLinkNameHandler.getLinkName(dataBroker, processor,
@@ -316,7 +316,7 @@ public class MultitechnologyNameHandlerTest extends AbstractDataBrokerTest {
                 mlmtTopologyIid, linkKey, LINKNAMEFIELD, linkName);
 
         synchronized (waitObject) {
-            waitObject.wait();
+            waitObject.wait(2000);
         }
 
         rxLinkName = MultitechnologyLinkNameHandler.getLinkName(dataBroker, processor,
