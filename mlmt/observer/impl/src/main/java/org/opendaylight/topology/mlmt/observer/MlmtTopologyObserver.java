@@ -15,18 +15,17 @@ import java.util.Map;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.topology.mlmt.factory.MlmtProviderFactoryImpl;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyBuilder;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.mlmt.topology.observer.impl.rev150122.MlmtTopologyObserverRuntimeMXBean;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypesBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implements AutoCloseable,
-        MlmtTopologyObserverRuntimeMXBean {
+public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implements AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MlmtTopologyObserver.class);
     private MlmtOperationProcessor processor;
@@ -86,8 +85,13 @@ public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implement
         }
     }
 
+    public void startup() {
+        final String topologyName = "mlmt:1";
+        init(dataBroker, rpcRegistry, topologyName, null);
+    }
+
     @Override
-    public synchronized void close() throws InterruptedException {
+    public void close() throws InterruptedException {
         LOG.info("MlmtTopologyObserver stopped.");
         closeListeners();
         if (thread != null) {
@@ -95,5 +99,29 @@ public class MlmtTopologyObserver extends AbstractMlmtTopologyObserver implement
             thread.join();
             thread = null;
         }
+    }
+
+    public DataBroker getDataBroker() {
+        return dataBroker;
+    }
+
+    public void setDataBroker(DataBroker dataBroker) {
+        this.dataBroker = dataBroker;
+    }
+
+    public RpcProviderRegistry getRpcRegistry() {
+        return rpcRegistry;
+    }
+
+    public void setRpcRegistry(RpcProviderRegistry rpcRegistry) {
+        this.rpcRegistry = rpcRegistry;
+    }
+
+    public void setNotificationService(NotificationPublishService notificationService) {
+        this.notificationService = notificationService;
+    }
+
+    public NotificationPublishService getNotificationService() {
+        return notificationService;
     }
 }

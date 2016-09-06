@@ -17,7 +17,6 @@ import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyOperation;
 import org.opendaylight.topology.multilayer.MultilayerForwardingAdjacency;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.impl.rev150123.ForwardingAdjacencyTopologyProviderRuntimeMXBean;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.FaTopology;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.FaTopologyType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.forwarding.adjacency.rev150123.FaTopologyTypeBuilder;
@@ -50,8 +49,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ForwardingAdjacencyTopologyProvider implements ForwardingAdjacencyTopologyProviderRuntimeMXBean,
-        AutoCloseable, MultilayerForwardingAdjacency {
+public class ForwardingAdjacencyTopologyProvider implements AutoCloseable, MultilayerForwardingAdjacency {
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingAdjacencyTopologyProvider.class);
     private DataBroker dataProvider;
     private MlmtOperationProcessor processor;

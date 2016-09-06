@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+  xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+  xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"  
+  odl:use-default-for-reference-types="true"
+  odl:restart-dependents-on-updates="true">
+
+  <reference id="dataBroker"
+    interface="org.opendaylight.controller.md.sal.binding.api.DataBroker"
+    odl:type="default"/>
+  <reference id="rpcRegistry" 
+    interface="org.opendaylight.controller.sal.binding.api.RpcProviderRegistry"/>
+  <reference id="notificationService" 
+    interface="org.opendaylight.controller.md.sal.binding.api.NotificationPublishService"/>
+
+  <bean id="MlmtTopologyObserver"
+    class="org.opendaylight.topology.mlmt.observer.MlmtTopologyObserver"
+    init-method="startup" destroy-method="close">
+    <property name="dataBroker" ref="dataBroker" />
+    <property name="rpcRegistry" ref="rpcRegistry" />
+  </bean>
+</blueprint>

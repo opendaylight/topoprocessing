@@ -34,7 +34,6 @@ import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyOperation;
 import org.opendaylight.topology.mlmt.utility.MlmtTopologyProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.impl.rev150123.MultilayerTopologyProviderRuntimeMXBean;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaEndPoint;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multilayer.rev150123.FaOperStatus;
@@ -90,8 +89,8 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MultilayerTopologyProvider implements MultilayerTopologyProviderRuntimeMXBean,
-        AutoCloseable, MlmtTopologyProvider, MultilayerTopologyService, TransactionChainListener {
+public class MultilayerTopologyProvider implements AutoCloseable, MlmtTopologyProvider,
+        MultilayerTopologyService, TransactionChainListener {
     private static final Logger LOG = LoggerFactory.getLogger(MultilayerTopologyProvider.class);
     private DataBroker dataProvider;
     private MlmtOperationProcessor processor;

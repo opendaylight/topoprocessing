@@ -24,6 +24,7 @@ import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.topology.mlmt.observer.AbstractMlmtTopologyObserver.MlmtDataChangeEventType;
 import org.opendaylight.topology.mlmt.utility.MlmtConsequentAction;
 import org.opendaylight.topology.mlmt.utility.MlmtDataChangeObserver;
@@ -55,6 +56,8 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMlmtTopologyObserver.class);
     protected InstanceIdentifier<Topology> mlmtTopologyId;
     protected DataBroker dataBroker;
+    protected RpcProviderRegistry rpcRegistry;
+    protected NotificationPublishService notificationService;
     protected MlmtTopologyBuilder mlmtTopologyBuilder;
     protected MlmtProviderFactory mlmtProviderFactory;
     protected List<MlmtTopologyProvider> mlmtProviders;
