@@ -5,7 +5,6 @@
    xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
     <repository>mvn:org.opendaylight.yangtools/features-yangtools/${yangtools.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/${mdsal.model.version}/xml/features</repository>
-    <repository>mvn:org.opendaylight.controller/features-config/${config.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.controller/features-mdsal/${mdsal.version}/xml/features</repository>
     <repository>mvn:org.opendaylight.netconf/features-restconf/${restconf.version}/xml/features</repository>
     <feature name='odl-topoprocessing-framework' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Framework">
@@ -22,7 +21,6 @@
     </feature>
     <feature name='odl-topoprocessing-mlmt' version='${project.version}' description="OpenDaylight :: Topology Processing Framework :: Mlmt">
         <feature version='${project.version}'>odl-topoprocessing-framework</feature>
-        <feature version='${config.version}'>odl-config-api</feature>
         <bundle>mvn:org.opendaylight.controller.model/model-topology/${mdsal.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/administrative-topology-model/${project.version}</bundle>
         <bundle>mvn:org.opendaylight.topoprocessing/rwa-model/${project.version}</bundle>

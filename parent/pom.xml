@@ -72,9 +72,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <yangtools.version>1.1.0-SNAPSHOT</yangtools.version>
         <salGeneratorPath>${project.build.directory}/yang-gen-sal</salGeneratorPath>
-        <jmxGeneratorPath>${project.build.directory}/yang-gen-config</jmxGeneratorPath>
-        <yang.jmx.generator.plugin>0.6.0-SNAPSHOT</yang.jmx.generator.plugin>
-        <config.version>0.6.0-SNAPSHOT</config.version>
         <mdsal.version>1.5.0-SNAPSHOT</mdsal.version>
         <mdsal.model.version>0.10.0-SNAPSHOT</mdsal.model.version>
         <i2rs.version>1.2.0-SNAPSHOT</i2rs.version>
@@ -129,13 +126,6 @@
                 <groupId>org.opendaylight.netconf</groupId>
                 <artifactId>restconf-artifacts</artifactId>
                 <version>${restconf.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.controller</groupId>
-                <artifactId>config-artifacts</artifactId>
-                <version>${config.version}</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
