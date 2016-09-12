@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_0ee2862e",
+        "filename": "features/pom.xml",
+        "patchSetId": 2
+      },
+      "lineNbr": 85,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T15:46:38Z",
+      "side": 1,
+      "message": "If you import dependency for topoprocessing artifacts, then you don\u0027t have to add version to each our dependencies, because they are declared in dependency management section of topoprocessing artifacts.\n\u003cdependency\u003e\n    \u003cgroupId\u003eorg.opendaylight.topoprocessing\u003c/groupId\u003e\n    \u003cartifactId\u003etopoprocessing-artifacts\u003c/artifactId\u003e\n    \u003cversion\u003e${project.version}\u003c/version\u003e\n    \u003cscope\u003eimport\u003c/scope\u003e\n    \u003ctype\u003epom\u003c/type\u003e\n\u003c/dependency\u003e",
+      "revId": "3fe955646def5ee9867a7f2b77e07a1f7a9b1fe6",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
