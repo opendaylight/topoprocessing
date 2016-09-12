@@ -140,6 +140,75 @@
       "revId": "c42e69ede751c3b1a8757c93746f5c9d2e915be8",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_736045a5",
+        "filename": "mlmt/observer/impl/src/main/resources/org/opendaylight/blueprint/mlmtobserver.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:16:11Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "range": {
+        "startLine": 4,
+        "startChar": 72,
+        "endLine": 4,
+        "endChar": 74
+      },
+      "revId": "c42e69ede751c3b1a8757c93746f5c9d2e915be8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_536549b3",
+        "filename": "mlmt/observer/impl/src/main/resources/org/opendaylight/blueprint/mlmtobserver.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:16:11Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "range": {
+        "startLine": 11,
+        "startChar": 29,
+        "endLine": 11,
+        "endChar": 30
+      },
+      "revId": "c42e69ede751c3b1a8757c93746f5c9d2e915be8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_b3565dcc",
+        "filename": "mlmt/observer/impl/src/main/resources/org/opendaylight/blueprint/mlmtobserver.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:16:11Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "range": {
+        "startLine": 13,
+        "startChar": 37,
+        "endLine": 13,
+        "endChar": 38
+      },
+      "revId": "c42e69ede751c3b1a8757c93746f5c9d2e915be8",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
