@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_d3c2f983",
+        "filename": "topoprocessing-i2rs/src/main/resources/org/opendaylight/blueprint/topoprocessing-i2rs.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:10:37Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "range": {
+        "startLine": 4,
+        "startChar": 72,
+        "endLine": 4,
+        "endChar": 74
+      },
+      "revId": "4830b3808557d7058ddc7886237719bdf97678ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_33bc0d06",
+        "filename": "topoprocessing-i2rs/src/main/resources/org/opendaylight/blueprint/topoprocessing-i2rs.xml",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:10:37Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 4
+      },
+      "revId": "4830b3808557d7058ddc7886237719bdf97678ef",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
