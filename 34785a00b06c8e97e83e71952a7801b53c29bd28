@@ -1,0 +1,671 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a6b29fe_5306e91d",
+        "filename": "topoprocessing-config/src/main/resources/80-topoprocessing-config.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 2,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "range": {
+        "startLine": 2,
+        "startChar": 84,
+        "endLine": 2,
+        "endChar": 85
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_b3077d17",
+        "filename": "topoprocessing-config/src/main/resources/80-topoprocessing-config.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "range": {
+        "startLine": 4,
+        "startChar": 76,
+        "endLine": 4,
+        "endChar": 77
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_930c013d",
+        "filename": "topoprocessing-config/src/main/resources/80-topoprocessing-config.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "range": {
+        "startLine": 5,
+        "startChar": 81,
+        "endLine": 5,
+        "endChar": 82
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_331b6d74",
+        "filename": "topoprocessing-i2rs/src/main/java/org/opendaylight/topoprocessing/i2rs/adapter/I2RSModelAdapter.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "I think we should use PingPongDataBroker here. DOMDataBroker should be only in TopoprocessingProvider.",
+      "range": {
+        "startLine": 46,
+        "startChar": 69,
+        "endLine": 46,
+        "endChar": 82
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_1318f173",
+        "filename": "topoprocessing-i2rs/src/main/java/org/opendaylight/topoprocessing/i2rs/listener/I2RSUnderlayTopologyListener.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "I think we should use PingPongDataBroker here. DOMDataBroker should be only in TopoprocessingProvider.",
+      "range": {
+        "startLine": 24,
+        "startChar": 39,
+        "endLine": 24,
+        "endChar": 53
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_f397358e",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/adapter/ModelAdapter.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "I think DOMDataTreeChangeService is sufficient in this class",
+      "range": {
+        "startLine": 46,
+        "startChar": 62,
+        "endLine": 46,
+        "endChar": 75
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_73284586",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/adapter/ModelAdapter.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 46,
+        "startChar": 0,
+        "endLine": 46,
+        "endChar": 122
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_532d4994",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "I think DOMDataTreeChangeService is sufficient in this class",
+      "range": {
+        "startLine": 64,
+        "startChar": 36,
+        "endLine": 64,
+        "endChar": 49
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_132f5189",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/provider/TopoProcessingProviderImpl.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 64,
+        "startChar": 0,
+        "endLine": 65,
+        "endChar": 137
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_1346314f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/provider/TopoProcessingProviderImpl.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 99,
+        "startChar": 0,
+        "endLine": 99,
+        "endChar": 134
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_537b898b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "Please don\u0027t use pingPong prefix as we don\u0027t know exactly if we get PingPongDataBroker",
+      "range": {
+        "startLine": 112,
+        "startChar": 48,
+        "endLine": 112,
+        "endChar": 66
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_138bd168",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 529,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 529,
+        "startChar": 20,
+        "endLine": 529,
+        "endChar": 122
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_b36c9dd1",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/yang/gen/v1/urn/opendaylight/params/xml/ns/yang/topoprocessing/provider/impl/rev150209/TopoProcessingProviderModule.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 30,
+        "startChar": 8,
+        "endLine": 30,
+        "endChar": 144
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_9371a1aa",
+        "filename": "topoprocessing-impl/src/main/resources/org/opendaylight/blueprint/topoprocessing.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "range": {
+        "startLine": 4,
+        "startChar": 72,
+        "endLine": 4,
+        "endChar": 74
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_f369f5be",
+        "filename": "topoprocessing-impl/src/main/resources/org/opendaylight/blueprint/topoprocessing.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 2
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d36679ec",
+        "filename": "topoprocessing-impl/src/main/resources/org/opendaylight/blueprint/topoprocessing.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "range": {
+        "startLine": 23,
+        "startChar": 0,
+        "endLine": 23,
+        "endChar": 4
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_33608dce",
+        "filename": "topoprocessing-impl/src/main/resources/org/opendaylight/blueprint/topoprocessing.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 2
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_135d9115",
+        "filename": "topoprocessing-impl/src/main/resources/org/opendaylight/blueprint/topoprocessing.xml",
+        "patchSetId": 26
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "trailing spaces",
+      "range": {
+        "startLine": 34,
+        "startChar": 42,
+        "endLine": 34,
+        "endChar": 44
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_53a269fd",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/adapter/IRModelAdapter.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "I think DOMDataTreeChangeService is sufficient in this class",
+      "range": {
+        "startLine": 45,
+        "startChar": 69,
+        "endLine": 45,
+        "endChar": 82
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_93a881dc",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/adapter/IRModelAdapter.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "DOMDataTreeChangeService should be sufficient in this class",
+      "range": {
+        "startLine": 51,
+        "startChar": 47,
+        "endLine": 51,
+        "endChar": 57
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_53f0a9fd",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/listener/IRUnderlayTopologyListener.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "duplicated semicolon",
+      "range": {
+        "startLine": 72,
+        "startChar": 91,
+        "endLine": 72,
+        "endChar": 92
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_b3f13d03",
+        "filename": "topoprocessing-inventory-rendering/src/main/java/org/opendaylight/topoprocessing/inventoryRendering/listener/IRUnderlayTopologyListener.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 74,
+        "startChar": 20,
+        "endLine": 74,
+        "endChar": 125
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_f3b0d544",
+        "filename": "topoprocessing-inventory/src/main/java/org/opendaylight/topoprocessing/inventory/adapter/InvModelAdapter.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "I think DOMDataTreeChangeService is sufficient in this class",
+      "range": {
+        "startLine": 46,
+        "startChar": 69,
+        "endLine": 46,
+        "endChar": 82
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d3add9ea",
+        "filename": "topoprocessing-inventory/src/main/java/org/opendaylight/topoprocessing/inventory/adapter/InvModelAdapter.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "I think DOMDataTreeChangeService is sufficient in this class",
+      "range": {
+        "startLine": 51,
+        "startChar": 79,
+        "endLine": 51,
+        "endChar": 89
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_33b7ed3b",
+        "filename": "topoprocessing-inventory/src/main/java/org/opendaylight/topoprocessing/inventory/listener/InvUnderlayTopologyListener.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "I think DOMDataTreeChangeService is sufficient in this class",
+      "range": {
+        "startLine": 37,
+        "startChar": 39,
+        "endLine": 37,
+        "endChar": 52
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_d3db197a",
+        "filename": "topoprocessing-inventory/src/main/java/org/opendaylight/topoprocessing/inventory/listener/InvUnderlayTopologyListener.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 72,
+        "startChar": 20,
+        "endLine": 72,
+        "endChar": 125
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_5389c973",
+        "filename": "topoprocessing-nt/src/main/java/org/opendaylight/topoprocessing/nt/adapter/NTModelAdapter.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "I think DOMDataTreeChangeService is sufficient in this class",
+      "range": {
+        "startLine": 46,
+        "startChar": 69,
+        "endLine": 46,
+        "endChar": 82
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_b37add74",
+        "filename": "topoprocessing-nt/src/main/java/org/opendaylight/topoprocessing/nt/adapter/NTModelAdapter.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "I think DOMDataTreeChangeService is sufficient in this class",
+      "range": {
+        "startLine": 51,
+        "startChar": 47,
+        "endLine": 51,
+        "endChar": 57
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_937fe165",
+        "filename": "topoprocessing-nt/src/main/java/org/opendaylight/topoprocessing/nt/listener/NTUnderlayTopologyListener.java",
+        "patchSetId": 26
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-09-12T12:07:43Z",
+      "side": 1,
+      "message": "I think DOMDataTreeChangeService is sufficient in this class",
+      "range": {
+        "startLine": 25,
+        "startChar": 38,
+        "endLine": 25,
+        "endChar": 51
+      },
+      "revId": "34785a00b06c8e97e83e71952a7801b53c29bd28",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
