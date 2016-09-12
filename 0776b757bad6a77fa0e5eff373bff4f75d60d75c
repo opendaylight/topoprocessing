@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_2e1b0274",
+        "filename": "topoprocessing-inventory-rendering/src/main/resources/org/opendaylight/blueprint/topoprocessing-inventory-rendering.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 4,
+      "author": {
+        "id": 5872
+      },
+      "writtenOn": "2016-09-12T15:06:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_9344011c",
+      "range": {
+        "startLine": 4,
+        "startChar": 72,
+        "endLine": 4,
+        "endChar": 74
+      },
+      "revId": "0776b757bad6a77fa0e5eff373bff4f75d60d75c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_f34c5544",
         "filename": "topoprocessing-inventory-rendering/src/main/resources/org/opendaylight/blueprint/topoprocessing-inventory-rendering.xml",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2016-09-12T12:11:43Z",
       "side": 1,
       "message": "trailing spaces",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 4
+      },
+      "revId": "0776b757bad6a77fa0e5eff373bff4f75d60d75c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_0e18c673",
+        "filename": "topoprocessing-inventory-rendering/src/main/resources/org/opendaylight/blueprint/topoprocessing-inventory-rendering.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 5872
+      },
+      "writtenOn": "2016-09-12T15:06:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_f34c5544",
       "range": {
         "startLine": 10,
         "startChar": 0,
