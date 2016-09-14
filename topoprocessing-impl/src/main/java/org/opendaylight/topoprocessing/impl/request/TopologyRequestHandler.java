@@ -217,7 +217,7 @@ public abstract class TopologyRequestHandler {
             if (linkComputation != null) {
                 initLinkComputation(linkComputation, linkAggregation);
             }
-            LOG.debug("Correlation configuration successfully read");
+            LOG.info("Correlation configuration successfully read");
         } catch (Exception e) {
             LOG.warn("Processing new request for topology change failed.", e);
             closeOperatingResources(0);
