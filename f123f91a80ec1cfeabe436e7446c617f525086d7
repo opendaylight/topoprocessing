@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7a6b29fe_10528e66",
+        "filename": "topoprocessing-inventory-rendering/src/test/java/org/opendaylight/topoprocessing/inventoryRendering/request/IRTopologyRequestListenerTest.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 5872
+      },
+      "writtenOn": "2016-09-20T08:06:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_50fd26b0",
+      "range": {
+        "startLine": 106,
+        "startChar": 4,
+        "endLine": 106,
+        "endChar": 124
+      },
+      "revId": "f123f91a80ec1cfeabe436e7446c617f525086d7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7a6b29fe_7002e2b4",
         "filename": "topoprocessing-inventory/src/test/java/org/opendaylight/topoprocessing/inventory/request/InvTopologyRequestListenerTest.java",
         "patchSetId": 16
@@ -36,6 +60,30 @@
       "writtenOn": "2016-09-20T06:24:39Z",
       "side": 1,
       "message": "line length",
+      "range": {
+        "startLine": 107,
+        "startChar": 4,
+        "endLine": 107,
+        "endChar": 124
+      },
+      "revId": "f123f91a80ec1cfeabe436e7446c617f525086d7",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a6b29fe_704dc2c3",
+        "filename": "topoprocessing-inventory/src/test/java/org/opendaylight/topoprocessing/inventory/request/InvTopologyRequestListenerTest.java",
+        "patchSetId": 16
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 5872
+      },
+      "writtenOn": "2016-09-20T08:06:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a6b29fe_7002e2b4",
       "range": {
         "startLine": 107,
         "startChar": 4,
