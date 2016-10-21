@@ -12,7 +12,7 @@
   <parent>
      <groupId>org.opendaylight.topoprocessing</groupId>
      <artifactId>topoprocessing-parent</artifactId>
-     <version>0.1.4-SNAPSHOT</version>
+     <version>0.1.4-Beryllium-SR4</version>
      <relativePath>../parent</relativePath>
   </parent>
   <artifactId>rwa</artifactId>
