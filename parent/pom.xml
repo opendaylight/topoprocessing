@@ -139,13 +139,6 @@
                 <type>xml</type>
             </dependency>
             <dependency>
-                <groupId>org.opendaylight.controller</groupId>
-                <artifactId>features-protocol-framework</artifactId>
-                <version>${protocol-framework.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
                 <groupId>org.opendaylight.odlparent</groupId>
                 <artifactId>features-test</artifactId>
                 <version>${features.test.version}</version>
