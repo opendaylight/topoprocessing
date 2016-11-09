@@ -158,10 +158,7 @@ public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
 
     private void createUnderlayTopology(LogicalDatastoreType type, String underlayTopologyName) throws Exception {
         TopologyId underlayTopologyId = new TopologyId(underlayTopologyName);
-        TopologyKey key = new TopologyKey(Preconditions.checkNotNull(underlayTopologyId));
-        InstanceIdentifier<Topology> topologyInstanceId =
-                InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
-        builder.createUnderlayTopology(type, topologyInstanceId, underlayTopologyId);
+        builder.createUnderlayTopology(type, mlmtTopologyInstanceId, underlayTopologyId);
     }
 
     private NodeBuilder createNodeBuilder(String nodeName) {
