@@ -233,7 +233,7 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
 
         mlmtTopology = buildMlmtTopology(MLMT);
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, mlmtTopology, true);
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, mlmtTopology);
         assertCommit(rwTx.submit());
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
@@ -486,7 +486,7 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         InstanceIdentifier<Topology> topologyIid = buildTopologyIid(MLMT);
         final Topology wrTopology = buildMlmtTopology(MLMT);
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, topologyIid, wrTopology, true);
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, topologyIid, wrTopology);
         assertCommit(rwTx.submit());
 
         createMlmtNodeAndTp("node:1", "1:1", "1:2");

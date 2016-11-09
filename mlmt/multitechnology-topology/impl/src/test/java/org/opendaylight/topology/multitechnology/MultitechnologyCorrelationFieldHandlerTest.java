@@ -137,7 +137,7 @@ public class MultitechnologyCorrelationFieldHandlerTest extends AbstractDataBrok
 
         mlmtTopology = buildMlmtTopology(MLMT);
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.CONFIGURATION, mlmtTopologyIid, mlmtTopology, true);
+        rwTx.put(LogicalDatastoreType.CONFIGURATION, mlmtTopologyIid, mlmtTopology);
         assertCommit(rwTx.submit());
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
