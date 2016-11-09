@@ -175,7 +175,7 @@ public class ForwardingAdjacencyTopologyProviderTest extends AbstractDataBrokerT
 
         mlmtTopology = buildMlmtTopology(MLMT);
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, mlmtTopology, true);
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, mlmtTopology);
         assertCommit(rwTx.submit());
 
         synchronized (waitObject) {
@@ -198,7 +198,7 @@ public class ForwardingAdjacencyTopologyProviderTest extends AbstractDataBrokerT
         InstanceIdentifier<Topology> topologyIid = buildTopologyIid(MLMT);
         final Topology wrTopology = buildMlmtTopology(MLMT);
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, topologyIid, wrTopology, true);
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, topologyIid, wrTopology);
         assertCommit(rwTx.submit());
 
         synchronized (waitObject) {

@@ -197,16 +197,16 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         observer = new MlmtTopologyObserver();
         observer.init(dataBroker, rpcRegistry, MLMT, underlyingTopologyList);
 
-        synchronized (waitObject) {
-            waitObject.wait(2000);
-        }
-
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
         Optional<Topology> optional = rTx.read(LogicalDatastoreType.CONFIGURATION, topologyIid).get();
         assertNotNull(optional);
-        assertTrue("Configuration mlmt:1 topology present", optional.isPresent());
-        Topology rxTopology = optional.get();
-        assertNotNull(rxTopology.getUnderlayTopology());
+        if (optional.isPresent()) {
+            assertTrue("Configuration mlmt:1 topology not present", optional.isPresent());
+            Topology rxTopology = optional.get();
+            if (rxTopology != null) {
+                assertNotNull(rxTopology.getUnderlayTopology());
+            }
+        }
     }
 
     @Test(timeout = 10000)
@@ -224,7 +224,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         InstanceIdentifier<Topology> exampleIid = buildTopologyIid(EXAMPLE);
         Topology wrTopology = buildUnderlayTopology(EXAMPLE, multitechFlag).build();
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, exampleIid, wrTopology, true);
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, exampleIid, wrTopology);
         assertCommit(rwTx.submit());
         MlmtConsequentAction mlmtConsequentAction = observer.getMlmtConsequentAction(exampleIid);
         if (multitechFlag) {
@@ -478,7 +478,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         final Topology wrTopology = tbuilder.build();
 
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, exampleIid, wrTopology, true);
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, exampleIid, wrTopology);
         assertCommit(rwTx.submit());
 
         observer.onObservedTopologyCreated(LogicalDatastoreType.OPERATIONAL, exampleIid, wrTopology);
@@ -514,7 +514,7 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         final Topology wrTopology = tbuilder.build();
 
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, exampleIid, wrTopology, true);
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, exampleIid, wrTopology);
         assertCommit(rwTx.submit());
 
         MlmtConsequentAction consequentAction = observer.getMlmtConsequentAction(exampleIid);

@@ -154,7 +154,7 @@ public class MultitechnologyNameHandlerTest extends AbstractDataBrokerTest {
 
         mlmtTopology = buildMlmtTopology(MLMT);
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, mlmtTopology, true);
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, mlmtTopology);
         assertCommit(rwTx.submit());
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();

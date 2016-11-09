@@ -172,11 +172,11 @@ public class InventoryTopologyProviderTest extends AbstractDataBrokerTest {
 
         mlmtTopology = buildMlmtTopology(MLMT);
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, mlmtTopology, true);
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, mlmtTopologyIid, mlmtTopology);
         assertCommit(rwTx.submit());
 
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.merge(LogicalDatastoreType.CONFIGURATION, mlmtTopologyIid, mlmtTopology, true);
+        rwTx.put(LogicalDatastoreType.CONFIGURATION, mlmtTopologyIid, mlmtTopology);
         assertCommit(rwTx.submit());
 
         ReadOnlyTransaction rTx = dataBroker.newReadOnlyTransaction();
