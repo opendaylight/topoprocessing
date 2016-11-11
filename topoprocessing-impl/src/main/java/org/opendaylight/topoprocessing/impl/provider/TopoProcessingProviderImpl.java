@@ -64,6 +64,8 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     //access to data store
     private DOMDataBroker domDataBroker;
     private Broker broker;
+    private DOMRpcService domRpcService;
+    private DOMRpcProviderService domRpcProviderService;
     //provides schema context for lookup in models
     private SchemaService schemaService;
     //translates BindingIndependent objects to BindingAware objects (used for Topology request handling)
@@ -86,6 +88,8 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     @Override
     public void startup() {
         Preconditions.checkNotNull(schemaService, "SchemaService can't be null");
+        Preconditions.checkNotNull(domRpcService, "DOMRpcService can't be null");
+        Preconditions.checkNotNull(domRpcProviderService, "DOMRpcProviderService can't be null");
         Preconditions.checkNotNull(domDataBroker, "DOMDataBroker can't be null");
         Preconditions.checkNotNull(nodeSerializer, "BindingNormalizedNodeSerializer can't be null");
         Preconditions.checkNotNull(dataStoreType, "DatastoreType can't be null");
@@ -93,18 +97,6 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         this.schemaHolder = new GlobalSchemaContextHolder(schemaService.getGlobalContext());
         schemaContextListenerRegistration = schemaService
                 .registerSchemaContextListener(new GlobalSchemaContextListener(schemaHolder));
-
-        ProviderSession session = broker.registerProvider(new Provider() {
-            @Override
-            public void onSessionInitiated(ProviderSession session) {
-                // NOOP
-            }
-
-            @Override
-            public Collection<ProviderFunctionality> getProviderFunctionality() {
-                return Collections.EMPTY_LIST;
-            }
-        });
 
         DOMDataTreeChangeService domDataTreeService = (DOMDataTreeChangeService) domDataBroker.getSupportedExtensions()
                 .get(DOMDataTreeChangeService.class);
@@ -115,9 +107,8 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
                     + "DOMDataTreeChangeService functionality. Expected PingPongDataBroker or similar instance,"
                     + " received toString(): " + domDataBroker);
         }
-        DOMRpcService rpcService = session.getService(DOMRpcService.class);
-        DOMRpcProviderService rpcProviderService = session.getService(DOMRpcProviderService.class);
-        rpcServices = new RpcServices(rpcService, rpcProviderService);
+
+        rpcServices = new RpcServices(domRpcService, domRpcProviderService);
     }
 
     @Override
@@ -128,6 +119,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
             topologyRequestListenerRegistrations) {
             topologyRequestListenerRegistration.close();
         }
+        dataStoreType = null;
     }
 
     @Override
@@ -227,4 +219,11 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         this.domDataTreeChangeService = domDataTreeChangeService;
     }
 
+    public void setDomRpcService(final DOMRpcService domRpcService) {
+        this.domRpcService = domRpcService;
+    }
+
+    public void setDomRpcProviderService(final DOMRpcProviderService domRpcProviderService) {
+        this.domRpcProviderService = domRpcProviderService;
+    }
 }
