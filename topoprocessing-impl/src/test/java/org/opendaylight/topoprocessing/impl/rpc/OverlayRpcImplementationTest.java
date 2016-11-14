@@ -27,6 +27,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcException;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
+import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcResult;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev130712.NetworkTopology;
@@ -69,6 +70,7 @@ public class OverlayRpcImplementationTest {
     private DOMRpcIdentifier rpcIdentifier;
 
     @Mock private DOMRpcService rpcService;
+    @Mock private DOMRpcProviderService rpcProviderService;
     @Mock private SchemaContext schemaContext;
     @Mock private ContainerNode input;
     @Mock private Module module;
@@ -84,7 +86,9 @@ public class OverlayRpcImplementationTest {
     public void setUp() throws Exception {
         underlayNodeIdentifier = YangInstanceIdentifier.of(RPC_QNAME);
         rpcIdentifier =  DOMRpcIdentifier.create(SchemaPath.create(true, RPC_QNAME));
-        overlayRpcImplementation = new OverlayRpcImplementation(rpcService, schemaContext, underlayNodeIdentifier);
+        overlayRpcImplementation = new OverlayRpcImplementation(schemaContext,
+                new RpcServices(rpcService, rpcProviderService),
+                underlayNodeIdentifier);
         Mockito.when(schemaContext.findModuleByNamespaceAndRevision((URI) Matchers.any(), (Date) Matchers.any()))
                 .thenReturn(module);
         Mockito.when(module.getRpcs()).thenReturn(Collections.singleton(rpcDefinition));
