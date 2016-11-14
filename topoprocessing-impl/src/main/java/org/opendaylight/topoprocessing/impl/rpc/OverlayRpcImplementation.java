@@ -10,14 +10,11 @@ package org.opendaylight.topoprocessing.impl.rpc;
 
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
-
 import java.util.Collection;
-
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcException;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcImplementation;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcResult;
-import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.md.sal.dom.broker.spi.rpc.RpcRoutingStrategy;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
@@ -47,21 +44,21 @@ import org.slf4j.LoggerFactory;
 public class OverlayRpcImplementation implements DOMRpcImplementation {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OverlayRpcImplementation.class);
-    private DOMRpcService rpcService;
+    private RpcServices rpcServices;
     private SchemaContext schemaContext;
     private YangInstanceIdentifier underlayItemIdentifier;
 
     /**
      * Default constructor
-     * @param rpcService used to reinvoked RPC at correct place
      * @param schemaContext used to get {@link RpcDefinition} {@link RpcRoutingStrategy}
+     * @param rpcServices instance of {@link RpcServices}
      * @param underlayNodeIdentifier identifies node which the RPC should be really invoked on
      */
-    public OverlayRpcImplementation(DOMRpcService rpcService, SchemaContext schemaContext,
+    public OverlayRpcImplementation(SchemaContext schemaContext, RpcServices rpcServices,
             YangInstanceIdentifier underlayNodeIdentifier) {
-        this.rpcService = rpcService;
         this.schemaContext = schemaContext;
         this.underlayItemIdentifier = underlayNodeIdentifier;
+        this.rpcServices = rpcServices;
     }
 
     @Override
@@ -94,7 +91,7 @@ public class OverlayRpcImplementation implements DOMRpcImplementation {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Reinvoking RPC at: {} with input: {}", underlayItemIdentifier, underlayRpcInput);
         }
-        return rpcService.invokeRpc(rpc.getType(), underlayRpcInput);
+        return rpcServices.invokeRpc(rpc.getType(), underlayRpcInput);
     }
 
     private static RpcDefinition findRpcDefinition(final SchemaContext context, final SchemaPath schemaPath) {

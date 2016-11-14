@@ -64,7 +64,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
         this.schemaHolder = schemaHolder;
         this.topologyIdentifier = topologyIdentifier;
         availableRpcs = new HashSet<>();
-        this.rpcServices.getRpcService().registerRpcListener(this);
+        this.rpcServices.registerRpcListener(this);
         this.outputModel = outputModel;
     }
 
@@ -238,15 +238,14 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
                 }
             }
             OverlayRpcImplementation overlayImplementation =
-                    new OverlayRpcImplementation(rpcServices.getRpcService(), schemaHolder.getSchemaContext(),
+                    new OverlayRpcImplementation(schemaHolder.getSchemaContext(), rpcServices,
                             nodeEntryIdentifier);
             Set<DOMRpcIdentifier> overlayRpcIdentifiers = new HashSet<>();
             for (DOMRpcIdentifier underlayRpcIdentifier : underlayRpcs) {
                 overlayRpcIdentifiers.add(DOMRpcIdentifier.create(underlayRpcIdentifier.getType(), contextIdentifier));
             }
             if (!overlayRpcIdentifiers.isEmpty()) {
-                rpcServices.getRpcProviderService()
-                    .registerRpcImplementation(overlayImplementation, overlayRpcIdentifiers);
+                rpcServices.registerRpcImplementation(overlayImplementation, overlayRpcIdentifiers);
             }
         }
     }
