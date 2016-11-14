@@ -61,7 +61,7 @@ public class TopologyManagerTest {
     private static final String NODE_ID2 = "pcep:2";
     private static final String NODE_ID3 = "pcep:3";
 
-    @Mock private RpcServices mockRpcServices;
+
     @Mock private GlobalSchemaContextHolder mockSchemaHolder;
     @Mock private NormalizedNode<?,?> mockNormalizedNode1;
     @Mock private DOMRpcService mockDOMRpcService;
@@ -73,6 +73,9 @@ public class TopologyManagerTest {
 
     @Mock private DOMRpcImplementation mockDomRpcImplementation;
     @Mock private DOMRpcIdentifier mockDomRpcIdentifier;
+
+    private RpcServices rpcServices = new RpcServices(mockDOMRpcService, mockDomRpcProviderService);
+
     TopologyManager manager;
     private YangInstanceIdentifier identifier = YangInstanceIdentifier.builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
             .nodeWithKey(Topology.QNAME, TopologyQNames.TOPOLOGY_ID_QNAME, TOPOLOGY1).build();
@@ -84,10 +87,8 @@ public class TopologyManagerTest {
      */
     @Before
     public void setUp() {
-        Mockito.when(mockRpcServices.getRpcService()).thenReturn(mockDOMRpcService);
-        Mockito.when(mockRpcServices.getRpcService().registerRpcListener((DOMRpcAvailabilityListener)any()))
-            .thenReturn(mockListenerRegistration);
-        manager = new TopologyManager(mockRpcServices, mockSchemaHolder, identifier, NetworkTopologyModel.class);
+        rpcServices = new RpcServices(mockDOMRpcService, mockDomRpcProviderService);
+        manager = new TopologyManager(rpcServices, mockSchemaHolder, identifier, NetworkTopologyModel.class);
         manager.setWriter(writer);
     }
 
@@ -269,10 +270,6 @@ public class TopologyManagerTest {
     @Test
     public void testRpcRepublishing() {
         Mockito.when(mockSchemaHolder.getSchemaContext()).thenReturn(mockSchemaContext);
-        Mockito.when(mockRpcServices.getRpcProviderService()).thenReturn(mockDomRpcProviderService);
-        Mockito.when(mockRpcServices.getRpcProviderService().registerRpcImplementation(
-                (DOMRpcImplementation) any(),(DOMRpcIdentifier) any()))
-                .thenReturn(mockDomRpcImplementationRegistration);
 
         YangInstanceIdentifier contextReference = YangInstanceIdentifier
                 .builder(InstanceIdentifiers.TOPOLOGY_IDENTIFIER)
