@@ -10,9 +10,7 @@ package org.opendaylight.topoprocessing.impl.rpc;
 
 import com.google.common.util.concurrent.CheckedFuture;
 import com.google.common.util.concurrent.Futures;
-
 import java.util.Collection;
-
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcException;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcImplementation;
@@ -58,7 +56,7 @@ public class OverlayRpcImplementation implements DOMRpcImplementation {
      * @param underlayNodeIdentifier identifies node which the RPC should be really invoked on
      */
     public OverlayRpcImplementation(DOMRpcService rpcService, SchemaContext schemaContext,
-            YangInstanceIdentifier underlayNodeIdentifier) {
+                                    YangInstanceIdentifier underlayNodeIdentifier) {
         this.rpcService = rpcService;
         this.schemaContext = schemaContext;
         this.underlayItemIdentifier = underlayNodeIdentifier;

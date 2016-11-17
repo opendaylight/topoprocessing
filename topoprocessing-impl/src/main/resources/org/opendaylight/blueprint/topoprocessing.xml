@@ -20,11 +20,17 @@
     interface="org.opendaylight.controller.sal.core.api.model.SchemaService" />
   <reference id="bindingNormalizedNodeSerializer"
     interface="org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer" />
+  <reference id="domRpcService"
+             interface="org.opendaylight.controller.md.sal.dom.api.DOMRpcService"/>
+  <reference id="domRpcProviderService"
+             interface="org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService"/>
 
   <bean id="topoprocessingProviderImpl"
     class="org.opendaylight.topoprocessing.impl.provider.TopoProcessingProviderImpl"
     init-method="startup" destroy-method="close">
     <property name="dataBroker" ref="dataBrokerImpl" />
+    <property name="domRpcService" ref="domRpcService" />
+    <property name="domRpcProviderService" ref="domRpcProviderService" />
     <property name="broker" ref="brokerImpl" />
     <property name="schemaService" ref="schemaServiceImpl" />
     <property name="nodeSerializer" ref="bindingNormalizedNodeSerializer" />
