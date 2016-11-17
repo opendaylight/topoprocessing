@@ -607,6 +607,9 @@ public abstract class TopologyRequestHandler {
                         + " closeOperatingResources in TopologyRequestHandler class.");
             }
         }
+        if (topologyManager != null) {
+            topologyManager.close();
+        }
     }
 
     /**

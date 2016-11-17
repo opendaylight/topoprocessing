@@ -131,6 +131,8 @@ public class TopoProcessingProviderImplTest {
         provider.setDataStoreType(LogicalDatastoreType.CONFIGURATION);
         provider.setBroker(brokerMock);
         provider.setDomDataTreeChangeService(domDataTreeChangeServiceMock);
+        provider.setDomRpcProviderService(rpcProviderServiceMock);
+        provider.setDomRpcService(rpcServiceMock);
         Map<Class<? extends DOMDataBrokerExtension>, DOMDataBrokerExtension> brokerExtensions = new HashMap<>();
         brokerExtensions.put(DOMDataTreeChangeService.class, domDataTreeChangeServiceMock);
         Mockito.when(domDataBrokerMock.getSupportedExtensions()).thenReturn(brokerExtensions);
