@@ -268,6 +268,7 @@ public class TopologyWriter implements TransactionChainListener {
             LOGGER.trace("Shutting down writer");
             try {
                 transactionChain.close();
+                transactionChain = null;
             } catch (Exception e) {
                 LOGGER.error("An error occurred while closing transaction chain: {}", transactionChain, e);
             }
