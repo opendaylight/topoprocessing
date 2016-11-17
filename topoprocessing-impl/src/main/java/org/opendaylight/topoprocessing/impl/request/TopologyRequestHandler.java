@@ -596,6 +596,7 @@ public abstract class TopologyRequestHandler {
     private void closeOperatingResources(int timeOut) {
         for (ListenerRegistration<DOMDataTreeChangeListener> listener : listeners) {
             listener.close();
+            listener = null;
         }
         listeners.clear();
         writer.tearDown();
@@ -606,6 +607,9 @@ public abstract class TopologyRequestHandler {
                 LOG.debug("Captured InterruptedException in method"
                         + " closeOperatingResources in TopologyRequestHandler class.");
             }
+        }
+        if (topologyManager != null) {
+            topologyManager.close();
         }
     }
 

@@ -9,15 +9,16 @@ package org.opendaylight.topoprocessing.impl.operator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
-
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcAvailabilityListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcIdentifier;
+import org.opendaylight.controller.md.sal.dom.api.DOMRpcImplementationRegistration;
 import org.opendaylight.topoprocessing.api.structure.OverlayItem;
 import org.opendaylight.topoprocessing.api.structure.UnderlayItem;
 import org.opendaylight.topoprocessing.impl.rpc.OverlayRpcImplementation;
@@ -29,6 +30,7 @@ import org.opendaylight.topoprocessing.impl.util.TopologyQNames;
 import org.opendaylight.topoprocessing.impl.writer.TopologyWriter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.common.QName;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.slf4j.Logger;
@@ -38,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author martin.uhlir
  *
  */
-public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyManager {
+public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyManager, AutoCloseable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TopologyManager.class);
 
@@ -52,6 +54,10 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
     private GlobalSchemaContextHolder schemaHolder;
     private Class<? extends Model> outputModel;
 
+    private ListenerRegistration<TopologyManager> rpcListenerReg;
+    private final List<DOMRpcImplementationRegistration<OverlayRpcImplementation>> overlayRpcRegs =
+            Collections.synchronizedList(new ArrayList<DOMRpcImplementationRegistration<OverlayRpcImplementation>>());
+
     /**
      * @param rpcServices used for rpc republishing
      * @param schemaHolder access to SchemaContext
@@ -64,7 +70,7 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
         this.schemaHolder = schemaHolder;
         this.topologyIdentifier = topologyIdentifier;
         availableRpcs = new HashSet<>();
-        this.rpcServices.getRpcService().registerRpcListener(this);
+        rpcListenerReg = this.rpcServices.getRpcService().registerRpcListener(this);
         this.outputModel = outputModel;
     }
 
@@ -245,8 +251,10 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
                 overlayRpcIdentifiers.add(DOMRpcIdentifier.create(underlayRpcIdentifier.getType(), contextIdentifier));
             }
             if (!overlayRpcIdentifiers.isEmpty()) {
-                rpcServices.getRpcProviderService()
-                    .registerRpcImplementation(overlayImplementation, overlayRpcIdentifiers);
+                final DOMRpcImplementationRegistration<OverlayRpcImplementation> reg =
+                        rpcServices.getRpcProviderService().registerRpcImplementation(
+                                overlayImplementation, overlayRpcIdentifiers);
+                overlayRpcRegs.add(reg);
             }
         }
     }
@@ -265,5 +273,18 @@ public class TopologyManager implements DOMRpcAvailabilityListener, ITopologyMan
                 throw new IllegalArgumentException("Wrong Correlation item set: " + correlationItem);
         }
         return resultList;
+    }
+
+    @Override
+    public void close() {
+        overlayRpcRegs.forEach(reg -> {
+            reg.close();
+            reg = null;
+        });
+
+        if (rpcListenerReg != null) {
+            rpcListenerReg.close();
+            rpcListenerReg = null;
+        }
     }
 }
