@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a65312a_740d3637",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-11-18T08:48:10Z",
+      "side": 1,
+      "message": "I am not sure if this work as you intended. If I am correct, then listener variable here is just local reference to the listener in listeners list. So I think this only set this local reference to null, but not the listener in list itself.",
+      "range": {
+        "startLine": 599,
+        "startChar": 12,
+        "endLine": 599,
+        "endChar": 28
+      },
+      "revId": "88c00c86d4705968d14c32a9e73c29169fc803d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
