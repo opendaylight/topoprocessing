@@ -46,6 +46,30 @@
       "revId": "88c00c86d4705968d14c32a9e73c29169fc803d2",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_77453816",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-11-18T13:50:41Z",
+      "side": 1,
+      "message": "Well, I just tested this assumption with this snippet:\n\n        List\u003cString\u003e test \u003d new ArrayList\u003c\u003e();\n        test.add(\"test\");\n        test.add(\"test2\");\n        for(String element: test) {\n            element \u003d null;\n        }\n        assertThat(test.get(0)).isNull();\n        assertThat(test.get(1)).isNull();\n\nand that test didn\u0027t pass. So is there something wrong in my code snippet?",
+      "parentUuid": "3a65312a_7416d656",
+      "range": {
+        "startLine": 599,
+        "startChar": 12,
+        "endLine": 599,
+        "endChar": 28
+      },
+      "revId": "88c00c86d4705968d14c32a9e73c29169fc803d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
