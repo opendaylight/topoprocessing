@@ -22,6 +22,30 @@
       "revId": "88c00c86d4705968d14c32a9e73c29169fc803d2",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a65312a_7416d656",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 7
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 3675
+      },
+      "writtenOn": "2016-11-18T12:55:37Z",
+      "side": 1,
+      "message": "The \"listener\" object here is actually representing an element of the list, it\u0027s not a local reference. And the reason why I \"null\" it is to help GC collect it. Basically, it is mainly to make sure no reference are retained anymore by the \"listener\" after it\u0027s closed.",
+      "parentUuid": "3a65312a_740d3637",
+      "range": {
+        "startLine": 599,
+        "startChar": 12,
+        "endLine": 599,
+        "endChar": 28
+      },
+      "revId": "88c00c86d4705968d14c32a9e73c29169fc803d2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
     }
   ]
 }
