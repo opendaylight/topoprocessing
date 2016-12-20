@@ -5,11 +5,11 @@
     <parent>
         <groupId>org.opendaylight.controller</groupId>
         <artifactId>karaf-parent</artifactId>
-        <version>1.7.2-SNAPSHOT</version>
+        <version>1.7.3-SNAPSHOT</version>
     </parent>
     <artifactId>distribution-karaf</artifactId>
     <groupId>org.opendaylight.topoprocessing</groupId>
-    <version>0.2.2-SNAPSHOT</version>
+    <version>0.2.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <scm>
         <connection>scm:git:ssh://git.opendaylight.org:29418/topoprocessing.git</connection>
