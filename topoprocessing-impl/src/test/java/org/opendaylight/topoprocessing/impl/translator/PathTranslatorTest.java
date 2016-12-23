@@ -8,15 +8,16 @@
 
 package org.opendaylight.topoprocessing.impl.translator;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,11 +39,7 @@ import org.opendaylight.yangtools.yang.data.util.DataSchemaContextTree;
 import org.opendaylight.yangtools.yang.model.api.SchemaContext;
 import org.opendaylight.yangtools.yang.model.parser.api.YangSyntaxErrorException;
 import org.opendaylight.yangtools.yang.parser.spi.meta.ReactorException;
-import org.opendaylight.yangtools.yang.parser.spi.source.SourceException;
-import org.opendaylight.yangtools.yang.parser.spi.source.StatementStreamSource;
-import org.opendaylight.yangtools.yang.parser.stmt.reactor.CrossSourceStatementReactor;
-import org.opendaylight.yangtools.yang.parser.stmt.rfc6020.YangInferencePipeline;
-import org.opendaylight.yangtools.yang.parser.stmt.rfc6020.YangStatementSourceImpl;
+import org.opendaylight.yangtools.yang.test.util.YangParserTestUtils;
 
 /**
  * @author martin.uhlir
@@ -51,46 +48,19 @@ import org.opendaylight.yangtools.yang.parser.stmt.rfc6020.YangStatementSourceIm
 @RunWith(MockitoJUnitRunner.class)
 public class PathTranslatorTest {
 
-    private PathTranslator pathTranslator = new PathTranslator();
-    private SchemaContext schemaContext;
+    private final PathTranslator pathTranslator = new PathTranslator();
 
     @Mock
     private GlobalSchemaContextHolder mockSchemaHolder;
 
-    private Class<? extends Model> NTmodel = NetworkTopologyModel.class;
-    private Class<? extends Model> I2RSmodel = I2rsModel.class;
-    private Class<? extends Model> INVmodel = OpendaylightInventoryModel.class;
-
-    private static SchemaContext createTestContext() throws IOException, YangSyntaxErrorException,
-    ReactorException {
-        List<String> modules = new ArrayList<String>();
-        modules.add("/ietf-inet-types@2013-07-15.yang");
-        modules.add("/network-topology.yang");
-        modules.add("/l3-unicast-igp-topology.yang");
-        modules.add("/network-topology-pcep.yang");
-        modules.add("/ietf-network.yang");
-        modules.add("/i2rs-topology.yang");
-        modules.add("/yang-ext.yang");
-        modules.add("/opendaylight-inventory.yang");
-        modules.add("/opendaylight-l2-types.yang");
-        modules.add("/ietf-yang-types@2013-07-15.yang");
-        modules.add("/opendaylight-topology.yang");
-        modules.add("/opendaylight-meter-types.yang");
-        modules.add("/opendaylight-queue-types.yang");
-        modules.add("/opendaylight-port-types.yang");
-        modules.add("/opendaylight-match-types.yang");
-        modules.add("/opendaylight-action-types.yang");
-        modules.add("/opendaylight-group-types.yang");
-        modules.add("/opendaylight-flow-types.yang");
-        modules.add("/opendaylight-table-types.yang");
-        modules.add("/flow-node-inventory.yang");
-        return parseYangSources(modules);
-    }
+    private static final Class<? extends Model> NT_MODEL = NetworkTopologyModel.class;
+    private static final Class<? extends Model> I2RS_MODEL = I2rsModel.class;
+    private static final Class<? extends Model> INV_MODEL = OpendaylightInventoryModel.class;
 
     @Before
     public void startup() throws URISyntaxException, ParseException, IOException, YangSyntaxErrorException,
     ReactorException {
-        schemaContext = createTestContext();
+        SchemaContext schemaContext = createTestContext();
         DataSchemaContextTree contextTree = DataSchemaContextTree.from(schemaContext);
         Mockito.when(mockSchemaHolder.getSchemaContext()).thenReturn(schemaContext);
         Mockito.when(mockSchemaHolder.getContextTree()).thenReturn(contextTree);
@@ -113,7 +83,7 @@ public class PathTranslatorTest {
         childNames.add(qName);
         AugmentationIdentifier augmentationIdentifier = new AugmentationIdentifier(childNames);
         YangInstanceIdentifier translate = pathTranslator.translate("network-topology-pcep:path-computation-client",
-                CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
+                CorrelationItemEnum.Node, mockSchemaHolder, NT_MODEL);
         YangInstanceIdentifier expectedIdentifier = YangInstanceIdentifier.builder().node(augmentationIdentifier)
                 .node(qName).build();
         System.out.println(expectedIdentifier.toString());
@@ -130,7 +100,7 @@ public class PathTranslatorTest {
         AugmentationIdentifier augmentationIdentifier = new AugmentationIdentifier(childNames);
         YangInstanceIdentifier translate =
                 pathTranslator.translate("l3-unicast-igp-topology:igp-termination-point-attributes",
-                CorrelationItemEnum.TerminationPoint, mockSchemaHolder, NTmodel);
+                CorrelationItemEnum.TerminationPoint, mockSchemaHolder, NT_MODEL);
         YangInstanceIdentifier expectedIdentifier = YangInstanceIdentifier.builder().node(augmentationIdentifier)
                 .node(qName).build();
         System.out.println(expectedIdentifier.toString());
@@ -168,7 +138,7 @@ public class PathTranslatorTest {
         childNames.add(qName);
         AugmentationIdentifier augmentationIdentifier = new AugmentationIdentifier(childNames);
         YangInstanceIdentifier translate = pathTranslator.translate("flow-node-inventory:state",
-                CorrelationItemEnum.TerminationPoint, mockSchemaHolder, INVmodel);
+                CorrelationItemEnum.TerminationPoint, mockSchemaHolder, INV_MODEL);
         YangInstanceIdentifier expectedIdentifier = YangInstanceIdentifier.builder().node(augmentationIdentifier)
                 .node(qName).build();
 
@@ -212,7 +182,7 @@ public class PathTranslatorTest {
         childNames.add(qName);
         AugmentationIdentifier augmentationIdentifier = new AugmentationIdentifier(childNames);
         YangInstanceIdentifier translate = pathTranslator.translate("flow-node-inventory:switch-features",
-                CorrelationItemEnum.Node, mockSchemaHolder, INVmodel);
+                CorrelationItemEnum.Node, mockSchemaHolder, INV_MODEL);
         YangInstanceIdentifier expectedIdentifier = YangInstanceIdentifier.builder().node(augmentationIdentifier)
                 .node(qName).build();
 
@@ -233,7 +203,7 @@ public class PathTranslatorTest {
     @Test(expected = IllegalArgumentException.class)
     public void testTwoColonsIllegalArgument() {
         pathTranslator.translate("network-topology-pcep::path-computation-client/network-topology-pcep:ip-address",
-                CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
+                CorrelationItemEnum.Node, mockSchemaHolder, NT_MODEL);
     }
 
     /**
@@ -243,7 +213,7 @@ public class PathTranslatorTest {
     @Test(expected = IllegalArgumentException.class)
     public void testNoColonsIllegalArgument() {
         pathTranslator.translate("network-topology-pceppath-computation-client/network-topology-pcep:ip-address",
-                CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
+                CorrelationItemEnum.Node, mockSchemaHolder, NT_MODEL);
     }
 
     /**
@@ -252,7 +222,7 @@ public class PathTranslatorTest {
     @Test(expected = IllegalArgumentException.class)
     public void testColonAtLastPosition() {
         pathTranslator.translate("network-topology-pcep:/network-topology-pcep:ip-address", CorrelationItemEnum.Node,
-                mockSchemaHolder, NTmodel);
+                mockSchemaHolder, NT_MODEL);
 
     }
 
@@ -262,7 +232,7 @@ public class PathTranslatorTest {
     @Test(expected = IllegalArgumentException.class)
     public void testColonAtFirstPosition() {
         pathTranslator.translate(":path-computation-client/network-topology-pcep:ip-address", CorrelationItemEnum.Node,
-                mockSchemaHolder, NTmodel);
+                mockSchemaHolder, NT_MODEL);
     }
 
     /**
@@ -270,7 +240,7 @@ public class PathTranslatorTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testEmptyString() {
-        pathTranslator.translate("", CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
+        pathTranslator.translate("", CorrelationItemEnum.Node, mockSchemaHolder, NT_MODEL);
     }
 
     /**
@@ -278,13 +248,13 @@ public class PathTranslatorTest {
      */
     @Test(expected = IllegalArgumentException.class)
     public void testYangPathNull() {
-        pathTranslator.translate(null, CorrelationItemEnum.Node, mockSchemaHolder, NTmodel);
+        pathTranslator.translate(null, CorrelationItemEnum.Node, mockSchemaHolder, NT_MODEL);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testPathBeginingWithSlash() {
         pathTranslator.translate("/network-topology-pcep:ip-address", CorrelationItemEnum.Node, mockSchemaHolder,
-                NTmodel);
+                NT_MODEL);
     }
 
     /**
@@ -300,27 +270,45 @@ public class PathTranslatorTest {
     public void testUnexistingModuleName()
             throws URISyntaxException, ParseException, IOException, YangSyntaxErrorException, ReactorException {
 
-        List<String> modules = new ArrayList<String>();
-        modules.add("/ietf-inet-types@2013-07-15.yang");
-        modules.add("/network-topology.yang");
+        List<String> resourceModules = new LinkedList<String>();
+        resourceModules.add("/ietf-inet-types@2013-07-15.yang");
+        resourceModules.add("/network-topology.yang");
 
-        SchemaContext schemaContext2 = parseYangSources(modules);
-        Mockito.when(mockSchemaHolder.getSchemaContext()).thenReturn(schemaContext2);
+        SchemaContext incompleteSchemaContext = parseYangResources(resourceModules);
+        Mockito.when(mockSchemaHolder.getSchemaContext()).thenReturn(incompleteSchemaContext);
         testLegalPath();
     }
 
-    public static SchemaContext parseYangSources(List<String> input) throws SourceException, ReactorException,
-    FileNotFoundException {
+    private SchemaContext createTestContext() throws IOException, YangSyntaxErrorException,
+    ReactorException {
+        List<String> resourceModules = new LinkedList<String>();
+        resourceModules.add("/ietf-inet-types@2013-07-15.yang");
+        resourceModules.add("/network-topology.yang");
+        resourceModules.add("/l3-unicast-igp-topology.yang");
+        resourceModules.add("/network-topology-pcep.yang");
+        resourceModules.add("/ietf-network.yang");
+        resourceModules.add("/i2rs-topology.yang");
+        resourceModules.add("/yang-ext.yang");
+        resourceModules.add("/opendaylight-inventory.yang");
+        resourceModules.add("/opendaylight-l2-types.yang");
+        resourceModules.add("/ietf-yang-types@2013-07-15.yang");
+        resourceModules.add("/opendaylight-topology.yang");
+        resourceModules.add("/opendaylight-meter-types.yang");
+        resourceModules.add("/opendaylight-queue-types.yang");
+        resourceModules.add("/opendaylight-port-types.yang");
+        resourceModules.add("/opendaylight-match-types.yang");
+        resourceModules.add("/opendaylight-action-types.yang");
+        resourceModules.add("/opendaylight-group-types.yang");
+        resourceModules.add("/opendaylight-flow-types.yang");
+        resourceModules.add("/opendaylight-table-types.yang");
+        resourceModules.add("/flow-node-inventory.yang");
+        return parseYangResources(resourceModules);
+    }
 
-        StatementStreamSource[] sources = new StatementStreamSource[input.size()];
-
-        for (int i = 0; i < input.size(); i++) {
-            sources[i] = new YangStatementSourceImpl(PathTranslatorTest.class.getResourceAsStream(input.get(i)));
-        }
-
-        CrossSourceStatementReactor.BuildAction reactor = YangInferencePipeline.RFC6020_REACTOR.newBuild();
-        reactor.addSources(sources);
-
-        return reactor.buildEffective();
+    private SchemaContext parseYangResources(List<String> resourceModules) throws ReactorException {
+        List<InputStream> yangStreams = resourceModules.stream()
+                .map(m -> PathTranslatorTest.class.getResourceAsStream(m))
+                .collect(Collectors.toList());
+        return YangParserTestUtils.parseYangStreams(yangStreams);
     }
 }

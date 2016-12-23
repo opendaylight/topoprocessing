@@ -49,6 +49,12 @@
             <artifactId>slf4j-log4j12</artifactId>
             <scope>test</scope>
         </dependency>
+        <!--Deps for tests-->
+        <dependency>
+          <groupId>org.opendaylight.yangtools</groupId>
+          <artifactId>yang-test-util</artifactId>
+          <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
