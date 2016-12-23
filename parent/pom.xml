@@ -77,7 +77,6 @@
         <i2rs.version>1.2.0-SNAPSHOT</i2rs.version>
         <restconf.version>1.5.0-SNAPSHOT</restconf.version>
         <features.test.version>1.8.0-SNAPSHOT</features.test.version>
-        <!-- TODO - bump openflowplugin version once its version is bumped -->
     </properties>
 
     <dependencyManagement>
