@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1a622d24_28e22e03",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/translator/PathTranslatorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 284,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2016-12-25T10:59:41Z",
+      "side": 1,
+      "message": "\u003c\u003e",
+      "range": {
+        "startLine": 284,
+        "startChar": 53,
+        "endLine": 284,
+        "endChar": 61
+      },
+      "revId": "2051ac2bc1d4fd953bde0a57a99625fdf8437336",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1a622d24_88e8a2e3",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/translator/PathTranslatorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 304,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2016-12-25T10:59:41Z",
+      "side": 1,
+      "message": "this can be written simply as:\n\nImmutableList.of(\"file1\", \"file2\", ...)",
+      "range": {
+        "startLine": 285,
+        "startChar": 0,
+        "endLine": 304,
+        "endChar": 57
+      },
+      "revId": "2051ac2bc1d4fd953bde0a57a99625fdf8437336",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
