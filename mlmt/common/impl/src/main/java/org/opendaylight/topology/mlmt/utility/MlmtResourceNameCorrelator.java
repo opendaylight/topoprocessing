@@ -38,6 +38,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     private Map<IsoSystemId, String> isoSystemId2NodeName;
     private Map<Ipv4Address, String> ipv4Address2NodeName;
 
+    private Map<IsoSystemId, Map<String, TpId>> isoSystemId2TpId;
     private Map<Ipv4Address, Map<String, TpId>> ipv4Address2TpId;
 
     private Map<IsoSystemId, NodeId> isoSystemId2NodeId;
@@ -45,6 +46,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
     private Map<NodeId, IsoSystemId> nodeId2IsoSystemId;
     private Map<NodeId, Ipv4Address> nodeId2Ipv4Address;
+
     private Map<NodeId, String> nodeId2NodeName;
 
     private Map<NodeKey, NodeId> invNodeKey2NodeId;
@@ -75,9 +77,11 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
 
         nodeId2IsoSystemId = new HashMap<NodeId, IsoSystemId>();
         nodeId2Ipv4Address = new HashMap<NodeId, Ipv4Address>();
+
         nodeId2NodeName = new HashMap<NodeId, String>();
 
         invNodeKey2NodeId = new HashMap<NodeKey, NodeId>();
+
         invNodeConnectorKey2TpId = new HashMap<NodeKey, Map<NodeConnectorKey, TpId>>();
     }
 
@@ -364,11 +368,11 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     @Override
     public void removeNodeId2IsoSystemId(final NodeId nodeId) {
         final IsoSystemId isoSystemId = nodeId2IsoSystemId.get(nodeId);
-        synchronized (nodeId2IsoSystemId) {
-            nodeId2IsoSystemId.remove(nodeId);
+        synchronized (isoSystemId2NodeId) {
+            isoSystemId2NodeId.remove(isoSystemId);
         }
         synchronized (nodeId2IsoSystemId) {
-            nodeId2IsoSystemId.remove(isoSystemId);
+            nodeId2IsoSystemId.remove(nodeId);
         }
     }
 
@@ -486,7 +490,7 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
                 return;
             }
             mapTpId.remove(nodeName);
-            if (mapTpId.size() == 0) {
+            if (mapTpId.size() > 0) {
                 ipv4Address2TpId.put(ipv4Address, mapTpId);
             } else {
                 ipv4Address2TpId.remove(ipv4Address);
@@ -509,9 +513,9 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     }
 
     @Override
-    public NodeId getNodeId(final NodeKey invNodeKey) {
-        synchronized (invNodeKey2NodeId) {
-            return invNodeKey2NodeId.get(invNodeKey);
+    public void removeNodeId2NodeName(final NodeId nodeId) {
+        synchronized (nodeId2NodeName) {
+            nodeId2NodeName.remove(nodeId);
         }
     }
 
@@ -519,6 +523,20 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
     public void putInvNodeKey2NodeId(final NodeKey invNodeKey, final NodeId nodeId) {
         synchronized (invNodeKey2NodeId) {
             invNodeKey2NodeId.put(invNodeKey, nodeId);
+        }
+    }
+
+    @Override
+    public NodeId getNodeId(final NodeKey invNodeKey) {
+        synchronized (invNodeKey2NodeId) {
+            return invNodeKey2NodeId.get(invNodeKey);
+        }
+    }
+
+    @Override
+    public void removeInvNodeKey2NodeId(final NodeKey invNodeKey) {
+        synchronized (invNodeKey2NodeId) {
+            invNodeKey2NodeId.remove(invNodeKey);
         }
     }
 
@@ -543,6 +561,23 @@ public class MlmtResourceNameCorrelator implements MlmtResourceNameCorrelation {
                 return null;
             }
             return tpIdMap.get(nodeConnectorKey);
+        }
+    }
+
+    @Override
+    public void removeInvNodeConnectorKey2TpId(final NodeKey invNodeKey,
+            final NodeConnectorKey nodeConnectorKey) {
+        synchronized (invNodeConnectorKey2TpId) {
+            Map<NodeConnectorKey, TpId> tpIdMap = invNodeConnectorKey2TpId.get(invNodeKey);
+            if (tpIdMap == null) {
+                return;
+            }
+            tpIdMap.remove(nodeConnectorKey);
+            if (tpIdMap.size() > 0) {
+                invNodeConnectorKey2TpId.put(invNodeKey, tpIdMap);
+            } else {
+                invNodeConnectorKey2TpId.remove(invNodeKey);
+            }
         }
     }
 
