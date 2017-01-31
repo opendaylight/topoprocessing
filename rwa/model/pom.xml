@@ -47,7 +47,6 @@
             <Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
             <Export-Package>org.opendaylight.yang.gen.v1.urn.opendaylight.topology*</Export-Package>
             <Import-Package>org.opendaylight.yangtools.yang.binding.annotations, *</Import-Package>
-            <manifestLocation>${project.basedir}/META-INF</manifestLocation>
           </instructions>
         </configuration>
       </plugin>
