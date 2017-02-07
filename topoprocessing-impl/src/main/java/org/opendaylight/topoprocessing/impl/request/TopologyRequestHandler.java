@@ -481,6 +481,7 @@ public abstract class TopologyRequestHandler {
                 UnificationAggregator aggregator = new UnificationAggregator(storeProvider);
                 aggregator.setTopologyManager(topologyManager);
                 calculator.setTopologyAggregator(aggregator);
+                aggregator..initCustomAggregation(linkAggregation.getScripting());
             }
             for (LinkInfo linkInfo : linksInformations) {
                 String underlayTopologyId = linkInfo.getLinkTopology();
