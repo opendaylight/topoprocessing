@@ -593,6 +593,10 @@ public abstract class TopologyRequestHandler {
         closeOperatingResources(timeOut);
     }
 
+    public void close() {
+        closeOperatingResources(5000);
+    }
+
     private void closeOperatingResources(int timeOut) {
         for (ListenerRegistration<DOMDataTreeChangeListener> listener : listeners) {
             listener.close();

@@ -8,13 +8,11 @@
 
 package org.opendaylight.topoprocessing.impl.provider;
 
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
@@ -43,8 +41,6 @@ import org.opendaylight.yangtools.yang.model.api.SchemaContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-
 /**
  * @author michal.polkorab
  *
@@ -58,7 +54,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private final Map<Class<? extends Model>, ModelAdapter> modelAdapters;
     private final List<TopologyRequestListener> listeners;
 
-    // blueprint autowired fields
+    // blueprint autowired fields ↓
     //access to data store
     private DOMDataBroker domDataBroker;
     private Broker broker;
@@ -116,6 +112,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
             topologyRequestListenerRegistrations) {
             topologyRequestListenerRegistration.close();
         }
+        listeners.forEach(TopologyRequestListener::close);
     }
 
     @Override

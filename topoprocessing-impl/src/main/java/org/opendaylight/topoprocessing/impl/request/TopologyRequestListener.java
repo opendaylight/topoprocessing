@@ -169,6 +169,10 @@ public abstract class TopologyRequestListener implements DOMDataTreeChangeListen
         processCreatedData(normalizedNode, yangInstanceIdentifier);
     }
 
+    public void close() {
+        topoRequestHandlers.values().forEach(TopologyRequestHandler::close);
+    }
+
     protected abstract boolean isTopology(NormalizedNode<?, ?> normalizedNode);
 
     protected abstract boolean isTopologyRequest(NormalizedNode<?, ?> normalizedNode);
