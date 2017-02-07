@@ -480,6 +480,7 @@ public abstract class TopologyRequestHandler {
                 storeProvider.initializeStore(overlayTopologyId, true);
                 UnificationAggregator aggregator = new UnificationAggregator(storeProvider);
                 aggregator.setTopologyManager(topologyManager);
+                aggregator.initCustomAggregation(linkAggregation.getScripting());
                 calculator.setTopologyAggregator(aggregator);
             }
             for (LinkInfo linkInfo : linksInformations) {
