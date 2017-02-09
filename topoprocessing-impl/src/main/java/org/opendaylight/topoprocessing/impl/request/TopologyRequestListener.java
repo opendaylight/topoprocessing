@@ -8,23 +8,21 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
+import com.google.common.base.Optional;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
-import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.operator.filtratorFactory.DefaultFiltrators;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.topoprocessing.impl.util.InstanceIdentifiers;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.FilterBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -39,8 +37,6 @@ import org.opendaylight.yangtools.yang.data.api.schema.tree.DataTreeCandidateNod
 import org.opendaylight.yangtools.yang.data.api.schema.tree.ModificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Optional;
 
 /**
  * Listens on new overlay topology requests.
@@ -60,7 +56,6 @@ public abstract class TopologyRequestListener implements DOMDataTreeChangeListen
     private final RpcServices rpcServices;
     private LogicalDatastoreType datastoreType;
     private final Map<Class<? extends FilterBase>, FiltratorFactory> filtrators;
-    private final Map<Class<? extends Model>, ModelAdapter> modelAdapters;
 
     /**
      * Default constructor.
@@ -73,13 +68,12 @@ public abstract class TopologyRequestListener implements DOMDataTreeChangeListen
      */
     public TopologyRequestListener(DOMDataBroker dataBroker, DOMDataTreeChangeService domDataTreeChangeService,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
-            RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
+            RpcServices rpcServices) {
         this.dataBroker = dataBroker;
         this.domDataTreeChangeService = domDataTreeChangeService;
         this.nodeSerializer = nodeSerializer;
         this.schemaHolder = schemaHolder;
         this.rpcServices = rpcServices;
-        this.modelAdapters = modelAdapters;
         this.filtrators = DefaultFiltrators.getDefaultFiltrators();
         LOGGER.trace("Topology Request Listener created");
     }
@@ -131,7 +125,7 @@ public abstract class TopologyRequestListener implements DOMDataTreeChangeListen
                         domDataTreeChangeService, schemaHolder, rpcServices, fromNormalizedNode);
                 requestHandler.setDatastoreType(datastoreType);
                 requestHandler.setFiltrators(filtrators);
-                requestHandler.setModelAdapters(modelAdapters);
+                requestHandler.prepareEmptyTopology();
                 requestHandler.processNewRequest();
                 topoRequestHandlers.put(yangInstanceIdentifier, requestHandler);
 

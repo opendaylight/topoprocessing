@@ -5,18 +5,17 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.topoprocessing.nt.adapter;
+package org.opendaylight.topoprocessing.nt.model;
 
 import java.util.List;
 import java.util.Map;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
-import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
+import org.opendaylight.topoprocessing.impl.model.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.operator.TopologyOperator;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
@@ -29,7 +28,6 @@ import org.opendaylight.topoprocessing.nt.request.NTTopologyRequestListener;
 import org.opendaylight.topoprocessing.nt.translator.NTLinkTranslator;
 import org.opendaylight.topoprocessing.nt.translator.NTNodeTranslator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
@@ -59,9 +57,9 @@ public class NTModelAdapter implements ModelAdapter {
     public TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
             DOMDataTreeChangeService domDataTreeChangeService,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
-            RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
+            RpcServices rpcServices) {
         return new NTTopologyRequestListener(dataBroker, domDataTreeChangeService, nodeSerializer, schemaHolder,
-                rpcServices, modelAdapters);
+                rpcServices);
     }
 
     @Override

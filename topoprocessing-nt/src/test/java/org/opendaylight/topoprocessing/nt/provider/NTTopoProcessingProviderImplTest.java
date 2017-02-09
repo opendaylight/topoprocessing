@@ -14,7 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.topoprocessing.impl.provider.TopoProcessingProviderImpl;
-import org.opendaylight.topoprocessing.nt.adapter.NTModelAdapter;
+import org.opendaylight.topoprocessing.nt.model.NTModelAdapter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 
 /**

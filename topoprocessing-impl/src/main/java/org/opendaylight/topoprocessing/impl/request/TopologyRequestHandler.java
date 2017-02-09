@@ -8,13 +8,14 @@
 
 package org.opendaylight.topoprocessing.impl.request;
 
+import static org.opendaylight.topoprocessing.impl.model.ModelSupportProvider.MODEL_PROVIDER;
 
+import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
@@ -23,7 +24,6 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
 import org.opendaylight.topoprocessing.api.filtration.Filtrator;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
-import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.UnderlayTopologyListener;
 import org.opendaylight.topoprocessing.impl.operator.EqualityAggregator;
 import org.opendaylight.topoprocessing.impl.operator.LinkCalculator;
@@ -76,11 +76,9 @@ import org.opendaylight.yangtools.yang.data.api.schema.DataContainerChild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-
 /**
- * Picks up information from topology request, engages corresponding
- * listeners, aggregators.
+ * Picks up information from topology request, engages corresponding listeners, aggregators.
+ *
  * @author michal.polkorab
  */
 public abstract class TopologyRequestHandler {
@@ -97,21 +95,21 @@ public abstract class TopologyRequestHandler {
     private TopologyWriter writer;
     private LogicalDatastoreType datastoreType;
     private Map<Class<? extends FilterBase>, FiltratorFactory> filtrators;
-    private Map<Class<? extends Model>, ModelAdapter> modelAdapters;
-    private Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode;
+    private Map.Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode;
     private TopologyManager topologyManager;
     private Class<? extends Model> outputModel;
 
     /**
      * Default constructor.
-     * @param domDataBroker         broker used for transaction operations
-     * @param schemaHolder          provides model search
-     * @param rpcServices           rpc services needed for rpc republishing
-     * @param fromNormalizedNode    Normalized node with topology information
+     *
+     * @param domDataBroker broker used for transaction operations
+     * @param schemaHolder provides model search
+     * @param rpcServices rpc services needed for rpc republishing
+     * @param fromNormalizedNode Normalized node with topology information
      */
     public TopologyRequestHandler(DOMDataBroker domDataBroker, DOMDataTreeChangeService domDataTreeChangeService,
             GlobalSchemaContextHolder schemaHolder, RpcServices rpcServices,
-            Map.Entry<InstanceIdentifier<?>,DataObject> fromNormalizedNode) {
+            Map.Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode) {
         this.domDataBroker = domDataBroker;
         this.domDataTreeChangeService = domDataTreeChangeService;
         this.schemaHolder = schemaHolder;
@@ -121,54 +119,6 @@ public abstract class TopologyRequestHandler {
         outputModel = getModel(fromNormalizedNode);
         writer = new TopologyWriter(topologyId, outputModel);
     }
-
-    protected abstract Class<? extends Model> getModel(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
-
-    /**
-     * Only for testing purposes.
-     * @param translator Provides translating String to Path
-     */
-    public void setTranslator(PathTranslator translator) {
-        this.translator = translator;
-    }
-
-    /**
-     * Only for testing purposes.
-     * @param listeners Sets UnderlayTopologyListener registrations
-     */
-    public void setListeners(List<ListenerRegistration<DOMDataTreeChangeListener>> listeners) {
-        this.listeners = listeners;
-    }
-
-    /**
-     * Only for testing purposes.
-     * @return UnderlayTopologyListener registrations
-     */
-    public List<ListenerRegistration<DOMDataTreeChangeListener>> getListeners() {
-        return listeners;
-    }
-
-    /**
-     * Only for testing purposes.
-     * @return Transaction Chain
-     */
-    public DOMTransactionChain getTransactionChain() {
-        return transactionChain;
-    }
-
-    public void setModelAdapters(Map<Class<? extends Model>, ModelAdapter> modelAdapters) {
-        this.modelAdapters = modelAdapters;
-        writer.setTranslator(modelAdapters.get(outputModel).createOverlayItemTranslator());
-        transactionChain = domDataBroker.createTransactionChain(writer);
-        writer.setTransactionChain(transactionChain);
-        topologyManager = new TopologyManager(rpcServices, schemaHolder,
-                modelAdapters.get(outputModel).createTopologyIdentifier(topologyId).build(), outputModel);
-        topologyManager.setWriter(writer);
-        writer.initOverlayTopology();
-
-    }
-
-    protected abstract String getTopologyId(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
 
     /**
      * Process new topology request.
@@ -183,9 +133,9 @@ public abstract class TopologyRequestHandler {
             LOG.debug("Processing correlation configuration");
             List<Correlation> correlationList = correlations.getCorrelation();
 
-            boolean isAggregationOfNodesAndTp = isAggregationOfNodesAndTp(correlationList) ;
+            boolean isAggregationOfNodesAndTp = isAggregationOfNodesAndTp(correlationList);
 
-            //this allow only one correlation of links in request
+            // this allow only one correlation of links in request
             for (Correlation correlation : correlationList) {
                 if (FiltrationAggregation.class.equals(correlation.getType())) {
                     if (!isAggregationOfNodesAndTp) {
@@ -218,6 +168,16 @@ public abstract class TopologyRequestHandler {
         }
     }
 
+    public void prepareEmptyTopology() {
+        writer.setTranslator(MODEL_PROVIDER.getModelAdapter(outputModel).createOverlayItemTranslator());
+        transactionChain = domDataBroker.createTransactionChain(writer);
+        writer.setTransactionChain(transactionChain);
+        topologyManager = new TopologyManager(rpcServices, schemaHolder,
+                MODEL_PROVIDER.getModelAdapter(outputModel).createTopologyIdentifier(topologyId).build(), outputModel);
+        topologyManager.setWriter(writer);
+        writer.initOverlayTopology();
+    }
+
     private boolean isAggregationOfNodesAndTp(List<Correlation> correlationList) {
         Correlation nodeCorrelation = null;
         boolean nodeFiltration = false;
@@ -246,15 +206,15 @@ public abstract class TopologyRequestHandler {
 
     private void initAggregationOfNodesAndTp(Correlation nodeCorrelation, boolean nodeFiltration,
             Correlation tpCorrelation, boolean tpFiltration) {
-
         Aggregation nodeAggregation = nodeCorrelation.getAggregation();
         Aggregation tpAggregation = tpCorrelation.getAggregation();
         TopoStoreProvider topoStoreProvider = new TopoStoreProvider();
         TopologyAggregator nodeAggregator = createAggregator(nodeAggregation.getAggregationType(),
                 CorrelationItemEnum.Node, topoStoreProvider, null);
-        TerminationPointAggregator tpAggregator = (TerminationPointAggregator) createAggregator(
-                tpAggregation.getAggregationType(), CorrelationItemEnum.TerminationPoint, topoStoreProvider,
-                tpAggregation.getMapping().get(0).getInputModel());
+        TerminationPointAggregator tpAggregator =
+                (TerminationPointAggregator) createAggregator(tpAggregation.getAggregationType(),
+                        CorrelationItemEnum.TerminationPoint, topoStoreProvider,
+                        tpAggregation.getMapping().get(0).getInputModel());
 
         // Termination point aggregator initialization
         if (tpAggregation.getScripting() != null) {
@@ -274,12 +234,12 @@ public abstract class TopologyRequestHandler {
             topoStoreProvider.initializeStore(underlayTopologyId, true);
             Map<Integer, YangInstanceIdentifier> pathIdentifier = new HashMap<>();
             for (TargetField targetField : mapping.getTargetField()) {
-                pathIdentifier.put(targetField.getMatchingKey(), translator.translate(
-                        targetField.getTargetFieldPath().getValue(), CorrelationItemEnum.TerminationPoint,
-                        schemaHolder, inputModel));
+                pathIdentifier.put(targetField.getMatchingKey(),
+                        translator.translate(targetField.getTargetFieldPath().getValue(),
+                                CorrelationItemEnum.TerminationPoint, schemaHolder, inputModel));
             }
             targetFieldsPerTopology.put(underlayTopologyId, pathIdentifier);
-            //((TerminationPointAggregator) aggregator).setTargetField(pathIdentifier);
+            // ((TerminationPointAggregator) aggregator).setTargetField(pathIdentifier);
             if (tpFiltration && mapping.getApplyFilters() != null) {
                 for (String filterId : mapping.getApplyFilters()) {
                     Filter filter = findFilter(tpCorrelation.getFiltration().getFilter(), filterId);
@@ -304,9 +264,9 @@ public abstract class TopologyRequestHandler {
             topoStoreProvider.initializeStore(underlayTopologyId, true);
             Map<Integer, YangInstanceIdentifier> pathIdentifier = new HashMap<>();
             for (TargetField targetField : mapping.getTargetField()) {
-                pathIdentifier.put(targetField.getMatchingKey(), translator.translate(
-                        targetField.getTargetFieldPath().getValue(), CorrelationItemEnum.Node,
-                        schemaHolder, inputModel));
+                pathIdentifier.put(targetField.getMatchingKey(),
+                        translator.translate(targetField.getTargetFieldPath().getValue(), CorrelationItemEnum.Node,
+                                schemaHolder, inputModel));
             }
             PreAggregationFiltrator filtrator = null;
             if (nodeFiltration && mapping.getApplyFilters() != null) {
@@ -319,17 +279,16 @@ public abstract class TopologyRequestHandler {
             }
             UnderlayTopologyListener listener;
             if (filtrator == null) {
-                listener = modelAdapters.get(inputModel)
-                        .registerUnderlayTopologyListener(domDataTreeChangeService, underlayTopologyId,
-                                CorrelationItemEnum.Node, datastoreType, nodeAndTpAggregator, listeners,
-                                pathIdentifier);
+                listener = MODEL_PROVIDER.getModelAdapter(inputModel).registerUnderlayTopologyListener(
+                        domDataTreeChangeService, underlayTopologyId, CorrelationItemEnum.Node, datastoreType,
+                        nodeAndTpAggregator, listeners, pathIdentifier);
             } else {
-                listener = modelAdapters.get(inputModel)
-                        .registerUnderlayTopologyListener(domDataTreeChangeService, underlayTopologyId,
-                        CorrelationItemEnum.Node, datastoreType, filtrator, listeners, pathIdentifier);
+                listener = MODEL_PROVIDER.getModelAdapter(inputModel).registerUnderlayTopologyListener(
+                        domDataTreeChangeService, underlayTopologyId, CorrelationItemEnum.Node, datastoreType,
+                        filtrator, listeners, pathIdentifier);
             }
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
-            registerListener(listener, inputModel, underlayTopologyId, CorrelationItemEnum.Node);
+            registerUnderlayListener(listener, inputModel, underlayTopologyId, CorrelationItemEnum.Node);
         }
     }
 
@@ -363,26 +322,26 @@ public abstract class TopologyRequestHandler {
             pathIdentifiers.put(key++, filterPath);
         }
 
-        UnderlayTopologyListener listener = modelAdapters.get(inputModel)
-                .registerUnderlayTopologyListener(domDataTreeChangeService, underlayTopologyId,
-                        correlationItem, datastoreType, filtrator, listeners, pathIdentifiers);
+        UnderlayTopologyListener listener =
+                MODEL_PROVIDER.getModelAdapter(inputModel).registerUnderlayTopologyListener(domDataTreeChangeService,
+                        underlayTopologyId, correlationItem, datastoreType, filtrator, listeners, pathIdentifiers);
         LOG.debug("Registering filtering underlay topology listener for topology: {}", underlayTopologyId);
-        registerListener(listener, inputModel, underlayTopologyId, correlationItem);
+        registerUnderlayListener(listener, inputModel, underlayTopologyId, correlationItem);
 
         if (correlation.getCorrelationItem().equals(CorrelationItemEnum.Link)) {
-            listener = modelAdapters.get(inputModel).
-                    registerUnderlayTopologyListener(domDataTreeChangeService, underlayTopologyId,
-                            CorrelationItemEnum.Node, datastoreType, filtrator, listeners, null);
-            LOG.debug("Registering secondary underlay topology listener for topology (in case of filtering on " +
-                    "links): {}", underlayTopologyId);
-            registerListener(listener, inputModel, underlayTopologyId, CorrelationItemEnum.Node);
+            listener = MODEL_PROVIDER.getModelAdapter(inputModel).registerUnderlayTopologyListener(
+                    domDataTreeChangeService, underlayTopologyId, CorrelationItemEnum.Node, datastoreType, filtrator,
+                    listeners, null);
+            LOG.debug("Registering secondary underlay topology listener for topology (in case of filtering on "
+                    + "links): {}", underlayTopologyId);
+            registerUnderlayListener(listener, inputModel, underlayTopologyId, CorrelationItemEnum.Node);
         }
     }
 
     private YangInstanceIdentifier addFiltrator(TopologyFiltrator operator, Filter filter,
             CorrelationItemEnum correlationItem, Class<? extends Model> inputModel) {
-        YangInstanceIdentifier filterPath = translator.translate(filter.getTargetField().getValue(),
-                correlationItem, schemaHolder, inputModel);
+        YangInstanceIdentifier filterPath =
+                translator.translate(filter.getTargetField().getValue(), correlationItem, schemaHolder, inputModel);
         FiltratorFactory ff = filtrators.get(filter.getFilterType());
         Filtrator currentFiltrator = ff.createFiltrator(filter, filterPath);
         operator.addFilter(currentFiltrator);
@@ -398,8 +357,7 @@ public abstract class TopologyRequestHandler {
             aggregator = createAggregator(aggregation.getAggregationType(), correlationItem, topoStoreProvider,
                     getRealInputModel(aggregation.getMapping().get(0).getInputModel(), correlationItem));
         } else {
-            aggregator = createAggregator(aggregation.getAggregationType(),
-                    correlationItem, topoStoreProvider, null);
+            aggregator = createAggregator(aggregation.getAggregationType(), correlationItem, topoStoreProvider, null);
         }
         aggregator.setTopologyManager(topologyManager);
         if (aggregation.getScripting() != null) {
@@ -415,8 +373,7 @@ public abstract class TopologyRequestHandler {
             Map<Integer, YangInstanceIdentifier> pathIdentifier = new HashMap<>();
             for (TargetField targetField : mapping.getTargetField()) {
                 pathIdentifier.put(targetField.getMatchingKey(), translator.translate(
-                        targetField.getTargetFieldPath().getValue(), correlationItem,
-                        schemaHolder, inputModel));
+                        targetField.getTargetFieldPath().getValue(), correlationItem, schemaHolder, inputModel));
             }
             if (aggregator instanceof TerminationPointAggregator) {
                 ((TerminationPointAggregator) aggregator).setTargetField(pathIdentifier);
@@ -436,11 +393,11 @@ public abstract class TopologyRequestHandler {
             }
             UnderlayTopologyListener listener;
             TopologyOperator operator = filtrator == null ? aggregator : filtrator;
-            listener = modelAdapters.get(inputModel)
-                    .registerUnderlayTopologyListener(domDataTreeChangeService, underlayTopologyId, correlationItem,
-                            datastoreType, operator, listeners, pathIdentifier);
+            listener = MODEL_PROVIDER.getModelAdapter(inputModel).registerUnderlayTopologyListener(
+                    domDataTreeChangeService, underlayTopologyId, correlationItem, datastoreType, operator, listeners,
+                    pathIdentifier);
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
-            registerListener(listener, inputModel, underlayTopologyId, correlationItem);
+            registerUnderlayListener(listener, inputModel, underlayTopologyId, correlationItem);
         }
     }
 
@@ -449,7 +406,7 @@ public abstract class TopologyRequestHandler {
         TopologyOperator operator = null;
         if (rendering != null) {
             String underlayTopologyId = rendering.getUnderlayTopology();
-            UnderlayTopologyListener listener = modelAdapters.get(outputModel)
+            UnderlayTopologyListener listener = MODEL_PROVIDER.getModelAdapter(outputModel)
                     .registerUnderlayTopologyListener(domDataTreeChangeService, underlayTopologyId,
                             correlation.getCorrelationItem(), datastoreType, operator, listeners, null);
             operator = listener.getOperator();
@@ -458,7 +415,7 @@ public abstract class TopologyRequestHandler {
             }
             operator.setTopologyManager(topologyManager);
             LOG.debug("Registering underlay topology listener for topology: {}", underlayTopologyId);
-            registerListener(listener, outputModel, underlayTopologyId, correlation.getCorrelationItem());
+            registerUnderlayListener(listener, outputModel, underlayTopologyId, correlation.getCorrelationItem());
         } else {
             throw new IllegalStateException("Rendering data missing: " + correlation);
         }
@@ -471,7 +428,7 @@ public abstract class TopologyRequestHandler {
             String overlayTopologyId = linkComputation.getNodeInfo().getNodeTopology();
             calculator = new LinkCalculator(overlayTopologyId, outputModel);
             calculator.setTopologyManager(topologyManager);
-            //register underlay listeners
+            // register underlay listeners
             if (linkAggregation != null) {
                 TopoStoreProvider storeProvider = new TopoStoreProvider();
                 storeProvider.initializeStore(overlayTopologyId, true);
@@ -489,38 +446,37 @@ public abstract class TopologyRequestHandler {
                     for (Mapping mapping : linkAggregation.getMapping()) {
                         if (mapping.getUnderlayTopology().equals(underlayTopologyId)) {
                             for (TargetField targetField : mapping.getTargetField()) {
-                                pathIdentifiers.put(targetField.getMatchingKey(), translator.translate(
-                                        targetField.getTargetFieldPath().getValue(), CorrelationItemEnum.Link,
-                                        schemaHolder, getRealInputModel(mapping.getInputModel(),
-                                                CorrelationItemEnum.Link)));
+                                pathIdentifiers.put(targetField.getMatchingKey(),
+                                        translator.translate(targetField.getTargetFieldPath().getValue(),
+                                                CorrelationItemEnum.Link, schemaHolder, getRealInputModel(
+                                                        mapping.getInputModel(), CorrelationItemEnum.Link)));
                             }
                         }
                     }
-                    listener = modelAdapters.get(inputModel)
-                            .registerUnderlayTopologyListener(domDataTreeChangeService, underlayTopologyId,
-                                    CorrelationItemEnum.Link, datastoreType, calculator, listeners, pathIdentifiers);
+                    listener = MODEL_PROVIDER.getModelAdapter(inputModel).registerUnderlayTopologyListener(
+                            domDataTreeChangeService, underlayTopologyId, CorrelationItemEnum.Link, datastoreType,
+                            calculator, listeners, pathIdentifiers);
                 } else {
-                    listener = modelAdapters.get(inputModel)
-                            .registerUnderlayTopologyListener(domDataTreeChangeService, underlayTopologyId,
-                                    CorrelationItemEnum.Link, datastoreType, calculator, listeners, null);
+                    listener = MODEL_PROVIDER.getModelAdapter(inputModel).registerUnderlayTopologyListener(
+                            domDataTreeChangeService, underlayTopologyId, CorrelationItemEnum.Link, datastoreType,
+                            calculator, listeners, null);
                 }
                 LOG.debug("Registering link calculation underlay topology listener for topology: {}",
                         underlayTopologyId);
-                registerListener(listener, inputModel, underlayTopologyId, CorrelationItemEnum.Link);
+                registerUnderlayListener(listener, inputModel, underlayTopologyId, CorrelationItemEnum.Link);
             }
-            //register overlay listener
-            UnderlayTopologyListener listener = modelAdapters.get(outputModel)
-                    .registerUnderlayTopologyListener(domDataTreeChangeService, topologyId,
-                            CorrelationItemEnum.Node, datastoreType, calculator, listeners, null);
-            InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(outputModel)
-                    .createTopologyIdentifier(overlayTopologyId);
-            YangInstanceIdentifier itemIdentifier = modelAdapters.get(outputModel)
+            // register overlay listener
+            UnderlayTopologyListener listener = MODEL_PROVIDER.getModelAdapter(outputModel)
+                    .registerUnderlayTopologyListener(domDataTreeChangeService, topologyId, CorrelationItemEnum.Node,
+                            datastoreType, calculator, listeners, null);
+            InstanceIdentifierBuilder topologyIdentifier =
+                    MODEL_PROVIDER.getModelAdapter(outputModel).createTopologyIdentifier(overlayTopologyId);
+            YangInstanceIdentifier itemIdentifier = MODEL_PROVIDER.getModelAdapter(outputModel)
                     .buildItemIdentifier(topologyIdentifier, CorrelationItemEnum.Node);
             LOG.debug("Registering link calculation overlay topology listener for topology: {}", overlayTopologyId);
             DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(LogicalDatastoreType.OPERATIONAL, itemIdentifier);
-            ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
-                    domDataTreeChangeService.registerDataTreeChangeListener(treeId,
-                            (DOMDataTreeChangeListener) listener);
+            ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration = domDataTreeChangeService
+                    .registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
             listeners.add(listenerRegistration);
         } else {
             throw new IllegalStateException("link computation data missing: " + linkComputation);
@@ -528,12 +484,12 @@ public abstract class TopologyRequestHandler {
         return calculator;
     }
 
-    private void registerListener(UnderlayTopologyListener listener, Class<? extends Model> model,
+    private void registerUnderlayListener(UnderlayTopologyListener listener, Class<? extends Model> model,
             String topologyId, CorrelationItemEnum correlationItem) {
-        InstanceIdentifierBuilder topologyIdentifier = modelAdapters.get(model)
-                .createTopologyIdentifier(topologyId);
-        YangInstanceIdentifier itemIdentifier = modelAdapters.get(model)
-                .buildItemIdentifier(topologyIdentifier, correlationItem);
+        InstanceIdentifierBuilder topologyIdentifier =
+                MODEL_PROVIDER.getModelAdapter(model).createTopologyIdentifier(topologyId);
+        YangInstanceIdentifier itemIdentifier =
+                MODEL_PROVIDER.getModelAdapter(model).buildItemIdentifier(topologyIdentifier, correlationItem);
         DOMDataTreeIdentifier treeId = new DOMDataTreeIdentifier(datastoreType, itemIdentifier);
         ListenerRegistration<DOMDataTreeChangeListener> listenerRegistration =
                 domDataTreeChangeService.registerDataTreeChangeListener(treeId, (DOMDataTreeChangeListener) listener);
@@ -574,18 +530,8 @@ public abstract class TopologyRequestHandler {
     }
 
     /**
-     * @return ID of topology that is handled by this {@link TopologyRequestHandler}
-     */
-    public String getTopologyId() {
-        return this.topologyId;
-    }
-
-    protected abstract Correlations getCorrelations(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
-
-    protected abstract LinkComputation getLinkComputation(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
-
-    /**
      * Closes all registered listeners and providers.
+     *
      * @param timeOut time in ms to wait for close operation to finish, if timeOut == 0, there is no waiting
      */
     public void processDeletionRequest(int timeOut) {
@@ -618,11 +564,62 @@ public abstract class TopologyRequestHandler {
 
     /**
      * Delegate topology types to writer.
+     *
      * @param topologyTypes - taken from overlay topology request
      */
-    public void delegateTopologyTypes(
-            DataContainerChild<? extends PathArgument, ?> topologyTypes) {
+    public void delegateTopologyTypes(DataContainerChild<? extends PathArgument, ?> topologyTypes) {
         writer.writeTopologyTypes(topologyTypes);
+    }
+
+    protected abstract Class<? extends Model> getModel(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
+
+    protected abstract String getTopologyId(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
+
+    protected abstract Correlations getCorrelations(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
+
+    protected abstract LinkComputation getLinkComputation(Entry<InstanceIdentifier<?>, DataObject> fromNormalizedNode);
+
+    /**
+     * @return ID of topology that is handled by this {@link TopologyRequestHandler}
+     */
+    public String getTopologyId() {
+        return this.topologyId;
+    }
+
+    /**
+     * Only for testing purposes.
+     *
+     * @param translator Provides translating String to Path
+     */
+    public void setTranslator(PathTranslator translator) {
+        this.translator = translator;
+    }
+
+    /**
+     * Only for testing purposes.
+     *
+     * @param listeners Sets UnderlayTopologyListener registrations
+     */
+    public void setListeners(List<ListenerRegistration<DOMDataTreeChangeListener>> listeners) {
+        this.listeners = listeners;
+    }
+
+    /**
+     * Only for testing purposes.
+     *
+     * @return UnderlayTopologyListener registrations
+     */
+    public List<ListenerRegistration<DOMDataTreeChangeListener>> getListeners() {
+        return listeners;
+    }
+
+    /**
+     * Only for testing purposes.
+     *
+     * @return Transaction Chain
+     */
+    public DOMTransactionChain getTransactionChain() {
+        return transactionChain;
     }
 
     /**

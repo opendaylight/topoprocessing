@@ -8,11 +8,11 @@
 
 package org.opendaylight.topoprocessing.impl.provider;
 
+import static org.opendaylight.topoprocessing.impl.model.ModelSupportProvider.MODEL_PROVIDER;
+
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
@@ -24,8 +24,8 @@ import org.opendaylight.controller.sal.core.api.Broker;
 import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
-import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.GlobalSchemaContextListener;
+import org.opendaylight.topoprocessing.impl.model.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.request.TopologyRequestListener;
 import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
@@ -51,7 +51,6 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
     private final List<ListenerRegistration<DOMDataTreeChangeListener>> topologyRequestListenerRegistrations;
     private GlobalSchemaContextHolder schemaHolder;
-    private final Map<Class<? extends Model>, ModelAdapter> modelAdapters;
     private final List<TopologyRequestListener> listeners;
 
     // blueprint autowired fields ↓
@@ -76,7 +75,6 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         LOGGER.trace("Creating TopoProcessingProvider");
         listeners = new ArrayList<>();
         topologyRequestListenerRegistrations = new ArrayList<>();
-        modelAdapters = new HashMap<>();
     }
 
     @Override
@@ -133,11 +131,13 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     public void registerModelAdapter(Class<? extends Model> model, Object modelAdapter) {
         if (modelAdapter instanceof ModelAdapter) {
             ModelAdapter adapter = (ModelAdapter) modelAdapter;
-            modelAdapters.put(model, adapter);
+            MODEL_PROVIDER.registerModelAdapter(model, adapter);
             if (model.equals(I2rsModel.class)) {
                 registerTopologyRequestListener(adapter, InstanceIdentifiers.I2RS_NETWORK_IDENTIFIER);
             } else if (model.equals(NetworkTopologyModel.class)) {
                 registerTopologyRequestListener(adapter, InstanceIdentifiers.TOPOLOGY_IDENTIFIER);
+            } else {
+                LOGGER.warn("Registered model adapter without request-parsing support");
             }
         } else {
             throw new IllegalStateException("Incorrect type of ModelAdapter");
@@ -146,7 +146,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
 
     private void registerTopologyRequestListener(ModelAdapter modelAdapter, YangInstanceIdentifier path) {
         TopologyRequestListener listener = modelAdapter.createTopologyRequestListener(domDataBroker,
-                domDataTreeChangeService, nodeSerializer, schemaHolder, rpcServices, modelAdapters);
+                domDataTreeChangeService, nodeSerializer, schemaHolder, rpcServices);
         listener.setDatastoreType(dataStoreType);
         listeners.add(listener);
         LOGGER.debug("Registering Topology Request Listener");

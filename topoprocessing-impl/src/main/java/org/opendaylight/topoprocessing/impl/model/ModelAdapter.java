@@ -6,11 +6,10 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 
-package org.opendaylight.topoprocessing.impl.adapter;
+package org.opendaylight.topoprocessing.impl.model;
 
 import java.util.List;
 import java.util.Map;
-
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
@@ -23,7 +22,6 @@ import org.opendaylight.topoprocessing.impl.rpc.RpcServices;
 import org.opendaylight.topoprocessing.impl.translator.OverlayItemTranslator;
 import org.opendaylight.topoprocessing.impl.util.GlobalSchemaContextHolder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.Model;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier.InstanceIdentifierBuilder;
@@ -62,7 +60,7 @@ public interface ModelAdapter {
     TopologyRequestListener createTopologyRequestListener(DOMDataBroker dataBroker,
             DOMDataTreeChangeService domDataTreeChangeService,
             BindingNormalizedNodeSerializer nodeSerializer, GlobalSchemaContextHolder schemaHolder,
-            RpcServices rpcServices, Map<Class<? extends Model>, ModelAdapter> modelAdapters);
+            RpcServices rpcServices);
 
     /**
      * Create model specific OverlayItemTranslator.

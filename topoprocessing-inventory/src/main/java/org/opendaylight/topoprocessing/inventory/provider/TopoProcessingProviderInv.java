@@ -8,7 +8,7 @@
 
 package org.opendaylight.topoprocessing.inventory.provider;
 
-import org.opendaylight.topoprocessing.inventory.adapter.InvModelAdapter;
+import org.opendaylight.topoprocessing.inventory.model.InvModelAdapter;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.OpendaylightInventoryModel;
 import org.slf4j.Logger;

@@ -8,7 +8,7 @@
 
 package org.opendaylight.topoprocessing.i2rs.provider;
 
-import org.opendaylight.topoprocessing.i2rs.adapter.I2RSModelAdapter;
+import org.opendaylight.topoprocessing.i2rs.model.I2RSModelAdapter;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.I2rsModel;
 import org.slf4j.Logger;
