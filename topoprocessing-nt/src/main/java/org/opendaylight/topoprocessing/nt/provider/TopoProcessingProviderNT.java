@@ -8,7 +8,7 @@
 
 package org.opendaylight.topoprocessing.nt.provider;
 
-import org.opendaylight.topoprocessing.nt.adapter.NTModelAdapter;
+import org.opendaylight.topoprocessing.nt.model.NTModelAdapter;
 import org.opendaylight.topoprocessing.spi.provider.TopoProcessingProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.NetworkTopologyModel;
 import org.slf4j.Logger;

@@ -10,6 +10,7 @@ package org.opendaylight.topoprocessing.i2rs.adapter;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.opendaylight.topoprocessing.i2rs.model.I2RSModelAdapter;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.network.topology.rev150608.network.Link;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.correlation.rev150121.CorrelationItemEnum;
 import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;

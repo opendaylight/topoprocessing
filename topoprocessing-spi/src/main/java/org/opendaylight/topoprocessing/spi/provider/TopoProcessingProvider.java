@@ -40,5 +40,5 @@ public interface TopoProcessingProvider extends AutoCloseable {
      * Registers specific ModelAdaper.
      * @param model - defines topology model
      */
-    void registerModelAdapter(Class<? extends Model> model, Object modelAdapter);
+    void registerModelAdapter(Class<? extends Model> model, Object adapter);
 }
