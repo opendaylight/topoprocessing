@@ -19,7 +19,10 @@
 
     <artifactId>topoprocessing-aggregator</artifactId>
     <packaging>pom</packaging>
-
+    <!-- <name> formatting is used by autorelease to parse and notify projects on
+         build failure. Please do not modify this unless you have a good reason. -->
+    <name>ODL :: topoprocessing :: ${project.artifactId}</name>
+    
     <modules>
         <module>distribution-karaf</module>
         <module>distribution-karaf4</module>
