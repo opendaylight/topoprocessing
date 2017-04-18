@@ -1,0 +1,140 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "da01753e_60710ee0",
+        "filename": "mlmt/factory/impl/src/test/java/org/opendaylight/topology/mlmt/factory/MlmtProviderFactoryTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-04-18T20:33:13Z",
+      "side": 1,
+      "message": "FYI as there is no @Mock in this test, this actually probably isn\u0027t needed",
+      "revId": "4bd087019afc650405c40061b903ce192310152b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_806eb2ff",
+        "filename": "mlmt/inventory/impl/src/test/java/org/opendaylight/topology/mlmt/inventory/InventoryTopologyProviderTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-04-18T20:33:13Z",
+      "side": 1,
+      "message": "FYI as there is no @Mock in this test, this actually probably isn\u0027t needed",
+      "revId": "4bd087019afc650405c40061b903ce192310152b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_20670627",
+        "filename": "mlmt/multilayer-topology/impl/forwarding-adjacency/src/test/java/org/opendaylight/topology/forwarding/adjacency/ForwardingAdjacencyTopologyProviderTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-04-18T20:33:13Z",
+      "side": 1,
+      "message": "FYI as there is no @Mock in this test, this actually probably isn\u0027t needed",
+      "revId": "4bd087019afc650405c40061b903ce192310152b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_4064ca21",
+        "filename": "mlmt/multilayer-topology/impl/multilayer/src/test/java/org/opendaylight/topology/multilayer/MultilayerTopologyProviderTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-04-18T20:33:13Z",
+      "side": 1,
+      "message": "FYI as there is no @Mock in this test, this actually probably isn\u0027t needed",
+      "revId": "4bd087019afc650405c40061b903ce192310152b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_009482e0",
+        "filename": "mlmt/multitechnology-topology/impl/src/test/java/org/opendaylight/topology/multitechnology/MultitechnologyCorrelationFieldHandlerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-04-18T20:33:13Z",
+      "side": 1,
+      "message": "FYI as there is no @Mock in this test, this actually probably isn\u0027t needed",
+      "revId": "4bd087019afc650405c40061b903ce192310152b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_60a3ce4f",
+        "filename": "mlmt/multitechnology-topology/impl/src/test/java/org/opendaylight/topology/multitechnology/MultitechnologyNameHandlerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-04-18T20:33:13Z",
+      "side": 1,
+      "message": "FYI as there is no @Mock in this test, this actually probably isn\u0027t needed",
+      "revId": "4bd087019afc650405c40061b903ce192310152b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_2099c61f",
+        "filename": "mlmt/multitechnology-topology/impl/src/test/java/org/opendaylight/topology/multitechnology/MultitechnologyTopologyProviderTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-04-18T20:33:13Z",
+      "side": 1,
+      "message": "FYI as there is no @Mock in this test, this actually probably isn\u0027t needed",
+      "revId": "4bd087019afc650405c40061b903ce192310152b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da01753e_40bdea67",
+        "filename": "mlmt/observer/impl/src/test/java/org/opendaylight/topology/mlmt/observer/MlmtTopologyObserverTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 5867
+      },
+      "writtenOn": "2017-04-18T20:33:13Z",
+      "side": 1,
+      "message": "FYI as there is no @Mock in this test, this actually probably isn\u0027t needed",
+      "revId": "4bd087019afc650405c40061b903ce192310152b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
