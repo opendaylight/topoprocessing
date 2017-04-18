@@ -33,7 +33,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.routing.RouteChangeListener;
@@ -77,7 +77,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
+public class MlmtTopologyObserverTest extends AbstractConcurrentDataBrokerTest {
 
     private final Object waitObject = new Object();
     private static final String MLMT = "mlmt:1";
@@ -173,11 +173,6 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
         return tbuilder;
     }
 
-    @Override
-    protected void setupWithDataBroker(DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-    }
-
     @BeforeClass
     public static void allMethodsSetUp() {
         // NOOP
@@ -185,6 +180,8 @@ public class MlmtTopologyObserverTest extends AbstractDataBrokerTest {
 
     @Before
     public void setUp() throws Exception {
+        this.dataBroker = getDataBroker();
+        assertNotNull(dataBroker);
         InstanceIdentifier<Topology> topologyIid = buildTopologyIid(MLMT);
         dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
                 topologyIid, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);

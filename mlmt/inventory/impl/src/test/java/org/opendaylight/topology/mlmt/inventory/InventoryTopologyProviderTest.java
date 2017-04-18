@@ -28,7 +28,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.topology.mlmt.inventory.InventoryTopologyProviderTest.ChangeListener;
@@ -66,7 +66,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
-public class InventoryTopologyProviderTest extends AbstractDataBrokerTest {
+public class InventoryTopologyProviderTest extends AbstractConcurrentDataBrokerTest {
     private final Object waitObject = new Object();
     private static final String MLMT = "mlmt:1";
     private static final String EXAMPLE = "example-linkstate-topology";
@@ -128,11 +128,6 @@ public class InventoryTopologyProviderTest extends AbstractDataBrokerTest {
         return top;
     }
 
-    @Override
-    protected void setupWithDataBroker(DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-    }
-
     @BeforeClass
     public static void allMethodsSetUp() {
         // NOOP
@@ -140,6 +135,8 @@ public class InventoryTopologyProviderTest extends AbstractDataBrokerTest {
 
     @Before
     public void setUp() throws Exception {
+        this.dataBroker = getDataBroker();
+        assertNotNull(dataBroker);
         InventoryAttributesParserTest parser = new InventoryAttributesParserTest();
         processor = new MlmtOperationProcessor(dataBroker);
         thread = new Thread(processor);

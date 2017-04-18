@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.routing.RouteChangeListener;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
@@ -52,7 +52,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MlmtProviderFactoryTest extends AbstractDataBrokerTest {
+public class MlmtProviderFactoryTest extends AbstractConcurrentDataBrokerTest {
 
     private static final String MLMT1 = "mlmt:1";
     private MlmtOperationProcessor processor;
@@ -87,11 +87,6 @@ public class MlmtProviderFactoryTest extends AbstractDataBrokerTest {
         }
     }
 
-    @Override
-    protected void setupWithDataBroker(DataBroker dataBroker) {
-        // NOOP
-    }
-
     @BeforeClass
     public static void allMethodsSetUp() {
         // NOOP
@@ -99,7 +94,9 @@ public class MlmtProviderFactoryTest extends AbstractDataBrokerTest {
 
     @Before
     public void setUp() {
-        this.processor = new MlmtOperationProcessor(getDataBroker());
+        final DataBroker dataBroker = getDataBroker();
+        assertNotNull(dataBroker);
+        this.processor = new MlmtOperationProcessor(dataBroker);
         this.providerFactory = new MlmtProviderFactoryImpl();
     }
 
