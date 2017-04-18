@@ -26,7 +26,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -40,7 +40,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
+public class MlmtOperationProcessorTest extends AbstractConcurrentDataBrokerTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(MlmtOperationProcessorTest.class);
     private static final String MLMT1 = "mlmt:1";
@@ -63,11 +63,6 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
         }
     }
 
-    @Override
-    protected void setupWithDataBroker(DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-    }
-
     @BeforeClass
     public static void allMethodsSetUp() {
         topologyId = new TopologyId(MLMT1);
@@ -77,6 +72,8 @@ public class MlmtOperationProcessorTest extends AbstractDataBrokerTest {
 
     @Before
     public void setUp() {
+        this.dataBroker = getDataBroker();
+        assertNotNull(dataBroker);
         processor = new MlmtOperationProcessor(dataBroker);
         assertNotNull(processor);
         thread = new Thread(processor);

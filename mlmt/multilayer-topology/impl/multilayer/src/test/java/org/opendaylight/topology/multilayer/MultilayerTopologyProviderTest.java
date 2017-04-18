@@ -23,14 +23,12 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.routing.RouteChangeListener;
@@ -95,8 +93,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-@RunWith(MockitoJUnitRunner.class)
-public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
+public class MultilayerTopologyProviderTest extends AbstractConcurrentDataBrokerTest {
     private final Object waitObject = new Object();
     private static final String MLMT = "mlmt:1";
     private static final String EXAMPLE = "example-linkstate-topology";
@@ -187,11 +184,6 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
         return top;
     }
 
-    @Override
-    protected void setupWithDataBroker(DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-    }
-
     @BeforeClass
     public static void allMethodsSetUp() {
         // NOOP
@@ -199,6 +191,8 @@ public class MultilayerTopologyProviderTest extends AbstractDataBrokerTest {
 
     @Before
     public void setUp() throws Exception {
+        this.dataBroker = getDataBroker();
+        assertNotNull(dataBroker);
         MultilayerAttributesParserTest parser = new MultilayerAttributesParserTest();
         parser.init();
         processor = new MlmtOperationProcessor(dataBroker);

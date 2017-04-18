@@ -28,7 +28,7 @@ import org.opendaylight.controller.md.sal.binding.api.DataBroker;
 import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
-import org.opendaylight.controller.md.sal.binding.test.AbstractDataBrokerTest;
+import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
 import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
@@ -55,7 +55,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
+public class MlmtTopologyBuilderTest extends AbstractConcurrentDataBrokerTest {
 
     private static final String MLMT1 = "mlmt:1";
     private final Object waitObject = new Object();
@@ -75,11 +75,6 @@ public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
         }
     }
 
-    @Override
-    protected void setupWithDataBroker(DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-    }
-
     @BeforeClass
     public static void allMethodsSetUp() {
         // NOOP
@@ -91,6 +86,7 @@ public class MlmtTopologyBuilderTest extends AbstractDataBrokerTest {
          * It is necessary to create first the network-topology data node
          * in order to populate with topology instances at a later moment
          */
+        this.dataBroker = getDataBroker();
         assertNotNull(dataBroker);
 
         NetworkTopologyBuilder nb = new NetworkTopologyBuilder();
