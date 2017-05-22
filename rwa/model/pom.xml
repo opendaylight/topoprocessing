@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.opendaylight.topoprocessing</groupId>
     <artifactId>rwa</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.3.0-Carbon</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>rwa-model</artifactId>

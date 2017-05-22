@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
+        <version>1.8.0-Carbon</version>
         <relativePath/>
     </parent>
 
     <groupId>org.opendaylight.topoprocessing</groupId>
     <artifactId>odl-topoprocessing-inventory-rendering</artifactId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.3.0-Carbon</version>
     <packaging>feature</packaging>
 
     <!-- <name> formatting is used by autorelease to parse and notify projects on
@@ -25,14 +25,14 @@
             <dependency>
                 <groupId>org.opendaylight.mdsal.model</groupId>
                 <artifactId>mdsal-model-artifacts</artifactId>
-                <version>0.10.0-SNAPSHOT</version>
+                <version>0.10.0-Carbon</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
-                <version>1.5.0-SNAPSHOT</version>
+                <version>1.5.0-Carbon</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
