@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>features-parent</artifactId>
-        <version>1.8.0-Carbon</version>
+        <version>1.9.0</version>
         <relativePath/>
     </parent>
     <groupId>org.opendaylight.topoprocessing</groupId>
@@ -26,7 +26,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <karaf.empty.version>1.8.0-Carbon</karaf.empty.version>
+        <karaf.empty.version>1.9.0</karaf.empty.version>
         <features.file>features.xml</features.file>
         <surefire.version>2.16</surefire.version>
         <jung2.version>2.0.1</jung2.version>
@@ -36,7 +36,7 @@
         <mdsal.model.version>0.11.0-SNAPSHOT</mdsal.model.version>
         <i2rs.version>1.3.0-SNAPSHOT</i2rs.version>
         <restconf.version>1.6.0-SNAPSHOT</restconf.version>
-        <features.test.version>1.8.0-Carbon</features.test.version>
+        <features.test.version>1.9.0</features.test.version>
     </properties>
 
     <dependencyManagement>
