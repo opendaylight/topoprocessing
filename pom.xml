@@ -25,7 +25,6 @@
     
     <modules>
         <module>distribution-karaf</module>
-        <module>distribution-karaf4</module>
         <module>features</module>
         <module>administrative-topology</module>
         <module>rwa</module>
