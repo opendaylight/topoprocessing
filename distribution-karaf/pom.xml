@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>features4-topoprocessing</artifactId>
+            <artifactId>features-topoprocessing</artifactId>
             <classifier>features</classifier>
             <type>xml</type>
             <scope>runtime</scope>
