@@ -104,35 +104,6 @@
           <manifestLocation>${project.build.directory}/META-INF</manifestLocation>
         </configuration>
       </plugin>
-      <plugin>
-        <groupId>org.opendaylight.yangtools</groupId>
-        <artifactId>yang-maven-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>maven-sal-api-gen-plugin</artifactId>
-            <version>${mdsal.model.version}</version>
-            <type>jar</type>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <id>config</id>
-            <goals>
-              <goal>generate-sources</goal>
-            </goals>
-            <configuration>
-              <codeGenerators>
-                <generator>
-                  <codeGeneratorClass>org.opendaylight.mdsal.binding.maven.api.gen.plugin.CodeGeneratorImpl</codeGeneratorClass>
-                  <outputBaseDir>${salGeneratorPath}</outputBaseDir>
-                </generator>
-              </codeGenerators>
-              <inspectDependencies>true</inspectDependencies>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
    </plugins>
   </build>
 
