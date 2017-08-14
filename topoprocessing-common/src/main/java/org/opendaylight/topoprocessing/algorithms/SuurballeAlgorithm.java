@@ -8,26 +8,23 @@
 
 package org.opendaylight.topoprocessing.algorithms;
 
+import com.google.common.base.Function;
+import com.google.common.base.Functions;
 import edu.uci.ics.jung.algorithms.shortestpath.DijkstraShortestPath;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.EdgeType;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections15.ListUtils;
-import org.apache.commons.collections15.Transformer;
-import org.apache.commons.collections15.functors.MapTransformer;
-
 public class SuurballeAlgorithm<V, E> {
     private final DijkstraShortestPath<V, E> dijkstraAlgorithm;
     private final Graph<V, E> graph;
-    private final Transformer<E, Number> defaultEdgeWeight = arg0 -> (Number)new Double(1);
+    private final Function<E, Number> defaultEdgeWeight = arg0 -> (Number)new Double(1);
     Map<V, Number> initialCostMap = null;
 
-    public SuurballeAlgorithm(Graph<V,E> graph) {
+    public SuurballeAlgorithm(final Graph<V,E> graph) {
         this.graph = graph;
         this.dijkstraAlgorithm = new DijkstraShortestPath<>(graph, defaultEdgeWeight, true);
     }
@@ -37,17 +34,20 @@ public class SuurballeAlgorithm<V, E> {
         initialCostMap = dijkstraAlgorithm.getDistanceMap(initial);
 
         final List<E> reversedShortestPath =
-                reverseUpdateEdgesWeight(graph, MapTransformer.getInstance(initialCostMap),
+                reverseUpdateEdgesWeight(graph, Functions.forMap(initialCostMap),
                         shortestPath, initial, destination);
 
         discardCommonReversedEdges(graph, shortestPath, reversedShortestPath);
 
-        final List<E> unitedPaths = ListUtils.union(shortestPath, reversedShortestPath);
+        final List<E> unitedPaths = new ArrayList<>(shortestPath.size() + reversedShortestPath.size());
+        unitedPaths.addAll(shortestPath);
+        unitedPaths.addAll(reversedShortestPath);
+
         final List<E> resultPath1 = restorePaths(shortestPath, destination, unitedPaths);
         final List<E> resultPath2 = restorePaths(reversedShortestPath, destination, unitedPaths);
         List<List<E>> result = mergePaths(resultPath1, resultPath2);
 
-        if ((result == null) || (result.size() == 0)) {
+        if (result == null || result.size() == 0) {
             result = new ArrayList<>();
             result.add(shortestPath);
         }
@@ -55,7 +55,7 @@ public class SuurballeAlgorithm<V, E> {
     }
 
     private List<List<E>> mergePaths(final List<E> resultPath1, final List<E> resultPath2) {
-        final List<List<E>> result = new ArrayList<>();
+        final List<List<E>> result = new ArrayList<>(2);
         final Number cost1 = calculatePathCost(resultPath1);
         final Number cost2 = calculatePathCost(resultPath2);
 
@@ -70,33 +70,33 @@ public class SuurballeAlgorithm<V, E> {
     }
 
     private void discardCommonReversedEdges(final Graph<V,E> graph, final List<E> path1, final List<E> path2) {
-        if (path1.size() == 0 || path2.size() == 0) {
+        if (path1.isEmpty() || path2.isEmpty()) {
             return;
-        } else {
-            final V source = graph.getSource(path1.get(0));
-            final V target = graph.getDest(path1.get(path1.size() - 1));
+        }
 
-            for (final E edge2 : path2) {
-                for (final E edge1 : path1) {
-                    if (edge1.equals(edge2)) {
-                        if (graph.isSource(source, edge1)
-                                || graph.isSource(source, edge2)
-                                || graph.isDest(target, edge1)
-                                || graph.isDest(target, edge2)) {
-                            // Return only shortest path
-                            path2.clear();
-                            return;
-                        }
-                        path1.remove(edge1);
-                        path2.remove(edge2);
-                        break;
+        final V source = graph.getSource(path1.get(0));
+        final V target = graph.getDest(path1.get(path1.size() - 1));
+
+        for (final E edge2 : path2) {
+            for (final E edge1 : path1) {
+                if (edge1.equals(edge2)) {
+                    if (graph.isSource(source, edge1)
+                            || graph.isSource(source, edge2)
+                            || graph.isDest(target, edge1)
+                            || graph.isDest(target, edge2)) {
+                        // Return only shortest path
+                        path2.clear();
+                        return;
                     }
+                    path1.remove(edge1);
+                    path2.remove(edge2);
+                    break;
                 }
             }
         }
     }
 
-    protected List<E> reverseUpdateEdgesWeight(final Graph<V, E> graph, final  Transformer<V, Number> transformer,
+    protected List<E> reverseUpdateEdgesWeight(final Graph<V, E> graph, final Function<V, Number> transformer,
                                                final List<E> shortestPath, final V initial, final V destination) {
         for (final E edge1 : shortestPath) {
             V src = graph.getSource(edge1);
@@ -115,7 +115,7 @@ public class SuurballeAlgorithm<V, E> {
         });
 
         final DijkstraShortestPath<V, E> reversedDijkstra =
-                new DijkstraShortestPath<>(graph, MapTransformer.getInstance(map));
+                new DijkstraShortestPath<>(graph, Functions.forMap(map));
 
         DijkstraShortestPath<V, E> validatedShortestPath = checkPath(initial, destination, reversedDijkstra);
         return validatedShortestPath != null ? reversedDijkstra.getPath(initial, destination) : new ArrayList<>();
@@ -124,20 +124,20 @@ public class SuurballeAlgorithm<V, E> {
     private DijkstraShortestPath<V, E> checkPath(final V startPoint, final V endPoint,
                                                  final DijkstraShortestPath<V, E> reversedDijkstra) {
         final Number reversedDistance = reversedDijkstra.getDistance(startPoint, endPoint);
-        if ((reversedDistance == null) || (reversedDistance.doubleValue() == Double.MAX_VALUE)) {
+        if (reversedDistance == null || reversedDistance.doubleValue() == Double.MAX_VALUE) {
             return null;
         }
         return reversedDijkstra;
     }
 
-    private Number calculateCost(final Transformer<V, Number> transformer, final E edge,
+    private Number calculateCost(final Function<V, Number> transformer, final E edge,
                                  final V source, final V destination) {
         double cost = 0;
-        if (transformer.transform(source) != null) {
-            double edgeWeight = defaultEdgeWeight.transform(edge).doubleValue();
-            double destinationWeight = (transformer.transform(destination).doubleValue());
-            double sourceWeight = transformer.transform(source).doubleValue();
-            cost = (edgeWeight - (destinationWeight + sourceWeight));
+        if (transformer.apply(source) != null) {
+            double edgeWeight = defaultEdgeWeight.apply(edge).doubleValue();
+            double destinationWeight = transformer.apply(destination).doubleValue();
+            double sourceWeight = transformer.apply(source).doubleValue();
+            cost = edgeWeight - (destinationWeight + sourceWeight);
             if (Math.abs(cost) < 0.000001) {
                 cost = 0;
             } else {
@@ -172,7 +172,7 @@ public class SuurballeAlgorithm<V, E> {
     private double calculatePathCost(final List<E> path) {
         double result = 0;
         for (E edge : path) {
-            result += defaultEdgeWeight.transform(edge).doubleValue();
+            result += defaultEdgeWeight.apply(edge).doubleValue();
         }
         return result;
     }
