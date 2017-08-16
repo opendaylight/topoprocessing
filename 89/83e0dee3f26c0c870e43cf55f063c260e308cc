@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng <jenkins-releng@opendaylight.org>
+Code-Review+2: Andrej Zan <andrej.zan@pantheon.sk>
+Submitted-by: Andrej Zan <andrej.zan@pantheon.sk>
+Submitted-at: Wed, 16 Aug 2017 16:35:59 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/61867
+Project: topoprocessing
+Branch: refs/heads/stable/nitrogen
