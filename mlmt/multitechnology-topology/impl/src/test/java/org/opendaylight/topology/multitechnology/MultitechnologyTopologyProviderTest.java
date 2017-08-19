@@ -73,6 +73,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.DestinationBuilder;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.link.attributes.SourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
@@ -229,35 +231,67 @@ public class MultitechnologyTopologyProviderTest extends AbstractConcurrentDataB
         exampleTopology = buildUnderlayTopology(EXAMPLE);
 
         NodeBuilder nodeBuilder = new NodeBuilder();
-        String nodeName = "node:1";
-        NodeId nodeId = new NodeId(nodeName);
-        nodeBuilder.setNodeId(nodeId);
-        NodeKey nodeKey = new NodeKey(nodeId);
-        nodeBuilder.setKey(nodeKey);
-        InstanceIdentifier<Node> nodeIid = mlmtTopologyIid.child(Node.class, nodeKey);
+        String nodeName1 = "node:1";
+        NodeId nodeId1 = new NodeId(nodeName1);
+        nodeBuilder.setNodeId(nodeId1);
+        NodeKey nodeKey1 = new NodeKey(nodeId1);
+        nodeBuilder.setKey(nodeKey1);
+        InstanceIdentifier<Node> nodeIid1 = mlmtTopologyIid.child(Node.class, nodeKey1);
 
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.CONFIGURATION, nodeIid, nodeBuilder.build());
+        rwTx.put(LogicalDatastoreType.CONFIGURATION, nodeIid1, nodeBuilder.build());
         assertCommit(rwTx.submit());
 
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, nodeIid, nodeBuilder.build());
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, nodeIid1, nodeBuilder.build());
         assertCommit(rwTx.submit());
 
-        TpId tpId = new TpId("tp:1");
-        final TerminationPointKey tpKey = new TerminationPointKey(tpId);
-        final TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
-        tpBuilder.setKey(tpKey);
-        tpBuilder.setTpId(tpId);
-        final InstanceIdentifier<TerminationPoint> instanceId = mlmtTopologyIid
-                .child(Node.class, nodeKey).child(TerminationPoint.class, tpKey);
+        nodeBuilder = new NodeBuilder();
+        String nodeName2 = "node:2";
+        NodeId nodeId2 = new NodeId(nodeName2);
+        nodeBuilder.setNodeId(nodeId2);
+        NodeKey nodeKey2 = new NodeKey(nodeId2);
+        nodeBuilder.setKey(nodeKey2);
+        InstanceIdentifier<Node> nodeIid2 = mlmtTopologyIid.child(Node.class, nodeKey2);
 
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.CONFIGURATION, instanceId, tpBuilder.build());
+        rwTx.put(LogicalDatastoreType.CONFIGURATION, nodeIid2, nodeBuilder.build());
         assertCommit(rwTx.submit());
 
         rwTx = dataBroker.newWriteOnlyTransaction();
-        rwTx.put(LogicalDatastoreType.OPERATIONAL, instanceId, tpBuilder.build());
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, nodeIid2, nodeBuilder.build());
+        assertCommit(rwTx.submit());
+
+        TpId tpId1 = new TpId("tp:1");
+        final TerminationPointKey tpKey1 = new TerminationPointKey(tpId1);
+        TerminationPointBuilder tpBuilder = new TerminationPointBuilder();
+        tpBuilder.setKey(tpKey1);
+        tpBuilder.setTpId(tpId1);
+        final InstanceIdentifier<TerminationPoint> tpIid1 = mlmtTopologyIid
+                .child(Node.class, nodeKey1).child(TerminationPoint.class, tpKey1);
+
+        rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.put(LogicalDatastoreType.CONFIGURATION, tpIid1, tpBuilder.build());
+        assertCommit(rwTx.submit());
+
+        rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, tpIid1, tpBuilder.build());
+        assertCommit(rwTx.submit());
+
+        TpId tpId2 = new TpId("tp:2");
+        final TerminationPointKey tpKey2 = new TerminationPointKey(tpId2);
+        tpBuilder = new TerminationPointBuilder();
+        tpBuilder.setKey(tpKey2);
+        tpBuilder.setTpId(tpId2);
+        final InstanceIdentifier<TerminationPoint> tpIid2 = mlmtTopologyIid
+                .child(Node.class, nodeKey2).child(TerminationPoint.class, tpKey2);
+
+        rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.put(LogicalDatastoreType.CONFIGURATION, tpIid2, tpBuilder.build());
+        assertCommit(rwTx.submit());
+
+        rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, tpIid2, tpBuilder.build());
         assertCommit(rwTx.submit());
 
         LinkBuilder linkBuilder = new LinkBuilder();
@@ -266,6 +300,17 @@ public class MultitechnologyTopologyProviderTest extends AbstractConcurrentDataB
         linkBuilder.setLinkId(linkId);
         LinkKey linkKey = new LinkKey(linkId);
         linkBuilder.setKey(linkKey);
+
+        SourceBuilder sourceBuilder = new SourceBuilder();
+        sourceBuilder.setSourceNode(nodeId1);
+        sourceBuilder.setSourceTp(tpId1);
+        linkBuilder.setSource(sourceBuilder.build());
+
+        DestinationBuilder destinationBuilder = new DestinationBuilder();
+        destinationBuilder.setDestNode(nodeId2);
+        destinationBuilder.setDestTp(tpId2);
+        linkBuilder.setDestination(destinationBuilder.build());
+
         InstanceIdentifier<Link> linkIid = mlmtTopologyIid.child(Link.class, linkKey);
 
         rwTx = dataBroker.newWriteOnlyTransaction();
@@ -686,6 +731,17 @@ public class MultitechnologyTopologyProviderTest extends AbstractConcurrentDataB
         linkBuilder.setLinkId(linkId);
         LinkKey linkKey = new LinkKey(linkId);
         linkBuilder.setKey(linkKey);
+
+        SourceBuilder sourceBuilder = new SourceBuilder();
+        sourceBuilder.setSourceNode(new NodeId("node:1"));
+        sourceBuilder.setSourceTp(new TpId("tp:1"));
+        linkBuilder.setSource(sourceBuilder.build());
+
+        DestinationBuilder destinationBuilder = new DestinationBuilder();
+        destinationBuilder.setDestNode(new NodeId("node:2"));
+        destinationBuilder.setDestTp(new TpId("tp:2"));
+        linkBuilder.setDestination(destinationBuilder.build());
+
         InstanceIdentifier<Link> linkIid = mlmtTopologyIid.child(Link.class, linkKey);
 
         WriteTransaction rwTx = dataBroker.newWriteOnlyTransaction();
