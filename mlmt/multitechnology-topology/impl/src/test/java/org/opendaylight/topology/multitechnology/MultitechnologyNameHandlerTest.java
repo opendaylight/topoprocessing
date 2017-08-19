@@ -221,7 +221,12 @@ public class MultitechnologyNameHandlerTest extends AbstractConcurrentDataBroker
         tpId = new TpId(tpName2);
         destinationBuilder.setDestTp(tpId);
         linkBuilder.setDestination(destinationBuilder.build());
-        Link link = linkBuilder.build();
+
+        InstanceIdentifier<Link> linkIid = mlmtTopologyIid.child(Link.class, linkKey);
+
+        rwTx = dataBroker.newWriteOnlyTransaction();
+        rwTx.put(LogicalDatastoreType.OPERATIONAL, linkIid, linkBuilder.build());
+        assertCommit(rwTx.submit());
     }
 
     @Test(timeout = 10000)
