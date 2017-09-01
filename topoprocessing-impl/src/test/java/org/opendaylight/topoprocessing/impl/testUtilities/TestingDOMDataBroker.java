@@ -7,63 +7,45 @@
  */
 package org.opendaylight.topoprocessing.impl.testUtilities;
 
+import com.google.common.util.concurrent.CheckedFuture;
+import com.google.common.util.concurrent.Futures;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.data.TransactionChainListener;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataBroker;
+import org.opendaylight.controller.md.sal.common.api.data.TransactionCommitFailedException;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataBrokerExtension;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataChangeListener;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.dom.api.DOMDataReadWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeListener;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeChangeService;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMDataWriteTransaction;
 import org.opendaylight.controller.md.sal.dom.api.DOMTransactionChain;
+import org.opendaylight.controller.md.sal.dom.broker.impl.AbstractDOMDataBroker;
+import org.opendaylight.controller.sal.core.spi.data.DOMStore;
+import org.opendaylight.controller.sal.core.spi.data.DOMStoreThreePhaseCommitCohort;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.data.api.YangInstanceIdentifier;
 
 /**
  * @author martin.uhlir
  *
  */
-public class TestingDOMDataBroker implements DOMDataBroker, DOMDataTreeChangeService {
+public class TestingDOMDataBroker extends AbstractDOMDataBroker implements DOMDataTreeChangeService {
 
     private boolean listenerClosed = false;
-    private Map<Class<? extends DOMDataBrokerExtension>, DOMDataBrokerExtension> supportedExtensions;
+    private final Map<Class<? extends DOMDataBrokerExtension>, DOMDataBrokerExtension> supportedExtensions;
 
     public TestingDOMDataBroker() {
+        super(Collections.singletonMap(LogicalDatastoreType.CONFIGURATION, Mockito.mock(DOMStore.class)));
         supportedExtensions = new HashMap<>();
         supportedExtensions.put(DOMDataTreeChangeService.class, this);
     }
 
     @Override
-    public ListenerRegistration<DOMDataChangeListener> registerDataChangeListener(LogicalDatastoreType store,
-            YangInstanceIdentifier path, DOMDataChangeListener listener,
-            org.opendaylight.controller.md.sal.common.api.data.AsyncDataBroker.DataChangeScope triggeringScope) {
-        return null;
-    }
-
-    @Override
     public Map<Class<? extends DOMDataBrokerExtension>, DOMDataBrokerExtension> getSupportedExtensions() {
         return supportedExtensions;
-    }
-
-    @Override
-    public DOMDataReadOnlyTransaction newReadOnlyTransaction() {
-        return null;
-    }
-
-    @Override
-    public DOMDataReadWriteTransaction newReadWriteTransaction() {
-        return null;
-    }
-
-    @Override
-    public DOMDataWriteTransaction newWriteOnlyTransaction() {
-        return null;
     }
 
     @Override
@@ -90,6 +72,12 @@ public class TestingDOMDataBroker implements DOMDataBroker, DOMDataTreeChangeSer
                 listenerClosed = true;
             }
         };
+    }
+
+    @Override
+    protected CheckedFuture<Void, TransactionCommitFailedException> submit(DOMDataWriteTransaction transaction,
+            Collection<DOMStoreThreePhaseCommitCohort> cohorts) {
+        return Futures.immediateCheckedFuture(null);
     }
 }
 

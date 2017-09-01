@@ -15,25 +15,24 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
-import org.opendaylight.topology.multitechnology.MultitechnologyTopologyProviderTest.ChangeListener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
@@ -98,7 +97,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.Node1Builder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.igp.link.attributes.IgpLinkAttributesBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.nt.l3.unicast.igp.topology.rev131021.igp.node.attributes.IgpNodeAttributesBuilder;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class MultitechnologyTopologyProviderTest extends AbstractConcurrentDataBrokerTest {
@@ -115,10 +113,9 @@ public class MultitechnologyTopologyProviderTest extends AbstractConcurrentDataB
     InstanceIdentifier<Topology> exampleIid;
     TopologyKey mlmtTopologyKey;
 
-    public class ChangeListener implements DataChangeListener {
-
+    public class ChangeListener implements DataTreeChangeListener<Topology> {
         @Override
-        public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+        public void onDataTreeChanged(Collection<DataTreeModification<Topology>> changes) {
             synchronized (waitObject) {
                 waitObject.notify();
             }
@@ -141,7 +138,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractConcurrentDataB
         UnderlayTopologyKey underlayKey = new UnderlayTopologyKey(underlayTopologyRef);
         underlayTopologyBuilder.setKey(underlayKey);
         UnderlayTopology underlayTopology = underlayTopologyBuilder.build();
-        List<UnderlayTopology> lUnderlayTopology = new ArrayList<UnderlayTopology>();
+        List<UnderlayTopology> lUnderlayTopology = new ArrayList<>();
         lUnderlayTopology.add(underlayTopology);
         final TopologyBuilder tbuilder = new TopologyBuilder();
         tbuilder.setKey(mlmtTopologyKey);
@@ -198,11 +195,11 @@ public class MultitechnologyTopologyProviderTest extends AbstractConcurrentDataB
                 InstanceIdentifier.create(NetworkTopology.class), networkTopology);
         assertCommit(rwTx.submit());
 
-        dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                mlmtTopologyIid, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);
+        dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
+                mlmtTopologyIid), new ChangeListener());
 
-        dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                mlmtTopologyIid, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);
+        dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
+                mlmtTopologyIid), new ChangeListener());
 
         mlmtTopology = buildMlmtTopology(MLMT);
         rwTx = dataBroker.newWriteOnlyTransaction();
@@ -372,7 +369,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractConcurrentDataB
         Ipv4LocalAddressKey ipv4LocalAddressKey = new Ipv4LocalAddressKey(ipv4Prefix);
         ipv4LocalAddressBuilder.setKey(ipv4LocalAddressKey);
         ipv4LocalAddressBuilder.setIpv4Prefix(ipv4Prefix);
-        List<Ipv4LocalAddress> lIpv4LocalAddress = new ArrayList<Ipv4LocalAddress>();
+        List<Ipv4LocalAddress> lIpv4LocalAddress = new ArrayList<>();
         lIpv4LocalAddress.add(ipv4LocalAddressBuilder.build());
         tedBuilder.setIpv4LocalAddress(lIpv4LocalAddress);
 
@@ -381,7 +378,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractConcurrentDataB
         Ipv6LocalAddressKey ipv6LocalAddressKey = new Ipv6LocalAddressKey(ipv6Prefix);
         ipv6LocalAddressBuilder.setKey(ipv6LocalAddressKey);
         ipv6LocalAddressBuilder.setIpv6Prefix(ipv6Prefix);
-        List<Ipv6LocalAddress> lIpv6LocalAddress = new ArrayList<Ipv6LocalAddress>();
+        List<Ipv6LocalAddress> lIpv6LocalAddress = new ArrayList<>();
         lIpv6LocalAddress.add(ipv6LocalAddressBuilder.build());
         tedBuilder.setIpv6LocalAddress(lIpv6LocalAddress);
 
@@ -529,7 +526,7 @@ public class MultitechnologyTopologyProviderTest extends AbstractConcurrentDataB
 
         UnreservedBandwidthBuilder unreservedBandwidthBuilder = new UnreservedBandwidthBuilder();
         int unreservedBandwidthValue = 31250;
-        List<UnreservedBandwidth> lUnreservedBandwidth = new ArrayList<UnreservedBandwidth>();
+        List<UnreservedBandwidth> lUnreservedBandwidth = new ArrayList<>();
         for (java.lang.Short priority=0; priority <=7; priority++) {
             UnreservedBandwidthKey unreservedBandwidthKey = new UnreservedBandwidthKey(priority);
             unreservedBandwidthBuilder.setBandwidth(new BigDecimal(unreservedBandwidthValue));
