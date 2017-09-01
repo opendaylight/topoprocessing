@@ -13,24 +13,23 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.topology.mlmt.utility.MlmtOperationProcessor;
-import org.opendaylight.topology.multitechnology.MultitechnologyCorrelationFieldHandlerTest.ChangeListener;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopologyBuilder;
@@ -48,7 +47,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypes;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.TopologyTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.UnderlayTopologyBuilder;
@@ -56,7 +54,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class MultitechnologyCorrelationFieldHandlerTest extends AbstractConcurrentDataBrokerTest {
@@ -71,10 +68,9 @@ public class MultitechnologyCorrelationFieldHandlerTest extends AbstractConcurre
     InstanceIdentifier<Topology> mlmtTopologyIid;
     TopologyKey mlmtTopologyKey;
 
-    public class ChangeListener implements DataChangeListener {
-
+    public class ChangeListener implements DataTreeChangeListener<Topology> {
         @Override
-        public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+        public void onDataTreeChanged(Collection<DataTreeModification<Topology>> changes) {
             synchronized (waitObject) {
                 waitObject.notify();
             }
@@ -97,7 +93,7 @@ public class MultitechnologyCorrelationFieldHandlerTest extends AbstractConcurre
         UnderlayTopologyKey underlayKey = new UnderlayTopologyKey(underlayTopologyRef);
         underlayTopologyBuilder.setKey(underlayKey);
         UnderlayTopology underlayTopology = underlayTopologyBuilder.build();
-        List<UnderlayTopology> lUnderlayTopology = new ArrayList<UnderlayTopology>();
+        List<UnderlayTopology> lUnderlayTopology = new ArrayList<>();
         lUnderlayTopology.add(underlayTopology);
         final TopologyBuilder tbuilder = new TopologyBuilder();
         tbuilder.setKey(mlmtTopologyKey);
@@ -135,8 +131,8 @@ public class MultitechnologyCorrelationFieldHandlerTest extends AbstractConcurre
                 InstanceIdentifier.create(NetworkTopology.class), networkTopology);
         assertCommit(rwTx.submit());
 
-        dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                mlmtTopologyIid, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);
+        dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
+                mlmtTopologyIid), new ChangeListener());
 
         mlmtTopology = buildMlmtTopology(MLMT);
         rwTx = dataBroker.newWriteOnlyTransaction();

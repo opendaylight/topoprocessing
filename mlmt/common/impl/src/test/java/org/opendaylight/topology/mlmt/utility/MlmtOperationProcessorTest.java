@@ -12,10 +12,9 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -23,11 +22,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opendaylight.controller.md.sal.binding.api.BindingTransactionChain;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.ReadWriteTransaction;
 import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopologyBuilder;
@@ -35,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,9 +53,9 @@ public class MlmtOperationProcessorTest extends AbstractConcurrentDataBrokerTest
     private List<Topology> topologies;
     private int testRun = 0;
 
-    public class ChangeListener implements DataChangeListener {
+    public class ChangeListener implements DataTreeChangeListener<Topology> {
         @Override
-        public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+        public void onDataTreeChanged(Collection<DataTreeModification<Topology>> changes) {
             synchronized (waitObject) {
                 waitObject.notify();
             }
@@ -81,12 +80,12 @@ public class MlmtOperationProcessorTest extends AbstractConcurrentDataBrokerTest
         thread.setDaemon(true);
         thread.setName("MlmtOperationProcessorTest");
         thread.start();
-        dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                topologyInstanceId, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);
-        dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                topologyInstanceId, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);
+        dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
+                topologyInstanceId), new ChangeListener());
+        dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
+                topologyInstanceId), new ChangeListener());
         Topology tp = new TopologyBuilder().setKey(new TopologyKey(new TopologyId("mlmttopo" + testRun))).build();
-        topologies = new ArrayList<Topology>();
+        topologies = new ArrayList<>();
         topologies.add(tp);
         testRun ++;
     }

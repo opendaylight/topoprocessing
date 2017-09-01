@@ -8,9 +8,11 @@
 
 package org.opendaylight.topology.mlmt.observer;
 
+import java.util.Collection;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.topology.mlmt.utility.MlmtDataChangeObserver;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
@@ -19,12 +21,12 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MlmtDataChangeEventListener implements DataChangeListener, AutoCloseable {
+public class MlmtDataChangeEventListener implements DataTreeChangeListener<DataObject>, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MlmtDataChangeEventListener.class);
     private LogicalDatastoreType storageType;
     private InstanceIdentifier<? extends DataObject> path;
-    private ListenerRegistration<DataChangeListener> listenerRegistration;
+    private ListenerRegistration<?> listenerRegistration;
     private MlmtDataChangeObserver observer;
     private DataBroker dataBroker;
 
@@ -35,17 +37,18 @@ public class MlmtDataChangeEventListener implements DataChangeListener, AutoClos
         this.dataBroker = dataBroker;
     }
 
+    @SuppressWarnings("unchecked")
     public void registerObserver(final MlmtDataChangeObserver observer) {
         this.observer = observer;
-        this.listenerRegistration = dataBroker.registerDataChangeListener(storageType, path,
-                this, DataBroker.DataChangeScope.SUBTREE);
+        this.listenerRegistration = dataBroker.registerDataTreeChangeListener(
+                new DataTreeIdentifier<>(storageType, (InstanceIdentifier<DataObject>)path), this);
     }
 
     @Override
-    public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataTreeChanged(Collection<DataTreeModification<DataObject>> changes) {
         try {
             if (observer != null) {
-                observer.onDataChanged(storageType, change);
+                observer.onDataChanged(storageType, changes);
             }
         } catch (final Exception e) {
             LOG.error("MlmtDataChangeEventListener.onDataChanged: ", e);

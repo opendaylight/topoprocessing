@@ -15,11 +15,10 @@ import static org.junit.Assert.assertTrue;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -28,23 +27,21 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
-import org.opendaylight.controller.md.sal.binding.api.DataChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeChangeListener;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeIdentifier;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.md.sal.binding.api.WriteTransaction;
 import org.opendaylight.controller.md.sal.binding.test.AbstractConcurrentDataBrokerTest;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.md.sal.common.api.routing.RouteChangeListener;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.RoutedRpcRegistration;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
 import org.opendaylight.controller.sal.binding.api.rpc.RpcContextIdentifier;
-import org.opendaylight.topology.mlmt.observer.MlmtTopologyObserverTest.ChangeListener;
-import org.opendaylight.topology.mlmt.observer.MlmtTopologyObserverTest.MlmtRpcProviderRegistryMock;
 import org.opendaylight.topology.mlmt.utility.MlmtConsequentAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.MtTopologyTypeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.multitechnology.topology.type.MultitechnologyTopology;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.topology.multitechnology.rev150122.multitechnology.topology.type.MultitechnologyTopologyBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.LinkId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -70,7 +67,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
@@ -82,10 +78,9 @@ public class MlmtTopologyObserverTest extends AbstractConcurrentDataBrokerTest {
     private MlmtTopologyObserver observer;
     private DataBroker dataBroker;
 
-    public class ChangeListener implements DataChangeListener {
-
+    public class ChangeListener implements DataTreeChangeListener<Topology> {
         @Override
-        public void onDataChanged(final AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+        public void onDataTreeChanged(Collection<DataTreeModification<Topology>> changes) {
             synchronized (waitObject) {
                 waitObject.notify();
             }
@@ -157,7 +152,7 @@ public class MlmtTopologyObserverTest extends AbstractConcurrentDataBrokerTest {
         UnderlayTopologyKey underlayKey = new UnderlayTopologyKey(underlayTopologyRef);
         underlayTopologyBuilder.setKey(underlayKey);
         UnderlayTopology underlayTopology = underlayTopologyBuilder.build();
-        List<UnderlayTopology> lUnderlayTopology = new ArrayList<UnderlayTopology>();
+        List<UnderlayTopology> lUnderlayTopology = new ArrayList<>();
         lUnderlayTopology.add(underlayTopology);
         final TopologyBuilder tbuilder = new TopologyBuilder();
         tbuilder.setKey(key);
@@ -180,13 +175,13 @@ public class MlmtTopologyObserverTest extends AbstractConcurrentDataBrokerTest {
         this.dataBroker = getDataBroker();
         assertNotNull(dataBroker);
         InstanceIdentifier<Topology> topologyIid = buildTopologyIid(MLMT);
-        dataBroker.registerDataChangeListener(LogicalDatastoreType.OPERATIONAL,
-                topologyIid, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);
-        dataBroker.registerDataChangeListener(LogicalDatastoreType.CONFIGURATION,
-                topologyIid, new ChangeListener(), DataBroker.DataChangeScope.SUBTREE);
+        dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.OPERATIONAL,
+                topologyIid), new ChangeListener());
+        dataBroker.registerDataTreeChangeListener(new DataTreeIdentifier<>(LogicalDatastoreType.CONFIGURATION,
+                topologyIid), new ChangeListener());
 
         MlmtRpcProviderRegistryMock rpcRegistry = new MlmtRpcProviderRegistryMock();
-        List<String> underlyingTopologyList = new ArrayList<String>();
+        List<String> underlyingTopologyList = new ArrayList<>();
         underlyingTopologyList.add(EXAMPLE);
         observer = new MlmtTopologyObserver();
         observer.init(dataBroker, rpcRegistry, MLMT, underlyingTopologyList);
@@ -417,11 +412,11 @@ public class MlmtTopologyObserverTest extends AbstractConcurrentDataBrokerTest {
         TerminationPointKey tpKey = new TerminationPointKey(tpId);
         tpBuilder.setKey(tpKey);
         tpBuilder.setTpId(tpId);
-        List<TerminationPoint> lTp = new ArrayList<TerminationPoint>();
+        List<TerminationPoint> lTp = new ArrayList<>();
         lTp.add(tpBuilder.build());
         nodeBuilder.setTerminationPoint(lTp);
 
-        List<Node> lNode = new ArrayList<Node>();
+        List<Node> lNode = new ArrayList<>();
         lNode.add(nodeBuilder.build());
 
         String nodeName2 = "node:2";
@@ -437,7 +432,7 @@ public class MlmtTopologyObserverTest extends AbstractConcurrentDataBrokerTest {
         tpKey = new TerminationPointKey(tpId);
         tpBuilder.setKey(tpKey);
         tpBuilder.setTpId(tpId);
-        lTp = new ArrayList<TerminationPoint>();
+        lTp = new ArrayList<>();
         lTp.add(tpBuilder.build());
         nodeBuilder.setTerminationPoint(lTp);
         lNode.add(nodeBuilder.build());
@@ -464,7 +459,7 @@ public class MlmtTopologyObserverTest extends AbstractConcurrentDataBrokerTest {
         tpId = new TpId(tpName2);
         destinationBuilder.setDestTp(tpId);
         linkBuilder.setDestination(destinationBuilder.build());
-        List<Link> lLink = new ArrayList<Link>();
+        List<Link> lLink = new ArrayList<>();
         lLink.add(linkBuilder.build());
 
         tbuilder.setLink(lLink);

@@ -10,7 +10,9 @@ package org.opendaylight.topology.mlmt.observer;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,14 +20,13 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.opendaylight.controller.md.sal.binding.api.DataBroker;
+import org.opendaylight.controller.md.sal.binding.api.DataObjectModification;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
+import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
 import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.controller.sal.binding.api.RpcProviderRegistry;
-import org.opendaylight.controller.md.sal.binding.api.NotificationPublishService;
-import org.opendaylight.topology.mlmt.observer.AbstractMlmtTopologyObserver.MlmtDataChangeEventType;
 import org.opendaylight.topology.mlmt.utility.MlmtConsequentAction;
 import org.opendaylight.topology.mlmt.utility.MlmtDataChangeObserver;
 import org.opendaylight.topology.mlmt.utility.MlmtProviderFactory;
@@ -75,11 +76,11 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
         @Override
         public  String toString() {
             if (this == CREATED) {
-                return ("Created");
+                return "Created";
             } else if (this == UPDATED) {
-                return ("Updated");
+                return "Updated";
             } else if (this == DELETED) {
-                return ("Deleted");
+                return "Deleted";
             }
             return null;
         }
@@ -620,28 +621,47 @@ public abstract class AbstractMlmtTopologyObserver implements MlmtDataChangeObse
     }
 
     @Override
-    public void onDataChanged(LogicalDatastoreType type,
-            AsyncDataChangeEvent<InstanceIdentifier<?>, DataObject> change) {
+    public void onDataChanged(LogicalDatastoreType type, Collection<DataTreeModification<DataObject>> changes) {
         synchronized (this) {
             try {
                 LOG.info("MlmtTopologyObserver.onDataChanged");
-                Preconditions.checkNotNull(change);
+                Preconditions.checkNotNull(changes);
 
-                Set<InstanceIdentifier<?>> removePathsSet = change.getRemovedPaths();
-                if (removePathsSet != null) {
+                Set<InstanceIdentifier<?>> removePathsSet = new HashSet<>();
+                Map<InstanceIdentifier<?>, DataObject> createdObjectMap = new HashMap<>();
+                Map<InstanceIdentifier<?>, DataObject> updatedObjectMap = new HashMap<>();
+                for (DataTreeModification<DataObject> change: changes) {
+                    final DataObjectModification<DataObject> rootNode = change.getRootNode();
+                    final InstanceIdentifier<?> identifier = change.getRootPath().getRootIdentifier();
+                    switch (rootNode.getModificationType()) {
+                        case WRITE:
+                        case SUBTREE_MODIFIED:
+                            if (rootNode.getDataBefore() == null) {
+                                createdObjectMap.put(identifier, rootNode.getDataAfter());
+                            } else {
+                                updatedObjectMap.put(identifier, rootNode.getDataAfter());
+                            }
+                            break;
+                        case DELETE:
+                            removePathsSet.add(identifier);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                if (!removePathsSet.isEmpty()) {
                     handleRemovedData(type, removePathsSet);
                 }
 
-                Map<InstanceIdentifier<?>, DataObject> mapIidObject = change.getCreatedData();
-                if (mapIidObject != null) {
-                    this.dumpMap(mapIidObject, MlmtDataChangeEventType.CREATED);
-                    handleCreatedData(type, mapIidObject, MlmtDataChangeEventType.CREATED);
+                if (!createdObjectMap.isEmpty()) {
+                    this.dumpMap(createdObjectMap, MlmtDataChangeEventType.CREATED);
+                    handleCreatedData(type, createdObjectMap, MlmtDataChangeEventType.CREATED);
                 }
 
-                mapIidObject = change.getUpdatedData();
-                if (mapIidObject != null) {
-                    this.dumpMap(mapIidObject, MlmtDataChangeEventType.UPDATED);
-                    handleUpdatedData(type, mapIidObject, MlmtDataChangeEventType.UPDATED);
+                if (!updatedObjectMap.isEmpty()) {
+                    this.dumpMap(updatedObjectMap, MlmtDataChangeEventType.UPDATED);
+                    handleUpdatedData(type, updatedObjectMap, MlmtDataChangeEventType.UPDATED);
                 }
             } catch (final Exception e) {
                 LOG.error("AbstractMlmtTopologyObserver.onDataChanged: ", e);

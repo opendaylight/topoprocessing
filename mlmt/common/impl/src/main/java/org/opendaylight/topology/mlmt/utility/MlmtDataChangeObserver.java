@@ -8,15 +8,14 @@
 
 package org.opendaylight.topology.mlmt.utility;
 
-import org.opendaylight.controller.md.sal.common.api.data.AsyncDataChangeEvent;
+import java.util.Collection;
+import org.opendaylight.controller.md.sal.binding.api.DataTreeModification;
 import org.opendaylight.controller.md.sal.common.api.data.LogicalDatastoreType;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public interface MlmtDataChangeObserver {
 
-    void onDataChanged(LogicalDatastoreType storageType, AsyncDataChangeEvent<InstanceIdentifier<?>,
-            DataObject> change);
+    void onDataChanged(LogicalDatastoreType storageType, Collection<DataTreeModification<DataObject>> changes);
 
     void closeListeners();
 }
