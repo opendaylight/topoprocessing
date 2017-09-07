@@ -21,8 +21,8 @@ import org.opendaylight.controller.md.sal.dom.api.DOMDataTreeIdentifier;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.sal.core.api.Broker;
-import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
+import org.opendaylight.mdsal.dom.api.DOMSchemaService;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.GlobalSchemaContextListener;
@@ -61,7 +61,7 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
     private DOMRpcService domRpcService;
     private DOMRpcProviderService domRpcProviderService;
     //provides schema context for lookup in models
-    private SchemaService schemaService;
+    private DOMSchemaService schemaService;
     //translates BindingIndependent objects to BindingAware objects (used for Topology request handling)
     private BindingNormalizedNodeSerializer nodeSerializer;
     //Configures whether framework should listen on CONFIGURATION or OPERATIONAL datastore changes
@@ -164,11 +164,11 @@ public class TopoProcessingProviderImpl implements TopoProcessingProvider {
         this.domDataBroker = dataBroker;
     }
 
-    public SchemaService getSchemaService() {
+    public DOMSchemaService getSchemaService() {
         return schemaService;
     }
 
-    public void setSchemaService(SchemaService schemaService) {
+    public void setSchemaService(DOMSchemaService schemaService) {
         this.schemaService = schemaService;
     }
 

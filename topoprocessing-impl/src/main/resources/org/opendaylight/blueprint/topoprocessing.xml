@@ -17,7 +17,7 @@
   <reference id="brokerImpl"
     interface="org.opendaylight.controller.sal.core.api.Broker" />
   <reference id="schemaServiceImpl"
-    interface="org.opendaylight.controller.sal.core.api.model.SchemaService" />
+    interface="org.opendaylight.mdsal.dom.api.DOMSchemaService" />
   <reference id="bindingNormalizedNodeSerializer"
     interface="org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer" />
   <reference id="domRpcService"

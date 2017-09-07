@@ -35,8 +35,8 @@ import org.opendaylight.controller.md.sal.dom.api.DOMRpcProviderService;
 import org.opendaylight.controller.md.sal.dom.api.DOMRpcService;
 import org.opendaylight.controller.sal.core.api.Broker;
 import org.opendaylight.controller.sal.core.api.Broker.ProviderSession;
-import org.opendaylight.controller.sal.core.api.model.SchemaService;
 import org.opendaylight.mdsal.binding.dom.codec.api.BindingNormalizedNodeSerializer;
+import org.opendaylight.mdsal.dom.api.DOMSchemaService;
 import org.opendaylight.topoprocessing.api.filtration.FiltratorFactory;
 import org.opendaylight.topoprocessing.impl.adapter.ModelAdapter;
 import org.opendaylight.topoprocessing.impl.listener.GlobalSchemaContextListener;
@@ -67,7 +67,7 @@ public class TopoProcessingProviderImplTest {
     @Mock
     private DOMDataTreeChangeService domDataTreeChangeServiceMock;
     @Mock
-    private SchemaService schemaMock;
+    private DOMSchemaService schemaMock;
     @Mock
     private BindingNormalizedNodeSerializer serializerMock;
     @Mock
