@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+:<?xml version="1.0" encoding="UTF-8"?>
 <!-- vi: set et smarttab sw=4 tabstop=4: -->
 <!--
  Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
@@ -72,7 +72,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <yangtools.version>2.0.0-SNAPSHOT</yangtools.version>
+        <yangtools.version>1.2.0</yangtools.version>
         <salGeneratorPath>${project.build.directory}/generated-sources/yang-gen-sal</salGeneratorPath>
         <controller.mdsal.version>1.7.0-SNAPSHOT</controller.mdsal.version>
         <mdsal.model.version>0.12.0-SNAPSHOT</mdsal.model.version>
