@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>karaf-parent</artifactId>
-        <version>1.8.2-SNAPSHOT</version>
+        <version>1.8.3-SNAPSHOT</version>
         <relativePath/>
     </parent>
     <artifactId>distribution-karaf</artifactId>
     <groupId>org.opendaylight.topoprocessing</groupId>
-    <version>0.3.2-SNAPSHOT</version>
+    <version>0.3.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <!-- <name> formatting is used by autorelease to parse and notify projects on
          build failure. Please do not modify this unless you have a good reason. -->
