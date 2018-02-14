@@ -13,7 +13,7 @@
 
     <groupId>org.opendaylight.topoprocessing</groupId>
     <artifactId>odl-topoprocessing-mlmt</artifactId>
-    <version>0.4.2-SNAPSHOT</version>
+    <version>0.4.2</version>
     <packaging>feature</packaging>
 
     <!-- <name> formatting is used by autorelease to parse and notify projects on
@@ -25,14 +25,14 @@
             <dependency>
                 <groupId>org.opendaylight.mdsal.model</groupId>
                 <artifactId>mdsal-model-artifacts</artifactId>
-                <version>0.11.2-SNAPSHOT</version>
+                <version>0.11.2</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
-                <version>1.6.2-SNAPSHOT</version>
+                <version>1.6.2</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
