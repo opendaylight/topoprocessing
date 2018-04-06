@@ -24,8 +24,6 @@
     <name>ODL :: topoprocessing :: ${project.artifactId}</name>
 
     <modules>
-        <module>distribution-karaf</module>
-        <module>distribution-karaf4</module>
         <module>features</module>
         <module>administrative-topology</module>
         <module>rwa</module>
@@ -41,4 +39,18 @@
         <module>topoprocessing-nt</module>
         <module>topoprocessing-spi</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>karaf</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+
+      <modules>
+        <module>distribution-karaf</module>
+        <module>distribution-karaf4</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
