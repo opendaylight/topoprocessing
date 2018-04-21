@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.opendaylight.topoprocessing</groupId>
         <artifactId>topoprocessing-parent</artifactId>
-        <version>0.3.4-SNAPSHOT</version>
+        <version>0.3.4-Carbon</version>
         <relativePath>parent</relativePath>
     </parent>
 
