@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.opendaylight.topoprocessing</groupId>
     <artifactId>multilayer-topology-impl</artifactId>
-    <version>0.3.4-SNAPSHOT</version>
+    <version>0.3.5-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>forwarding-adjacency-impl</artifactId>
