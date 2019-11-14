@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a4c51b2_d7d9fb84",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointPreAggregationFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-31T08:55:39Z",
+      "side": 1,
+      "message": "You should test if isPresent(), before call of get() method",
+      "range": {
+        "startLine": 108,
+        "startChar": 40,
+        "endLine": 108,
+        "endChar": 69
+      },
+      "revId": "46bc1ceb0259110d8df69dea560384b2e968ca6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_37e77f42",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointPreAggregationFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-31T08:55:39Z",
+      "side": 1,
+      "message": "use only two tabs",
+      "range": {
+        "startLine": 62,
+        "startChar": 8,
+        "endLine": 62,
+        "endChar": 42
+      },
+      "revId": "46bc1ceb0259110d8df69dea560384b2e968ca6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_17e4033a",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointPreAggregationFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-31T08:55:39Z",
+      "side": 1,
+      "message": "use only two tabs",
+      "range": {
+        "startLine": 69,
+        "startChar": 8,
+        "endLine": 69,
+        "endChar": 42
+      },
+      "revId": "46bc1ceb0259110d8df69dea560384b2e968ca6c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
