@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "9a3d3df0_4c0f4c37",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/listener/UnderlayTopologyListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-11T18:53:12Z",
+      "side": 1,
+      "message": "Line should not be longer than 120 characters. Please fix",
+      "range": {
+        "startLine": 75,
+        "startChar": 0,
+        "endLine": 75,
+        "endChar": 128
+      },
+      "revId": "4d07421e04587d52da47eac75e0e8c49f65dc447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_8c05d415",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 488,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-11T18:53:12Z",
+      "side": 1,
+      "message": "You should not just swallow InteruptedException. Use logger to log it.",
+      "range": {
+        "startLine": 488,
+        "startChar": 16,
+        "endLine": 488,
+        "endChar": 29
+      },
+      "revId": "4d07421e04587d52da47eac75e0e8c49f65dc447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_a72c339a",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-11T18:53:12Z",
+      "side": 1,
+      "message": "If only one of getCreatedDate(), getRemovedPaths() or getUpdateData() can contains values, then use please change it to if else",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 97,
+        "endChar": 9
+      },
+      "revId": "4d07421e04587d52da47eac75e0e8c49f65dc447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_273823d2",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-11T18:53:12Z",
+      "side": 1,
+      "message": "Please remove this empty line",
+      "range": {
+        "startLine": 105,
+        "startChar": 0,
+        "endLine": 105,
+        "endChar": 0
+      },
+      "revId": "4d07421e04587d52da47eac75e0e8c49f65dc447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_0757df02",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-11T18:53:12Z",
+      "side": 1,
+      "message": "Why you don\u0027t use \"change\" method parameter?.",
+      "range": {
+        "startLine": 162,
+        "startChar": 43,
+        "endLine": 162,
+        "endChar": 46
+      },
+      "revId": "4d07421e04587d52da47eac75e0e8c49f65dc447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
