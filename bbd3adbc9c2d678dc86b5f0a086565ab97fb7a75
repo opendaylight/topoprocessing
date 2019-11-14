@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a4c51b2_e7142df7",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-09T09:28:45Z",
+      "side": 1,
+      "message": "add space",
+      "revId": "bbd3adbc9c2d678dc86b5f0a086565ab97fb7a75",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_07103900",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/LinkFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-09T09:28:45Z",
+      "side": 1,
+      "message": "please rename this variable to something self-explanatory",
+      "range": {
+        "startLine": 46,
+        "startChar": 42,
+        "endLine": 46,
+        "endChar": 45
+      },
+      "revId": "bbd3adbc9c2d678dc86b5f0a086565ab97fb7a75",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
