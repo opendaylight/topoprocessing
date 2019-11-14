@@ -1,0 +1,170 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "3a4c51b2_bf5d16ec",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-06T14:08:18Z",
+      "side": 1,
+      "message": "I didn\u0027t see this approach of importing nowhere in ODL (respectively I was once advised of that it is not ODL approach). Please keep previous way of importing so it is consistent with whole ODL.",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 19
+      },
+      "revId": "775f6462126a94db571a65e4112276d87d6fb73b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_ff6e7e95",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-06T14:08:18Z",
+      "side": 1,
+      "message": "add space after if",
+      "revId": "775f6462126a94db571a65e4112276d87d6fb73b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_3f69068c",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointPreAggregationFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-06T14:08:18Z",
+      "side": 1,
+      "message": "I didn\u0027t see this approach of importing nowhere in ODL (respectively I was once advised of that it is not ODL approach). Please keep previous way of importing so it is consistent with whole ODL.",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 85
+      },
+      "revId": "775f6462126a94db571a65e4112276d87d6fb73b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_df0f42e0",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointPreAggregationFiltrator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-06T14:08:18Z",
+      "side": 1,
+      "message": "You can use NT_TERMINATION_POINT which is in InstanceIdentifiers class",
+      "range": {
+        "startLine": 79,
+        "startChar": 16,
+        "endLine": 79,
+        "endChar": 65
+      },
+      "revId": "775f6462126a94db571a65e4112276d87d6fb73b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_5f0332b8",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-06T14:08:18Z",
+      "side": 1,
+      "message": "the same as previous files",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 54
+      },
+      "revId": "775f6462126a94db571a65e4112276d87d6fb73b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_3f00e6a9",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-06T14:08:18Z",
+      "side": 1,
+      "message": "add space",
+      "revId": "775f6462126a94db571a65e4112276d87d6fb73b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_9f2c9a4c",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 290,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-06T14:08:18Z",
+      "side": 1,
+      "message": "add space",
+      "revId": "775f6462126a94db571a65e4112276d87d6fb73b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_1f208a48",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 295,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-06T14:08:18Z",
+      "side": 1,
+      "message": "Try to simplify this. I prefer to use variables if it simplifies code.",
+      "range": {
+        "startLine": 292,
+        "startChar": 20,
+        "endLine": 295,
+        "endChar": 109
+      },
+      "revId": "775f6462126a94db571a65e4112276d87d6fb73b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
