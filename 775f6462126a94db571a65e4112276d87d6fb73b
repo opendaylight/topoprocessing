@@ -25,6 +25,23 @@
     },
     {
       "key": {
+        "uuid": "3a4c51b2_1f724a7c",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-06T14:08:18Z",
+      "side": 1,
+      "message": "please add space after if and use bracket and new line even if it is only one line.",
+      "revId": "775f6462126a94db571a65e4112276d87d6fb73b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "3a4c51b2_ff6e7e95",
         "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointAggregator.java",
         "patchSetId": 2
@@ -162,6 +179,23 @@
         "endLine": 295,
         "endChar": 109
       },
+      "revId": "775f6462126a94db571a65e4112276d87d6fb73b",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3a4c51b2_ff1cbe15",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointPreAggregationFiltratorTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-06T14:08:18Z",
+      "side": 1,
+      "message": "add space",
       "revId": "775f6462126a94db571a65e4112276d87d6fb73b",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": false
