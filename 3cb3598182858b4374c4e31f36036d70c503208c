@@ -1,0 +1,188 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5a3f45e8_000328b9",
+        "filename": "topoprocessing-i2rs/src/main/java/org/opendaylight/topoprocessing/i2rs/listener/I2RSUnderlayTopologyListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:20:45Z",
+      "side": 1,
+      "message": "bad indentation. It should start as previous line.",
+      "range": {
+        "startLine": 39,
+        "startChar": 24,
+        "endLine": 39,
+        "endChar": 49
+      },
+      "revId": "3cb3598182858b4374c4e31f36036d70c503208c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_80261867",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:20:45Z",
+      "side": 1,
+      "message": "dot should not be alone put it to second line.",
+      "range": {
+        "startLine": 89,
+        "startChar": 78,
+        "endLine": 90,
+        "endChar": 83
+      },
+      "revId": "3cb3598182858b4374c4e31f36036d70c503208c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_602b0c31",
+        "filename": "topoprocessing-inventory/src/main/java/org/opendaylight/topoprocessing/inventory/listener/InvUnderlayTopologyListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:20:45Z",
+      "side": 1,
+      "message": "bad indentation. It should start as previous line.",
+      "range": {
+        "startLine": 52,
+        "startChar": 24,
+        "endLine": 52,
+        "endChar": 49
+      },
+      "revId": "3cb3598182858b4374c4e31f36036d70c503208c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_c01f8008",
+        "filename": "topoprocessing-inventory/src/test/java/org/opendaylight/topoprocessing/inventory/listener/InvUnderlayTopologyListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:20:45Z",
+      "side": 1,
+      "message": "bad indentation. It should start as previous line.",
+      "range": {
+        "startLine": 81,
+        "startChar": 24,
+        "endLine": 82,
+        "endChar": 41
+      },
+      "revId": "3cb3598182858b4374c4e31f36036d70c503208c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_001a0817",
+        "filename": "topoprocessing-inventory/src/test/java/org/opendaylight/topoprocessing/inventory/listener/InvUnderlayTopologyListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:20:45Z",
+      "side": 1,
+      "message": "bad indentation. It should start as previous line.",
+      "range": {
+        "startLine": 154,
+        "startChar": 24,
+        "endLine": 155,
+        "endChar": 41
+      },
+      "revId": "3cb3598182858b4374c4e31f36036d70c503208c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_e016fcf0",
+        "filename": "topoprocessing-nt/src/main/java/org/opendaylight/topoprocessing/nt/listener/NTUnderlayTopologyListener.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:20:45Z",
+      "side": 1,
+      "message": "bad indentation. It should start as previous line.",
+      "range": {
+        "startLine": 41,
+        "startChar": 24,
+        "endLine": 41,
+        "endChar": 49
+      },
+      "revId": "3cb3598182858b4374c4e31f36036d70c503208c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_40d37038",
+        "filename": "topoprocessing-nt/src/test/java/org/opendaylight/topoprocessing/nt/listener/NTUnderlayTopologyListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:20:45Z",
+      "side": 1,
+      "message": "bad indentation. It should start as previous line.",
+      "range": {
+        "startLine": 78,
+        "startChar": 24,
+        "endLine": 79,
+        "endChar": 41
+      },
+      "revId": "3cb3598182858b4374c4e31f36036d70c503208c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a3f45e8_20d8e452",
+        "filename": "topoprocessing-nt/src/test/java/org/opendaylight/topoprocessing/nt/listener/NTUnderlayTopologyListenerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-03-22T08:20:45Z",
+      "side": 1,
+      "message": "bad indentation. It should start as previous line.",
+      "range": {
+        "startLine": 154,
+        "startChar": 24,
+        "endLine": 155,
+        "endChar": 41
+      },
+      "revId": "3cb3598182858b4374c4e31f36036d70c503208c",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
