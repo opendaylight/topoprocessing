@@ -1,0 +1,228 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fa57193c_f1e35c03",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/LinkFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-22T14:28:47Z",
+      "side": 1,
+      "message": "Use please imports without *",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 19
+      },
+      "revId": "4d9fed8b912c00037ded7a6437b6c404af0281e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_3c62cbd8",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-22T14:28:47Z",
+      "side": 1,
+      "message": "Is this necessary? I think it should work if you just set passed \u003d false in else branch of this if condition. But technically your sollution is also good.",
+      "range": {
+        "startLine": 129,
+        "startChar": 20,
+        "endLine": 129,
+        "endChar": 35
+      },
+      "revId": "4d9fed8b912c00037ded7a6437b6c404af0281e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_7c9ba3c9",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointPreAggregationFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-22T14:28:47Z",
+      "side": 1,
+      "message": "the same as previous file",
+      "range": {
+        "startLine": 108,
+        "startChar": 20,
+        "endLine": 108,
+        "endChar": 35
+      },
+      "revId": "4d9fed8b912c00037ded7a6437b6c404af0281e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_fcae93e6",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/TopologyFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-22T14:28:47Z",
+      "side": 1,
+      "message": "Please don\u0027t use * in imports",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 19
+      },
+      "revId": "4d9fed8b912c00037ded7a6437b6c404af0281e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_1cb6e73d",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/operator/filtrator/Ipv6AddressFiltrator.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-22T14:28:47Z",
+      "side": 1,
+      "message": "please remove this empty line",
+      "revId": "4d9fed8b912c00037ded7a6437b6c404af0281e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_dc92af9e",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-22T14:28:47Z",
+      "side": 1,
+      "message": "Previous indentation was correct.",
+      "range": {
+        "startLine": 110,
+        "startChar": 12,
+        "endLine": 110,
+        "endChar": 34
+      },
+      "revId": "4d9fed8b912c00037ded7a6437b6c404af0281e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_dcd90f85",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 285,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-22T14:28:47Z",
+      "side": 1,
+      "message": "previous indentation was correct",
+      "range": {
+        "startLine": 285,
+        "startChar": 12,
+        "endLine": 285,
+        "endChar": 30
+      },
+      "revId": "4d9fed8b912c00037ded7a6437b6c404af0281e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_3ce76b42",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandler.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 494,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-22T14:28:47Z",
+      "side": 1,
+      "message": "previous indentation was correct",
+      "range": {
+        "startLine": 494,
+        "startChar": 12,
+        "endLine": 494,
+        "endChar": 48
+      },
+      "revId": "4d9fed8b912c00037ded7a6437b6c404af0281e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_1ce4273a",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/operator/TerminationPointPreAggregationFiltratorTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-22T14:28:47Z",
+      "side": 1,
+      "message": "Remove this line if it is not used",
+      "range": {
+        "startLine": 112,
+        "startChar": 10,
+        "endLine": 112,
+        "endChar": 78
+      },
+      "revId": "4d9fed8b912c00037ded7a6437b6c404af0281e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fa57193c_7cd0c353",
+        "filename": "topoprocessing-impl/src/test/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestHandlerTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 4630
+      },
+      "writtenOn": "2016-04-22T14:28:47Z",
+      "side": 1,
+      "message": "line length",
+      "range": {
+        "startLine": 216,
+        "startChar": 8,
+        "endLine": 216,
+        "endChar": 127
+      },
+      "revId": "4d9fed8b912c00037ded7a6437b6c404af0281e9",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    }
+  ]
+}
