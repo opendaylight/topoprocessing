@@ -94,6 +94,30 @@
     },
     {
       "key": {
+        "uuid": "9a3d3df0_c6fdf86f",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 5702
+      },
+      "writtenOn": "2019-11-14T20:25:08Z",
+      "side": 1,
+      "message": "testing showed that onDataChange listener can supply both add and remove operation or remove/update operations in one call.",
+      "parentUuid": "9a3d3df0_a72c339a",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 97,
+        "endChar": 9
+      },
+      "revId": "4d07421e04587d52da47eac75e0e8c49f65dc447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "9a3d3df0_273823d2",
         "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
         "patchSetId": 5
@@ -128,6 +152,30 @@
       "writtenOn": "2016-03-11T18:53:12Z",
       "side": 1,
       "message": "Why you don\u0027t use \"change\" method parameter?.",
+      "range": {
+        "startLine": 162,
+        "startChar": 43,
+        "endLine": 162,
+        "endChar": 46
+      },
+      "revId": "4d07421e04587d52da47eac75e0e8c49f65dc447",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9a3d3df0_660a2c8b",
+        "filename": "topoprocessing-impl/src/main/java/org/opendaylight/topoprocessing/impl/request/TopologyRequestListener.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 5702
+      },
+      "writtenOn": "2019-11-14T20:25:08Z",
+      "side": 1,
+      "message": "Intention was to process one remove and one add operation at a time.",
+      "parentUuid": "9a3d3df0_0757df02",
       "range": {
         "startLine": 162,
         "startChar": 43,
