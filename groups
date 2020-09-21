@@ -2,4 +2,3 @@
 #
 72949fad123874c73c6c870e7cb84aa63952f293                                      	saml/odl-gerrit-topoprocessing-committers
 c9025ab9ddc1e3171919e085449f22c54f8f7b54                                      	GitHub Replication
-ldap:cn=odl-gerrit-topoprocessing-committers,ou=Groups,dc=freestandards,dc=org	ldap/odl-gerrit-topoprocessing-committers
